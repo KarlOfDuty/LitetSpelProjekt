@@ -2,11 +2,32 @@
 #include <GL/GL.h>
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
+#include "Shader.h"
+#include "Camera.h"
 
 #pragma comment(lib, "opengl32.lib")
 
+//Shader
+Shader simpleShader;
+
+//Camera
+Camera playerCamera;
+
+//VBO VAO
+GLuint VBO, VAO;
+
+//Triangle Vertices
+GLfloat vertices[] = {
+	// Positions         // Colors
+	0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,  // Bottom Right
+	-0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,  // Bottom Left
+	0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f   // Top 
+};
+
+//Functions
 void render();
-void update();
+void update(sf::Window &window);
+void loadTriangle();
 
 int main()
 {
@@ -22,6 +43,11 @@ int main()
 	window.setActive(true);
 
 	// load resources, initialize the OpenGL states, ...
+	glewInit();
+
+	simpleShader = Shader("Shaders/simpleVertex.glsl", "Shaders/simpleFragment.glsl");
+
+	loadTriangle();
 
 	// run the main loop
 	bool running = true;
@@ -41,14 +67,21 @@ int main()
 				// adjust the viewport when the window is resized
 				glViewport(0, 0, event.size.width, event.size.height);
 			}
+			else if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Escape)
+				{
+					running = false;
+				}
+			}
 		}
 
 		// clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		update();
+		update(window);
 		render();
-		
+
 		// end the current frame (internally swaps the front and back buffers)
 		window.display();
 	}
@@ -60,9 +93,33 @@ int main()
 
 void render()
 {
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 
+	// Draw the triangle
+	simpleShader.use();
+	glBindVertexArray(VAO);
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
 }
-void update()
+void update(sf::Window &window)
 {
-
+	playerCamera.Update(0.1f, window);
+}
+void loadTriangle()
+{
+	VBO, VAO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	// Position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+	// Color attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+	glBindVertexArray(0); // Unbind VAO
 }
