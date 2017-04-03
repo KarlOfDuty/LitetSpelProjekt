@@ -2,6 +2,9 @@
 #include <GL/GL.h>
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
+#include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
+#include <glm\gtc\type_ptr.hpp>
 #include "Shader.h"
 #include "Camera.h"
 
@@ -12,17 +15,24 @@ Shader simpleShader;
 
 //Camera
 Camera playerCamera;
+glm::mat4 projectionMatrix = glm::perspective(45.0f, (float)1280 / (float)720, 0.1f, 1000.0f);
+glm::mat4 viewMatrix;
 
 //VBO VAO
 GLuint VBO, VAO;
 
-//Triangle Vertices
+//Triangle
 GLfloat vertices[] = {
 	// Positions         // Colors
 	0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,  // Bottom Right
 	-0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,  // Bottom Left
 	0.0f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f   // Top 
 };
+glm::mat4 triangleModelMat = {
+	1.0, 0.0, 0.0, 0.0,
+	0.0, 1.0, 0.0, 0.0,
+	0.0, 0.0, 1.0, 0.0,
+	0.0, 0.0, 3.0, 1.0 };
 
 //Functions
 void render();
@@ -100,12 +110,18 @@ void render()
 	simpleShader.use();
 	glBindVertexArray(VAO);
 
+	GLint viewID = glGetUniformLocation(simpleShader.program, "view");
+	glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
+	GLint projectionID = glGetUniformLocation(simpleShader.program, "projection");
+	glUniformMatrix4fv(projectionID, 1, GL_FALSE, &projectionMatrix[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(simpleShader.program, "model"), 1, GL_FALSE, &triangleModelMat[0][0]);
+
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glBindVertexArray(0);
 }
 void update(sf::Window &window)
 {
-	playerCamera.Update(0.1f, window);
+	viewMatrix = playerCamera.Update(0.1f, window);
 }
 void loadTriangle()
 {
