@@ -130,8 +130,10 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\simpleFragment.glsl" />
-    <None Include="Shaders\simpleVertex.glsl" />
+    <None Include="Shaders\gBufferGeometryFragment.glsl" />
+    <None Include="Shaders\gBufferGeometryVertex.glsl" />
+    <None Include="Shaders\gBufferLightingFragment.glsl" />
+    <None Include="Shaders\gBufferLightingVertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
