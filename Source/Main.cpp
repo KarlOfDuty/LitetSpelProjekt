@@ -7,6 +7,8 @@
 #include <glm\gtc\type_ptr.hpp>
 #include "Shader.h"
 #include "Camera.h"
+//#include "Model.h"
+//#include "FrustumCulling.h"
 
 #pragma comment(lib, "opengl32.lib")
 
@@ -15,10 +17,15 @@ Shader simpleShader;
 
 //Camera
 Camera playerCamera;
-glm::mat4 projectionMatrix = glm::perspective(45.0f, (float)1280 / (float)720, 0.1f, 1000.0f);
+float verticalFOV = 45.0f;
+int windowWidth = 1280.0f;
+int windowHeight = 720.0f;
+float nearDistance = 0.01f;
+float farDistance = 1000;
+glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
-
-//VBO VAO
+//FrustumCulling frustumObject;
+//VBO, VAO
 GLuint VBO, VAO;
 
 //Triangle

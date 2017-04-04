@@ -22,14 +22,6 @@ glm::mat4 Model::getRotationMatrix() const
 {
 	return this->rotationMatrix;
 }
-glm::vec3 Model::getMinBounding() const
-{
-	return this->minBounding;
-}
-glm::vec3 Model::getMaxBounding() const
-{
-	return this->maxBounding;
-}
 Material Model::getMaterial(int index)
 {
 	return this->meshes.at(index)->material;
@@ -43,7 +35,7 @@ void Model::setRotationMatrix(glm::mat4 rotationMat)
 {
 	this->rotationMatrix = rotationMat;
 }
-//Multiplies the model matrix with the rotation matrix (used for constant rotation)
+//Multiplies the model matrix with the rotation matrix
 void Model::rotate()
 {
 	this->modelMatrix *= rotationMatrix;
@@ -412,7 +404,7 @@ void Model::setupModel()
 	//Unbind the vertex array buffer
 	glBindVertexArray(0);
 }
-
+//Loads textures from memory, not from disk
 void Model::loadTextures(int i)
 {
 	//Loading ambient texture or colour for mesh
@@ -521,50 +513,6 @@ void Model::loadTextures(int i)
 	}
 
 }
-//Generation of the bounding box around the model
-void Model::generateBoundingBox()
-{
-	glm::vec3 minPos(0,0,0);
-	glm::vec3 maxPos(0,0,0);
-	for (int i = 0; i < meshes.size(); i++)
-	{
-		for (int j = 0; j < meshes[i]->vertices.size(); j++)
-		{
-			//Minimum pos check
-			if (meshes[i]->vertices[j].pos.x < minPos.x)
-			{
-				minPos.x = meshes[i]->vertices[j].pos.x;
-			}
-			if (meshes[i]->vertices[j].pos.y < minPos.y)
-			{
-				minPos.y = meshes[i]->vertices[j].pos.y;
-			}
-			if (meshes[i]->vertices[j].pos.z < minPos.z)
-			{
-				minPos.z = meshes[i]->vertices[j].pos.z;
-			}
-			//Maximum pos check
-			if (meshes[i]->vertices[j].pos.x > maxPos.x)
-			{
-				maxPos.x = meshes[i]->vertices[j].pos.x;
-			}
-			if (meshes[i]->vertices[j].pos.y > maxPos.y)
-			{
-				maxPos.y = meshes[i]->vertices[j].pos.y;
-			}
-			if (meshes[i]->vertices[j].pos.z > maxPos.z)
-			{
-				maxPos.z = meshes[i]->vertices[j].pos.z;
-			}
-		}
-	}
-	//Scale the min max from modelMatrix
-	glm::vec3 scaleVector(modelMatrix[0][0], modelMatrix[1][1], modelMatrix[2][2]);
-	minPos *= scaleVector;
-	maxPos *= scaleVector;
-	this->minBounding = minPos;
-	this->maxBounding = maxPos;
-}
 //Constructors
 Model::Model(std::string filename)
 {
@@ -573,7 +521,6 @@ Model::Model(std::string filename)
 	this->rotationMatrix = glm::mat4(1.0);
 	read(filename);
 	setupModel();
-	generateBoundingBox();
 }
 Model::Model(std::string filename, glm::mat4 modelMat)
 {
@@ -581,7 +528,6 @@ Model::Model(std::string filename, glm::mat4 modelMat)
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = glm::mat4(1.0);
 	read(filename);
-	generateBoundingBox();
 	setupModel();
 }
 Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
@@ -590,7 +536,6 @@ Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = rotation;
 	read(filename);
-	generateBoundingBox();
 	setupModel();
 }
 Model::Model()
@@ -598,8 +543,6 @@ Model::Model()
 	//Initializes the model with no data
 	this->modelMatrix = glm::mat4(1.0);
 	this->rotationMatrix = glm::mat4(1.0);
-	generateBoundingBox();
-	//this->faces = std::vector<std::vector<Vertex>>();
 }
 //Copy constructors
 Model::Model(Model &otherModel)
@@ -607,8 +550,6 @@ Model::Model(Model &otherModel)
 	this->modelMatrix = otherModel.modelMatrix;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->meshes = otherModel.meshes;
-	this->minBounding = otherModel.minBounding;
-	this->maxBounding = otherModel.maxBounding;
 	setupModel();
 }
 Model::Model(Model &otherModel, glm::mat4 modelMat)
@@ -616,7 +557,6 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 	this->modelMatrix =  modelMat;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->meshes = otherModel.meshes;
-	generateBoundingBox();
 	setupModel();
 }
 //Destructor
