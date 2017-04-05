@@ -1,5 +1,6 @@
 #ifndef PLAYERCHAR_H
 #define PLAYERCHAR_H
+#include "Model.h"
 #include "PlayerBird.h"
 #include "PlayerShark.h"
 #include "PlayerButterfly.h"
@@ -8,7 +9,6 @@ class PlayerChar
 {
 private:
 	int HP;
-	//Model model;
 	//Animation animation;
 public:
 	PlayerChar();

@@ -4,7 +4,7 @@
 class PlayerButterfly : public PlayerChar
 {
 private:
-	
+	Model butterflyModel;
 public:
 	PlayerButterfly(int HP);
 	~PlayerButterfly();

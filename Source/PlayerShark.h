@@ -3,7 +3,7 @@
 class PlayerShark : public PlayerChar
 {
 private:
-
+	Model sharkModel;
 public:
 	PlayerShark(int HP);
 	~PlayerShark();

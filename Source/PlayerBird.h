@@ -4,7 +4,7 @@
 class PlayerBird : public PlayerChar
 {
 private:
-
+	Model birdModel;
 public:
 	PlayerBird(int HP);
 	~PlayerBird();

@@ -22,6 +22,7 @@ Player::Player()
 	this->playerCharacters = new PlayerChar*[2];
 	this->initiate();
 
+	//Add characters
 	this->playerCharacters[0] = new PlayerBird(100);
 	this->playerCharacters[1] = new PlayerShark(100);
 	this->playerCharacters[2] = new PlayerButterfly(100);
@@ -47,7 +48,14 @@ void Player::swap(int charType)
 //Update funtion
 void Player::update(float dt)
 {
-	
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		this->playerCharacters[0]->moveLeft();
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		this->playerCharacters[0]->moveRight();
+	}
 }
 //Draws the models involved
 void Player::render(Shader shader)

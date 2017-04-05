@@ -4,6 +4,8 @@
 #include "PlayerShark.h"
 #include "PlayerButterfly.h"
 #include "Shader.h"
+#include <SFML\Window.hpp>
+#include <glm\glm.hpp>
 #include <vector>
 #include <iostream>
 
