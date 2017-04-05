@@ -7,8 +7,12 @@
 #include <glm\gtc\type_ptr.hpp>
 #include "Shader.h"
 #include "Camera.h"
+#include "Player.h"
 
 #pragma comment(lib, "opengl32.lib")
+
+//Player
+Player player;
 
 //Shader
 Shader simpleShader;
@@ -38,6 +42,7 @@ glm::mat4 triangleModelMat = {
 void render();
 void update(sf::Window &window);
 void loadTriangle();
+void createPlayer();
 
 int main()
 {
@@ -138,4 +143,9 @@ void loadTriangle()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
 	glBindVertexArray(0); // Unbind VAO
+}
+
+void createPlayer()
+{
+	
 }
