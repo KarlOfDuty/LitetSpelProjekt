@@ -1,6 +1,6 @@
 #include "PlayerShark.h"
 
-PlayerShark::PlayerShark()
+PlayerShark::PlayerShark(int HP) :PlayerChar(HP)
 {
 
 }
@@ -8,6 +8,11 @@ PlayerShark::PlayerShark()
 PlayerShark::~PlayerShark()
 {
 
+}
+
+void PlayerShark::operator=(const PlayerShark &originalObject)
+{
+	PlayerChar::operator=(originalObject);
 }
 
 void PlayerShark::dive()

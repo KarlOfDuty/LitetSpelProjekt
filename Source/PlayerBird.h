@@ -1,19 +1,18 @@
-#ifndef PLAYERBIRD_H
-#define PLAYERBIRD_H
+#include "PlayerChar.h"
 
 
-class PlayerBird: public PlayerChar
+class PlayerBird : public PlayerChar
 {
 private:
 
 public:
-	PlayerBird();
+	PlayerBird(int HP);
 	~PlayerBird();
+	void operator=(const PlayerBird &originalObject);
 	bool jumpAllowed();
-	void jump();
-	void moveLeft();
-	void moveRight();
-	void attack();
+	virtual void jump();
+	virtual void moveLeft();
+	virtual void moveRight();
+	virtual void attack();
 
 };
-#endif

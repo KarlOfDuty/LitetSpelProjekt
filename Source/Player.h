@@ -1,16 +1,20 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "PlayerChar.h"
+#include "PlayerBird.h"
+#include "PlayerShark.h"
+#include "PlayerButterfly.h"
 #include <vector>
 
 class Player
 {
 private:
-	std::vector<PlayerChar>* playerCharacters;
+	PlayerChar* *playerCharacters;
+	void initiate();
+	void freeMemory();
 public:
 	Player();
 	~Player();
-	void swap();
+	void swap(int charType);
 
 };
 #endif

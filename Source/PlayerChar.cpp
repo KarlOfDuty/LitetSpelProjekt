@@ -1,13 +1,23 @@
 #include "PlayerChar.h"
 
+PlayerChar::PlayerChar()
+{
+	this->HP = 100;
+}
+
 PlayerChar::PlayerChar(int HP)
 {
-	HP = 100;
+	this->HP = HP;
 }
 
 PlayerChar::~PlayerChar()
 {
 
+}
+
+void PlayerChar::operator=(const PlayerChar &originalObject)
+{
+	this->HP = originalObject.HP;
 }
 
 void PlayerChar::jump()

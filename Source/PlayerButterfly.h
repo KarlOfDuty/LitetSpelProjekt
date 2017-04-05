@@ -1,5 +1,4 @@
-#ifndef PLAYERBUTTERFLY_H
-#define PLAYERBUTTERFLY_H
+#include "PlayerChar.h"
 
 
 class PlayerButterfly : public PlayerChar
@@ -7,13 +6,13 @@ class PlayerButterfly : public PlayerChar
 private:
 	
 public:
-	PlayerButterfly();
+	PlayerButterfly(int HP);
 	~PlayerButterfly();
+	void operator=(const PlayerButterfly &originalObject);
 	void teleport();
-	void jump();
-	void moveLeft();
-	void moveRight();
-	void attack();
+	virtual void jump();
+	virtual void moveLeft();
+	virtual void moveRight();
+	virtual void attack();
 
 };
-#endif

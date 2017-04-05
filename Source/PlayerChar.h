@@ -11,8 +11,10 @@ private:
 	//Model model;
 	//Animation animation;
 public:
+	PlayerChar();
 	PlayerChar(int HP);
 	~PlayerChar();
+	void operator=(const PlayerChar &originalObject);
 	virtual void jump() = 0;
 	virtual void moveLeft() = 0;
 	virtual void moveRight() = 0;

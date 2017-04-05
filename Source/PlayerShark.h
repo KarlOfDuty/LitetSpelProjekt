@@ -1,19 +1,17 @@
-#ifndef PLAYERSHARK_H
-#define PLAYERSHARK_H
-
+#include "PlayerChar.h"
 
 class PlayerShark : public PlayerChar
 {
 private:
 
 public:
-	PlayerShark();
+	PlayerShark(int HP);
 	~PlayerShark();
+	void operator=(const PlayerShark &originalObject);
 	void dive();
-	void jump();
-	void moveLeft();
-	void moveRight();
-	void attack();
+	virtual void jump();
+	virtual void moveLeft();
+	virtual void moveRight();
+	virtual void attack();
 
 };
-#endif

@@ -1,6 +1,6 @@
 #include "PlayerButterfly.h"
 
-PlayerButterfly::PlayerButterfly()
+PlayerButterfly::PlayerButterfly(int HP) :PlayerChar(HP)
 {
 
 }
@@ -8,6 +8,11 @@ PlayerButterfly::PlayerButterfly()
 PlayerButterfly::~PlayerButterfly()
 {
 
+}
+
+void PlayerButterfly::operator=(const PlayerButterfly &originalObject)
+{
+	PlayerChar::operator=(originalObject);
 }
 
 void PlayerButterfly::teleport()

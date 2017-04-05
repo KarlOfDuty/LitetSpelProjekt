@@ -1,6 +1,6 @@
 #include "PlayerBird.h"
 
-PlayerBird::PlayerBird()
+PlayerBird::PlayerBird(int HP) :PlayerChar(HP)
 {
 
 }
@@ -8,6 +8,11 @@ PlayerBird::PlayerBird()
 PlayerBird::~PlayerBird()
 {
 
+}
+
+void PlayerBird::operator=(const PlayerBird &originalObject)
+{
+	PlayerChar::operator=(originalObject);
 }
 
 bool PlayerBird::jumpAllowed()
