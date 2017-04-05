@@ -6,9 +6,11 @@ private:
 	Model sharkModel;
 public:
 	PlayerShark(int HP);
-	~PlayerShark();
+	virtual ~PlayerShark();
+	PlayerShark(const PlayerShark & originalObject);
 	void operator=(const PlayerShark &originalObject);
 	void dive();
+	virtual Model getModel()const;
 	virtual void jump();
 	virtual void moveLeft();
 	virtual void moveRight();

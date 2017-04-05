@@ -16,6 +16,11 @@ PlayerBird::~PlayerBird()
 
 }
 
+PlayerBird::PlayerBird(const PlayerBird & originalObject)
+{
+	this->birdModel = originalObject.birdModel;
+}
+
 void PlayerBird::operator=(const PlayerBird &originalObject)
 {
 	PlayerChar::operator=(originalObject);
@@ -24,6 +29,11 @@ void PlayerBird::operator=(const PlayerBird &originalObject)
 bool PlayerBird::jumpAllowed()
 {
 	return false;
+}
+
+Model PlayerBird::getModel()const
+{
+	return this->birdModel.getModelMatrix()[0][0];
 }
 
 void PlayerBird::jump()

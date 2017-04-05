@@ -16,6 +16,11 @@ PlayerButterfly::~PlayerButterfly()
 
 }
 
+PlayerButterfly::PlayerButterfly(const PlayerButterfly & originalObject)
+{
+	this->butterflyModel = originalObject.butterflyModel;
+}
+
 void PlayerButterfly::operator=(const PlayerButterfly &originalObject)
 {
 	PlayerChar::operator=(originalObject);
@@ -24,6 +29,11 @@ void PlayerButterfly::operator=(const PlayerButterfly &originalObject)
 void PlayerButterfly::teleport()
 {
 
+}
+
+Model PlayerButterfly::getModel()const
+{
+	return this->butterflyModel.getModelMatrix()[0][0];
 }
 
 void PlayerButterfly::jump()

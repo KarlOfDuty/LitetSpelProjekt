@@ -60,7 +60,7 @@ void Player::update(float dt)
 //Draws the models involved
 void Player::render(Shader shader)
 {
-	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &cannonModel.getModelMatrix()[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &playerCharacters[0]->getModelNow()[0][0]);
 	cannonModel.draw(shader);
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &cannonModel2.getModelMatrix()[0][0]);
 	cannonModel2.draw(shader);

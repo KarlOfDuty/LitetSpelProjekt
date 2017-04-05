@@ -16,6 +16,11 @@ PlayerShark::~PlayerShark()
 
 }
 
+PlayerShark::PlayerShark(const PlayerShark & originalObject)
+{
+	this->sharkModel = originalObject.sharkModel;
+}
+
 void PlayerShark::operator=(const PlayerShark &originalObject)
 {
 	PlayerChar::operator=(originalObject);
@@ -24,6 +29,11 @@ void PlayerShark::operator=(const PlayerShark &originalObject)
 void PlayerShark::dive()
 {
 
+}
+
+Model PlayerShark::getModel()const
+{
+	return this->sharkModel.getModelMatrix()[0][0];
 }
 
 void PlayerShark::jump()

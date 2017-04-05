@@ -15,6 +15,11 @@ PlayerChar::~PlayerChar()
 
 }
 
+PlayerChar::PlayerChar(const PlayerChar & originalObject)
+{
+	this->HP = originalObject.HP;
+}
+
 void PlayerChar::operator=(const PlayerChar &originalObject)
 {
 	this->HP = originalObject.HP;

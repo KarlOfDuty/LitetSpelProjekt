@@ -7,9 +7,11 @@ private:
 	Model birdModel;
 public:
 	PlayerBird(int HP);
-	~PlayerBird();
+	virtual ~PlayerBird();
+	PlayerBird(const PlayerBird & originalObject);
 	void operator=(const PlayerBird &originalObject);
 	bool jumpAllowed();
+	virtual Model getModel()const;
 	virtual void jump();
 	virtual void moveLeft();
 	virtual void moveRight();

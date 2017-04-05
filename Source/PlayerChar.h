@@ -13,8 +13,10 @@ private:
 public:
 	PlayerChar();
 	PlayerChar(int HP);
-	~PlayerChar();
+	virtual ~PlayerChar();
+	PlayerChar(const PlayerChar &originalObject);
 	void operator=(const PlayerChar &originalObject);
+	virtual Model getModelNow()const = 0;
 	virtual void jump() = 0;
 	virtual void moveLeft() = 0;
 	virtual void moveRight() = 0;
