@@ -3,6 +3,7 @@
 #include "PlayerBird.h"
 #include "PlayerShark.h"
 #include "PlayerButterfly.h"
+#include "Shader.h"
 #include <vector>
 #include <iostream>
 
@@ -16,5 +17,7 @@ public:
 	Player();
 	~Player();
 	void swap(int charType);
+	void update(float dt);
+	void render(Shader shader);
 };
 #endif

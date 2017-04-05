@@ -43,3 +43,24 @@ void Player::swap(int charType)
 		std::swap(playerCharacters[0], playerCharacters[charType]);
 	}
 }
+
+//Update funtion
+void Player::update(float dt)
+{
+	
+}
+//Draws the models involved
+void Player::render(Shader shader)
+{
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &cannonModel.getModelMatrix()[0][0]);
+	cannonModel.draw(shader);
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &cannonModel2.getModelMatrix()[0][0]);
+	cannonModel2.draw(shader);
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &targetModel.getModelMatrix()[0][0]);
+	targetModel.draw(shader);
+	if (aCannonBall != nullptr)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &aCannonBall->ballModel->getModelMatrix()[0][0]);
+		aCannonBall->ballModel->draw(shader);
+	}
+}
