@@ -34,5 +34,12 @@ Player::~Player()
 
 void Player::swap(int charType)
 {
-	if(charType ==)
+	if (charType == 0)
+	{
+		std::cout << "Characters type is the same as the one currently in use" << std::endl;
+	}
+	else if (charType == 1 || charType == 2)
+	{
+		std::swap(playerCharacters[0], playerCharacters[charType]);
+	}
 }

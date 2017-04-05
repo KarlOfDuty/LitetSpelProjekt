@@ -4,6 +4,7 @@
 #include "PlayerShark.h"
 #include "PlayerButterfly.h"
 #include <vector>
+#include <iostream>
 
 class Player
 {
@@ -15,6 +16,5 @@ public:
 	Player();
 	~Player();
 	void swap(int charType);
-
 };
 #endif
