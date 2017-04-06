@@ -1,6 +1,6 @@
 #include "PlayerBird.h"
 
-PlayerBird::PlayerBird(bool jumpAllowed, int HP, Model model) :PlayerChar(HP, model)
+PlayerBird::PlayerBird(int HP, Model model) :PlayerChar(HP, model)
 {
 	jumpAllowed = true;
 }

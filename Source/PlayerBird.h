@@ -6,7 +6,7 @@ class PlayerBird : public PlayerChar
 private:
 	bool jumpAllowed;
 public:
-	PlayerBird(bool jumpAllowed, int HP, Model model);
+	PlayerBird(int HP, Model model);
 	virtual ~PlayerBird();
 	void operator=(const PlayerBird &originalObject);
 	void setDoubleJump(bool doubleJumpAllowed);
