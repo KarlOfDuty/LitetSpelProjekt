@@ -2,10 +2,13 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <SFML\Window.hpp>
+#include "FrustumCulling.h"
+extern const bool aboveView;
 class Camera
 {
 private:
 	bool firstMouse;
+	bool cameraHasMoved;
 	int oldMouseX;
 	int oldMouseY;
 	float mouseSensitivity;
@@ -21,6 +24,7 @@ private:
 public:
 	Camera();
 	~Camera();
+	void frustumCulling(FrustumCulling &fcObject, std::vector<Model*> &models);
 	glm::mat4 Update(float deltaTime, sf::Window &window);
 	glm::vec3 getCameraPos();
 	void cameraFall(float terrainY,float scale, float dt);

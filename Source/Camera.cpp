@@ -1,6 +1,7 @@
 #include "Camera.h"
 Camera::Camera()
 {
+	this->cameraHasMoved = true;
 	this->firstMouse = true;
 	this->oldMouseX = RESOLUTION_WIDTH / 2;
 	this->oldMouseY = RESOLUTION_HEIGHT / 2;
@@ -18,6 +19,19 @@ Camera::~Camera()
 {
 
 }
+void Camera::frustumCulling(FrustumCulling &fcObject, std::vector<Model*> &visibleModels)
+{
+	//If the camera has moved, update the visible models
+	if (cameraHasMoved)
+	{
+		fcObject.setFrustumPlanes(cameraPos, cameraFront, cameraUp);
+		visibleModels = fcObject.getRoot()->getModelsToDraw(fcObject);
+		//Remove duplicate pointers
+		std::sort(visibleModels.begin(), visibleModels.end());
+		visibleModels.erase(std::unique(visibleModels.begin(), visibleModels.end()), visibleModels.end());
+		cameraHasMoved = false;
+	}
+}
 //Updates the camera
 glm::mat4 Camera::Update(float deltaTime, sf::Window &window)
 {
@@ -28,28 +42,32 @@ glm::mat4 Camera::Update(float deltaTime, sf::Window &window)
 		flattenedCameraFront.y = 0;
 		flattenedCameraFront = glm::normalize(flattenedCameraFront);
 
-		cameraSpeed = 0.5 * deltaTime;
+		cameraSpeed = 0.5f * deltaTime;
 		//Forward
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
 			cameraPos.x += (cameraSpeed * flattenedCameraFront).x;
 			cameraPos.z += (cameraSpeed * flattenedCameraFront).z;
+			cameraHasMoved = true;
 		}
 		//Backwards
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		{
 			cameraPos.x -= (cameraSpeed * flattenedCameraFront).x;
 			cameraPos.z -= (cameraSpeed * flattenedCameraFront).z;
+			cameraHasMoved = true;
 		}
 		//Left
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
 			cameraPos -= glm::normalize(glm::cross(flattenedCameraFront, cameraUp)) * cameraSpeed;
+			cameraHasMoved = true;
 		}
 		//Right
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
 			cameraPos += glm::normalize(glm::cross(flattenedCameraFront, cameraUp)) * cameraSpeed;
+			cameraHasMoved = true;
 		}
 		//Executed only once on startup
 		if (firstMouse)
@@ -63,10 +81,12 @@ glm::mat4 Camera::Update(float deltaTime, sf::Window &window)
 		if (sf::Mouse::getPosition().x != RESOLUTION_WIDTH / 2)
 		{
 			cameraYaw += (float)(sf::Mouse::getPosition().x - oldMouseX) * mouseSensitivity;
+			cameraHasMoved = true;
 		}
-		if (sf::Mouse::getPosition().y != RESOLUTION_HEIGHT / 2)
+		if (sf::Mouse::getPosition().y != RESOLUTION_HEIGHT / 2 && !aboveView)
 		{
 			cameraPitch += (float)(oldMouseY - sf::Mouse::getPosition().y) * mouseSensitivity;
+			cameraHasMoved = true;
 		}
 		//Limits the pitch so the player cant move the camera further than straight up or down
 		if (cameraPitch > 89.0f)
