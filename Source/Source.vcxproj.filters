@@ -49,10 +49,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\simpleVertex.glsl">
+    <None Include="Shaders\gBufferGeometryVertex.glsl">
       <Filter>Source Files\Shader</Filter>
     </None>
-    <None Include="Shaders\simpleFragment.glsl">
+    <None Include="Shaders\gBufferGeometryFragment.glsl">
+      <Filter>Source Files\Shader</Filter>
+    </None>
+    <None Include="Shaders\gBufferLightingVertex.glsl">
+      <Filter>Source Files\Shader</Filter>
+    </None>
+    <None Include="Shaders\gBufferLightingFragment.glsl">
       <Filter>Source Files\Shader</Filter>
     </None>
   </ItemGroup>

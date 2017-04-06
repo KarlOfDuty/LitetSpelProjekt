@@ -7,8 +7,8 @@
 #include <glm\gtc\type_ptr.hpp>
 #include "Shader.h"
 #include "Camera.h"
-//#include "Model.h"
-//#include "FrustumCulling.h"
+#include "Model.h"
+#include "FrustumCulling.h"
 
 #pragma comment(lib, "opengl32.lib")
 
@@ -42,6 +42,11 @@ GLuint VBO, VAO, EBO;
 GLuint quadVAO = 0;
 GLuint quadVBO;
 
+//Models
+std::vector<std::string> modelFilePaths = { "models/cube/cube.obj","models/sphere/sphere.obj" };
+std::vector<Model*> modelLibrary;
+std::vector<Model*> allModels;
+
 //Functions
 void render();
 void update(sf::Window &window);
@@ -49,6 +54,8 @@ void createGBuffer();
 void loadSquare();
 void drawSquare();
 void drawQuad();
+void loadModels();
+void setupModels();
 
 //Main function
 int main()
@@ -130,6 +137,11 @@ void render()
 	glUniformMatrix4fv(projectionID, 1, GL_FALSE, &projectionMatrix[0][0]);
 	
 	//Draw functions
+	for (int i = 0; i < allModels.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &allModels[i]->getModelMatrix()[0][0]);
+		allModels.at(i)->draw(deferredGeometryPass);
+	}
 	drawSquare();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -339,4 +351,24 @@ void drawQuad()
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+}
+
+void loadModels()
+{
+	//Loads all models
+	for (int i = 0; i < modelFilePaths.size(); i++)
+	{
+		modelLibrary.push_back(new Model(modelFilePaths[i]));
+	}
+}
+
+void setupModels()
+{
+	allModels.push_back(new Model(*(modelLibrary.at(1)), 
+	{
+		0.1, 0.0, 0.0, 0.0,
+		0.0, 0.1, 0.0, 0.0,
+		0.0, 0.0, 0.1, 0.0,
+		1.0, 0.0, 3.0, 1.0 
+	}));
 }
