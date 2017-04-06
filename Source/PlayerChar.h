@@ -9,18 +9,18 @@ class PlayerChar
 {
 private:
 	int HP;
+	Model playerModel;
 	//Animation animation;
+	bool mayJumpAgain;
 public:
 	PlayerChar();
-	PlayerChar(int HP);
+	PlayerChar(int HP, Model model);
 	virtual ~PlayerChar();
 	PlayerChar(const PlayerChar &originalObject);
 	void operator=(const PlayerChar &originalObject);
-	virtual Model getModelNow()const = 0;
-	virtual void jump() = 0;
-	virtual void moveLeft() = 0;
-	virtual void moveRight() = 0;
-	virtual void attack() = 0;
-	
+	bool getJumpAvailable();
+	void setJumpAvailable(bool available);
+	void attack();
+	void draw(Shader shader);
 };
 #endif

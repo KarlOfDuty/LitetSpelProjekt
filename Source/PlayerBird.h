@@ -4,17 +4,11 @@
 class PlayerBird : public PlayerChar
 {
 private:
-	Model birdModel;
+	bool jumpAllowed;
 public:
-	PlayerBird(int HP);
+	PlayerBird(bool jumpAllowed, int HP, Model model);
 	virtual ~PlayerBird();
-	PlayerBird(const PlayerBird & originalObject);
 	void operator=(const PlayerBird &originalObject);
-	bool jumpAllowed();
-	virtual Model getModel()const;
-	virtual void jump();
-	virtual void moveLeft();
-	virtual void moveRight();
-	virtual void attack();
-
+	void setDoubleJump(bool doubleJumpAllowed);
+	bool getDoubleJump();
 };

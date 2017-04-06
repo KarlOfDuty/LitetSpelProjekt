@@ -15,11 +15,20 @@ private:
 	PlayerChar* *playerCharacters;
 	void initiate();
 	void freeMemory();
+	glm::mat4 modelMatrix;
+	glm::vec3 playerPos;
+	Model birdModel;
+	Model sharkModel;
+	Model butterflyModel;
+	float dx;
+	float dy;
+	bool isOnGround;
 public:
 	Player();
 	~Player();
 	void swap(int charType);
+	void setModelMatrix(glm::vec3 playerPos);
 	void update(float dt);
-	void render(Shader shader);
+	void draw(Shader shader);
 };
 #endif

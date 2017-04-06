@@ -1,14 +1,8 @@
 #include "PlayerBird.h"
 
-PlayerBird::PlayerBird(int HP) :PlayerChar(HP)
+PlayerBird::PlayerBird(bool jumpAllowed, int HP, Model model) :PlayerChar(HP, model)
 {
-	Model birdModel1 = Model("", {
-		0.1, 0.0, 0.0, 0.0,
-		0.0, 0.1, 0.0, 0.0,
-		0.0, 0.0, 0.1, 0.0,
-		2.0, -0.12, 2.0, 1.0 });
-
-	this->birdModel = Model(birdModel1);
+	jumpAllowed = true;
 }
 
 PlayerBird::~PlayerBird()
@@ -16,44 +10,18 @@ PlayerBird::~PlayerBird()
 
 }
 
-PlayerBird::PlayerBird(const PlayerBird & originalObject)
-{
-	this->birdModel = originalObject.birdModel;
-}
-
 void PlayerBird::operator=(const PlayerBird &originalObject)
 {
 	PlayerChar::operator=(originalObject);
 }
 
-bool PlayerBird::jumpAllowed()
+void PlayerBird::setDoubleJump(bool doubleJumpAllowed)
 {
-	return false;
+	jumpAllowed = doubleJumpAllowed;
 }
 
-Model PlayerBird::getModel()const
+bool PlayerBird::getDoubleJump()
 {
-	return this->birdModel.getModelMatrix()[0][0];
+	return jumpAllowed;
 }
 
-void PlayerBird::jump()
-{
-}
-
-void PlayerBird::moveLeft()
-{
-
-	birdModel.setModelMatrix({
-		0.1, 0.0, 0.0, 0.0,
-		0.0, 0.1, 0.0, 0.0,
-		0.0, 0.0, 0.1, 0.0,
-		2.0 + 0.5, -0.12, 2.0, 1.0 })
-}
-
-void PlayerBird::moveRight()
-{
-}
-
-void PlayerBird::attack()
-{
-}
