@@ -67,18 +67,18 @@ int main()
 	settings.antialiasingLevel = 2;
 	sf::Window window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
-
 	// activate the window
 	window.setActive(true);
 
 	// load resources, initialize the OpenGL states, ...
 	glewInit();
-
+	glEnable(GL_DEPTH_TEST);
 	//Create the gbuffer textures and lights
 	createGBuffer();
-	
-	//Load the test square
-	loadSquare();
+
+	//Models
+	loadModels();
+	setupModels();
 
 	// run the main loop
 	bool running = true;
@@ -142,7 +142,6 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &allModels[i]->getModelMatrix()[0][0]);
 		allModels.at(i)->draw(deferredGeometryPass);
 	}
-	drawSquare();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -272,59 +271,6 @@ void createGBuffer()
 	}
 }
 
-//Load the test square
-void loadSquare()
-{
-	GLfloat vertices[] = {
-		// Positions         // Texture Coords   //Normals
-		0.5f,  0.5f, 0.0f,   1.0f, 1.0f,         0.0f, 1.0f, 0.0f,// Top Right
-		0.5f, -0.5f, 0.0f,   1.0f, 0.0f,         0.0f, 1.0f, 0.0f,// Bottom Right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f,        0.0f, 1.0f, 0.0f,// Bottom Left
-		-0.5f,  0.5f, 0.0f,   0.0f, 1.0f,        0.0f, 1.0f, 0.0f// Top Left 
-	};
-	GLuint indices[] = {  // Note that we start from 0!
-		0, 1, 3, // First Triangle
-		1, 2, 3  // Second Triangle
-	};
-	VBO, VAO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-    // TexCoord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-	// Normal attribute
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(5 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);
-	glBindVertexArray(0); // Unbind VAO
-}
-
-//Draw the test square
-void drawSquare()
-{
-	glBindVertexArray(VAO);
-	glm::mat4 triangleModelMat = {
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 3.0, 1.0 };
-	glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &triangleModelMat[0][0]);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-}
-
 //Quad used for lighting pass fullscreen quad
 void drawQuad()
 {
@@ -364,11 +310,18 @@ void loadModels()
 
 void setupModels()
 {
-	allModels.push_back(new Model(*(modelLibrary.at(1)), 
+	allModels.push_back(new Model(*(modelLibrary.at(0)), 
 	{
-		0.1, 0.0, 0.0, 0.0,
-		0.0, 0.1, 0.0, 0.0,
-		0.0, 0.0, 0.1, 0.0,
-		1.0, 0.0, 3.0, 1.0 
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0 
+	}));
+	allModels.push_back(new Model(*(modelLibrary.at(1)),
+	{
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		2.0, 0.0, 0.0, 1.0
 	}));
 }
