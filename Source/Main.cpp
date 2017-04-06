@@ -7,12 +7,10 @@
 #include <glm\gtc\type_ptr.hpp>
 #include "Shader.h"
 #include "Camera.h"
+#include "Model.h"
+#include "FrustumCulling.h"
 
 #pragma comment(lib, "opengl32.lib")
-
-//Window width and height
-const int windowWidth = 1280;
-const int windowHeight = 720;
 
 //gBuffer
 Shader deferredGeometryPass;
@@ -24,8 +22,15 @@ GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
 
 //Camera
 Camera playerCamera;
-glm::mat4 projectionMatrix = glm::perspective(45.0f, (float)1280 / (float)720, 0.1f, 1000.0f);
+float verticalFOV = 45.0f;
+int windowWidth = 1280.0f;
+int windowHeight = 720.0f;
+float nearDistance = 0.01f;
+float farDistance = 1000;
+glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
+
+//FrustumCulling frustumObject;
 
 //Lights
 const GLuint NR_LIGHTS = 10;
@@ -37,6 +42,11 @@ GLuint VBO, VAO, EBO;
 GLuint quadVAO = 0;
 GLuint quadVBO;
 
+//Models
+std::vector<std::string> modelFilePaths = { "models/cube/cube.obj","models/sphere/sphere.obj" };
+std::vector<Model*> modelLibrary;
+std::vector<Model*> allModels;
+
 //Functions
 void render();
 void update(sf::Window &window);
@@ -44,6 +54,8 @@ void createGBuffer();
 void loadSquare();
 void drawSquare();
 void drawQuad();
+void loadModels();
+void setupModels();
 
 //Main function
 int main()
@@ -55,18 +67,18 @@ int main()
 	settings.antialiasingLevel = 2;
 	sf::Window window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
-
 	// activate the window
 	window.setActive(true);
 
 	// load resources, initialize the OpenGL states, ...
 	glewInit();
-
+	glEnable(GL_DEPTH_TEST);
 	//Create the gbuffer textures and lights
 	createGBuffer();
-	
-	//Load the test square
-	loadSquare();
+
+	//Models
+	loadModels();
+	setupModels();
 
 	// run the main loop
 	bool running = true;
@@ -125,7 +137,11 @@ void render()
 	glUniformMatrix4fv(projectionID, 1, GL_FALSE, &projectionMatrix[0][0]);
 	
 	//Draw functions
-	drawSquare();
+	for (int i = 0; i < allModels.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &allModels[i]->getModelMatrix()[0][0]);
+		allModels.at(i)->draw(deferredGeometryPass);
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -255,59 +271,6 @@ void createGBuffer()
 	}
 }
 
-//Load the test square
-void loadSquare()
-{
-	GLfloat vertices[] = {
-		// Positions         // Texture Coords   //Normals
-		0.5f,  0.5f, 0.0f,   1.0f, 1.0f,         0.0f, 1.0f, 0.0f,// Top Right
-		0.5f, -0.5f, 0.0f,   1.0f, 0.0f,         0.0f, 1.0f, 0.0f,// Bottom Right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f,        0.0f, 1.0f, 0.0f,// Bottom Left
-		-0.5f,  0.5f, 0.0f,   0.0f, 1.0f,        0.0f, 1.0f, 0.0f// Top Left 
-	};
-	GLuint indices[] = {  // Note that we start from 0!
-		0, 1, 3, // First Triangle
-		1, 2, 3  // Second Triangle
-	};
-	VBO, VAO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-    // TexCoord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-	// Normal attribute
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(5 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(2);
-	glBindVertexArray(0); // Unbind VAO
-}
-
-//Draw the test square
-void drawSquare()
-{
-	glBindVertexArray(VAO);
-	glm::mat4 triangleModelMat = {
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 3.0, 1.0 };
-	glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &triangleModelMat[0][0]);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-}
-
 //Quad used for lighting pass fullscreen quad
 void drawQuad()
 {
@@ -334,4 +297,31 @@ void drawQuad()
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+}
+
+void loadModels()
+{
+	//Loads all models
+	for (int i = 0; i < modelFilePaths.size(); i++)
+	{
+		modelLibrary.push_back(new Model(modelFilePaths[i]));
+	}
+}
+
+void setupModels()
+{
+	allModels.push_back(new Model(*(modelLibrary.at(0)), 
+	{
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0 
+	}));
+	allModels.push_back(new Model(*(modelLibrary.at(1)),
+	{
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		2.0, 0.0, 0.0, 1.0
+	}));
 }
