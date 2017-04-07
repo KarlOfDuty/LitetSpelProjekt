@@ -8,11 +8,21 @@
 #include "Shader.h"
 #include "FreeCamera.h"
 #include "Camera.h"
+#include "Player.h"
 #include "Model.h"
 #include "FrustumCulling.h"
 
 #pragma comment(lib, "opengl32.lib")
+
+//Player
+Player *player;
+sf::Clock deltaClock;
+float dt;
+int jumpPress;
+bool keyReleased;
+
 const bool aboveView = false;
+
 //gBuffer
 Shader deferredGeometryPass;
 Shader deferredLightingPass;
@@ -20,9 +30,6 @@ GLuint gBuffer;
 
 //Textures
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
-
-//Player
-glm::vec3 playerPos = glm::vec3(0,0,0);
 
 //Camera
 FreeCamera freeCamera;
@@ -54,12 +61,9 @@ std::vector<Model*> staticModels;
 std::vector<Model*> visibleStaticModels;
 std::vector<Model*> dynamicModels;
 
-sf::Clock deltaClock;
-sf::Time deltaTime;
-
 //Functions
 void render();
-void update(sf::Window &window);
+void update(sf::Window &window, int &jumpPress, bool &keyReleased);
 void createGBuffer();
 void drawQuad();
 void loadModels();
@@ -87,6 +91,11 @@ int main()
 	//Models
 	loadModels();
 	setupModels();
+	player = new Player();
+
+
+	jumpPress = 0;
+	// run the main loop
 
 	//Set up the frustum culling object and quadtree
 	frustumObject.setFrustumShape(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
@@ -117,13 +126,25 @@ int main()
 				{
 					running = false;
 				}
+				
+				if (event.key.code == sf::Keyboard::Space)
+				{
+					jumpPress += 1;
+				}
+			}
+			else if (event.type == sf::Event::KeyReleased)
+			{
+				if (event.key.code == sf::Keyboard::Space)
+				{
+					keyReleased = true;
+				}
 			}
 		}
 
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		update(window);
+		update(window, jumpPress, keyReleased);
 		render();
 
 		//End the current frame (internally swaps the front and back buffers)
@@ -163,6 +184,7 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
 		dynamicModels.at(i)->draw(deferredGeometryPass);
 	}
+	player->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -198,15 +220,14 @@ void render()
 }
 
 //Update function
-void update(sf::Window &window)
+void update(sf::Window &window, int &jumpPress, bool &keyReleased)
 {
-	deltaTime = deltaClock.restart();
-	playerPos.x += deltaTime.asSeconds();
+	dt = deltaClock.restart().asSeconds();
 	//Camera update, get new viewMatrix
 
 	if (aboveView)
 	{
-		playerCamera.update(playerPos);
+		playerCamera.update(player->getPlayerPos());
 		viewMatrix = glm::lookAt(
 			glm::vec3(0, 100, 0),
 			glm::vec3(1, 1, 1),
@@ -214,7 +235,7 @@ void update(sf::Window &window)
 	}
 	else
 	{
-		viewMatrix = playerCamera.update(playerPos);
+		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
 	//Does not work in this version
 	//playerCamera.frustumCulling(frustumObject,visibleStaticModels);
@@ -228,6 +249,7 @@ void update(sf::Window &window)
 	{
 		window.setMouseCursorVisible(false);
 	}
+	player->update(dt, jumpPress, keyReleased);
 }
 
 //Create the buffer
@@ -347,6 +369,20 @@ void loadModels()
 
 void setupModels()
 {
+	staticModels.push_back(new Model(*(modelLibrary.at(0)),
+	{
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(1)),
+	{
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		2.0, 0.0, 0.0, 1.0
+	}));
 	std::srand(time(0));
 	//Loads 100 spheres randomly
 	for (int i = 0; i < 100; i++)

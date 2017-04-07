@@ -27,6 +27,21 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBird.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerChar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerShark.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerButterfly.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
     <ClCompile Include="FrustumCulling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -40,6 +55,21 @@
   <ItemGroup>
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerChar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBird.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerShark.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerButterfly.h">
+	  <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrustumCulling.h">
       <Filter>Header Files</Filter>
