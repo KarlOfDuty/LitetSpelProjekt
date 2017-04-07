@@ -6,12 +6,12 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
 #include "Shader.h"
-#include "Camera.h"
+#include "FreeCamera.h"
 #include "Model.h"
 #include "FrustumCulling.h"
 
 #pragma comment(lib, "opengl32.lib")
-const bool aboveView = true;
+const bool aboveView = false;
 //gBuffer
 Shader deferredGeometryPass;
 Shader deferredLightingPass;
@@ -21,7 +21,7 @@ GLuint gBuffer;
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
 
 //Camera
-Camera playerCamera;
+FreeCamera playerCamera;
 float verticalFOV = 45.0f;
 int windowWidth = 1280;
 int windowHeight = 720;

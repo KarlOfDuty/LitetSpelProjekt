@@ -1,5 +1,5 @@
-#include "Camera.h"
-Camera::Camera()
+#include "FreeCamera.h"
+FreeCamera::FreeCamera()
 {
 	this->cameraHasMoved = true;
 	this->firstMouse = true;
@@ -15,11 +15,11 @@ Camera::Camera()
 	this->RESOLUTION_WIDTH = sf::VideoMode::getDesktopMode().width;
 	this->RESOLUTION_HEIGHT = sf::VideoMode::getDesktopMode().height;
 }
-Camera::~Camera()
+FreeCamera::~FreeCamera()
 {
 
 }
-void Camera::frustumCulling(FrustumCulling &fcObject, std::vector<Model*> &visibleModels)
+void FreeCamera::frustumCulling(FrustumCulling &fcObject, std::vector<Model*> &visibleModels)
 {
 	//If the camera has moved, update the visible models
 	if (cameraHasMoved)
@@ -33,7 +33,7 @@ void Camera::frustumCulling(FrustumCulling &fcObject, std::vector<Model*> &visib
 	}
 }
 //Updates the camera
-glm::mat4 Camera::Update(float deltaTime, sf::Window &window)
+glm::mat4 FreeCamera::Update(float deltaTime, sf::Window &window)
 {
 	if (window.hasFocus() && !sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
 	{
@@ -111,12 +111,12 @@ glm::mat4 Camera::Update(float deltaTime, sf::Window &window)
 	//Returns the view matrix
 	return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 }
-glm::vec3 Camera::getCameraPos()
+glm::vec3 FreeCamera::getCameraPos()
 {
 	return this->cameraPos;
 }
 //Calculates the player falling when above the terrain
-void Camera::cameraFall(float terrainY, float scale, float dt)
+void FreeCamera::cameraFall(float terrainY, float scale, float dt)
 {
 	float cameraOffset = 0.2f;
 	float fallSpeed = 0.8f;
@@ -189,7 +189,7 @@ int Camera::mousePicking(sf::Window &window, glm::mat4 &projectionMatrix, glm::m
 }
 */
 //Tests intersection between a ray and an OBB
-bool Camera::testIntersection( glm::vec3 rayOrigin, glm::vec3 rayDirection, glm::vec3 obbMin, glm::vec3 obbMax, glm::mat4 modelMatrix, float& intersection_distance)
+bool FreeCamera::testIntersection( glm::vec3 rayOrigin, glm::vec3 rayDirection, glm::vec3 obbMin, glm::vec3 obbMax, glm::mat4 modelMatrix, float& intersection_distance)
 {	
 	float tMin = 0.0f;
 	float tMax = 100000.0f;
