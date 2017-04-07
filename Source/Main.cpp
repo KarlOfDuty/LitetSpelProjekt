@@ -216,7 +216,9 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(playerPos);
 	}
-	playerCamera.frustumCulling(frustumObject,visibleStaticModels);
+	//Does not work in this version
+	//playerCamera.frustumCulling(frustumObject,visibleStaticModels);
+
 	//TEMPORARY CAMERA CONTROLS, DISABLE WITH ALT
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
 	{

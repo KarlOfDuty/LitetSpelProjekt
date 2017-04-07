@@ -2,12 +2,6 @@
 
 Camera::Camera()
 {
-	//this->cameraHasMoved = true;
-	//this->firstMouse = true;
-	//this->oldMouseX = resolutionWidth / 2;
-	//this->oldMouseY = resolutionHeight / 2;
-	//this->mouseSensitivity = 0.05f;
-	//this->cameraSpeed = 0.05f;
 	this->cameraPos = glm::vec3(0.0f, 0.0f, 2.0f);
 	this->cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	this->cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
