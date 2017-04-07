@@ -3,8 +3,8 @@ FreeCamera::FreeCamera()
 {
 	this->cameraHasMoved = true;
 	this->firstMouse = true;
-	this->oldMouseX = RESOLUTION_WIDTH / 2;
-	this->oldMouseY = RESOLUTION_HEIGHT / 2;
+	this->oldMouseX = resolutionWidth / 2;
+	this->oldMouseY = resolutionHeight / 2;
 	this->mouseSensitivity = 0.05f;
 	this->cameraSpeed = 0.05f;
 	this->cameraPos = glm::vec3(0.0f, 0.0f, 2.0f);
@@ -12,8 +12,8 @@ FreeCamera::FreeCamera()
 	this->cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	this->cameraYaw = -90.0f;
 	this->cameraPitch = 0.0f;
-	this->RESOLUTION_WIDTH = sf::VideoMode::getDesktopMode().width;
-	this->RESOLUTION_HEIGHT = sf::VideoMode::getDesktopMode().height;
+	this->resolutionWidth = sf::VideoMode::getDesktopMode().width;
+	this->resolutionHeight = sf::VideoMode::getDesktopMode().height;
 }
 FreeCamera::~FreeCamera()
 {
@@ -72,18 +72,18 @@ glm::mat4 FreeCamera::Update(float deltaTime, sf::Window &window)
 		//Executed only once on startup
 		if (firstMouse)
 		{
-			sf::Mouse::setPosition(sf::Vector2i(RESOLUTION_WIDTH / 2, RESOLUTION_HEIGHT / 2));
+			sf::Mouse::setPosition(sf::Vector2i(resolutionWidth / 2, resolutionHeight / 2));
 			oldMouseX = sf::Mouse::getPosition().x;
 			oldMouseY = sf::Mouse::getPosition().y;
 			firstMouse = false;
 		}
 		//Checks if the mouse has been moved from the center
-		if (sf::Mouse::getPosition().x != RESOLUTION_WIDTH / 2)
+		if (sf::Mouse::getPosition().x != resolutionWidth / 2)
 		{
 			cameraYaw += (float)(sf::Mouse::getPosition().x - oldMouseX) * mouseSensitivity;
 			cameraHasMoved = true;
 		}
-		if (sf::Mouse::getPosition().y != RESOLUTION_HEIGHT / 2 && !aboveView)
+		if (sf::Mouse::getPosition().y != resolutionHeight / 2 && !aboveView)
 		{
 			cameraPitch += (float)(oldMouseY - sf::Mouse::getPosition().y) * mouseSensitivity;
 			cameraHasMoved = true;
@@ -104,7 +104,7 @@ glm::mat4 FreeCamera::Update(float deltaTime, sf::Window &window)
 		front.z = cos(glm::radians(cameraPitch)) * sin(glm::radians(cameraYaw));
 		cameraFront = glm::normalize(front);
 		//Resets the mouse position
-		sf::Mouse::setPosition(sf::Vector2i(RESOLUTION_WIDTH / 2, RESOLUTION_HEIGHT / 2));
+		sf::Mouse::setPosition(sf::Vector2i(resolutionWidth / 2, resolutionHeight / 2));
 		oldMouseX = sf::Mouse::getPosition().x;
 		oldMouseY = sf::Mouse::getPosition().y;
 	}

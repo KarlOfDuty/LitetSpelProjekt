@@ -7,6 +7,7 @@
 #include <glm\gtc\type_ptr.hpp>
 #include "Shader.h"
 #include "FreeCamera.h"
+#include "Camera.h"
 #include "Model.h"
 #include "FrustumCulling.h"
 
@@ -20,8 +21,12 @@ GLuint gBuffer;
 //Textures
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
 
+//Player
+glm::vec3 playerPos = glm::vec3(0,0,0);
+
 //Camera
-FreeCamera playerCamera;
+FreeCamera freeCamera;
+Camera playerCamera;
 float verticalFOV = 45.0f;
 int windowWidth = 1280;
 int windowHeight = 720;
@@ -196,11 +201,12 @@ void render()
 void update(sf::Window &window)
 {
 	deltaTime = deltaClock.restart();
+	playerPos.x += deltaTime.asSeconds();
 	//Camera update, get new viewMatrix
-	viewMatrix = playerCamera.Update(0.1f, window);
+
 	if (aboveView)
 	{
-		playerCamera.Update(deltaTime.asSeconds(), window);
+		playerCamera.update(playerPos);
 		viewMatrix = glm::lookAt(
 			glm::vec3(0, 100, 0),
 			glm::vec3(1, 1, 1),
@@ -208,7 +214,7 @@ void update(sf::Window &window)
 	}
 	else
 	{
-		viewMatrix = playerCamera.Update(deltaTime.asSeconds(), window);
+		viewMatrix = playerCamera.update(playerPos);
 	}
 	playerCamera.frustumCulling(frustumObject,visibleStaticModels);
 	//TEMPORARY CAMERA CONTROLS, DISABLE WITH ALT
