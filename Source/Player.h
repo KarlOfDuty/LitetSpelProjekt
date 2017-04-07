@@ -29,7 +29,7 @@ public:
 	void swap(int charType);
 	void groundCheck();
 	void setModelMatrix(glm::vec3 playerPos);
-	void update(float dt);
+	void update(float dt, int &jumpPress, bool &keyReleased);
 	void draw(Shader shader);
 };
 #endif

@@ -17,6 +17,8 @@
 Player *player;
 sf::Clock deltaClock;
 float dt;
+int jumpPress;
+bool keyReleased;
 //gBuffer
 Shader deferredGeometryPass;
 Shader deferredLightingPass;
@@ -54,7 +56,7 @@ std::vector<Model*> allModels;
 
 //Functions
 void render();
-void update(sf::Window &window);
+void update(sf::Window &window, int &jumpPress, bool &keyReleased);
 void createPlayer();
 void createGBuffer();
 void drawQuad();
@@ -84,6 +86,8 @@ int main()
 	loadModels();
 	//setupModels();
 	player = new Player();
+
+	jumpPress = 0;
 	// run the main loop
 	bool running = true;
 	while (running)
@@ -108,13 +112,25 @@ int main()
 				{
 					running = false;
 				}
+				
+				if (event.key.code == sf::Keyboard::Space)
+				{
+					jumpPress += 1;
+				}
+			}
+			else if (event.type == sf::Event::KeyReleased)
+			{
+				if (event.key.code == sf::Keyboard::Space)
+				{
+					keyReleased = true;
+				}
 			}
 		}
 
 		// clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		update(window);
+		update(window, jumpPress, keyReleased);
 		render();
 
 		// end the current frame (internally swaps the front and back buffers)
@@ -182,7 +198,7 @@ void render()
 }
 
 //Update function
-void update(sf::Window &window)
+void update(sf::Window &window, int &jumpPress, bool &keyReleased)
 {
 	dt = deltaClock.restart().asSeconds();
 	//Camera update, get new viewMatrix
@@ -197,7 +213,7 @@ void update(sf::Window &window)
 	{
 		window.setMouseCursorVisible(false);
 	}
-	player->update(dt);
+	player->update(dt, jumpPress, keyReleased);
 }
 
 //Create the buffer

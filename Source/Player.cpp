@@ -35,6 +35,7 @@ Player::Player()
 	this->playerCharacters[1] = new PlayerShark(100, sharkModel);
 	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
 	isOnGround = true;
+	this->playerCharacters[0]->setJumpAvailable(true);
 }
 
 Player::~Player()
@@ -77,9 +78,10 @@ void Player::setModelMatrix(glm::vec3 playerPos)
 }
 
 //Update funtion
-void Player::update(float dt)
+void Player::update(float dt, int &jumpPress, bool &keyReleased)
 {
 	groundCheck();
+	PlayerBird *birdPtr = dynamic_cast<PlayerBird*>(playerCharacters[0]);
 
 	//Move
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
@@ -93,49 +95,44 @@ void Player::update(float dt)
 	//Jump
 	if (isOnGround)
 	{
-		PlayerBird *birdPtr = dynamic_cast<PlayerBird*>(playerCharacters[0]);
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		if (jumpPress == 1)
 		{
 			dx *= 0.9*dt;
 
-			if (birdPtr != nullptr)
+			if (playerCharacters[0]->getJumpAvailable())
 			{
-				if (playerCharacters[0]->getJumpAvailable() || birdPtr->getJumpAvailable())
-				{
-					dy = 10*dt;
-					playerCharacters[0]->setJumpAvailable(false);
-					birdPtr->setJumpAvailable(false);
-
-				}
-			}
-			else
-			{
-				if (playerCharacters[0]->getJumpAvailable())
-				{
-					dy = 10*dt;
-					playerCharacters[0]->setJumpAvailable(false);
-				}
-			}
-
-			     
-		}
-		else
-		{
-			playerCharacters[0]->setJumpAvailable(true);
-			birdPtr->setJumpAvailable(true);
+				dy = 10 * dt;
+				birdPtr->setDoubleJump(true);
+				this->playerCharacters[0]->setJumpAvailable(false);
+			}     
 		}
 	}
+
+	if (keyReleased == true)
+	{
+		this->playerCharacters[0]->setJumpAvailable(true);
+		keyReleased = false;
+	}
+	
 
 	if (!isOnGround)
 	{
+		//If it's the bird character
+		if (birdPtr != nullptr)
+		{
+			//Double jump
+			if (birdPtr->getDoubleJump() && jumpPress >= 2)
+			{
+				dy = 10 * dt;
+				birdPtr->setDoubleJump(false);
+			}
+		}
+
+		//Apply gravity
 		dy -= 0.5*dt;
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isOnGround && dy > 0)
-	{
-		dy -= 0.1*dt;
-	}
-
+	//Maximum falling speed
 	if (dy > 5)
 	{
 		dy = 5;
@@ -146,7 +143,10 @@ void Player::update(float dt)
 	playerPos.y += dy;
 
 	//Handle collision detection with ground
-	if (playerPos.y < 0) {
+	if (playerPos.y <= 0)
+	{
+		jumpPress = 0;
+		playerPos.y = 0;
 		dy = 0;
 		isOnGround = true;
 	}
