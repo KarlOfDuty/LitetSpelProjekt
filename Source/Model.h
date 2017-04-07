@@ -55,6 +55,7 @@ private:
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
 	std::vector<Mesh*> meshes;
+	float boundingSphereRadius;
 	void setupModel();
 	void loadTextures(int meshNr);
 public:
@@ -68,11 +69,18 @@ public:
 	void rotate();
 	void read(std::string filename);
 	void draw(Shader shader);
+	void setBoundingSphereRadius();
+	float getBoundingSphereRadius() const;
+	//Constructors
 	Model(std::string filename);
 	Model(std::string filename, glm::mat4 modelMat);
 	Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation);
+	//Copy constructors
 	Model(Model &otherModel);
+	Model(Model *otherModel);
 	Model(Model &otherModel, glm::mat4 modelMat);
+	Model(Model *otherModel, glm::mat4 modelMat);
+	//Destructor
 	Model();
 
 	~Model();

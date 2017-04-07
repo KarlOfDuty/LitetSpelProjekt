@@ -43,6 +43,11 @@ Player::~Player()
 	this->freeMemory();
 }
 
+glm::vec3 Player::getPlayerPos()
+{
+	return this->playerPos;
+}
+
 void Player::swap(int charType)
 {
 	if (charType == 0)

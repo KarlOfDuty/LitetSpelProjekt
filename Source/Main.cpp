@@ -6,6 +6,7 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
 #include "Shader.h"
+#include "FreeCamera.h"
 #include "Camera.h"
 #include "Player.h"
 #include "Model.h"
@@ -19,6 +20,9 @@ sf::Clock deltaClock;
 float dt;
 int jumpPress;
 bool keyReleased;
+
+const bool aboveView = false;
+
 //gBuffer
 Shader deferredGeometryPass;
 Shader deferredLightingPass;
@@ -28,16 +32,17 @@ GLuint gBuffer;
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
 
 //Camera
+FreeCamera freeCamera;
 Camera playerCamera;
 float verticalFOV = 45.0f;
-int windowWidth = 1280.0f;
-int windowHeight = 720.0f;
+int windowWidth = 1280;
+int windowHeight = 720;
 float nearDistance = 0.01f;
 float farDistance = 1000;
 glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
-
-//FrustumCulling frustumObject;
+FrustumCulling frustumObject;
+glm::vec4 mapSize = glm::vec4(-100.0f, -100.0f, 100.0f, 100.0f);
 
 //Lights
 const GLuint NR_LIGHTS = 10;
@@ -52,12 +57,13 @@ GLuint quadVBO;
 //Models
 std::vector<std::string> modelFilePaths = { "models/cube/cube.obj","models/sphere/sphere.obj" };
 std::vector<Model*> modelLibrary;
-std::vector<Model*> allModels;
+std::vector<Model*> staticModels;
+std::vector<Model*> visibleStaticModels;
+std::vector<Model*> dynamicModels;
 
 //Functions
 void render();
 void update(sf::Window &window, int &jumpPress, bool &keyReleased);
-void createPlayer();
 void createGBuffer();
 void drawQuad();
 void loadModels();
@@ -66,17 +72,17 @@ void setupModels();
 //Main function
 int main()
 {
-	// create the window
+	//Create the window
 	sf::ContextSettings settings;
 	settings.depthBits = 24;
 	settings.stencilBits = 8;
 	settings.antialiasingLevel = 2;
 	sf::Window window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
-	// activate the window
+	//Activate the window
 	window.setActive(true);
 
-	// load resources, initialize the OpenGL states, ...
+	//Load resources, initialize the OpenGL states, ...
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 	//Create the gbuffer textures and lights
@@ -84,26 +90,34 @@ int main()
 
 	//Models
 	loadModels();
-	//setupModels();
+	setupModels();
 	player = new Player();
+
 
 	jumpPress = 0;
 	// run the main loop
+
+	//Set up the frustum culling object and quadtree
+	frustumObject.setFrustumShape(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
+	frustumObject.getRoot()->buildQuadTree(staticModels, 0, mapSize);
+	frustumObject.getRoot()->cleanTree();
+
+	//Main loop
 	bool running = true;
 	while (running)
 	{
-		// handle events
+		//Handle events
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
 			{
-				// end the program
+				//End the program
 				running = false;
 			}
 			else if (event.type == sf::Event::Resized)
 			{
-				// adjust the viewport when the window is resized
+				//Adjust the viewport when the window is resized
 				glViewport(0, 0, event.size.width, event.size.height);
 			}
 			else if (event.type == sf::Event::KeyPressed)
@@ -127,17 +141,17 @@ int main()
 			}
 		}
 
-		// clear the buffers
+		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		update(window, jumpPress, keyReleased);
 		render();
 
-		// end the current frame (internally swaps the front and back buffers)
+		//End the current frame (internally swaps the front and back buffers)
 		window.display();
 	}
 
-	// release resources...
+	//Release resources...
 
 	return 0;
 }
@@ -157,10 +171,18 @@ void render()
 	glUniformMatrix4fv(projectionID, 1, GL_FALSE, &projectionMatrix[0][0]);
 	
 	//Draw functions
-	for (int i = 0; i < allModels.size(); i++)
+
+	//Only potentially visible static models are drawn
+	for (int i = 0; i < visibleStaticModels.size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &allModels[i]->getModelMatrix()[0][0]);
-		allModels.at(i)->draw(deferredGeometryPass);
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &visibleStaticModels[i]->getModelMatrix()[0][0]);
+		visibleStaticModels.at(i)->draw(deferredGeometryPass);
+	}
+	//All dynamic models are always drawn
+	for (int i = 0; i < dynamicModels.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
+		dynamicModels.at(i)->draw(deferredGeometryPass);
 	}
 	player->draw(deferredGeometryPass);
 
@@ -202,8 +224,22 @@ void update(sf::Window &window, int &jumpPress, bool &keyReleased)
 {
 	dt = deltaClock.restart().asSeconds();
 	//Camera update, get new viewMatrix
-	viewMatrix = playerCamera.Update(0.1f, window);
-	
+
+	if (aboveView)
+	{
+		playerCamera.update(player->getPlayerPos());
+		viewMatrix = glm::lookAt(
+			glm::vec3(0, 100, 0),
+			glm::vec3(1, 1, 1),
+			glm::vec3(0, 1, 0));
+	}
+	else
+	{
+		viewMatrix = playerCamera.update(player->getPlayerPos());
+	}
+	//Does not work in this version
+	//playerCamera.frustumCulling(frustumObject,visibleStaticModels);
+
 	//TEMPORARY CAMERA CONTROLS, DISABLE WITH ALT
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
 	{
@@ -333,18 +369,29 @@ void loadModels()
 
 void setupModels()
 {
-	allModels.push_back(new Model(*(modelLibrary.at(0)),
+	staticModels.push_back(new Model(*(modelLibrary.at(0)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
 		0.0, 0.0, 0.0, 1.0
 	}));
-	allModels.push_back(new Model(*(modelLibrary.at(1)),
+	staticModels.push_back(new Model(*(modelLibrary.at(1)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
 		2.0, 0.0, 0.0, 1.0
 	}));
+	std::srand(time(0));
+	//Loads 100 spheres randomly
+	for (int i = 0; i < 100; i++)
+	{
+		staticModels.push_back(new Model(modelLibrary.at(1), {
+			1.0, 0.0, 0.0, 0.0,
+			0.0, 1.0, 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0,
+			(rand() % 100) - 50, (rand() % 10) - 5, (rand() % 100) - 50, 1.0 }));
+	}
+	visibleStaticModels = staticModels;
 }

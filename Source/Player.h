@@ -26,6 +26,7 @@ private:
 public:
 	Player();
 	~Player();
+	glm::vec3 getPlayerPos();
 	void swap(int charType);
 	void groundCheck();
 	void setModelMatrix(glm::vec3 playerPos);
