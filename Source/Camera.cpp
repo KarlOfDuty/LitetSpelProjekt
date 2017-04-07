@@ -9,7 +9,7 @@ Camera::Camera()
 	this->cameraPos = glm::vec3(0.0f, 0.0f, 2.0f);
 	this->cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	this->cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-	this->cameraYaw = 90.0f;
+	this->cameraYaw = -90.0f;
 	this->cameraPitch = 0.0f;
 	this->RESOLUTION_WIDTH = sf::VideoMode::getDesktopMode().width;
 	this->RESOLUTION_HEIGHT = sf::VideoMode::getDesktopMode().height;

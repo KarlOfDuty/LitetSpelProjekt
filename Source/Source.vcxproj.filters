@@ -43,6 +43,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PlayerButterfly.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+    <ClCompile Include="FrustumCulling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -66,6 +69,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PlayerButterfly.h">
+	  <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrustumCulling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
@@ -73,10 +79,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\simpleVertex.glsl">
+    <None Include="Shaders\gBufferGeometryVertex.glsl">
       <Filter>Source Files\Shader</Filter>
     </None>
-    <None Include="Shaders\simpleFragment.glsl">
+    <None Include="Shaders\gBufferGeometryFragment.glsl">
+      <Filter>Source Files\Shader</Filter>
+    </None>
+    <None Include="Shaders\gBufferLightingVertex.glsl">
+      <Filter>Source Files\Shader</Filter>
+    </None>
+    <None Include="Shaders\gBufferLightingFragment.glsl">
       <Filter>Source Files\Shader</Filter>
     </None>
   </ItemGroup>

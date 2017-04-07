@@ -22,11 +22,11 @@ Player::Player()
 	this->playerCharacters = new PlayerChar*[2];
 	this->initiate();
 
-	birdModel = Model("");
-	sharkModel = Model("");
-	butterflyModel = Model("");
+	birdModel = Model("models/cube/cube.obj");
+	sharkModel = Model("models/cube/cube.obj");
+	butterflyModel = Model("models/cube/cube.obj");
 
-	this->playerPos = glm::vec3(0.0f, 0.0f, 2.0f);
+	this->playerPos = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	setModelMatrix(playerPos);
 
@@ -34,6 +34,7 @@ Player::Player()
 	this->playerCharacters[0] = new PlayerBird(100, birdModel);
 	this->playerCharacters[1] = new PlayerShark(100, sharkModel);
 	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
+	isOnGround = true;
 }
 
 Player::~Player()
@@ -53,12 +54,20 @@ void Player::swap(int charType)
 	}
 }
 
+void Player::groundCheck()
+{
+	if (playerPos.y > 0.0f)
+	{
+		isOnGround = false;
+	}
+}
+
 void Player::setModelMatrix(glm::vec3 playerPos)
 {
 	this->modelMatrix = glm::mat4(
-		0.1, 0.0, 0.0, 0.0,
-		0.0, 0.1, 0.0, 0.0,
-		0.0, 0.0, 0.1, 0.0,
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
 		playerPos.x, playerPos.y, playerPos.z, 1.0
 	);
 
@@ -70,14 +79,16 @@ void Player::setModelMatrix(glm::vec3 playerPos)
 //Update funtion
 void Player::update(float dt)
 {
+	groundCheck();
+
 	//Move
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		playerPos.x - 0.5f;
+		playerPos.x -= 4.0f*dt;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		playerPos.x + 0.5f;
+		playerPos.x += 4.0f*dt;
 	}
 	//Jump
 	if (isOnGround)
@@ -85,22 +96,23 @@ void Player::update(float dt)
 		PlayerBird *birdPtr = dynamic_cast<PlayerBird*>(playerCharacters[0]);
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
-			dx *= 0.9;
+			dx *= 0.9*dt;
 
 			if (birdPtr != nullptr)
 			{
 				if (playerCharacters[0]->getJumpAvailable() || birdPtr->getJumpAvailable())
 				{
-					dy = -10;
+					dy = 10*dt;
 					playerCharacters[0]->setJumpAvailable(false);
 					birdPtr->setJumpAvailable(false);
+
 				}
 			}
 			else
 			{
 				if (playerCharacters[0]->getJumpAvailable())
 				{
-					dy = -10;
+					dy = 10*dt;
 					playerCharacters[0]->setJumpAvailable(false);
 				}
 			}
@@ -116,12 +128,12 @@ void Player::update(float dt)
 
 	if (!isOnGround)
 	{
-		dy += 0.5;
+		dy -= 0.5*dt;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !isOnGround && dy > 0)
 	{
-		dy -= 0.1;
+		dy -= 0.1*dt;
 	}
 
 	if (dy > 5)
@@ -134,11 +146,10 @@ void Player::update(float dt)
 	playerPos.y += dy;
 
 	//Handle collision detection with ground
-	//if (playerCollidedWithGround()) {
-	//	playerPos.y = positionJustAboveGround;
-	//	dy = 0;
-	//	isOnGround = true;
-	//}
+	if (playerPos.y < 0) {
+		dy = 0;
+		isOnGround = true;
+	}
 
 	setModelMatrix(playerPos);
 }

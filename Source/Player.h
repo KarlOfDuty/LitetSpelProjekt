@@ -27,6 +27,7 @@ public:
 	Player();
 	~Player();
 	void swap(int charType);
+	void groundCheck();
 	void setModelMatrix(glm::vec3 playerPos);
 	void update(float dt);
 	void draw(Shader shader);
