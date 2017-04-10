@@ -23,6 +23,7 @@ private:
 	float dx;
 	float dy;
 	bool isOnGround;
+	bool jumpPressed;
 public:
 	Player();
 	~Player();

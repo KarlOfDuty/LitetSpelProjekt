@@ -95,6 +95,7 @@ int main()
 
 
 	jumpPress = 0;
+	keyReleased = true;
 	// run the main loop
 
 	//Set up the frustum culling object and quadtree
@@ -130,6 +131,7 @@ int main()
 				if (event.key.code == sf::Keyboard::Space)
 				{
 					jumpPress += 1;
+					keyReleased = false;
 				}
 			}
 			else if (event.type == sf::Event::KeyReleased)

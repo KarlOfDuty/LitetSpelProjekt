@@ -98,6 +98,7 @@ void Player::update(float dt, int &jumpPress, bool &keyReleased)
 		playerPos.x += 4.0f*dt;
 	}
 	//Jump
+	//If on ground
 	if (isOnGround)
 	{
 		if (jumpPress == 1)
@@ -107,21 +108,23 @@ void Player::update(float dt, int &jumpPress, bool &keyReleased)
 			if (playerCharacters[0]->getJumpAvailable())
 			{
 				dy = 10 * dt;
-				birdPtr->setDoubleJump(true);
 				this->playerCharacters[0]->setJumpAvailable(false);
+				jumpPressed = true;
 			}     
+		}
+		if (keyReleased == true)
+		{
+			this->playerCharacters[0]->setJumpAvailable(true);
 		}
 	}
 
-	if (keyReleased == true)
-	{
-		this->playerCharacters[0]->setJumpAvailable(true);
-		keyReleased = false;
-	}
-	
-
+	//If in air
 	if (!isOnGround)
 	{
+		if (keyReleased == true && jumpPressed == true)
+		{
+			birdPtr->setDoubleJump(true);
+		}
 		//If it's the bird character
 		if (birdPtr != nullptr)
 		{
@@ -130,6 +133,7 @@ void Player::update(float dt, int &jumpPress, bool &keyReleased)
 			{
 				dy = 10 * dt;
 				birdPtr->setDoubleJump(false);
+				jumpPressed = false;
 			}
 		}
 
