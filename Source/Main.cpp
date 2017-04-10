@@ -69,6 +69,8 @@ void drawQuad();
 void loadModels();
 void setupModels();
 
+enum { XboxA, XboxB, XboxX, XboxY };
+
 //Main function
 int main()
 {
@@ -107,42 +109,27 @@ int main()
 	bool running = true;
 	while (running)
 	{
-		//Handle events
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
-				//End the program
-				running = false;
-			}
-			else if (event.type == sf::Event::Resized)
-			{
-				//Adjust the viewport when the window is resized
-				glViewport(0, 0, event.size.width, event.size.height);
-			}
-			else if (event.type == sf::Event::KeyPressed)
-			{
-				if (event.key.code == sf::Keyboard::Escape)
-				{
-					running = false;
-				}
-				
-				if (event.key.code == sf::Keyboard::Space)
-				{
-					jumpPress += 1;
-					keyReleased = false;
-				}
-			}
-			else if (event.type == sf::Event::KeyReleased)
-			{
-				if (event.key.code == sf::Keyboard::Space)
-				{
-					keyReleased = true;
-				}
-			}
-		}
-
+		//sf::Event event;
+		//while (window.pollEvent(event))
+		//{
+		//	if (event.type == sf::Event::Closed)
+		//	{
+		//		//End the program
+		//		running = false;
+		//	}
+		//	else if (event.type == sf::Event::Resized)
+		//	{
+		//		//Adjust the viewport when the window is resized
+		//		glViewport(0, 0, event.size.width, event.size.height);
+		//	}
+		//	else if (event.type == sf::Event::KeyPressed)
+		//	{
+		//		if (event.key.code == sf::Keyboard::Escape)
+		//		{
+		//			running = false;
+		//		}
+		//	}
+		//}
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -251,7 +238,7 @@ void update(sf::Window &window, int &jumpPress, bool &keyReleased)
 	{
 		window.setMouseCursorVisible(false);
 	}
-	player->update(dt, jumpPress, keyReleased);
+	player->update(dt, window);
 }
 
 //Create the buffer
@@ -380,13 +367,13 @@ void setupModels()
 	}));
 	std::srand(time(0));
 	//Loads 100 spheres randomly
-	for (int i = 0; i < 100; i++)
-	{
-		staticModels.push_back(new Model(modelLibrary.at(3), {
-			0.1, 0.0, 0.0, 0.0,
-			0.0, 0.1, 0.0, 0.0,
-			0.0, 0.0, 0.1, 0.0,
-			(rand() % 100) - 50, (rand() % 10) - 5, (rand() % 100) - 50, 1.0 }));
-	}
+	//for (int i = 0; i < 100; i++)
+	//{
+	//	staticModels.push_back(new Model(modelLibrary.at(3), {
+	//		0.1, 0.0, 0.0, 0.0,
+	//		0.0, 0.1, 0.0, 0.0,
+	//		0.0, 0.0, 0.1, 0.0,
+	//		(rand() % 100) - 50, (rand() % 10) - 5, (rand() % 100) - 50, 1.0 }));
+	//}
 	visibleStaticModels = staticModels;
 }

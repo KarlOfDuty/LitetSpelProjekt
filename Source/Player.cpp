@@ -1,41 +1,30 @@
 #include "Player.h"
 
-void Player::initiate()
-{
-	for (int i = 0; i < 2; i++)
-	{
-		this->playerCharacters[i] = nullptr;
-	}
-}
-
 void Player::freeMemory()
 {
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		delete this->playerCharacters[i];
 	}
-	delete[] this->playerCharacters;
 }
 
 Player::Player()
 {
-	this->playerCharacters = new PlayerChar*[2];
-	this->initiate();
-
 	birdModel = Model("models/cube/cube.obj");
 	sharkModel = Model("models/cube/cube.obj");
 	butterflyModel = Model("models/cube/cube.obj");
 
 	this->playerPos = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	setModelMatrix(playerPos);
+	setPos(playerPos);
 
+	this->movementSpeed = 4.0f;
 	//Add characters
 	this->playerCharacters[0] = new PlayerBird(100, birdModel);
 	this->playerCharacters[1] = new PlayerShark(100, sharkModel);
 	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
-	isOnGround = true;
-	this->playerCharacters[0]->setJumpAvailable(true);
+	this->player = playerCharacters[0];
+	this->isOnGround = true;
 }
 
 Player::~Player()
@@ -48,27 +37,21 @@ glm::vec3 Player::getPlayerPos()
 	return this->playerPos;
 }
 
-void Player::swap(int charType)
+void Player::swap(int character)
 {
-	if (charType == 0)
+	player = playerCharacters[character];
+}
+
+void Player::jump(float dt)
+{
+	if (player->getMaxJumps() > jumps)
 	{
-		std::cout << "Characters type is the same as the one currently in use" << std::endl;
-	}
-	else if (charType == 1 || charType == 2)
-	{
-		std::swap(playerCharacters[0], playerCharacters[charType]);
+		velocityY = 10 * dt;
+		jumps++;
 	}
 }
 
-void Player::groundCheck()
-{
-	if (playerPos.y > 0.0f)
-	{
-		isOnGround = false;
-	}
-}
-
-void Player::setModelMatrix(glm::vec3 playerPos)
+void Player::setPos(glm::vec3 playerPos)
 {
 	this->modelMatrix = glm::mat4(
 		1.0, 0.0, 0.0, 0.0,
@@ -76,91 +59,104 @@ void Player::setModelMatrix(glm::vec3 playerPos)
 		0.0, 0.0, 1.0, 0.0,
 		playerPos.x, playerPos.y, playerPos.z, 1.0
 	);
-
-	birdModel.setModelMatrix(modelMatrix);
-	sharkModel.setModelMatrix(modelMatrix);
-	butterflyModel.setModelMatrix(modelMatrix);
 }
 
 //Update funtion
-void Player::update(float dt, int &jumpPress, bool &keyReleased)
+void Player::update(float dt, sf::Window &window)
 {
-	groundCheck();
-	PlayerBird *birdPtr = dynamic_cast<PlayerBird*>(playerCharacters[0]);
-
+	if (playerPos.y > 0.0f)
+	{
+		isOnGround = false;
+	}
+	int controller = Controller1;
+	if (sf::Joystick::isConnected(controller))
+	{
+		//Left
+		if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
+		{
+			playerPos.x -= movementSpeed*dt;
+		}
+		//Right
+		else if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) > 20)
+		{
+			playerPos.x += movementSpeed*dt;
+		}
+	}
 	//Move
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		playerPos.x -= 4.0f*dt;
+		playerPos.x -= movementSpeed*dt;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		playerPos.x += 4.0f*dt;
+		playerPos.x += movementSpeed*dt;
 	}
-	//Jump
-	//If on ground
-	if (isOnGround)
+	//Handle events
+	sf::Event windowEvent;
+	while (window.pollEvent(windowEvent))
 	{
-		if (jumpPress == 1)
+		//Controller
+		if (sf::Joystick::isConnected(controller))
 		{
-			dx *= 0.9*dt;
 
-			if (playerCharacters[0]->getJumpAvailable())
+			//Jump
+			if (windowEvent.type == sf::Event::JoystickButtonPressed && joystickPressed[controller][XboxA] == false)
 			{
-				dy = 10 * dt;
-				this->playerCharacters[0]->setJumpAvailable(false);
-				jumpPressed = true;
-			}     
+				if (windowEvent.joystickButton.joystickId == XboxA)
+				{
+					joystickPressed[controller][XboxA] = true;
+					jump(dt);
+				}
+			}
+			else if (windowEvent.type == sf::Event::JoystickButtonReleased)
+			{
+				if (windowEvent.joystickButton.joystickId == XboxA)
+				{
+					joystickPressed[controller][XboxA] = false;
+				}
+			}
 		}
-		if (keyReleased == true)
+		//Jump
+		if (windowEvent.type == sf::Event::KeyPressed)
 		{
-			this->playerCharacters[0]->setJumpAvailable(true);
+			if (windowEvent.key.code == sf::Keyboard::Space && !keyPressed[sf::Keyboard::Space])
+			{
+				keyPressed[sf::Keyboard::Space] = true;
+				jump(dt);
+			}
+		}
+		else if (windowEvent.type == sf::Event::KeyReleased)
+		{
+			if (windowEvent.key.code == sf::Keyboard::Space)
+			{
+				keyPressed[sf::Keyboard::Space] = false;
+			}
 		}
 	}
-
 	//If in air
 	if (!isOnGround)
 	{
-		if (keyReleased == true && jumpPressed == true)
-		{
-			birdPtr->setDoubleJump(true);
-		}
-		//If it's the bird character
-		if (birdPtr != nullptr)
-		{
-			//Double jump
-			if (birdPtr->getDoubleJump() && jumpPress >= 2)
-			{
-				dy = 10 * dt;
-				birdPtr->setDoubleJump(false);
-				jumpPressed = false;
-			}
-		}
-
-		//Apply gravity
-		dy -= 0.5*dt;
+		velocityY -= 0.5*dt;
 	}
 
 	//Maximum falling speed
-	if (dy > 5)
+	if (velocityY > 5)
 	{
-		dy = 5;
+		velocityY = 5;
 	}
 
 	//Apply velocity
-	playerPos.x += dx;
-	playerPos.y += dy;
+	playerPos.y += velocityY;
 
 	//Handle collision detection with ground
 	if (playerPos.y <= 0)
 	{
-		jumpPress = 0;
+		jumps = 0;
 		playerPos.y = 0;
-		dy = 0;
+		velocityY = 0;
 		isOnGround = true;
 	}
-
-	setModelMatrix(playerPos);
+	setPos(playerPos);
 }
 //Draws the models involved
 void Player::draw(Shader shader)
