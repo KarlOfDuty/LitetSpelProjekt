@@ -55,7 +55,7 @@ GLuint quadVAO = 0;
 GLuint quadVBO;
 
 //Models
-std::vector<std::string> modelFilePaths = { "models/cube/cube.obj","models/sphere/sphere.obj" };
+std::vector<std::string> modelFilePaths = { "models/cube/cube.obj","models/sphere/sphere.obj","models/cube/cubeGreen.obj", "models/Characters/Bird/BirdTest1.obj" };
 std::vector<Model*> modelLibrary;
 std::vector<Model*> staticModels;
 std::vector<Model*> visibleStaticModels;
@@ -371,21 +371,21 @@ void loadModels()
 
 void setupModels()
 {
-	staticModels.push_back(new Model(*(modelLibrary.at(0)),
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		10.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 2.0, 0.0,
 		0.0, -1.0, 0.0, 1.0
 	}));
 	std::srand(time(0));
 	//Loads 100 spheres randomly
 	for (int i = 0; i < 100; i++)
 	{
-		staticModels.push_back(new Model(modelLibrary.at(1), {
-			1.0, 0.0, 0.0, 0.0,
-			0.0, 1.0, 0.0, 0.0,
-			0.0, 0.0, 1.0, 0.0,
+		staticModels.push_back(new Model(modelLibrary.at(3), {
+			0.1, 0.0, 0.0, 0.0,
+			0.0, 0.1, 0.0, 0.0,
+			0.0, 0.0, 0.1, 0.0,
 			(rand() % 100) - 50, (rand() % 10) - 5, (rand() % 100) - 50, 1.0 }));
 	}
 	visibleStaticModels = staticModels;
