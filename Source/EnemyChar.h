@@ -10,8 +10,9 @@ public:
 	Model enemyModel;
 	//Animation animation;
 private:
-	EnemyChar(int HP, Model enemyModel, int damage);
-	virtual ~EnemyChar();
+	EnemyChar();
+	EnemyChar(int HP, Model model, int damage);
+	~EnemyChar();
 	void attack();
 	void draw(Shader shader);
 };

@@ -6,9 +6,7 @@ public:
 
 
 private:
-	EnemySlime(int HP, Model model, int damage);
-	virtual ~EnemySlime();
-
-
+	EnemySlime(int HP, Model enemyModel, int damage);
+	~EnemySlime();
 };
 

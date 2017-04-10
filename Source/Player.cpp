@@ -22,9 +22,9 @@ Player::Player()
 	this->playerCharacters = new PlayerChar*[2];
 	this->initiate();
 
-	birdModel = Model("models/cube/cube.obj");
-	sharkModel = Model("models/cube/cube.obj");
-	butterflyModel = Model("models/cube/cube.obj");
+	Model birdModel = Model("models/cube/cube.obj");
+	Model sharkModel = Model("models/cube/cube.obj");
+	Model butterflyModel = Model("models/cube/cube.obj");
 
 	this->playerPos = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -70,10 +70,6 @@ void Player::setModelMatrix(glm::vec3 playerPos)
 		0.0, 0.0, 1.0, 0.0,
 		playerPos.x, playerPos.y, playerPos.z, 1.0
 	);
-
-	birdModel.setModelMatrix(modelMatrix);
-	sharkModel.setModelMatrix(modelMatrix);
-	butterflyModel.setModelMatrix(modelMatrix);
 }
 
 //Update funtion

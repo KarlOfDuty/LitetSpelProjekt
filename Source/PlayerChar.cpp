@@ -10,7 +10,7 @@ PlayerChar::PlayerChar()
 PlayerChar::PlayerChar(int HP, Model model)
 {
 	this->HP = HP;
-	playerModel = model;
+	this->playerModel = model;
 }
 
 PlayerChar::~PlayerChar()
