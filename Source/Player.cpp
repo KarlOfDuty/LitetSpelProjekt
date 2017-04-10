@@ -89,11 +89,11 @@ void Player::update(float dt, int &jumpPress, bool &keyReleased)
 	PlayerBird *birdPtr = dynamic_cast<PlayerBird*>(playerCharacters[0]);
 
 	//Move
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		playerPos.x -= 4.0f*dt;
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		playerPos.x += 4.0f*dt;
 	}
