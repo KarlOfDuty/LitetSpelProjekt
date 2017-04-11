@@ -11,17 +11,19 @@
 #include "Player.h"
 #include "Model.h"
 #include "FrustumCulling.h"
+#include "EventHandler.h"
 
 #pragma comment(lib, "opengl32.lib")
 
 //Player
 Player *player;
+EventHandler eventHandler;
 sf::Clock deltaClock;
 float dt;
 int jumpPress;
 bool keyReleased;
 
-const bool aboveView = false;
+const bool aboveView = true;
 
 //gBuffer
 Shader deferredGeometryPass;
@@ -63,11 +65,12 @@ std::vector<Model*> dynamicModels;
 
 //Functions
 void render();
-void update(sf::Window &window, int &jumpPress, bool &keyReleased);
+void update(sf::Window &window);
 void createGBuffer();
 void drawQuad();
 void loadModels();
 void setupModels();
+void setupQuadTreeAndFrustum();
 
 //Main function
 int main()
@@ -91,70 +94,29 @@ int main()
 	//Models
 	loadModels();
 	setupModels();
+
+	//Player
 	player = new Player();
+	eventHandler = EventHandler();
 
-
-	jumpPress = 0;
-	keyReleased = true;
-	// run the main loop
-
-	//Set up the frustum culling object and quadtree
-	frustumObject.setFrustumShape(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
-	frustumObject.getRoot()->buildQuadTree(staticModels, 0, mapSize);
-	frustumObject.getRoot()->cleanTree();
+	setupQuadTreeAndFrustum();
 
 	//Main loop
 	bool running = true;
 	while (running)
 	{
-		//Handle events
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
-				//End the program
-				running = false;
-			}
-			else if (event.type == sf::Event::Resized)
-			{
-				//Adjust the viewport when the window is resized
-				glViewport(0, 0, event.size.width, event.size.height);
-			}
-			else if (event.type == sf::Event::KeyPressed)
-			{
-				if (event.key.code == sf::Keyboard::Escape)
-				{
-					running = false;
-				}
-				
-				if (event.key.code == sf::Keyboard::Space)
-				{
-					jumpPress += 1;
-					keyReleased = false;
-				}
-			}
-			else if (event.type == sf::Event::KeyReleased)
-			{
-				if (event.key.code == sf::Keyboard::Space)
-				{
-					keyReleased = true;
-				}
-			}
-		}
-
+		dt = deltaClock.restart().asSeconds();
+		running = eventHandler.handleEvents(window, dt, player);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		update(window, jumpPress, keyReleased);
+		update(window);
 		render();
 
 		//End the current frame (internally swaps the front and back buffers)
 		window.display();
 	}
-
 	//Release resources...
-
 	return 0;
 }
 
@@ -222,11 +184,9 @@ void render()
 }
 
 //Update function
-void update(sf::Window &window, int &jumpPress, bool &keyReleased)
+void update(sf::Window &window)
 {
-	dt = deltaClock.restart().asSeconds();
 	//Camera update, get new viewMatrix
-
 	if (aboveView)
 	{
 		playerCamera.update(player->getPlayerPos());
@@ -239,8 +199,8 @@ void update(sf::Window &window, int &jumpPress, bool &keyReleased)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
-	//Does not work in this version
-	//playerCamera.frustumCulling(frustumObject,visibleStaticModels);
+	//Does not work in this version - Maybe?
+	playerCamera.frustumCulling(frustumObject,visibleStaticModels);
 
 	//TEMPORARY CAMERA CONTROLS, DISABLE WITH ALT
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
@@ -251,7 +211,7 @@ void update(sf::Window &window, int &jumpPress, bool &keyReleased)
 	{
 		window.setMouseCursorVisible(false);
 	}
-	player->update(dt, jumpPress, keyReleased);
+	player->update(dt, window);
 }
 
 //Create the buffer
@@ -380,13 +340,22 @@ void setupModels()
 	}));
 	std::srand(time(0));
 	//Loads 100 spheres randomly
-	for (int i = 0; i < 100; i++)
-	{
-		staticModels.push_back(new Model(modelLibrary.at(3), {
-			0.1, 0.0, 0.0, 0.0,
-			0.0, 0.1, 0.0, 0.0,
-			0.0, 0.0, 0.1, 0.0,
-			(rand() % 100) - 50, (rand() % 10) - 5, (rand() % 100) - 50, 1.0 }));
-	}
+	//for (int i = 0; i < 100; i++)
+	//{
+	//	staticModels.push_back(new Model(modelLibrary.at(1), {
+	//		0.1, 0.0, 0.0, 0.0,
+	//		0.0, 0.1, 0.0, 0.0,
+	//		0.0, 0.0, 0.1, 0.0,
+	//		(rand() % 100) - 50, (rand() % 10) - 5, (rand() % 100) - 50, 1.0 }));
+	//}
 	visibleStaticModels = staticModels;
+}
+
+void setupQuadTreeAndFrustum()
+{
+	//Set up the frustum culling object and quadtree
+	frustumObject = FrustumCulling();
+	frustumObject.setFrustumShape(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
+	frustumObject.getRoot()->buildQuadTree(staticModels, 0, mapSize);
+	frustumObject.getRoot()->cleanTree();
 }

@@ -12,26 +12,28 @@
 class Player
 {
 private:
-	PlayerChar* *playerCharacters;
-	void initiate();
+	PlayerChar* playerCharacters[3];
+	PlayerChar* player;
 	void freeMemory();
 	glm::mat4 modelMatrix;
 	glm::vec3 playerPos;
 	Model birdModel;
 	Model sharkModel;
 	Model butterflyModel;
-	float dx;
-	float dy;
+	float velocityX;
+	float velocityY;
 	bool isOnGround;
-	bool jumpPressed;
+	int jumps;
+	float movementSpeed;
+	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3 };
 public:
 	Player();
 	~Player();
 	glm::vec3 getPlayerPos();
-	void swap(int charType);
-	void groundCheck();
-	void setModelMatrix(glm::vec3 playerPos);
-	void update(float dt, int &jumpPress, bool &keyReleased);
+	void swap(int character);
+	void jump(float dt);
+	void setPos(glm::vec3 playerPos);
+	void update(float dt, sf::Window &window);
 	void draw(Shader shader);
 };
 #endif

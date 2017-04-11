@@ -8,16 +8,14 @@ private:
 	int HP;
 	Model playerModel;
 	//Animation animation;
-	bool mayJumpAgain;
 public:
 	PlayerChar();
 	PlayerChar(int HP, Model model);
-	virtual ~PlayerChar();
+	virtual ~PlayerChar() = 0;
 	PlayerChar(const PlayerChar &originalObject);
 	void operator=(const PlayerChar &originalObject);
-	bool getJumpAvailable();
-	void setJumpAvailable(bool available);
 	void attack();
 	void draw(Shader shader);
+	virtual int getMaxJumps() = 0;
 };
 #endif
