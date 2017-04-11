@@ -167,7 +167,7 @@ void Player::update(float dt, glm::vec3 enemyPos, int enemyDamage)
 	//Player taking damage
 	if (damageImmunity.getElapsedTime().asSeconds() >= 1.0)
 	{
-		if (fabs(enemyPos.x - playerPos.x) < 0.1)
+		if (fabs(enemyPos.x - playerPos.x) < 0.1 && fabs(enemyPos.y - playerPos.y) < 1.0)
 		{
 			playerCharacters[0]->takingDamage(enemyDamage);
 			damageImmunity.restart();
