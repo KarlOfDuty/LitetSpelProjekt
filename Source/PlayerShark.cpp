@@ -10,12 +10,6 @@ PlayerShark::~PlayerShark()
 
 }
 
-
-void PlayerShark::operator=(const PlayerShark &originalObject)
-{
-	PlayerChar::operator=(originalObject);
-}
-
 void PlayerShark::dive()
 {
 

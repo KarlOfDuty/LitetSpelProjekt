@@ -18,15 +18,6 @@ PlayerChar::~PlayerChar()
 
 }
 
-PlayerChar::PlayerChar(const PlayerChar & originalObject)
-{
-	this->HP = originalObject.HP;
-}
-
-void PlayerChar::operator=(const PlayerChar &originalObject)
-{
-	this->HP = originalObject.HP;
-}
 
 bool PlayerChar::getJumpAvailable()
 {
@@ -36,6 +27,21 @@ bool PlayerChar::getJumpAvailable()
 void PlayerChar::setJumpAvailable(bool available)
 {
 	mayJumpAgain = available;
+}
+
+void PlayerChar::takingDamage(int appliedDamage)
+{
+	this->HP -= appliedDamage;
+}
+
+void PlayerChar::setHP(int HP)
+{
+	this->HP = HP;
+}
+
+int PlayerChar::getHP() const
+{
+	return HP;
 }
 
 void PlayerChar::attack()

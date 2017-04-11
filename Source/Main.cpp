@@ -151,7 +151,10 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &allModels[i]->getModelMatrix()[0][0]);
 		allModels.at(i)->draw(deferredGeometryPass);
 	}
-	player->draw(deferredGeometryPass);
+	if (player->playerDead() != true)
+	{
+		player->draw(deferredGeometryPass);
+	}
 	enemy->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -203,8 +206,11 @@ void update(sf::Window &window)
 	{
 		window.setMouseCursorVisible(false);
 	}
-	player->update(dt);
-	enemy->update(dt, player->getPlayerPos());
+	if (player->playerDead() != true)
+	{
+		player->update(dt, enemy->getEnemyPos(), enemy->getDamage());
+	}
+		enemy->update(dt, player->getPlayerPos());
 }
 
 //Create the buffer

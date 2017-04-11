@@ -35,7 +35,12 @@ void EnemyChar::setEnemyPos(glm::vec3 position)
 
 glm::vec3 EnemyChar::getEnemyPos() const
 {
-	return glm::vec3();
+	return enemyPos;
+}
+
+int EnemyChar::getDamage() const
+{
+	return damage;
 }
 
 glm::mat4 EnemyChar::getModelMatrix() const
@@ -58,46 +63,7 @@ void EnemyChar::attack()
 
 void EnemyChar::update(float dt, glm::vec3 playerPos)
 {
-	groundCheck();
-
-	//Move
-	if (enemyPos.x > playerPos.x)
-	{
-		enemyPos.x -= 1.0f*dt;
-	}
-	else
-	{
-		enemyPos.x += 1.0f*dt;
-	}
-
-	if (isOnGround)
-	{
-		if (fabs(enemyPos.x - playerPos.x) < 0.1)
-		{
-			velocityY = 10*dt;
-		}
-	}
-
-	if (!isOnGround)
-	{
-		velocityY -= 0.5*dt;
-	}
-
-	if (velocityY > 5)
-	{
-		velocityY = 5;
-	}
-
-	//Apply velocity
-	enemyPos.y += velocityY;
-
-	//Handle collision detection with ground
-	if (enemyPos.y < 0) {
-		velocityY = 0;
-		isOnGround = true;
-	}
-
-	setEnemyPos(enemyPos);
+	updateThis(dt, playerPos, enemyPos);
 }
 
 void EnemyChar::draw(Shader shader)

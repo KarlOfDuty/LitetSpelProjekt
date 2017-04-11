@@ -72,13 +72,24 @@ void Player::setModelMatrix(glm::vec3 playerPos)
 	);
 }
 
+bool Player::playerDead()
+{
+	if (playerCharacters[0]->getHP() <= 0)
+	{
+		playerCharacters[0]->setHP(0);
+
+		return true;
+	}
+	return false;
+}
+
 glm::vec3 Player::getPlayerPos() const
 {
 	return playerPos;
 }
 
 //Update funtion
-void Player::update(float dt)
+void Player::update(float dt, glm::vec3 enemyPos, int enemyDamage)
 {
 	groundCheck();
 
@@ -149,7 +160,18 @@ void Player::update(float dt)
 	//Handle collision detection with ground
 	if (playerPos.y < 0) {
 		dy = 0;
+		playerPos.y = 0;
 		isOnGround = true;
+	}
+
+	//Player taking damage
+	if (damageImmunity.getElapsedTime().asSeconds() >= 1.0)
+	{
+		if (fabs(enemyPos.x - playerPos.x) < 0.1)
+		{
+			playerCharacters[0]->takingDamage(enemyDamage);
+			damageImmunity.restart();
+		}
 	}
 
 	setModelMatrix(playerPos);

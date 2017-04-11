@@ -10,12 +10,6 @@ PlayerButterfly::~PlayerButterfly()
 
 }
 
-
-void PlayerButterfly::operator=(const PlayerButterfly &originalObject)
-{
-	PlayerChar::operator=(originalObject);
-}
-
 void PlayerButterfly::teleport()
 {
 

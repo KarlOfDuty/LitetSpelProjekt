@@ -53,6 +53,16 @@ void Enemy::createSlime(glm::vec3 enemyStartPos)
 	this->nrOfEnemies++;
 }
 
+glm::vec3 Enemy::getEnemyPos() const
+{
+	return enemyCharacters[0]->getEnemyPos();
+}
+
+int Enemy::getDamage() const
+{
+	return enemyCharacters[0]->getDamage();
+}
+
 void Enemy::update(float dt, glm::vec3 playerPos)
 {
 		enemyCharacters[0]->update(dt, playerPos);

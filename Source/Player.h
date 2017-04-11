@@ -15,6 +15,7 @@ private:
 	PlayerChar* *playerCharacters;
 	void initiate();
 	void freeMemory();
+	sf::Clock damageImmunity;
 	glm::mat4 modelMatrix;
 	glm::vec3 playerPos;
 	float dx;
@@ -26,8 +27,9 @@ public:
 	void swap(int charType);
 	void groundCheck();
 	void setModelMatrix(glm::vec3 playerPos);
+	bool playerDead();
 	glm::vec3 getPlayerPos() const;
-	void update(float dt);
+	void update(float dt, glm::vec3 enemyPos, int enemyDamage);
 	void draw(Shader shader);
 };
 #endif

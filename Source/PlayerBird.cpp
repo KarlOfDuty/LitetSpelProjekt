@@ -10,11 +10,6 @@ PlayerBird::~PlayerBird()
 
 }
 
-void PlayerBird::operator=(const PlayerBird &originalObject)
-{
-	PlayerChar::operator=(originalObject);
-}
-
 void PlayerBird::setDoubleJump(bool doubleJumpAllowed)
 {
 	jumpAllowed = doubleJumpAllowed;

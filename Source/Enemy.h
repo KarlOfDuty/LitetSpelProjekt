@@ -23,6 +23,8 @@ public:
 	Enemy();
 	~Enemy();
 	void createSlime(glm::vec3 enemyPos);
+	glm::vec3 getEnemyPos()const;
+	int getDamage()const;
 	void update(float dt, glm::vec3 playerPos);
 	void draw(Shader shader);
 };
