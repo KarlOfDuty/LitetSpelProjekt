@@ -23,7 +23,7 @@ float dt;
 int jumpPress;
 bool keyReleased;
 
-const bool aboveView = true;
+const bool aboveView = false;
 
 //gBuffer
 Shader deferredGeometryPass;

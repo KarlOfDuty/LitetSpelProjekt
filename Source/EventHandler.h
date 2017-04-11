@@ -5,10 +5,10 @@
 class EventHandler
 {
 private:
-	enum { XBOXA, XBOXB, XBOXX, XBOXY };
+	enum { XBOXA, XBOXB, XBOXX, XBOXY, GFDGF, SDFDSF, DSFDSFDSFSDF, XBOXSTART };
 	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3};
 	//[Controller][Button]
-	bool joystickPressed[8][4] = { false };
+	bool joystickPressed[8][30] = { false };
 	//[Key]
 	bool keyPressed[120] = { false };
 public:

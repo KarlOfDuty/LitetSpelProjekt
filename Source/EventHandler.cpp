@@ -47,7 +47,12 @@ bool EventHandler::handleEvents(sf::Window & window, float dt, Player *player)
 			//Adjust the viewport when the window is resized
 			glViewport(0, 0, windowEvent.size.width, windowEvent.size.height);
 		}
+		//Menu/End program
 		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Escape)
+		{
+			running = false;
+		}
+		else if (windowEvent.type == sf::Event::JoystickButtonPressed && windowEvent.joystickButton.joystickId == controller && windowEvent.joystickButton.button == XBOXSTART)
 		{
 			running = false;
 		}
