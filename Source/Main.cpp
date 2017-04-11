@@ -11,13 +11,13 @@
 #include "Player.h"
 #include "Model.h"
 #include "FrustumCulling.h"
-#include "InputHandler.h"
+#include "EventHandler.h"
 
 #pragma comment(lib, "opengl32.lib")
 
 //Player
 Player *player;
-InputHandler inputHandler;
+EventHandler eventHandler;
 sf::Clock deltaClock;
 float dt;
 int jumpPress;
@@ -70,8 +70,7 @@ void createGBuffer();
 void drawQuad();
 void loadModels();
 void setupModels();
-
-enum { XboxA, XboxB, XboxX, XboxY };
+void setupQuadTreeAndFrustum();
 
 //Main function
 int main()
@@ -95,24 +94,19 @@ int main()
 	//Models
 	loadModels();
 	setupModels();
+
+	//Player
 	player = new Player();
-	inputHandler = InputHandler();
+	eventHandler = EventHandler();
 
-	jumpPress = 0;
-	keyReleased = true;
-	// run the main loop
-
-	//Set up the frustum culling object and quadtree
-	frustumObject.setFrustumShape(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
-	frustumObject.getRoot()->buildQuadTree(staticModels, 0, mapSize);
-	frustumObject.getRoot()->cleanTree();
+	setupQuadTreeAndFrustum();
 
 	//Main loop
 	bool running = true;
 	while (running)
 	{
 		dt = deltaClock.restart().asSeconds();
-		inputHandler.handleEvents(window, dt, player);
+		running = eventHandler.handleEvents(window, dt, player);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -122,9 +116,7 @@ int main()
 		//End the current frame (internally swaps the front and back buffers)
 		window.display();
 	}
-
 	//Release resources...
-
 	return 0;
 }
 
@@ -207,8 +199,8 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
-	//Does not work in this version
-	//playerCamera.frustumCulling(frustumObject,visibleStaticModels);
+	//Does not work in this version - Maybe?
+	playerCamera.frustumCulling(frustumObject,visibleStaticModels);
 
 	//TEMPORARY CAMERA CONTROLS, DISABLE WITH ALT
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
@@ -350,11 +342,20 @@ void setupModels()
 	//Loads 100 spheres randomly
 	//for (int i = 0; i < 100; i++)
 	//{
-	//	staticModels.push_back(new Model(modelLibrary.at(3), {
+	//	staticModels.push_back(new Model(modelLibrary.at(1), {
 	//		0.1, 0.0, 0.0, 0.0,
 	//		0.0, 0.1, 0.0, 0.0,
 	//		0.0, 0.0, 0.1, 0.0,
 	//		(rand() % 100) - 50, (rand() % 10) - 5, (rand() % 100) - 50, 1.0 }));
 	//}
 	visibleStaticModels = staticModels;
+}
+
+void setupQuadTreeAndFrustum()
+{
+	//Set up the frustum culling object and quadtree
+	frustumObject = FrustumCulling();
+	frustumObject.setFrustumShape(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
+	frustumObject.getRoot()->buildQuadTree(staticModels, 0, mapSize);
+	frustumObject.getRoot()->cleanTree();
 }

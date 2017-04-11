@@ -1,8 +1,8 @@
-#ifndef INPUTHANDLER_H
-#define INPUTHANDLER_H
+#ifndef EVENTHANDLER_H
+#define EVENTHANDLER_H
 #include <SFML\Window.hpp>
 #include "Player.h"
-class InputHandler
+class EventHandler
 {
 private:
 	enum { XBOXA, XBOXB, XBOXX, XBOXY };
@@ -12,8 +12,8 @@ private:
 	//[Key]
 	bool keyPressed[120] = { false };
 public:
-	InputHandler();
-	~InputHandler();
+	EventHandler();
+	~EventHandler();
 	bool handleEvents(sf::Window &window, float dt, Player *player);
 };
 #endif
