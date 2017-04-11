@@ -1,6 +1,7 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 #include "EnemySlime.h"
+#include "Player.h"
 #include "Shader.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
@@ -9,13 +10,20 @@
 
 class Enemy
 {
-public:
-
-
 private:
+	int nrOfEnemies;
+	int CAP;
+	EnemyChar* *enemyCharacters;
+	void initiate(int from = 0);
+	void expand();
+	void freeMemory();
+	glm::vec3 enemyPos;
+	Model slimeModel;
+public:
 	Enemy();
 	~Enemy();
-
-
+	void createSlime(glm::vec3 enemyPos);
+	void update(float dt, glm::vec3 playerPos);
+	void draw(Shader shader);
 };
 #endif

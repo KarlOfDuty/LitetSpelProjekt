@@ -17,9 +17,6 @@ private:
 	void freeMemory();
 	glm::mat4 modelMatrix;
 	glm::vec3 playerPos;
-	Model birdModel;
-	Model sharkModel;
-	Model butterflyModel;
 	float dx;
 	float dy;
 	bool isOnGround;
@@ -29,6 +26,7 @@ public:
 	void swap(int charType);
 	void groundCheck();
 	void setModelMatrix(glm::vec3 playerPos);
+	glm::vec3 getPlayerPos() const;
 	void update(float dt);
 	void draw(Shader shader);
 };

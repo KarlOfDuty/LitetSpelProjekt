@@ -56,7 +56,7 @@ void Player::swap(int charType)
 
 void Player::groundCheck()
 {
-	if (playerPos.y > 0.0f)
+	if (this->playerPos.y > 0.0f)
 	{
 		isOnGround = false;
 	}
@@ -70,6 +70,11 @@ void Player::setModelMatrix(glm::vec3 playerPos)
 		0.0, 0.0, 1.0, 0.0,
 		playerPos.x, playerPos.y, playerPos.z, 1.0
 	);
+}
+
+glm::vec3 Player::getPlayerPos() const
+{
+	return playerPos;
 }
 
 //Update funtion

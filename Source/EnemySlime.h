@@ -2,11 +2,10 @@
 
 class EnemySlime : public EnemyChar
 {
-public:
-
-
 private:
-	EnemySlime(int HP, Model enemyModel, int damage);
-	~EnemySlime();
+
+public:
+	EnemySlime(int HP, Model enemyModel, int damage, glm::vec3 enemyStartPos);
+	virtual ~EnemySlime();
 };
 

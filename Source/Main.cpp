@@ -8,6 +8,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Model.h"
 #include "FrustumCulling.h"
 
@@ -17,6 +18,8 @@
 Player *player;
 sf::Clock deltaClock;
 float dt;
+//Enemies
+Enemy *enemy;
 //gBuffer
 Shader deferredGeometryPass;
 Shader deferredLightingPass;
@@ -84,6 +87,8 @@ int main()
 	loadModels();
 	//setupModels();
 	player = new Player();
+	enemy = new Enemy();
+	enemy->createSlime(glm::vec3(10.0f, 0.0f, 0.0f));
 	// run the main loop
 	bool running = true;
 	while (running)
@@ -147,6 +152,7 @@ void render()
 		allModels.at(i)->draw(deferredGeometryPass);
 	}
 	player->draw(deferredGeometryPass);
+	enemy->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -198,6 +204,7 @@ void update(sf::Window &window)
 		window.setMouseCursorVisible(false);
 	}
 	player->update(dt);
+	enemy->update(dt, player->getPlayerPos());
 }
 
 //Create the buffer
