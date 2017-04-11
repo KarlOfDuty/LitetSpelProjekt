@@ -11,17 +11,19 @@
 #include "Player.h"
 #include "Model.h"
 #include "FrustumCulling.h"
+#include "InputHandler.h"
 
 #pragma comment(lib, "opengl32.lib")
 
 //Player
 Player *player;
+InputHandler inputHandler;
 sf::Clock deltaClock;
 float dt;
 int jumpPress;
 bool keyReleased;
 
-const bool aboveView = false;
+const bool aboveView = true;
 
 //gBuffer
 Shader deferredGeometryPass;
@@ -63,7 +65,7 @@ std::vector<Model*> dynamicModels;
 
 //Functions
 void render();
-void update(sf::Window &window, int &jumpPress, bool &keyReleased);
+void update(sf::Window &window);
 void createGBuffer();
 void drawQuad();
 void loadModels();
@@ -94,7 +96,7 @@ int main()
 	loadModels();
 	setupModels();
 	player = new Player();
-
+	inputHandler = InputHandler();
 
 	jumpPress = 0;
 	keyReleased = true;
@@ -109,31 +111,12 @@ int main()
 	bool running = true;
 	while (running)
 	{
-		//sf::Event event;
-		//while (window.pollEvent(event))
-		//{
-		//	if (event.type == sf::Event::Closed)
-		//	{
-		//		//End the program
-		//		running = false;
-		//	}
-		//	else if (event.type == sf::Event::Resized)
-		//	{
-		//		//Adjust the viewport when the window is resized
-		//		glViewport(0, 0, event.size.width, event.size.height);
-		//	}
-		//	else if (event.type == sf::Event::KeyPressed)
-		//	{
-		//		if (event.key.code == sf::Keyboard::Escape)
-		//		{
-		//			running = false;
-		//		}
-		//	}
-		//}
+		dt = deltaClock.restart().asSeconds();
+		inputHandler.handleEvents(window, dt, player);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		update(window, jumpPress, keyReleased);
+		update(window);
 		render();
 
 		//End the current frame (internally swaps the front and back buffers)
@@ -209,11 +192,9 @@ void render()
 }
 
 //Update function
-void update(sf::Window &window, int &jumpPress, bool &keyReleased)
+void update(sf::Window &window)
 {
-	dt = deltaClock.restart().asSeconds();
 	//Camera update, get new viewMatrix
-
 	if (aboveView)
 	{
 		playerCamera.update(player->getPlayerPos());

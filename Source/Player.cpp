@@ -68,70 +68,24 @@ void Player::update(float dt, sf::Window &window)
 	{
 		isOnGround = false;
 	}
-	int controller = Controller1;
-	if (sf::Joystick::isConnected(controller))
-	{
-		//Left
-		if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
-		{
-			playerPos.x -= movementSpeed*dt;
-		}
-		//Right
-		else if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) > 20)
-		{
-			playerPos.x += movementSpeed*dt;
-		}
-	}
+	int controller = CONTROLLER0;
 	//Move
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
+	{
+		playerPos.x -= movementSpeed*dt;
+	}
+	else if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) > 20)
+	{
+		playerPos.x += movementSpeed*dt;
+	}
+
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		playerPos.x -= movementSpeed*dt;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		playerPos.x += movementSpeed*dt;
-	}
-	//Handle events
-	sf::Event windowEvent;
-	while (window.pollEvent(windowEvent))
-	{
-		//Controller
-		if (sf::Joystick::isConnected(controller))
-		{
-
-			//Jump
-			if (windowEvent.type == sf::Event::JoystickButtonPressed && joystickPressed[controller][XboxA] == false)
-			{
-				if (windowEvent.joystickButton.joystickId == XboxA)
-				{
-					joystickPressed[controller][XboxA] = true;
-					jump(dt);
-				}
-			}
-			else if (windowEvent.type == sf::Event::JoystickButtonReleased)
-			{
-				if (windowEvent.joystickButton.joystickId == XboxA)
-				{
-					joystickPressed[controller][XboxA] = false;
-				}
-			}
-		}
-		//Jump
-		if (windowEvent.type == sf::Event::KeyPressed)
-		{
-			if (windowEvent.key.code == sf::Keyboard::Space && !keyPressed[sf::Keyboard::Space])
-			{
-				keyPressed[sf::Keyboard::Space] = true;
-				jump(dt);
-			}
-		}
-		else if (windowEvent.type == sf::Event::KeyReleased)
-		{
-			if (windowEvent.key.code == sf::Keyboard::Space)
-			{
-				keyPressed[sf::Keyboard::Space] = false;
-			}
-		}
 	}
 	//If in air
 	if (!isOnGround)

@@ -25,12 +25,7 @@ private:
 	bool isOnGround;
 	int jumps;
 	float movementSpeed;
-	enum {XboxA, XboxB, XboxX, XboxY};
-	enum {Controller1, Controller2,Controller3};
-	//First dimension size equal to possible number of joysticks,
-	//second to number of buttons on each joystick
-	bool joystickPressed[8][4] = { false };
-	bool keyPressed[120] = { false };
+	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3 };
 public:
 	Player();
 	~Player();
