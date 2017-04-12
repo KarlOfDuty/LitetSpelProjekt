@@ -8,24 +8,18 @@
 class Camera
 {
 public:
+
 	Camera();
 	~Camera();
-	void frustumCulling(FrustumCulling &fcObject, std::vector<Model*> &visibleModels);
+	void frustumCulling(std::vector<Model*> &visibleModels);
+	void setupQuadTreeAndFrustum(float verticalFOV, float windowWidth, float windowHeight, float near, float far, std::vector<Model*> &staticModels);
 	glm::mat4 update(glm::vec3 playerPos);
 	glm::vec3 getCameraPos();
 private:
-	bool firstMouse;
-	bool cameraHasMoved;
-	int oldMouseX;
-	int oldMouseY;
-	float mouseSensitivity;
-	float cameraSpeed;
+	FrustumCulling frustumObject;
 	glm::vec3 cameraPos;
 	glm::vec3 cameraFront;
 	glm::vec3 cameraUp;
-	float cameraYaw;
-	float cameraPitch;
-	int resolutionWidth;
-	int resolutionHeight;
+	glm::vec4 mapSize;
 };
 #endif

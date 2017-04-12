@@ -3,6 +3,7 @@
 PlayerButterfly::PlayerButterfly(int HP, Model model) :PlayerChar(HP, model)
 {
 	this->maxJumps = 1;
+	this->jumpHeight = 0.3f;
 }
 
 PlayerButterfly::~PlayerButterfly()
@@ -19,6 +20,11 @@ void PlayerButterfly::operator=(const PlayerButterfly &originalObject)
 int PlayerButterfly::getMaxJumps()
 {
 	return maxJumps;
+}
+
+float PlayerButterfly::getJumpHeight()
+{
+	return jumpHeight;
 }
 
 void PlayerButterfly::teleport()
