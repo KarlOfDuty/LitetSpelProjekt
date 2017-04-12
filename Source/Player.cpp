@@ -10,19 +10,17 @@ void Player::freeMemory()
 
 Player::Player()
 {
-	birdModel = Model("models/cube/cube.obj");
-	sharkModel = Model("models/cube/cube.obj");
-	butterflyModel = Model("models/cube/cube.obj");
+	Model *box = new Model("models/cube/cube.obj");
 
-	this->playerPos = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->playerPos = glm::vec3(0.0f, 2.0f, 0.0f);
 
 	setPos(playerPos);
 
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->playerCharacters[0] = new PlayerBird(100, birdModel);
-	this->playerCharacters[1] = new PlayerShark(100, sharkModel);
-	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
+	this->playerCharacters[0] = new PlayerBird(100, box);
+	this->playerCharacters[1] = new PlayerShark(100, box);
+	this->playerCharacters[2] = new PlayerButterfly(100, box);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 }
@@ -62,8 +60,10 @@ void Player::setPos(glm::vec3 playerPos)
 }
 
 //Update funtion
-void Player::update(float dt, sf::Window &window)
+void Player::update(float dt, sf::Window &window, std::vector<Model*> &allModels)
 {
+	groundPos = 0;
+	velocityX = 0;
 	if (playerPos.y > 0.0f)
 	{
 		isOnGround = false;
@@ -72,20 +72,20 @@ void Player::update(float dt, sf::Window &window)
 	//Move
 	if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
 	{
-		playerPos.x -= movementSpeed*dt;
+		velocityX = -movementSpeed*dt;
 	}
 	else if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) > 20)
 	{
-		playerPos.x += movementSpeed*dt;
+		velocityX = movementSpeed*dt;
 	}
 
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		playerPos.x -= movementSpeed*dt;
+		velocityX = -movementSpeed*dt;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		playerPos.x += movementSpeed*dt;
+		velocityX = movementSpeed*dt;
 	}
 	//If in air
 	if (!isOnGround)
@@ -100,7 +100,13 @@ void Player::update(float dt, sf::Window &window)
 	}
 
 	//Apply velocity
+	playerPos.x += velocityX;
 	playerPos.y += velocityY;
+	int amountOfTries = 0;
+	while (fixCollision(allModels) && amountOfTries < 5)
+	{
+		amountOfTries++;
+	}
 
 	//Handle collision detection with ground
 	if (playerPos.y <= 0)
@@ -117,4 +123,76 @@ void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	playerCharacters[0]->draw(shader);
+}
+
+bool Player::collidesWith(Model* object)
+{
+	glm::vec3 minPlayer = -0.5f + this->playerPos;
+	glm::vec3 maxPlayer = 0.5f + this->playerPos;
+
+	glm::vec3 objectPos = object->getModelMatrix()[3];
+	glm::vec3 minObject = -0.5f + objectPos;
+	glm::vec3 maxObject = 0.5f + objectPos;
+
+	if (maxPlayer.x > minObject.x &&
+		minPlayer.x < maxObject.x &&
+		maxPlayer.y > minObject.y &&
+		minPlayer.y < maxObject.y &&
+		maxPlayer.z > minObject.z &&
+		minPlayer.z < maxObject.z)
+	{
+		return true;
+	}
+
+	return false;
+}
+bool Player::fixCollision(std::vector<Model*> allModels)
+{
+	int index = -1;
+	float minDist = 1000.0f;
+	for (int i = 0; i < allModels.size(); i++)
+	{
+		if (collidesWith(allModels[i]))
+		{
+			float distanceToModel = glm::distance(glm::vec3(allModels[i]->getModelMatrix()[3]), playerPos);
+			if (distanceToModel < minDist)
+			{
+				index = i;
+				minDist = distanceToModel;
+			}
+		}
+	}
+	if (index != -1)
+	{
+		float xLen = fabs(allModels[index]->getModelMatrix()[3].x - playerPos.x) - 1.0f;
+		float yLen = fabs(allModels[index]->getModelMatrix()[3].y - playerPos.y) - 1.0f;
+
+		if (xLen > yLen)
+		{
+			if (velocityX > 0)
+			{
+				this->playerPos.x += xLen;
+			}
+			else
+			{
+				this->playerPos.x -= xLen;
+			}
+			velocityX = 0;
+		}
+		else
+		{
+			if (velocityY > 0)
+			{
+				this->playerPos.y += yLen;
+				velocityY = 0;
+			}
+			else if (velocityY < 0)
+			{
+				this->playerPos.y -= yLen;
+				groundPos = playerPos.y;
+				velocityY = 0;
+			}
+		}
+	}
+	return index != -1;
 }
