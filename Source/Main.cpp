@@ -12,8 +12,11 @@
 #include "Model.h"
 #include "FrustumCulling.h"
 #include "EventHandler.h"
+#include "LevelManager.h"
 
 #pragma comment(lib, "opengl32.lib")
+
+LevelManager levelManager;
 
 //Player
 Player *player;
@@ -53,26 +56,15 @@ GLuint VBO, VAO, EBO;
 GLuint quadVAO = 0;
 GLuint quadVBO;
 
-//Models
-std::vector<std::string> modelFilePaths = 
-{ 
-	"models/cube/cube.obj"
-	,"models/sphere/sphere.obj"
-	,"models/cube/cubeGreen.obj"
-	//, "models/Characters/Bird/BirdTest1.obj"
-};
-std::vector<Model*> modelLibrary;
-std::vector<Model*> staticModels;
-std::vector<Model*> visibleStaticModels;
-std::vector<Model*> dynamicModels;
+std::vector<Model*> modelsToBeDrawn;
 
 //Functions
 void render();
 void update(sf::Window &window);
 void createGBuffer();
 void drawQuad();
-void loadModels();
 void setupModels();
+void loadLevel();
 
 //Main function
 int main()
@@ -83,7 +75,7 @@ int main()
 	settings.stencilBits = 8;
 	settings.antialiasingLevel = 2;
 	sf::Window window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
-	//window.setVerticalSyncEnabled(true);
+	window.setVerticalSyncEnabled(true);
 	//Activate the window
 	window.setActive(true);
 
@@ -94,9 +86,8 @@ int main()
 	createGBuffer();
 
 	//Models
-	loadModels();
-	setupModels();
-	playerCamera.setupQuadTreeAndFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance, staticModels);
+	loadLevel();
+
 	//Player
 	player = new Player();
 	eventHandler = EventHandler();
@@ -137,10 +128,10 @@ void render()
 	//Draw functions
 
 	//Only potentially visible static models are drawn
-	for (int i = 0; i < visibleStaticModels.size(); i++)
+	for (int i = 0; i < modelsToBeDrawn.size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &visibleStaticModels[i]->getModelMatrix()[0][0]);
-		visibleStaticModels.at(i)->draw(deferredGeometryPass);
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
+		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
 	}
 	//All dynamic models are always drawn
 	for (int i = 0; i < dynamicModels.size(); i++)
@@ -199,7 +190,7 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
-	playerCamera.frustumCulling(visibleStaticModels);
+	playerCamera.frustumCulling(modelsToBeDrawn);
 
 	//TEMPORARY CAMERA CONTROLS, DISABLE WITH ALT
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
@@ -319,33 +310,10 @@ void drawQuad()
 	glBindVertexArray(0);
 }
 
-void loadModels()
+void loadLevel()
 {
-	//Loads all models
-	for (int i = 0; i < modelFilePaths.size(); i++)
-	{
-		modelLibrary.push_back(new Model(modelFilePaths[i]));
-	}
-}
-
-void setupModels()
-{
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		10.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 2.0, 0.0,
-		0.0, -1.0, 0.0, 1.0
-	}));
-	std::srand(time(0));
-	//Loads 1000 spheres randomly
-	for (int i = 0; i < 1000; i++)
-	{
-		staticModels.push_back(new Model(modelLibrary.at(1), {
-			1.0, 0.0, 0.0, 0.0,
-			0.0, 1.0, 0.0, 0.0,
-			0.0, 0.0, 1.0, 0.0,
-			(rand() % 100) - 50, (rand() % 100) - 50, (rand() % 100) - 100, 1.0 }));
-	}
-	visibleStaticModels = staticModels;
+	levelManager.currentLevel->loadModels();
+	levelManager.currentLevel->setupModels();
+	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
+	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 }

@@ -12,7 +12,8 @@ public:
 	Camera();
 	~Camera();
 	void frustumCulling(std::vector<Model*> &visibleModels);
-	void setupQuadTreeAndFrustum(float verticalFOV, float windowWidth, float windowHeight, float near, float far, std::vector<Model*> &staticModels);
+	void setupFrustum(float verticalFOV, float windowWidth, float windowHeight, float nearD, float farD);
+	void setupQuadTree(std::vector<Model*> &staticModels);
 	glm::mat4 update(glm::vec3 playerPos);
 	glm::vec3 getCameraPos();
 private:
