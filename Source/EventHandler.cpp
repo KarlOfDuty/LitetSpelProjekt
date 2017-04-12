@@ -9,7 +9,7 @@ EventHandler::~EventHandler()
 
 }
 //Add any events that need to be handled here
-bool EventHandler::handleEvents(sf::Window & window, float dt, Player *player)
+bool EventHandler::handleEvents(sf::Window & window, Player *player)
 {
 	//If several controllers are plugged in, this decides which is used
 	int controller = CONTROLLER0;
@@ -22,7 +22,7 @@ bool EventHandler::handleEvents(sf::Window & window, float dt, Player *player)
 		if (windowEvent.type == sf::Event::JoystickButtonPressed && joystickPressed[controller][XBOXA] == false && windowEvent.joystickButton.joystickId == controller && windowEvent.joystickButton.button == XBOXA)
 		{
 			joystickPressed[controller][XBOXA] = true;
-			player->jump(dt);
+			player->jump();
 		}
 		else if (windowEvent.type == sf::Event::JoystickButtonReleased && windowEvent.joystickButton.joystickId == controller && windowEvent.joystickButton.button == XBOXA)
 		{
@@ -31,7 +31,7 @@ bool EventHandler::handleEvents(sf::Window & window, float dt, Player *player)
 		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Space && !keyPressed[sf::Keyboard::Space])
 		{
 			keyPressed[sf::Keyboard::Space] = true;
-			player->jump(dt);
+			player->jump();
 		}
 		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Space)
 		{

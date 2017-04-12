@@ -31,7 +31,7 @@ public:
 	~Player();
 	glm::vec3 getPlayerPos();
 	void swap(int character);
-	void jump(float dt);
+	void jump();
 	void setPos(glm::vec3 playerPos);
 	void update(float dt, sf::Window &window);
 	void draw(Shader shader);

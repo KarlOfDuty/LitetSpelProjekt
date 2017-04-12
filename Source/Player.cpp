@@ -42,11 +42,11 @@ void Player::swap(int character)
 	player = playerCharacters[character];
 }
 
-void Player::jump(float dt)
+void Player::jump()
 {
 	if (player->getMaxJumps() > jumps)
 	{
-		velocityY = 10 * dt;
+		velocityY = player->getJumpHeight();
 		jumps++;
 	}
 }

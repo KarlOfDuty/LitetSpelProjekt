@@ -146,6 +146,7 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="Shaders\gBufferGeometryFragment.glsl" />
     <None Include="Shaders\gBufferGeometryVertex.glsl" />
     <None Include="Shaders\gBufferLightingFragment.glsl" />
