@@ -339,7 +339,7 @@ void setupModels()
 	}));
 	std::srand(time(0));
 	//Loads 1000 spheres randomly
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < 0; i++)
 	{
 		staticModels.push_back(new Model(modelLibrary.at(1), {
 			1.0, 0.0, 0.0, 0.0,

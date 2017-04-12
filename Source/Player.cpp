@@ -1,5 +1,7 @@
 #include "Player.h"
 
+const double PI = 3.14159265358979323846;
+
 void Player::freeMemory()
 {
 	for (int i = 0; i < 3; i++)
@@ -10,14 +12,14 @@ void Player::freeMemory()
 
 Player::Player()
 {
-	birdModel = Model("models/cube/cube.obj");
-	sharkModel = Model("models/cube/cube.obj");
-	butterflyModel = Model("models/cube/cube.obj");
+	birdModel = Model("models/Characters/Bird/BirdTest1.obj");
+	sharkModel = Model("models/sphere/sphere.obj");
+	butterflyModel = Model("models/cube/cubeGreen.obj");
 
 	this->playerPos = glm::vec3(0.0f, 0.0f, 0.0f);
-
 	setPos(playerPos);
-
+	this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
 	this->playerCharacters[0] = new PlayerBird(100, birdModel);
@@ -53,12 +55,7 @@ void Player::jump()
 
 void Player::setPos(glm::vec3 playerPos)
 {
-	this->modelMatrix = glm::mat4(
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		playerPos.x, playerPos.y, playerPos.z, 1.0
-	);
+	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
 }
 
 //Update funtion
@@ -82,10 +79,31 @@ void Player::update(float dt, sf::Window &window)
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		playerPos.x -= movementSpeed*dt;
+		goingLeft = true;
+		goingRight = false;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		playerPos.x += movementSpeed*dt;
+		goingRight = true;
+		goingLeft = false;
+	}
+	if (goingLeft == true)
+	{
+		if (angle != 180)
+		{
+			this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			angle += 12;
+		}
+	}
+
+	if (goingRight == true)
+	{
+		if (angle > 0)
+		{
+			this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			angle -= 12;
+		}
 	}
 	//If in air
 	if (!isOnGround)
@@ -116,5 +134,5 @@ void Player::update(float dt, sf::Window &window)
 void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
-	playerCharacters[0]->draw(shader);
+	player->draw(shader);
 }

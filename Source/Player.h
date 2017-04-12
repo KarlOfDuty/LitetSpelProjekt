@@ -22,6 +22,9 @@ private:
 	Model butterflyModel;
 	float velocityX;
 	float velocityY;
+	bool goingLeft;
+	bool goingRight;
+	float angle;
 	bool isOnGround;
 	int jumps;
 	float movementSpeed;
