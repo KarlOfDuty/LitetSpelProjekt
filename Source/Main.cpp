@@ -63,7 +63,6 @@ void render();
 void update(sf::Window &window);
 void createGBuffer();
 void drawQuad();
-void setupModels();
 void loadLevel();
 
 //Main function
@@ -96,7 +95,6 @@ int main()
 	bool running = true;
 	while (running)
 	{
-		dt = deltaClock.restart().asSeconds();
 		running = eventHandler.handleEvents(window, player);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -132,12 +130,6 @@ void render()
 	{
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
-	}
-	//All dynamic models are always drawn
-	for (int i = 0; i < dynamicModels.size(); i++)
-	{
-		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
-		dynamicModels.at(i)->draw(deferredGeometryPass);
 	}
 	player->draw(deferredGeometryPass);
 
@@ -176,7 +168,9 @@ void render()
 
 //Update function
 void update(sf::Window &window)
-{
+{	
+	dt = deltaClock.restart().asSeconds();
+	player->update(dt, window);
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
@@ -190,18 +184,7 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
-	playerCamera.frustumCulling(modelsToBeDrawn);
-
-	//TEMPORARY CAMERA CONTROLS, DISABLE WITH ALT
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
-	{
-		window.setMouseCursorVisible(true);
-	}
-	else
-	{
-		window.setMouseCursorVisible(false);
-	}
-	player->update(dt, window);
+	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
 //Create the buffer
