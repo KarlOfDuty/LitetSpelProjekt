@@ -40,12 +40,9 @@ float verticalFOV = 45.0f;
 int windowWidth = 1280;
 int windowHeight = 720;
 float nearDistance = 0.01f;
-float farDistance = 1000;
+float farDistance = 10000;
 glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
-FrustumCulling frustumObject;
-glm::vec4 mapSize = glm::vec4(-100.0f, -100.0f, 100.0f, 100.0f);
-
 //Lights
 const GLuint NR_LIGHTS = 10;
 std::vector<glm::vec3> lightPositions;
@@ -57,7 +54,13 @@ GLuint quadVAO = 0;
 GLuint quadVBO;
 
 //Models
-std::vector<std::string> modelFilePaths = { "models/cube/cube.obj","models/sphere/sphere.obj","models/cube/cubeGreen.obj", "models/Characters/Bird/BirdTest1.obj" };
+std::vector<std::string> modelFilePaths = 
+{ 
+	"models/cube/cube.obj"
+	,"models/sphere/sphere.obj"
+	,"models/cube/cubeGreen.obj"
+	//, "models/Characters/Bird/BirdTest1.obj"
+};
 std::vector<Model*> modelLibrary;
 std::vector<Model*> staticModels;
 std::vector<Model*> visibleStaticModels;
@@ -70,7 +73,6 @@ void createGBuffer();
 void drawQuad();
 void loadModels();
 void setupModels();
-void setupQuadTreeAndFrustum();
 
 //Main function
 int main()
@@ -81,7 +83,7 @@ int main()
 	settings.stencilBits = 8;
 	settings.antialiasingLevel = 2;
 	sf::Window window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
-	window.setVerticalSyncEnabled(true);
+	//window.setVerticalSyncEnabled(true);
 	//Activate the window
 	window.setActive(true);
 
@@ -94,19 +96,17 @@ int main()
 	//Models
 	loadModels();
 	setupModels();
-
+	playerCamera.setupQuadTreeAndFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance, staticModels);
 	//Player
 	player = new Player();
 	eventHandler = EventHandler();
-
-	setupQuadTreeAndFrustum();
 
 	//Main loop
 	bool running = true;
 	while (running)
 	{
 		dt = deltaClock.restart().asSeconds();
-		running = eventHandler.handleEvents(window, dt, player);
+		running = eventHandler.handleEvents(window, player);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -199,8 +199,7 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
-	//Does not work in this version - Maybe?
-	playerCamera.frustumCulling(frustumObject,visibleStaticModels);
+	playerCamera.frustumCulling(visibleStaticModels);
 
 	//TEMPORARY CAMERA CONTROLS, DISABLE WITH ALT
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
@@ -339,23 +338,14 @@ void setupModels()
 		0.0, -1.0, 0.0, 1.0
 	}));
 	std::srand(time(0));
-	//Loads 100 spheres randomly
-	//for (int i = 0; i < 100; i++)
-	//{
-	//	staticModels.push_back(new Model(modelLibrary.at(1), {
-	//		0.1, 0.0, 0.0, 0.0,
-	//		0.0, 0.1, 0.0, 0.0,
-	//		0.0, 0.0, 0.1, 0.0,
-	//		(rand() % 100) - 50, (rand() % 10) - 5, (rand() % 100) - 50, 1.0 }));
-	//}
+	//Loads 1000 spheres randomly
+	for (int i = 0; i < 1000; i++)
+	{
+		staticModels.push_back(new Model(modelLibrary.at(1), {
+			1.0, 0.0, 0.0, 0.0,
+			0.0, 1.0, 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0,
+			(rand() % 100) - 50, (rand() % 100) - 50, (rand() % 100) - 100, 1.0 }));
+	}
 	visibleStaticModels = staticModels;
-}
-
-void setupQuadTreeAndFrustum()
-{
-	//Set up the frustum culling object and quadtree
-	frustumObject = FrustumCulling();
-	frustumObject.setFrustumShape(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
-	frustumObject.getRoot()->buildQuadTree(staticModels, 0, mapSize);
-	frustumObject.getRoot()->cleanTree();
 }
