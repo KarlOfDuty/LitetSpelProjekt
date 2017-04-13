@@ -12,13 +12,14 @@ void Player::freeMemory()
 
 Player::Player()
 {
-	birdModel = Model("models/Characters/Bird/BirdTest1.obj");
-	sharkModel = Model("models/sphere/sphere.obj");
-	butterflyModel = Model("models/cube/cubeGreen.obj");
+	birdModel = Model("models/Characters/Bird/BirdTest1.obj", modelMatrix);
+	sharkModel = Model("models/sphere/sphere.obj", modelMatrix);
+	butterflyModel = Model("models/cube/cubeGreen.obj", modelMatrix);
 
-	this->playerPos = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->playerPos = glm::vec3(0.0f, 0.0f, 1.0f);
 	setPos(playerPos);
 	this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	this->modelMatrix *= glm::scale(glm::vec3(0.08f, 0.08f, 0.08f));
 	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
@@ -56,6 +57,10 @@ void Player::jump()
 void Player::setPos(glm::vec3 playerPos)
 {
 	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
+	//this->modelMatrix = glm::mat4(0.1, 0.0, 0.0, 0.0,
+	//	0.0, 0.1, 0.0, 0.0,
+	//	0.0, 0.0, 0.1, 0.0,
+	//	playerPos.x, playerPos.y, playerPos.z, 1.0);
 }
 
 //Update funtion
@@ -101,7 +106,7 @@ void Player::update(float dt, sf::Window &window)
 	{
 		if (angle > 0)
 		{
-			this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			this->modelMatrix  *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			angle -= 12;
 		}
 	}

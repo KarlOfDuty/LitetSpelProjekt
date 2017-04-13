@@ -8,6 +8,8 @@
 #include <glm\glm.hpp>
 #include <vector>
 #include <iostream>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 class Player
 {
@@ -16,6 +18,7 @@ private:
 	PlayerChar* player;
 	void freeMemory();
 	glm::mat4 modelMatrix;
+	glm::mat4 rotationMatrix;
 	glm::vec3 playerPos;
 	Model birdModel;
 	Model sharkModel;

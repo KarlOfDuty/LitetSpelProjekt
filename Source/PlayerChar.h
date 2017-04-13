@@ -11,7 +11,7 @@ private:
 public:
 	PlayerChar();
 	PlayerChar(int HP, Model model);
-	virtual ~PlayerChar() = 0;
+	virtual ~PlayerChar();
 	PlayerChar(const PlayerChar &originalObject);
 	void operator=(const PlayerChar &originalObject);
 	void attack();
