@@ -102,7 +102,6 @@ void Player::update(float dt, sf::Window &window, std::vector<Model*> &allModels
 	}
 
 	//Apply velocity
-	playerPos.y += velocityY;
 	int amountOfTries = 0;
 	while (fixCollision(allModels) && amountOfTries < 5)
 	{
