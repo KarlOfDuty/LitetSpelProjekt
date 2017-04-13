@@ -44,8 +44,11 @@ void Player::swap(int character)
 
 void Player::jump()
 {
+	if(jumps == 0)
+		deltaClock.restart();
 	if (player->getMaxJumps() > jumps)
 	{
+
 		velocityY = player->getJumpHeight();
 		jumps++;
 	}
@@ -64,7 +67,7 @@ void Player::setPos(glm::vec3 playerPos)
 //Update funtion
 void Player::update(float dt, sf::Window &window)
 {
-	if (playerPos.y > 0.0f)
+	if (playerPos.y > 0.0f && isOnGround)
 	{
 		isOnGround = false;
 	}
@@ -90,21 +93,23 @@ void Player::update(float dt, sf::Window &window)
 	//If in air
 	if (!isOnGround)
 	{
-		velocityY -= 0.5*dt;
+		velocityY -= 30*dt;
 	}
 
 	//Maximum falling speed
-	if (velocityY > 5)
+	if (velocityY < -30)
 	{
-		velocityY = 5;
+		velocityY = -30;
 	}
 
 	//Apply velocity
-	playerPos.y += velocityY;
+	playerPos.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (playerPos.y <= 0)
+	if (playerPos.y <= 0 && !isOnGround)
 	{
+		float testTime = deltaClock.restart().asSeconds();
+		std::cout << testTime << std::endl;
 		jumps = 0;
 		playerPos.y = 0;
 		velocityY = 0;

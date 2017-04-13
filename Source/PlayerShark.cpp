@@ -3,7 +3,7 @@
 PlayerShark::PlayerShark(int HP, Model model) :PlayerChar(HP, model)
 {
 	this->maxJumps = 1;
-	this->jumpHeight = 0.3f;
+	this->jumpHeight = 10;
 }
 
 PlayerShark::~PlayerShark()
