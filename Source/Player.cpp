@@ -57,12 +57,8 @@ void Player::jump()
 void Player::setPos(glm::vec3 playerPos)
 {
 	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
-	//this->modelMatrix = glm::mat4(0.1, 0.0, 0.0, 0.0,
-	//	0.0, 0.1, 0.0, 0.0,
-	//	0.0, 0.0, 0.1, 0.0,
-	//	playerPos.x, playerPos.y, playerPos.z, 1.0);
 }
-
+  
 //Update funtion
 void Player::update(float dt, sf::Window &window)
 {
