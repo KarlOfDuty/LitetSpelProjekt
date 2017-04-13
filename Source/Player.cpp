@@ -93,13 +93,13 @@ void Player::update(float dt, sf::Window &window)
 	//If in air
 	if (!isOnGround)
 	{
-		velocityY -= 9.82*dt;
+		velocityY -= 30*dt;
 	}
 
 	//Maximum falling speed
-	if (velocityY > 5)
+	if (velocityY < -30)
 	{
-		velocityY = 5;
+		velocityY = -30;
 	}
 
 	//Apply velocity
