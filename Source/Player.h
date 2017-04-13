@@ -35,7 +35,8 @@ public:
 	void update(float dt, sf::Window &window, std::vector<Model*> &allModels);
 	void draw(Shader shader);
 
-	bool collidesWith(Model* object);
-	bool fixCollision(std::vector<Model*> allModels);
+	void fixCollision(std::vector<Model*> &allModels);
+	bool checkCollision(Model* object, glm::vec2 &mtv);
+	std::vector<glm::vec2> getAxis(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2);
 };
 #endif
