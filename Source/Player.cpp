@@ -42,8 +42,11 @@ void Player::swap(int character)
 
 void Player::jump()
 {
+	if(jumps == 0)
+		deltaClock.restart();
 	if (player->getMaxJumps() > jumps)
 	{
+
 		velocityY = player->getJumpHeight();
 		jumps++;
 	}
@@ -64,7 +67,7 @@ void Player::update(float dt, sf::Window &window, std::vector<Model*> &allModels
 {
 	groundPos = 0;
 	velocityX = 0;
-	if (playerPos.y > 0.0f)
+	if (playerPos.y > 0.0f && isOnGround)
 	{
 		isOnGround = false;
 	}
@@ -78,7 +81,6 @@ void Player::update(float dt, sf::Window &window, std::vector<Model*> &allModels
 	{
 		velocityX = movementSpeed*dt;
 	}
-
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		velocityX = -movementSpeed*dt;
@@ -90,27 +92,30 @@ void Player::update(float dt, sf::Window &window, std::vector<Model*> &allModels
 	//If in air
 	if (!isOnGround)
 	{
-		velocityY -= 0.5*dt;
+		velocityY -= 30*dt;
 	}
 
 	//Maximum falling speed
-	if (velocityY > 5)
+	if (velocityY < -30)
 	{
-		velocityY = 5;
+		velocityY = -30;
 	}
 
 	//Apply velocity
-	playerPos.x += velocityX;
 	playerPos.y += velocityY;
 	int amountOfTries = 0;
 	while (fixCollision(allModels) && amountOfTries < 5)
 	{
 		amountOfTries++;
 	}
+	playerPos.x += velocityX;
+	playerPos.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (playerPos.y <= 0)
+	if (playerPos.y <= 0 && !isOnGround)
 	{
+		float testTime = deltaClock.restart().asSeconds();
+		std::cout << testTime << std::endl;
 		jumps = 0;
 		playerPos.y = 0;
 		velocityY = 0;

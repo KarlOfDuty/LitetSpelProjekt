@@ -12,6 +12,7 @@
 class Player
 {
 private:
+	sf::Clock deltaClock;
 	PlayerChar* playerCharacters[3];
 	PlayerChar* player;
 	void freeMemory();

@@ -1,7 +1,8 @@
 #include "Camera.h"
 
 Camera::Camera()
-{
+{	
+	this->frustumObject = FrustumCulling();
 	this->cameraPos = glm::vec3(0.0f, 0.0f, 2.0f);
 	this->cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	this->cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -40,12 +41,14 @@ void Camera::frustumCulling(std::vector<Model*> &visibleModels)
 	std::sort(visibleModels.begin(), visibleModels.end());
 	visibleModels.erase(std::unique(visibleModels.begin(), visibleModels.end()), visibleModels.end());
 }
-
-void Camera::setupQuadTreeAndFrustum(float verticalFOV, float windowWidth, float windowHeight, float nearD, float farD, std::vector<Model*> &staticModels)
+void Camera::setupFrustum(float verticalFOV, float windowWidth, float windowHeight, float nearD, float farD)
 {
-	//Set up the frustum culling object and quadtree
-	frustumObject = FrustumCulling();
+	//Sets up the frustum using the same variables as the projection matrix
 	frustumObject.setFrustumShape(verticalFOV, (float)windowWidth / (float)windowHeight, nearD, farD);
+}
+void Camera::setupQuadTree(std::vector<Model*> &staticModels)
+{
+	//Recursively sets the quadtree up starting from the root
 	frustumObject.getRoot()->buildQuadTree(staticModels, 0, mapSize);
 	frustumObject.getRoot()->cleanTree();
 }
