@@ -161,6 +161,10 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 				{
 					groundPos = playerPos.y;
 				}
+				else if (mtv.y > 0)
+				{
+					velocityY = 0;
+				}
 			}
 		}
 	}

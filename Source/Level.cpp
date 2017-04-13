@@ -81,7 +81,7 @@ void Level::setupModels()
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		1.0, -1.0, 0.0, 1.0
+		1.0, 3.0, 0.0, 1.0
 	}));
 	std::srand(time(0));
 	//Loads 1000 spheres randomly
