@@ -10,11 +10,19 @@ EnemySlime::~EnemySlime()
 
 }
 
+void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
+{
+
+}
+
 void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
 {
 	groundCheck();
 
 	//Move
+	if ((enemyPos - playerPos).length() < 5)
+	{
+	}
 	if (enemyPos.x > playerPos.x)
 	{
 		enemyPos.x -= 1.0f*dt;

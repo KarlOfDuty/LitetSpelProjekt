@@ -26,7 +26,7 @@ public:
 	int getDamage()const;
 	glm::mat4 getModelMatrix() const;
 	void groundCheck();
-	void attack();
+	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos) = 0;
 	void update(float dt, glm::vec3 playerPos);
 	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos) = 0;
 	void draw(Shader shader);

@@ -56,14 +56,10 @@ void EnemyChar::groundCheck()
 	}
 }
 
-void EnemyChar::attack()
-{
-
-}
-
 void EnemyChar::update(float dt, glm::vec3 playerPos)
 {
 	updateThis(dt, playerPos, enemyPos);
+	attackPlayer(dt, playerPos, enemyPos);
 }
 
 void EnemyChar::draw(Shader shader)
