@@ -21,7 +21,7 @@ void Level::setupModels()
 		0.0, -1.0, 0.0, 1.0
 	}));
 	std::srand(time(0));
-	//Loads 1000 spheres randomly
+	//Loads spheres in random positions
 	for (int i = 0; i < 0; i++)
 	{
 		staticModels.push_back(new Model(modelLibrary.at(1), {
