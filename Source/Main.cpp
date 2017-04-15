@@ -13,6 +13,7 @@
 #include "FrustumCulling.h"
 #include "EventHandler.h"
 #include "LevelManager.h"
+#include "Light.h"
 
 #pragma comment(lib, "opengl32.lib")
 
@@ -25,7 +26,6 @@ sf::Clock deltaClock;
 float dt;
 int jumpPress;
 bool keyReleased;
-
 const bool aboveView = false;
 
 //gBuffer
@@ -48,8 +48,6 @@ glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / 
 glm::mat4 viewMatrix;
 //Lights
 const GLuint NR_LIGHTS = 10;
-std::vector<glm::vec3> lightPositions;
-std::vector<glm::vec3> lightColors;
 
 //VBO VAO
 GLuint VBO, VAO, EBO;
@@ -57,6 +55,7 @@ GLuint quadVAO = 0;
 GLuint quadVBO;
 
 std::vector<Model*> modelsToBeDrawn;
+std::vector<Light*> lights;
 
 //Functions
 void render();
@@ -150,10 +149,10 @@ void render()
 	glBindTexture(GL_TEXTURE_2D, gAmbient);
 
 	//Send all lights to the shader
-	for (GLuint i = 0; i < lightPositions.size(); i++)
+	for (GLuint i = 0; i < lights.size(); i++)
 	{
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].position").c_str()), 1, &lightPositions[i][0]);
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].color").c_str()), 1, &lightColors[i][0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].position").c_str()), 1, &lights[i]->pos[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].color").c_str()), 1, &lights[i]->colour[0]);
 		// Linear and quadratic for calculation of the lights radius
 		const GLfloat linear = 0.7f;
 		const GLfloat quadratic = 1.8f;
@@ -249,20 +248,6 @@ void createGBuffer()
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "Framebuffer not complete!" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//Some lights with random values
-	std::srand(13);
-	for (int i = 0; i < NR_LIGHTS; i++)
-	{
-		GLfloat xPos = 2.0f;
-		GLfloat yPos = 2.0f;
-		GLfloat zPos = 4.0f;
-		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-		GLfloat rColor = 0.6f;
-		GLfloat gColor = 0.9f;
-		GLfloat bColor = 0.9f;
-		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
-	}
 }
 
 //Quad used for lighting pass fullscreen quad
@@ -299,4 +284,13 @@ void loadLevel()
 	levelManager.currentLevel->setupModels();
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+
+	//Some lights with random values
+	std::srand(13);
+	for (int i = 0; i < NR_LIGHTS; i++)
+	{
+		lights.push_back(new Light(
+			2.0f,2.0f,4.0f,
+			0.6f,0.9f,0.9f));
+	}
 }
