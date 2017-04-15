@@ -10,6 +10,7 @@ void Level::loadModels()
 	{
 		modelLibrary.push_back(new Model(modelFilePaths[i]));
 	}
+	std::cout << "Done" << std::endl;
 }
 void Level::setupModels()
 {
@@ -22,7 +23,7 @@ void Level::setupModels()
 	}));
 	std::srand(time(0));
 	//Loads spheres in random positions
-	for (int i = 0; i < 0; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		staticModels.push_back(new Model(modelLibrary.at(1), {
 			1.0, 0.0, 0.0, 0.0,
@@ -30,6 +31,26 @@ void Level::setupModels()
 			0.0, 0.0, 1.0, 0.0,
 			(rand() % 100) - 50, (rand() % 100) - 50, (rand() % 100) - 100, 1.0 }));
 	}
+}
+void Level::unloadModels()
+{
+	for (int i = 0; i < modelLibrary.size(); i++)
+	{
+		delete modelLibrary[i];
+	}
+	modelLibrary.clear();
+
+	for (int i = 0; i < staticModels.size(); i++)
+	{
+		delete staticModels[i];
+	}
+	staticModels.clear();
+
+	for (int i = 0; i < dynamicModels.size(); i++)
+	{
+		delete dynamicModels[i];
+	}
+	dynamicModels.clear();
 }
 Level::Level()
 {

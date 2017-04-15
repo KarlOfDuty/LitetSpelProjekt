@@ -44,11 +44,8 @@ void Player::swap(int character)
 
 void Player::jump()
 {
-	if(jumps == 0)
-		deltaClock.restart();
 	if (player->getMaxJumps() > jumps)
 	{
-
 		velocityY = player->getJumpHeight();
 		jumps++;
 	}
@@ -108,8 +105,6 @@ void Player::update(float dt, sf::Window &window)
 	//Handle collision detection with ground
 	if (playerPos.y <= 0 && !isOnGround)
 	{
-		float testTime = deltaClock.restart().asSeconds();
-		std::cout << testTime << std::endl;
 		jumps = 0;
 		playerPos.y = 0;
 		velocityY = 0;
@@ -121,5 +116,5 @@ void Player::update(float dt, sf::Window &window)
 void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
-	playerCharacters[0]->draw(shader);
+	player->draw(shader);
 }

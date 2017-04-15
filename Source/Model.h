@@ -80,9 +80,8 @@ public:
 	Model(Model *otherModel);
 	Model(Model &otherModel, glm::mat4 modelMat);
 	Model(Model *otherModel, glm::mat4 modelMat);
-	//Destructor
 	Model();
-
+	//Destructor
 	~Model();
 };
 #endif

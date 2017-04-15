@@ -23,6 +23,7 @@ LevelManager levelManager;
 Player *player;
 EventHandler eventHandler;
 sf::Clock deltaClock;
+sf::Clock timer;
 float dt;
 int jumpPress;
 bool keyReleased;
@@ -56,13 +57,16 @@ GLuint quadVBO;
 
 std::vector<Model*> modelsToBeDrawn;
 std::vector<Light*> lights;
-
+bool unloaded = false;
+bool reloaded = false;
 //Functions
 void render();
 void update(sf::Window &window);
 void createGBuffer();
 void drawQuad();
 void loadLevel();
+void unloadLevel();
+void reloadLevel();
 
 //Main function
 int main()
@@ -90,6 +94,8 @@ int main()
 	player = new Player();
 	eventHandler = EventHandler();
 
+	timer.restart();
+
 	//Main loop
 	bool running = true;
 	while (running)
@@ -100,7 +106,8 @@ int main()
 
 		update(window);
 		render();
-
+		unloadLevel();
+		reloadLevel();
 		//End the current frame (internally swaps the front and back buffers)
 		window.display();
 	}
@@ -292,5 +299,40 @@ void loadLevel()
 		lights.push_back(new Light(
 			2.0f,2.0f,4.0f,
 			0.6f,0.9f,0.9f));
+	}
+}
+void unloadLevel()
+{
+	if (timer.getElapsedTime().asSeconds() > 3)
+	{
+		levelManager.currentLevel->unloadModels();
+		modelsToBeDrawn.clear();
+		playerCamera.destroyQuadTree();
+		for (int i = 0; i < lights.size(); i++)
+		{
+			delete lights[i];
+		}
+		lights.clear();
+		unloaded = true;
+	}
+}
+void reloadLevel()
+{
+	if (timer.getElapsedTime().asSeconds() > 6)
+	{
+		levelManager.currentLevel->loadModels();
+		levelManager.currentLevel->setupModels();
+		modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
+		//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+
+		//Some lights with random values
+		std::srand(13);
+		for (int i = 0; i < NR_LIGHTS; i++)
+		{
+			lights.push_back(new Light(
+				2.0f, 2.0f, 4.0f,
+				0.6f, 0.9f, 0.9f));
+		}
+		reloaded = true;
 	}
 }

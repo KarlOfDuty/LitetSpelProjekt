@@ -18,6 +18,7 @@ private:
 public:
 	void loadModels();
 	void setupModels();
+	void unloadModels();
 	std::vector<Model*> getStaticModels();
 	Level();
 	~Level();
