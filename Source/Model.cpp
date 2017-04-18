@@ -596,3 +596,18 @@ Model::~Model()
 {
 
 }
+//As models share pointers this can not be done in the destructor
+void Model::deleteMeshes()
+{
+	std::cout << meshes.size() << std::endl;
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		delete meshes[i];
+	}
+	meshes.clear();
+}
+
+Mesh::~Mesh()
+{
+	vertices.clear();
+}

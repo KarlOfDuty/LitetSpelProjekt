@@ -44,6 +44,7 @@ struct Mesh
 {
 	std::vector<Vertex> vertices;
 	Material material;
+	~Mesh();
 };
 //Turns on console feedback for reading of model files
 static bool modelDebug = false;
@@ -83,5 +84,6 @@ public:
 	Model();
 	//Destructor
 	~Model();
+	void deleteMeshes();
 };
 #endif

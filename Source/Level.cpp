@@ -10,7 +10,6 @@ void Level::loadModels()
 	{
 		modelLibrary.push_back(new Model(modelFilePaths[i]));
 	}
-	std::cout << "Done" << std::endl;
 }
 void Level::setupModels()
 {
@@ -36,18 +35,21 @@ void Level::unloadModels()
 {
 	for (int i = 0; i < modelLibrary.size(); i++)
 	{
+		modelLibrary[i]->deleteMeshes();
 		delete modelLibrary[i];
 	}
 	modelLibrary.clear();
 
 	for (int i = 0; i < staticModels.size(); i++)
 	{
+		staticModels[i]->deleteMeshes();
 		delete staticModels[i];
 	}
 	staticModels.clear();
 
 	for (int i = 0; i < dynamicModels.size(); i++)
 	{
+		dynamicModels[i]->deleteMeshes();
 		delete dynamicModels[i];
 	}
 	dynamicModels.clear();

@@ -107,7 +107,7 @@ int main()
 		update(window);
 		render();
 		unloadLevel();
-		reloadLevel();
+		//reloadLevel();
 		//End the current frame (internally swaps the front and back buffers)
 		window.display();
 	}
@@ -306,6 +306,7 @@ void unloadLevel()
 	if (timer.getElapsedTime().asSeconds() > 3)
 	{
 		levelManager.currentLevel->unloadModels();
+		std::cout << "Done" << std::endl;
 		modelsToBeDrawn.clear();
 		playerCamera.destroyQuadTree();
 		for (int i = 0; i < lights.size(); i++)
@@ -321,8 +322,9 @@ void reloadLevel()
 	if (timer.getElapsedTime().asSeconds() > 6)
 	{
 		levelManager.currentLevel->loadModels();
-		levelManager.currentLevel->setupModels();
-		modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
+		//levelManager.currentLevel->setupModels();
+		//modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
+		std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
 		//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 
 		//Some lights with random values
