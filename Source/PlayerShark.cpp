@@ -11,7 +11,6 @@ PlayerShark::~PlayerShark()
 
 }
 
-
 void PlayerShark::operator=(const PlayerShark &originalObject)
 {
 	PlayerChar::operator=(originalObject);
@@ -26,7 +25,6 @@ float PlayerShark::getJumpHeight()
 {
 	return jumpHeight;
 }
-
 void PlayerShark::dive()
 {
 

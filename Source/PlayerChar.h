@@ -11,9 +11,10 @@ private:
 public:
 	PlayerChar();
 	PlayerChar(int HP, Model model);
-	virtual ~PlayerChar() = 0;
-	PlayerChar(const PlayerChar &originalObject);
-	void operator=(const PlayerChar &originalObject);
+	virtual ~PlayerChar();
+	void takingDamage(int appliedDamage);
+	void setHP(int HP);
+	int getHP()const;
 	void attack();
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;

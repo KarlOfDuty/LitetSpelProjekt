@@ -11,7 +11,6 @@ PlayerButterfly::~PlayerButterfly()
 
 }
 
-
 void PlayerButterfly::operator=(const PlayerButterfly &originalObject)
 {
 	PlayerChar::operator=(originalObject);
@@ -26,7 +25,6 @@ float PlayerButterfly::getJumpHeight()
 {
 	return jumpHeight;
 }
-
 void PlayerButterfly::teleport()
 {
 

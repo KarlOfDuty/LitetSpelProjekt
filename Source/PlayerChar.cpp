@@ -8,24 +8,27 @@ PlayerChar::PlayerChar()
 PlayerChar::PlayerChar(int HP, Model model)
 {
 	this->HP = HP;
-	playerModel = model;
+	this->playerModel = model;
 }
 
 PlayerChar::~PlayerChar()
 {
 
 }
-
-PlayerChar::PlayerChar(const PlayerChar & originalObject)
+void PlayerChar::takingDamage(int appliedDamage)
 {
-	this->HP = originalObject.HP;
+	this->HP -= appliedDamage;
 }
 
-void PlayerChar::operator=(const PlayerChar &originalObject)
+void PlayerChar::setHP(int HP)
 {
-	this->HP = originalObject.HP;
+	this->HP = HP;
 }
 
+int PlayerChar::getHP() const
+{
+	return HP;
+}
 void PlayerChar::attack()
 {
 

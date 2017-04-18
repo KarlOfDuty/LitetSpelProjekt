@@ -37,7 +37,8 @@ glm::vec3 Player::getPlayerPos()
 
 void Player::swap(int character)
 {
-	player = playerCharacters[character];
+	if (this->playerPos.y > 0.0f)
+		player = playerCharacters[character];
 }
 
 void Player::jump()
@@ -59,8 +60,24 @@ void Player::setPos(glm::vec3 playerPos)
 	);
 }
 
-//Update funtion
-void Player::update(float dt, sf::Window &window, std::vector<Model*> &allModels)
+bool Player::playerDead()
+{
+	if (playerCharacters[0]->getHP() <= 0)
+	{
+		playerCharacters[0]->setHP(0);
+
+		return true;
+	}
+	return false;
+}
+
+glm::vec3 Player::getPlayerPos() const
+{
+	return playerPos;
+}
+
+//Update function
+void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage)
 {
 	groundPos = 0.0f;
 	if (playerPos.y > groundPos && isOnGround)
@@ -116,6 +133,15 @@ void Player::update(float dt, sf::Window &window, std::vector<Model*> &allModels
 		isOnGround = true;
 	}
 	setPos(playerPos);
+	//Player taking damage
+	if (damageImmunity.getElapsedTime().asSeconds() >= 1.0)
+	{
+		if (fabs(enemyPos.x - playerPos.x) < 0.1 && fabs(enemyPos.y - playerPos.y) < 1.0)
+		{
+			playerCharacters[0]->takingDamage(enemyDamage);
+			damageImmunity.restart();
+		}
+	}	
 }
 //Draws the models involved
 void Player::draw(Shader shader)

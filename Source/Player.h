@@ -15,6 +15,7 @@ private:
 	PlayerChar* playerCharacters[3];
 	PlayerChar* player;
 	void freeMemory();
+	sf::Clock damageImmunity;
 	glm::mat4 modelMatrix;
 	glm::vec3 playerPos;
 	float velocityX;
@@ -27,13 +28,16 @@ private:
 public:
 	Player();
 	~Player();
+	void swap(int charType);
+	void groundCheck();
+	void setModelMatrix(glm::vec3 playerPos);
+	bool playerDead();
+	glm::vec3 getPlayerPos() const;
+	void update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
 	glm::vec3 getPlayerPos();
-	void swap(int character);
 	void jump();
 	void setPos(glm::vec3 playerPos);
-	void update(float dt, sf::Window &window, std::vector<Model*> &allModels);
 	void draw(Shader shader);
-
 	void fixCollision(std::vector<Model*> &allModels);
 	bool checkCollision(Model* object, glm::vec2 &mtv);
 	std::vector<glm::vec2> getAxis(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2);

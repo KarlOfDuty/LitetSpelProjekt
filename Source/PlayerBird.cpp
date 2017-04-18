@@ -10,7 +10,6 @@ PlayerBird::~PlayerBird()
 {
 
 }
-
 void PlayerBird::operator=(const PlayerBird &originalObject)
 {
 	PlayerChar::operator=(originalObject);

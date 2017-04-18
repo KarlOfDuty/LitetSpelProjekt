@@ -9,6 +9,7 @@
 #include "FreeCamera.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Model.h"
 #include "FrustumCulling.h"
 #include "EventHandler.h"
@@ -23,6 +24,8 @@ Player *player;
 EventHandler eventHandler;
 sf::Clock deltaClock;
 float dt;
+//Enemies
+Enemy *enemy;
 int jumpPress;
 bool keyReleased;
 
@@ -89,6 +92,9 @@ int main()
 
 	//Player
 	player = new Player();
+	enemy = new Enemy();
+	enemy->createSlime(glm::vec3(10.0f, 0.0f, 0.0f));
+	// run the main loop
 	eventHandler = EventHandler();
 
 	//Main loop
@@ -131,7 +137,11 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
 	}
-	player->draw(deferredGeometryPass);
+	if (player->playerDead() != true)
+	{
+		player->draw(deferredGeometryPass);
+	}
+	enemy->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -170,7 +180,6 @@ void render()
 void update(sf::Window &window)
 {	
 	dt = deltaClock.restart().asSeconds();
-	player->update(dt, window, modelsToBeDrawn);
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
@@ -184,6 +193,11 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
+	if (player->playerDead() != true)
+	{
+		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
+	}
+		enemy->update(dt, player->getPlayerPos());
 	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
