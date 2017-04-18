@@ -15,7 +15,7 @@ EnemyChar::EnemyChar(int HP, Model model, int damage, glm::vec3 enemyStartPos)
 	this->enemyPos = enemyStartPos;
 	setEnemyPos(enemyPos);
 	isOnGround = true;
-	this->checkPoint.x = enemyStartPos.x+5;
+	this->checkPoint.x = enemyStartPos.x;
 }
 
 EnemyChar::~EnemyChar()
@@ -59,7 +59,7 @@ void EnemyChar::groundCheck()
 
 void EnemyChar::update(float dt, glm::vec3 playerPos)
 {
-	updateThis(dt, playerPos, enemyPos);
+	updateThis(dt, playerPos, enemyPos, checkPoint);
 	attackPlayer(dt, playerPos, enemyPos);
 }
 

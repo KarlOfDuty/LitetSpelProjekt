@@ -29,7 +29,7 @@ public:
 	void groundCheck();
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos) = 0;
 	void update(float dt, glm::vec3 playerPos);
-	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos) = 0;
+	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint) = 0;
 	void draw(Shader shader);
 };
 #endif
