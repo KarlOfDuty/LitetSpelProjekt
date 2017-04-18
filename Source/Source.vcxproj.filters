@@ -45,6 +45,15 @@
     <ClCompile Include="FrustumCulling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyChar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemySlime.cpp">
+	  <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="FreeCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,6 +61,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EventHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,6 +95,15 @@
     <ClInclude Include="Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyChar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemySlime.h">
+	  <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="FreeCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -87,6 +111,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EventHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

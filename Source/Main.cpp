@@ -9,17 +9,23 @@
 #include "FreeCamera.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Model.h"
 #include "FrustumCulling.h"
 #include "EventHandler.h"
+#include "LevelManager.h"
 
 #pragma comment(lib, "opengl32.lib")
+
+LevelManager levelManager;
 
 //Player
 Player *player;
 EventHandler eventHandler;
 sf::Clock deltaClock;
 float dt;
+//Enemies
+Enemy *enemy;
 int jumpPress;
 bool keyReleased;
 
@@ -53,26 +59,14 @@ GLuint VBO, VAO, EBO;
 GLuint quadVAO = 0;
 GLuint quadVBO;
 
-//Models
-std::vector<std::string> modelFilePaths = 
-{ 
-	"models/cube/cube.obj"
-	,"models/sphere/sphere.obj"
-	,"models/cube/cubeGreen.obj"
-	//, "models/Characters/Bird/BirdTest1.obj"
-};
-std::vector<Model*> modelLibrary;
-std::vector<Model*> staticModels;
-std::vector<Model*> visibleStaticModels;
-std::vector<Model*> dynamicModels;
+std::vector<Model*> modelsToBeDrawn;
 
 //Functions
 void render();
 void update(sf::Window &window);
 void createGBuffer();
 void drawQuad();
-void loadModels();
-void setupModels();
+void loadLevel();
 
 //Main function
 int main()
@@ -83,7 +77,7 @@ int main()
 	settings.stencilBits = 8;
 	settings.antialiasingLevel = 2;
 	sf::Window window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
-	//window.setVerticalSyncEnabled(true);
+	window.setVerticalSyncEnabled(true);
 	//Activate the window
 	window.setActive(true);
 
@@ -94,18 +88,19 @@ int main()
 	createGBuffer();
 
 	//Models
-	loadModels();
-	setupModels();
-	playerCamera.setupQuadTreeAndFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance, staticModels);
+	loadLevel();
+
 	//Player
 	player = new Player();
+	enemy = new Enemy();
+	enemy->createSlime(glm::vec3(10.0f, 0.0f, 0.0f));
+	// run the main loop
 	eventHandler = EventHandler();
 
 	//Main loop
 	bool running = true;
 	while (running)
 	{
-		dt = deltaClock.restart().asSeconds();
 		running = eventHandler.handleEvents(window, player);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -137,18 +132,16 @@ void render()
 	//Draw functions
 
 	//Only potentially visible static models are drawn
-	for (int i = 0; i < visibleStaticModels.size(); i++)
+	for (int i = 0; i < modelsToBeDrawn.size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &visibleStaticModels[i]->getModelMatrix()[0][0]);
-		visibleStaticModels.at(i)->draw(deferredGeometryPass);
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
+		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
 	}
-	//All dynamic models are always drawn
-	for (int i = 0; i < dynamicModels.size(); i++)
+	if (player->playerDead() != true)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
-		dynamicModels.at(i)->draw(deferredGeometryPass);
+		player->draw(deferredGeometryPass);
 	}
-	player->draw(deferredGeometryPass);
+	enemy->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -185,7 +178,8 @@ void render()
 
 //Update function
 void update(sf::Window &window)
-{
+{	
+	dt = deltaClock.restart().asSeconds();
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
@@ -199,18 +193,12 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
-	playerCamera.frustumCulling(visibleStaticModels);
-
-	//TEMPORARY CAMERA CONTROLS, DISABLE WITH ALT
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
+	if (player->playerDead() != true)
 	{
-		window.setMouseCursorVisible(true);
+		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
 	}
-	else
-	{
-		window.setMouseCursorVisible(false);
-	}
-	player->update(dt, window);
+		enemy->update(dt, player->getPlayerPos());
+	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
 //Create the buffer
@@ -319,33 +307,10 @@ void drawQuad()
 	glBindVertexArray(0);
 }
 
-void loadModels()
+void loadLevel()
 {
-	//Loads all models
-	for (int i = 0; i < modelFilePaths.size(); i++)
-	{
-		modelLibrary.push_back(new Model(modelFilePaths[i]));
-	}
-}
-
-void setupModels()
-{
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		10.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 2.0, 0.0,
-		0.0, -1.0, 0.0, 1.0
-	}));
-	std::srand(time(0));
-	//Loads 1000 spheres randomly
-	for (int i = 0; i < 0; i++)
-	{
-		staticModels.push_back(new Model(modelLibrary.at(1), {
-			1.0, 0.0, 0.0, 0.0,
-			0.0, 1.0, 0.0, 0.0,
-			0.0, 0.0, 1.0, 0.0,
-			(rand() % 100) - 50, (rand() % 100) - 50, (rand() % 100) - 100, 1.0 }));
-	}
-	visibleStaticModels = staticModels;
+	levelManager.currentLevel->loadModels();
+	levelManager.currentLevel->setupModels();
+	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
+	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 }

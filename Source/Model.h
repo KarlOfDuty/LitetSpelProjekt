@@ -55,6 +55,7 @@ private:
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
 	std::vector<Mesh*> meshes;
+	std::vector<glm::vec2> allPoints;
 	float boundingSphereRadius;
 	void setupModel();
 	void loadTextures(int meshNr);
@@ -64,6 +65,7 @@ public:
 	Material getMaterial(int index);
 	glm::mat4 getModelMatrix() const;
 	glm::mat4 getRotationMatrix() const;
+	std::vector<glm::vec2> getPoints(float scale);
 	void setModelMatrix(glm::mat4 modelMat);
 	void setRotationMatrix(glm::mat4 rotationMat);
 	void rotate();

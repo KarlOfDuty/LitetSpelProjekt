@@ -120,9 +120,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyChar.cpp" />
+    <ClCompile Include="EnemySlime.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="FrustumCulling.cpp" />
     <ClCompile Include="EventHandler.cpp" />
+    <ClCompile Include="Level.cpp" />
+    <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -134,9 +139,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyChar.h" />
+    <ClInclude Include="EnemySlime.h" />
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="FrustumCulling.h" />
     <ClInclude Include="EventHandler.h" />
+    <ClInclude Include="Level.h" />
+    <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerBird.h" />

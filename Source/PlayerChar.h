@@ -12,11 +12,13 @@ public:
 	PlayerChar();
 	PlayerChar(int HP, Model model);
 	virtual ~PlayerChar();
-	PlayerChar(const PlayerChar &originalObject);
-	void operator=(const PlayerChar &originalObject);
+	void takingDamage(int appliedDamage);
+	void setHP(int HP);
+	int getHP()const;
 	void attack();
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;
 	virtual float getJumpHeight() = 0;
+	Model& getModel();
 };
 #endif
