@@ -10,6 +10,7 @@ LevelManager::~LevelManager()
 {
 
 }
+//Unload current level before switching
 void LevelManager::startLevel(int level)
 {
 	levelIndex = level;
