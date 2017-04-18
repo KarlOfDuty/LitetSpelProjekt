@@ -1,5 +1,7 @@
 #include "Player.h"
 
+const double PI = 3.14159265358979323846;
+
 void Player::freeMemory()
 {
 	for (int i = 0; i < 3; i++)
@@ -10,17 +12,20 @@ void Player::freeMemory()
 
 Player::Player()
 {
-	Model *box = new Model("models/cube/cube.obj");
+	Model* birdModel = new Model("models/Characters/Bird/BirdTest1.obj", modelMatrix);
+	Model* sharkModel = new Model("models/sphere/sphere.obj", modelMatrix);
+	Model* butterflyModel = new Model("models/cube/cubeGreen.obj", modelMatrix);
 
 	this->playerPos = glm::vec3(0.0f, 2.0f, 0.0f);
-
 	setPos(playerPos);
-
+	this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	this->modelMatrix *= glm::scale(glm::vec3(0.08f, 0.08f, 0.08f));
+	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->playerCharacters[0] = new PlayerBird(100, box);
-	this->playerCharacters[1] = new PlayerShark(100, box);
-	this->playerCharacters[2] = new PlayerButterfly(100, box);
+	this->playerCharacters[0] = new PlayerBird(100, birdModel);
+	this->playerCharacters[1] = new PlayerShark(100, sharkModel);
+	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 }
@@ -37,8 +42,7 @@ glm::vec3 Player::getPlayerPos()
 
 void Player::swap(int character)
 {
-	if (this->playerPos.y > 0.0f)
-		player = playerCharacters[character];
+	player = playerCharacters[character];
 }
 
 void Player::jump()
@@ -52,12 +56,7 @@ void Player::jump()
 
 void Player::setPos(glm::vec3 playerPos)
 {
-	this->modelMatrix = glm::mat4(
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		playerPos.x, playerPos.y, playerPos.z, 1.0
-	);
+	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
 }
 
 bool Player::playerDead()
@@ -97,10 +96,33 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		velocityX = -movementSpeed*dt;
+		goingLeft = true;
+		goingRight = false;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		velocityX = movementSpeed*dt;
+		goingRight = true;
+		goingLeft = false;
+	}
+	if (goingLeft == true)
+	{
+		if (angle != 180)
+		{
+			this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			angle += 12;
+		}
+		
+	}
+
+	if (goingRight == true)
+	{
+		if (angle > 0)
+		{
+			this->modelMatrix  *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			angle -= 12;
+		}
+		
 	}
 	//If in air
 	if (!isOnGround)
@@ -147,7 +169,7 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
-	playerCharacters[0]->draw(shader);
+	player->draw(shader);
 }
 void Player::fixCollision(std::vector<Model*> &allModels)
 {
@@ -185,8 +207,8 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 }
 bool Player::checkCollision(Model* object, glm::vec2 &mtv)
 {
-	std::vector<glm::vec2> playerPoints = player->getModel().getPoints();
-	std::vector<glm::vec2> objectPoints = object->getPoints();
+	std::vector<glm::vec2> playerPoints = player->getModel().getPoints(this->modelMatrix[1][1]);
+	std::vector<glm::vec2> objectPoints = object->getPoints(object->getModelMatrix()[1][1]);
 
 	for (int i = 0; i < playerPoints.size(); i++)
 	{

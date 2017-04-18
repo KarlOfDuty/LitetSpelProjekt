@@ -26,26 +26,29 @@ Material Model::getMaterial(int index)
 {
 	return this->meshes.at(index)->material;
 }
-std::vector<glm::vec2> Model::getPoints() const
+std::vector<glm::vec2> Model::getPoints(float scale)
 {
-	std::vector<glm::vec2> allPoints;
-	glm::vec2 minPos;
-	glm::vec2 maxPos;
-	for (int i = 0; i < meshes.size(); i++)
+	if (this->allPoints.empty())
 	{
-		for (int j = 0; j < meshes[i]->vertices.size(); j++)
+		//std::vector<glm::vec2> allPoints;
+		glm::vec2 minPos;
+		glm::vec2 maxPos;
+		for (int i = 0; i < meshes.size(); i++)
 		{
-			if (meshes[i]->vertices[j].pos.x < minPos.x) minPos.x = meshes[i]->vertices[j].pos.x;
-			if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
-			if (meshes[i]->vertices[j].pos.x > maxPos.x) maxPos.x = meshes[i]->vertices[j].pos.x;
-			if (meshes[i]->vertices[j].pos.y > maxPos.y) maxPos.y = meshes[i]->vertices[j].pos.y;
+			for (int j = 0; j < meshes[i]->vertices.size(); j++)
+			{
+				if (meshes[i]->vertices[j].pos.x < minPos.x) minPos.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
+				if (meshes[i]->vertices[j].pos.x > maxPos.x) maxPos.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y > maxPos.y) maxPos.y = meshes[i]->vertices[j].pos.y;
+			}
 		}
+		allPoints.push_back(minPos*scale);
+		allPoints.push_back(glm::vec2(-minPos.x, minPos.y)*scale);
+		allPoints.push_back(maxPos*scale);
+		allPoints.push_back(glm::vec2(-maxPos.x, maxPos.y)*scale);
 	}
-	allPoints.push_back(minPos);
-	allPoints.push_back(glm::vec2(-minPos.x, minPos.y));
-	allPoints.push_back(maxPos);
-	allPoints.push_back(glm::vec2(-maxPos.x, maxPos.y));
-	return allPoints;
+	return this->allPoints;
 }
 //Setters
 void Model::setModelMatrix(glm::mat4 modelMat)

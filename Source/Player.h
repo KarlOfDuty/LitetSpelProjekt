@@ -8,6 +8,8 @@
 #include <glm\glm.hpp>
 #include <vector>
 #include <iostream>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 class Player
 {
@@ -17,9 +19,13 @@ private:
 	void freeMemory();
 	sf::Clock damageImmunity;
 	glm::mat4 modelMatrix;
+	glm::mat4 rotationMatrix;
 	glm::vec3 playerPos;
 	float velocityX;
 	float velocityY;
+	bool goingLeft;
+	bool goingRight;
+	float angle;
 	bool isOnGround;
 	int jumps;
 	float movementSpeed;
@@ -30,7 +36,6 @@ public:
 	~Player();
 	void swap(int charType);
 	void groundCheck();
-	void setModelMatrix(glm::vec3 playerPos);
 	bool playerDead();
 	glm::vec3 getPlayerPos() const;
 	void update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
