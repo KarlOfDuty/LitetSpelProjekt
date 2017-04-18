@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Camera">
+    <Position X="10.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IBACAAgAAAAQAAgAQAAAAAAEAwAAAAAAEQACiAAEAAA=</HashCode>
+      <FileName>Camera.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FreeCamera">
+    <Position X="12.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IBQAAAgAAAAQAAgQAAAAAAAEA4AAAAAAEwECiAAAAAA=</HashCode>
+      <FileName>FreeCamera.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FrustumCulling">
+    <Position X="10.75" Y="8.75" Width="1.5" />
+    <NestedTypes>
+      <Class Name="FrustumCulling::Node" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FrustumCulling.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="FrustumCulling::__unnamed_enum_00d4_2" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>FrustumCulling.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>ABAAAACAAAAIAAAgAAQgABAAAAAAAggAAgAAAAAAAEE=</HashCode>
+      <FileName>FrustumCulling.h</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="planes" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="EventHandler">
+    <Position X="2.75" Y="8.75" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="EventHandler::__unnamed_enum_0229_1" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>EventHandler.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="EventHandler::__unnamed_enum_0229_2" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>EventHandler.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAgAAABAAAAAAAAAAAAAAAAAAAEAAAgAAAAA=</HashCode>
+      <FileName>EventHandler.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Model">
+    <Position X="4.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QwCBAggABAAQAAEAACIQAAIAABAAAAACAAgAAAAkAAA=</HashCode>
+      <FileName>Model.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Player">
+    <Position X="0.5" Y="5.5" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="Player::__unnamed_enum_021a_1" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Player.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AICCCADAAAgAAAAAAgIAAgAAAAQAAAAJAQQAIQAMABA=</HashCode>
+      <FileName>Player.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlayerBird">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAACAAAAAABAAAAAAAAAAAgAAAAEAA=</HashCode>
+      <FileName>PlayerBird.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlayerButterfly">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAIAABAAAAAAAEAAAgAAAAEAA=</HashCode>
+      <FileName>PlayerButterfly.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlayerChar">
+    <Position X="2.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAEAAAAAAAAAAAAICAAABQAAAAACAAAAgAAAAAAA=</HashCode>
+      <FileName>PlayerChar.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlayerShark">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAEAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAgAQAAAAA=</HashCode>
+      <FileName>PlayerShark.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shader">
+    <Position X="6.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE=</HashCode>
+      <FileName>Shader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="Plane">
+    <Position X="14.25" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAQAQAAAAAgAAAAAAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>FrustumCulling.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Material">
+    <Position X="6.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIAAEIEBAAACAAgAAEEAAAAABABAAICAA=</HashCode>
+      <FileName>Model.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Vertex">
+    <Position X="8.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAIgAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Model.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Mesh">
+    <Position X="8.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Model.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="__unnamed_enum_00d4_1">
+    <Position X="6.5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAgAAAAAAIAAIAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>FrustumCulling.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

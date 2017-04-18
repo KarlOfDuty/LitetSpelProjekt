@@ -4,10 +4,12 @@
 class PlayerBird : public PlayerChar
 {
 private:
-	bool jumpAllowed;
+	int maxJumps;
+	float jumpHeight;
 public:
 	PlayerBird(int HP, Model model);
 	virtual ~PlayerBird();
-	void setDoubleJump(bool doubleJumpAllowed);
-	bool getDoubleJump();
+	void operator=(const PlayerBird &originalObject);
+	float getJumpHeight();
+	int getMaxJumps();
 };

@@ -3,8 +3,6 @@
 PlayerChar::PlayerChar()
 {
 	this->HP = 100;
-	this->mayJumpAgain = false;
-
 }
 
 PlayerChar::PlayerChar(int HP, Model model)
@@ -17,18 +15,6 @@ PlayerChar::~PlayerChar()
 {
 
 }
-
-
-bool PlayerChar::getJumpAvailable()
-{
-	return mayJumpAgain;
-}
-
-void PlayerChar::setJumpAvailable(bool available)
-{
-	mayJumpAgain = available;
-}
-
 void PlayerChar::takingDamage(int appliedDamage)
 {
 	this->HP -= appliedDamage;
@@ -43,7 +29,6 @@ int PlayerChar::getHP() const
 {
 	return HP;
 }
-
 void PlayerChar::attack()
 {
 
@@ -52,4 +37,9 @@ void PlayerChar::attack()
 void PlayerChar::draw(Shader shader)
 {
 	playerModel.draw(shader);
+}
+
+Model& PlayerChar::getModel()
+{
+	return this->playerModel;
 }

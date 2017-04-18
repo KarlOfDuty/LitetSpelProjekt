@@ -2,21 +2,25 @@
 
 PlayerBird::PlayerBird(int HP, Model model) :PlayerChar(HP, model)
 {
-	jumpAllowed = true;
+	this->maxJumps = 2;
+	this->jumpHeight = 15;
 }
 
 PlayerBird::~PlayerBird()
 {
 
 }
-
-void PlayerBird::setDoubleJump(bool doubleJumpAllowed)
+void PlayerBird::operator=(const PlayerBird &originalObject)
 {
-	jumpAllowed = doubleJumpAllowed;
+	PlayerChar::operator=(originalObject);
 }
 
-bool PlayerBird::getDoubleJump()
+int PlayerBird::getMaxJumps()
 {
-	return jumpAllowed;
+	return maxJumps;
 }
 
+float PlayerBird::getJumpHeight()
+{
+	return jumpHeight;
+}

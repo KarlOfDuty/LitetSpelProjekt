@@ -18,7 +18,7 @@ void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
 void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint)
 {
 	groundCheck();
-	std::cout << fabs(enemyPos.x) << std::endl;
+
 	if (fabs(enemyPos.x) < checkPoint.x-2)
 	{
 		checkPointReached = true;

@@ -26,6 +26,27 @@ Material Model::getMaterial(int index)
 {
 	return this->meshes.at(index)->material;
 }
+std::vector<glm::vec2> Model::getPoints() const
+{
+	std::vector<glm::vec2> allPoints;
+	glm::vec2 minPos;
+	glm::vec2 maxPos;
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		for (int j = 0; j < meshes[i]->vertices.size(); j++)
+		{
+			if (meshes[i]->vertices[j].pos.x < minPos.x) minPos.x = meshes[i]->vertices[j].pos.x;
+			if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
+			if (meshes[i]->vertices[j].pos.x > maxPos.x) maxPos.x = meshes[i]->vertices[j].pos.x;
+			if (meshes[i]->vertices[j].pos.y > maxPos.y) maxPos.y = meshes[i]->vertices[j].pos.y;
+		}
+	}
+	allPoints.push_back(minPos);
+	allPoints.push_back(glm::vec2(-minPos.x, minPos.y));
+	allPoints.push_back(maxPos);
+	allPoints.push_back(glm::vec2(-maxPos.x, maxPos.y));
+	return allPoints;
+}
 //Setters
 void Model::setModelMatrix(glm::mat4 modelMat)
 {
@@ -513,6 +534,24 @@ void Model::loadTextures(int i)
 	}
 
 }
+//Sets the radius of the bounding sphere around this model
+void Model::setBoundingSphereRadius()
+{
+	//Takes the distance to the furthest away vertex and sets it as the radius
+	float radius = 0.0f;
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		for (int j = 0; j < meshes[i]->vertices.size(); j++)
+		{
+			radius = glm::max(radius, (float)meshes[i]->vertices[j].pos.length());
+		}
+	}
+	this->boundingSphereRadius = radius;
+}
+float Model::getBoundingSphereRadius() const
+{
+	return boundingSphereRadius;
+}
 //Constructors
 Model::Model(std::string filename)
 {
@@ -552,11 +591,25 @@ Model::Model(Model &otherModel)
 	this->meshes = otherModel.meshes;
 	setupModel();
 }
+Model::Model(Model *otherModel)
+{
+	this->modelMatrix = otherModel->modelMatrix;
+	this->rotationMatrix = otherModel->rotationMatrix;
+	this->meshes = otherModel->meshes;
+	setupModel();
+}
 Model::Model(Model &otherModel, glm::mat4 modelMat)
 {
 	this->modelMatrix =  modelMat;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->meshes = otherModel.meshes;
+	setupModel();
+}
+Model::Model(Model * otherModel, glm::mat4 modelMat)
+{
+	this->modelMatrix = modelMat;
+	this->rotationMatrix = otherModel->rotationMatrix;
+	this->meshes = otherModel->meshes;
 	setupModel();
 }
 //Destructor
