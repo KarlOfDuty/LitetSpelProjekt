@@ -10,19 +10,17 @@ void Player::freeMemory()
 
 Player::Player()
 {
-	birdModel = Model("models/cube/cube.obj");
-	sharkModel = Model("models/cube/cube.obj");
-	butterflyModel = Model("models/cube/cube.obj");
+	Model *box = new Model("models/cube/cube.obj");
 
-	this->playerPos = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->playerPos = glm::vec3(0.0f, 2.0f, 0.0f);
 
 	setPos(playerPos);
 
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->playerCharacters[0] = new PlayerBird(100, birdModel);
-	this->playerCharacters[1] = new PlayerShark(100, sharkModel);
-	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
+	this->playerCharacters[0] = new PlayerBird(100, box);
+	this->playerCharacters[1] = new PlayerShark(100, box);
+	this->playerCharacters[2] = new PlayerButterfly(100, box);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 }
@@ -65,9 +63,10 @@ void Player::setPos(glm::vec3 playerPos)
 }
 
 //Update funtion
-void Player::update(float dt, sf::Window &window)
+void Player::update(float dt, sf::Window &window, std::vector<Model*> &allModels)
 {
-	if (playerPos.y > 0.0f && isOnGround)
+	groundPos = 0.0f;
+	if (playerPos.y > groundPos && isOnGround)
 	{
 		isOnGround = false;
 	}
@@ -75,20 +74,19 @@ void Player::update(float dt, sf::Window &window)
 	//Move
 	if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
 	{
-		playerPos.x -= movementSpeed*dt;
+		velocityX = -movementSpeed*dt;
 	}
 	else if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) > 20)
 	{
-		playerPos.x += movementSpeed*dt;
+		velocityX = movementSpeed*dt;
 	}
-
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		playerPos.x -= movementSpeed*dt;
+		velocityX = -movementSpeed*dt;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		playerPos.x += movementSpeed*dt;
+		velocityX = movementSpeed*dt;
 	}
 	//If in air
 	if (!isOnGround)
@@ -103,16 +101,30 @@ void Player::update(float dt, sf::Window &window)
 	}
 
 	//Apply velocity
+	playerPos.x += velocityX;
+	velocityX = 0;
 	playerPos.y += velocityY*dt;
+	
+	fixCollision(allModels);
+	
+	/*
+	while (fixCollision(allModels) && amountOfTries < 5)
+	{
+		amountOfTries++;
+	}
+	*/
 
 	//Handle collision detection with ground
-	if (playerPos.y <= 0 && !isOnGround)
+	if (playerPos.y <= groundPos && !isOnGround)
 	{
 		float testTime = deltaClock.restart().asSeconds();
 		std::cout << testTime << std::endl;
 		jumps = 0;
-		playerPos.y = 0;
-		velocityY = 0;
+		if (velocityY < 0)
+		{
+			playerPos.y = groundPos;
+			velocityY = 0;
+		}
 		isOnGround = true;
 	}
 	setPos(playerPos);
@@ -122,4 +134,102 @@ void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	playerCharacters[0]->draw(shader);
+}
+void Player::fixCollision(std::vector<Model*> &allModels)
+{
+	for (int i = 0; i < 2; i++)
+	{
+		glm::vec2 mtv(1000, 1000);
+		int index = -1;
+		float minDistance = 1000;
+		for (int i = 0; i < allModels.size(); i++)
+		{
+			float distance = glm::length(glm::vec2(playerPos) - glm::vec2(allModels[i]->getModelMatrix()[3]));
+			if (distance < minDistance)
+			{
+				minDistance = distance;
+				index = i;
+			}
+		}
+		if (index != -1)
+		{
+			if (checkCollision(allModels[index], mtv))
+			{
+				playerPos.x -= mtv.x;
+				playerPos.y -= mtv.y;
+				if (mtv.y < 0)
+				{
+					groundPos = playerPos.y;
+				}
+				else if (mtv.y > 0)
+				{
+					velocityY = 0;
+				}
+			}
+		}
+	}
+}
+bool Player::checkCollision(Model* object, glm::vec2 &mtv)
+{
+	std::vector<glm::vec2> playerPoints = player->getModel().getPoints();
+	std::vector<glm::vec2> objectPoints = object->getPoints();
+
+	for (int i = 0; i < playerPoints.size(); i++)
+	{
+		playerPoints[i] += glm::vec2(playerPos);
+		objectPoints[i] += glm::vec2(object->getModelMatrix()[3]);
+	}
+
+	std::vector<glm::vec2> axis = getAxis(playerPoints, objectPoints);
+
+	std::vector<float> s1;
+	std::vector<float> s2;
+
+	for (size_t i = 0; i < axis.size(); i++)
+	{
+		s1.clear();
+		s2.clear();
+		for (size_t j = 0; j < playerPoints.size(); j++)
+		{
+			for (size_t k = 0; k < j; k++)
+			{
+				s1.push_back(glm::dot(playerPoints[k], axis[i]));
+				s2.push_back(glm::dot(objectPoints[k], axis[i]));
+			}
+		}
+
+		float s1min = s1[0];
+		float s1max = s1[0];
+		float s2min = s2[0];
+		float s2max = s2[0];
+		for (size_t x = 1; x < s1.size(); x++)
+		{
+			if (s1min > s1[x]) s1min = s1[x];
+			if (s1max < s1[x]) s1max = s1[x];
+			if (s2min > s2[x]) s2min = s2[x];
+			if (s2max < s2[x]) s2max = s2[x];
+		}
+		if (s2min > s1max || s2max < s1min) 
+			return false;
+
+		float overlap;
+		if (s1min < s2min)
+			overlap = s1max - s2min;
+		else 
+			overlap = -(s2max - s1min);
+
+		if (abs(overlap) < length(mtv))
+			mtv = axis[i] * overlap;
+	}
+
+	return true;
+}
+std::vector<glm::vec2> Player::getAxis(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2)
+{
+	std::vector<glm::vec2> axis;
+	axis.push_back(glm::normalize(points1[1] - points1[0]));
+	axis.push_back(glm::normalize(points1[3] - points1[0]));
+	axis.push_back(glm::normalize(points2[1] - points2[0]));
+	axis.push_back(glm::normalize(points2[3] - points2[0]));
+	return axis;
 }

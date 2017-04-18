@@ -35,3 +35,8 @@ void PlayerChar::draw(Shader shader)
 {
 	playerModel.draw(shader);
 }
+
+Model& PlayerChar::getModel()
+{
+	return this->playerModel;
+}

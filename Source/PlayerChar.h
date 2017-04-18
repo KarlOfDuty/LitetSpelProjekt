@@ -18,5 +18,6 @@ public:
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;
 	virtual float getJumpHeight() = 0;
+	Model& getModel();
 };
 #endif

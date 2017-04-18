@@ -170,7 +170,7 @@ void render()
 void update(sf::Window &window)
 {	
 	dt = deltaClock.restart().asSeconds();
-	player->update(dt, window);
+	player->update(dt, window, modelsToBeDrawn);
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
