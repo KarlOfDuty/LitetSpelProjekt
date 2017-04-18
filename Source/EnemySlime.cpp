@@ -1,8 +1,8 @@
 #include "EnemySlime.h"
 
-EnemySlime::EnemySlime(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemySlime::EnemySlime(int HP, Model model, int damage, glm::vec3 enemyPos, glm::vec3 checkPoint) :EnemyChar(HP, model, damage, enemyPos, checkPoint)
 {
-
+	
 }
 
 EnemySlime::~EnemySlime()
@@ -18,18 +18,38 @@ void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
 void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
 {
 	groundCheck();
+	std::cout << fabs(enemyPos.x) << std::endl;
+	if (fabs(enemyPos.x) < )
+	{
+		checkPointReached = true;
+	}
+	else if (fabs(enemyPos.x) > 8.0f)
+	{
+		checkPointReached = false;
+	}
 
 	//Move
-	if ((enemyPos - playerPos).length() < 5)
+	if (glm::length(enemyPos - playerPos) < 5.0f)
 	{
-	}
-	if (enemyPos.x > playerPos.x)
-	{
-		enemyPos.x -= 1.0f*dt;
+		if (enemyPos.x > playerPos.x)
+		{
+			enemyPos.x -= 1.0f*dt;
+		}
+		else
+		{
+			enemyPos.x += 1.0f*dt;
+		}
 	}
 	else
 	{
-		enemyPos.x += 1.0f*dt;
+		if(checkPointReached == false)
+		{
+			enemyPos.x -= 1.0f*dt;
+		}
+		else if (checkPointReached == true)
+		{
+			enemyPos.x += 1.0f*dt;
+		}
 	}
 
 	if (isOnGround)

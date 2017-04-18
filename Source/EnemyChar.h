@@ -10,6 +10,7 @@ private:
 	Model enemyModel;
 	glm::vec3 enemyPos;
 	glm::mat4 enemyModelMatrix;
+	glm::vec3 checkPoint;
 	//Animation animation;
 public:
 	//Variables
