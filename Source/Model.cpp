@@ -575,7 +575,8 @@ Model::Model(Model *otherModel)
 	this->modelMatrix = otherModel->modelMatrix;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->meshes = otherModel->meshes;
-	setupModel();
+	this->VAO = otherModel->VAO;
+	this->VBO = otherModel->VBO;
 }
 Model::Model(Model &otherModel, glm::mat4 modelMat)
 {
@@ -589,7 +590,8 @@ Model::Model(Model *otherModel, glm::mat4 modelMat)
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->meshes = otherModel->meshes;
-	setupModel();
+	this->VAO = otherModel->VAO;
+	this->VBO = otherModel->VBO;
 }
 //Destructor
 Model::~Model()
