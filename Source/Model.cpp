@@ -584,7 +584,7 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 	this->meshes = otherModel.meshes;
 	setupModel();
 }
-Model::Model(Model * otherModel, glm::mat4 modelMat)
+Model::Model(Model *otherModel, glm::mat4 modelMat)
 {
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = otherModel->rotationMatrix;
@@ -594,20 +594,14 @@ Model::Model(Model * otherModel, glm::mat4 modelMat)
 //Destructor
 Model::~Model()
 {
-
+	meshes.clear();
 }
 //As models share pointers this can not be done in the destructor
 void Model::deleteMeshes()
 {
-	std::cout << meshes.size() << std::endl;
 	for (int i = 0; i < meshes.size(); i++)
 	{
 		delete meshes[i];
 	}
 	meshes.clear();
-}
-
-Mesh::~Mesh()
-{
-	vertices.clear();
 }

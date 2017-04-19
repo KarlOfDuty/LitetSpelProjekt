@@ -13,7 +13,7 @@ private:
 		"models/cube/cube.obj"
 		,"models/sphere/sphere.obj"
 		,"models/cube/cubeGreen.obj"
-		//, "models/Characters/Bird/BirdTest1.obj"
+		,"models/Characters/Bird/BirdTest1.obj"
 	};
 public:
 	void loadModels();
