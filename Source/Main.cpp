@@ -14,7 +14,6 @@
 #include "EventHandler.h"
 #include "LevelManager.h"
 #include "Light.h"
-
 #pragma comment(lib, "opengl32.lib")
 
 LevelManager levelManager;
@@ -105,9 +104,10 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		update(window);
-		render();
 		unloadLevel();
-		//reloadLevel();
+		reloadLevel();
+		render();
+
 		//End the current frame (internally swaps the front and back buffers)
 		window.display();
 	}
@@ -161,10 +161,8 @@ void render()
 		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].position").c_str()), 1, &lights[i]->pos[0]);
 		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].color").c_str()), 1, &lights[i]->colour[0]);
 		// Linear and quadratic for calculation of the lights radius
-		const GLfloat linear = 0.7f;
-		const GLfloat quadratic = 1.8f;
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].linear").c_str()), linear);
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].quadratic").c_str()), quadratic);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].linear").c_str()), lights[i]->linear);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].quadratic").c_str()), lights[i]->quadratic);
 	}
 	glUniform3fv(glGetUniformLocation(deferredLightingPass.program, "viewPos"), 1, &playerCamera.getCameraPos()[0]);
 	
@@ -290,51 +288,54 @@ void loadLevel()
 	levelManager.currentLevel->loadModels();
 	levelManager.currentLevel->setupModels();
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
-	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
+	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 
 	//Some lights with random values
-	std::srand(13);
+	std::srand(time(0));
 	for (int i = 0; i < NR_LIGHTS; i++)
 	{
 		lights.push_back(new Light(
-			2.0f,2.0f,4.0f,
-			0.6f,0.9f,0.9f));
+			rand()%50-25,2.0f,4.0f,
+			0.6f,0.9f,0.9f,
+			0.0001f,0.02f));
 	}
 }
 void unloadLevel()
 {
-	if (timer.getElapsedTime().asSeconds() > 3)
-	{
+	//if (timer.getElapsedTime().asSeconds() > 3)
+	//{
 		levelManager.currentLevel->unloadModels();
 		std::cout << "Done" << std::endl;
 		modelsToBeDrawn.clear();
-		playerCamera.destroyQuadTree();
-		for (int i = 0; i < lights.size(); i++)
-		{
-			delete lights[i];
-		}
-		lights.clear();
-		unloaded = true;
-	}
+		//playerCamera.destroyQuadTree();
+		//for (int i = 0; i < lights.size(); i++)
+		//{
+		//	delete lights[i];
+		//}
+		//lights.clear();
+		//unloaded = true;
+	//}
 }
 void reloadLevel()
 {
-	if (timer.getElapsedTime().asSeconds() > 6)
-	{
+	//if (timer.getElapsedTime().asSeconds() > 6)
+	//{
 		levelManager.currentLevel->loadModels();
-		//levelManager.currentLevel->setupModels();
-		//modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
-		std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
+		levelManager.currentLevel->setupModels();
+		modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
+		//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
 		//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 
 		//Some lights with random values
-		std::srand(13);
-		for (int i = 0; i < NR_LIGHTS; i++)
-		{
-			lights.push_back(new Light(
-				2.0f, 2.0f, 4.0f,
-				0.6f, 0.9f, 0.9f));
-		}
-		reloaded = true;
-	}
+		//std::srand(time(0));
+		//for (int i = 0; i < NR_LIGHTS; i++)
+		//{
+		//	lights.push_back(new Light(
+		//		rand() % 50 - 25, 2.0f, 4.0f,
+		//		0.6f, 0.9f, 0.9f,
+		//		0.0001f, 0.02f));
+		//}
+		//reloaded = true;
+	//}
 }
