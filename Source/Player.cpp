@@ -1,5 +1,5 @@
 #include "Player.h"
-
+#include <glm\gtx\matrix_decompose.hpp>
 const double PI = 3.14159265358979323846;
 
 void Player::freeMemory()
@@ -112,7 +112,6 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 			this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			angle += 12;
 		}
-		
 	}
 
 	if (goingRight == true)
@@ -170,23 +169,60 @@ void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
+
+	for (int i = 0; i < debugCubes.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &debugCubes[i]->getModelMatrix()[0][0]);
+		debugCubes[i]->draw(shader);
+	}
 }
 void Player::fixCollision(std::vector<Model*> &allModels)
 {
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		glm::vec2 mtv(1000, 1000);
 		int index = -1;
 		float minDistance = 1000;
+		/*
+		for (int j = 0; j < allModels.size(); j++)
+		{
+			std::vector<glm::vec2> playerPoints;
+			playerPoints.push_back(glm::vec2(-0.5f, -0.0f));
+			playerPoints.push_back(glm::vec2(0.5f, -0.0f));
+			playerPoints.push_back(glm::vec2(0.5f, 1.0f));
+			playerPoints.push_back(glm::vec2(-0.5f, 1.0f));
+			std::vector<glm::vec2> objectPoints = allModels[j]->getPoints(allModels[j]->getModelMatrix()[1][1]);
+			for (int h = 0; h < playerPoints.size(); h++)
+			{
+				playerPoints[h] += glm::vec2(playerPos);
+				objectPoints[h] += glm::vec2(allModels[j]->getModelMatrix()[3]);
+			}
+			for (int k = 0; k < playerPoints.size(); k++)
+			{
+				for (int o = 0; o < objectPoints.size(); o++)
+				{
+					float distance = glm::length(playerPoints[k] - objectPoints[o]);
+					if (distance < minDistance)
+					{
+						minDistance = distance;
+						index = j;
+					}
+				}
+			}
+		}
+		*/
+		
+		glm::vec2 player2dPos = glm::vec2(playerPos.x,playerPos.y+0.5f);
 		for (int i = 0; i < allModels.size(); i++)
 		{
-			float distance = glm::length(glm::vec2(playerPos) - glm::vec2(allModels[i]->getModelMatrix()[3]));
+			float distance = glm::length(player2dPos - glm::vec2(allModels[i]->getModelMatrix()[3]));
 			if (distance < minDistance)
 			{
 				minDistance = distance;
 				index = i;
 			}
 		}
+		
 		if (index != -1)
 		{
 			if (checkCollision(allModels[index], mtv))
@@ -207,13 +243,40 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 }
 bool Player::checkCollision(Model* object, glm::vec2 &mtv)
 {
-	std::vector<glm::vec2> playerPoints = player->getModel().getPoints(this->modelMatrix[1][1]);
-	std::vector<glm::vec2> objectPoints = object->getPoints(object->getModelMatrix()[1][1]);
+	//std::vector<glm::vec2> playerPoints = player->getModel().getPoints(this->modelMatrix[1][1]);
+	std::vector<glm::vec2> playerPoints;
+	playerPoints.push_back(glm::vec2(-0.5f,-0.0f));
+	playerPoints.push_back(glm::vec2(0.5f, -0.0f));
+	playerPoints.push_back(glm::vec2(0.5f, 1.0f));
+	playerPoints.push_back(glm::vec2(-0.5f, 1.0f));
+	float scaleValue = sqrt(object->getModelMatrix()[0][0] * object->getModelMatrix()[0][0] + object->getModelMatrix()[1][0] * object->getModelMatrix()[1][0] + object->getModelMatrix()[2][0] * object->getModelMatrix()[2][0]);
+	std::vector<glm::vec2> objectPoints = object->getPoints(scaleValue);
 
+	glm::mat4 modelMat = object->getModelMatrix();
+	glm::quat rotation;
+	glm::decompose(modelMat, glm::vec3(), rotation, glm::vec3(), glm::vec3(), glm::vec4());
+
+	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
+	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
+	float radians = std::atan2(t3, t4);
+	std::cout << std::atan2(t3,t4) << std::endl;
+	debugCubes.clear();
 	for (int i = 0; i < playerPoints.size(); i++)
 	{
 		playerPoints[i] += glm::vec2(playerPos);
-		objectPoints[i] += glm::vec2(object->getModelMatrix()[3]);
+		
+		//std::cout << i << " : " << objectPoints[i].x << ", " << objectPoints[i].y << std::endl;
+		glm::vec2 center = object->getModelMatrix()[3];
+		objectPoints[i] += center;
+		objectPoints[i].x = center.x + (objectPoints[i].x - center.x) * cos(radians) - (objectPoints[i].y - center.y) * sin(radians);
+		objectPoints[i].y = center.y + (objectPoints[i].x - center.x) * sin(radians) + (objectPoints[i].y - center.y) * cos(radians);
+		glm::mat4 modelMat({
+			0.5, 0.0, 0.0, 0.0,
+			0.0, 0.5, 0.0, 0.0,
+			0.0, 0.0, 0.5, 0.0,
+			objectPoints[i].x, objectPoints[i].y, 3.5, 1.0
+		});
+		debugCubes.push_back(new Model(playerCharacters[2]->getModel(), modelMat));
 	}
 
 	std::vector<glm::vec2> axis = getAxis(playerPoints, objectPoints);

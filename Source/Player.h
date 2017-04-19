@@ -31,6 +31,7 @@ private:
 	float movementSpeed;
 	float groundPos;
 	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3 };
+	std::vector<Model*> debugCubes;
 public:
 	Player();
 	~Player();

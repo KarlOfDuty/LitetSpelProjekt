@@ -191,7 +191,8 @@ void update(sf::Window &window)
 	}
 	else
 	{
-		viewMatrix = playerCamera.update(player->getPlayerPos());
+		//viewMatrix = playerCamera.update(player->getPlayerPos());
+		viewMatrix = freeCamera.Update(dt,window);
 	}
 	if (player->playerDead() != true)
 	{

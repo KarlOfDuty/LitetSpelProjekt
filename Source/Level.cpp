@@ -18,71 +18,82 @@ void Level::setupModels()
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		2.0, 0.0, 0.0, 1.0
+		2.0, 0.5, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		3.0, 0.0, 0.0, 1.0
+		3.0, 0.5, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		4.0, 0.0, 0.0, 1.0
+		4.0, 0.5, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		5.0, 0.0, 0.0, 1.0
+		5.0, 0.5, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		5.0, 1.0, 0.0, 1.0
+		5.0, 1.5, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		5.0, 2.0, 0.0, 1.0
+		5.0, 2.5, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		0.0, -1.0, 0.0, 1.0
+		0.0, -0.5, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		-1.0, -1.0, 0.0, 1.0
+		-1.0, -0.5, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		-2.0, -1.0, 0.0, 1.0
+		-2.0, -0.5, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		1.0, 3.0, 0.0, 1.0
+		1.0, 3.5, 0.0, 1.0
 	}));
+
+	Model* slope = new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		-8.0, 0.5, 0.0, 1.0
+	});
+	slope->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+	slope->rotate();
+	staticModels.push_back(slope);
 	std::srand(time(0));
 	//Loads 1000 spheres randomly
 	for (int i = 0; i < 0; i++)
