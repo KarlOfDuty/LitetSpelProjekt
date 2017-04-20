@@ -64,6 +64,29 @@ void Enemy::createToad(glm::vec3 enemyStartPos)
 	this->nrOfEnemies++;
 }
 
+void Enemy::sortEnemies(glm::vec3 playerPos)
+{
+	//Bubble sort
+	glm::vec3 enemyPos1;
+	glm::vec3 enemyPos2;
+	bool sorted = false;
+	while (!sorted)
+	{
+		sorted = true;
+		for (int i = 0; i < this->nrOfEnemies - 1; i++)
+		{
+			enemyPos1 = this->enemyCharacters[i]->getEnemyPos();
+			enemyPos2 = this->enemyCharacters[i + 1]->getEnemyPos();
+			//Compare distance to enemy1 and distance to enemy2 and swap if out of order
+			if (glm::distance(enemyPos1, playerPos) > glm::distance(enemyPos2, playerPos))
+			{
+				std::swap(enemyCharacters[i], enemyCharacters[i + 1]);
+				sorted = false;
+			}
+		}
+	}
+}
+
 glm::vec3 Enemy::getEnemyPos() const
 {
 	return enemyCharacters[0]->getEnemyPos();
@@ -76,11 +99,18 @@ int Enemy::getDamage() const
 
 void Enemy::update(float dt, glm::vec3 playerPos)
 {
-		enemyCharacters[0]->update(dt, playerPos);
+	sortEnemies(playerPos);
+	for (int i = 0; i < nrOfEnemies; i++)
+	{
+		enemyCharacters[i]->update(dt, playerPos);
+	}
 }
 
 void Enemy::draw(Shader shader)
 {
-	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &enemyCharacters[0]->getModelMatrix()[0][0]);
-	enemyCharacters[0]->draw(shader);
+	for (int i = 0; i < nrOfEnemies; i++)
+	{
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &enemyCharacters[i]->getModelMatrix()[0][0]);
+	enemyCharacters[i]->draw(shader);
+	}
 }

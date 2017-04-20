@@ -44,11 +44,11 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, g
 	{
 		if(checkPointReached == false)
 		{
-			enemyPos.x -= 1.0f*dt;
+			velocityX -= 1.0f*dt;
 		}
 		else if (checkPointReached == true)
 		{
-			enemyPos.x += 1.0f*dt;
+			velocityX += 1.0f*dt;
 		}
 	}
 
@@ -62,15 +62,17 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, g
 
 	if (!isOnGround)
 	{
-		velocityY -= 0.5*dt;
+		velocityY -= 0.7*dt;
 	}
 
-	if (velocityY > 5)
+	if (velocityY < -10)
 	{
-		velocityY = 5;
+		velocityY = -10;
 	}
 
 	//Apply velocity
+	enemyPos.x += velocityX;
+	velocityX = 0;
 	enemyPos.y += velocityY;
 
 	//Handle collision detection with ground

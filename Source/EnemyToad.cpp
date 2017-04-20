@@ -33,44 +33,73 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 	{
 		if (enemyPos.x > playerPos.x)
 		{
-			enemyPos.x -= 1.0f*dt;
+			if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
+			{
+				if (isOnGround)
+				{
+					velocityY = 17 * dt;
+				}
+				jumpTimer.restart();
+			}
 		}
 		else
 		{
-			enemyPos.x += 1.0f*dt;
-		}
-	}
-	else
-	{
-		if (checkPointReached == false)
-		{
-			enemyPos.x -= 1.0f*dt;
-		}
-		else if (checkPointReached == true)
-		{
-			enemyPos.x += 1.0f*dt;
+			if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
+			{
+				if (isOnGround)
+				{
+					velocityY = 17 * dt;
+				}
+				jumpTimer.restart();
+			}
 		}
 	}
 
 	if (isOnGround)
 	{
-		if (fabs(enemyPos.x - playerPos.x) < 0.1)
-		{
-			velocityY = 10 * dt;
-		}
+		movingRight = false;
+		movingLeft = false;
 	}
 
 	if (!isOnGround)
 	{
-		velocityY -= 0.5*dt;
+		if (movingLeft == false)
+		{
+			if (enemyPos.x >= playerPos.x)
+			{
+				movingRight = true;
+			}
+		}
+		if (movingRight == false)
+		{
+			if (enemyPos.x <= playerPos.x)
+			{
+				movingLeft = true;
+			}
+		}
+		if (movingRight == true)
+		{
+			velocityX -= 3.0f*dt;
+		}
+		else if (movingLeft = true)
+		{
+			velocityX += 3.0f*dt;
+		}
+		velocityY -= 0.7*dt;
 	}
 
-	if (velocityY > 5)
+	if (velocityY < -10)
 	{
-		velocityY = 5;
+		velocityY = -10;
+	}
+	if (velocityX > 12)
+	{
+		velocityX = 12;
 	}
 
 	//Apply velocity
+	enemyPos.x += velocityX;
+	velocityX = 0;
 	enemyPos.y += velocityY;
 
 	//Handle collision detection with ground

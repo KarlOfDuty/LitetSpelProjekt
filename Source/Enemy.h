@@ -26,6 +26,7 @@ public:
 	~Enemy();
 	void createSlime(glm::vec3 enemyStartPos);
 	void createToad(glm::vec3 enemyStartPos);
+	void sortEnemies(glm::vec3 playerPos);
 	glm::vec3 getEnemyPos()const;
 	int getDamage()const;
 	void update(float dt, glm::vec3 playerPos);

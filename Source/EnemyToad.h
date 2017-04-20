@@ -4,6 +4,9 @@ class EnemyToad : public EnemyChar
 {
 private:
 	bool checkPointReached;
+	sf::Clock jumpTimer;
+	bool movingLeft;
+	bool movingRight;
 public:
 	EnemyToad(int HP, Model enemyModel, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyToad();

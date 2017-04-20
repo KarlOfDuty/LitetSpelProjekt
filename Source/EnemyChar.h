@@ -1,6 +1,7 @@
 #ifndef ENEMYCHAR_H
 #define ENEMYCHAR_H
 #include "Model.h"
+#include <SFML\Window.hpp>
 
 class EnemyChar
 {

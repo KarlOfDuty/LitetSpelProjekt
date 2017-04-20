@@ -94,6 +94,7 @@ int main()
 	player = new Player();
 	enemy = new Enemy();
 	enemy->createSlime(glm::vec3(10.0f, 0.0f, 0.0f));
+	enemy->createToad(glm::vec3(-10.0f, 0.0f, 0.0f));
 	// run the main loop
 	eventHandler = EventHandler();
 
