@@ -19,6 +19,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, g
 {
 	groundCheck();
 
+	//Patrol check 
 	if (fabs(enemyPos.x) < checkPoint.x-2)
 	{
 		checkPointReached = true;
@@ -29,19 +30,21 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, g
 	}
 
 	//Move
-	if (glm::length(enemyPos - playerPos) < 5.0f)
+	if (glm::length(enemyPos - playerPos) < 5.0f || playerSeen)
 	{
 		if (enemyPos.x > playerPos.x)
 		{
-			enemyPos.x -= 1.0f*dt;
+			velocityX -= 1.0f*dt;
 		}
 		else
 		{
-			enemyPos.x += 1.0f*dt;
+			velocityX += 1.0f*dt;
 		}
+		playerSeen = true;
 	}
 	else
 	{
+		//Patrol
 		if(checkPointReached == false)
 		{
 			velocityX -= 1.0f*dt;

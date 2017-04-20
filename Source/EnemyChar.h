@@ -18,6 +18,7 @@ public:
 	float velocityX;
 	float velocityY;
 	bool isOnGround;
+	bool playerSeen;
 
 	//Functions
 	EnemyChar();

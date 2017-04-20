@@ -2,6 +2,7 @@
 #define ENEMY_H
 #include "EnemySlime.h"
 #include "EnemyToad.h"
+#include "EnemyBat.h"
 #include "Player.h"
 #include "Shader.h"
 #include <SFML\Window.hpp>
@@ -21,11 +22,13 @@ private:
 	glm::vec3 enemyPos;
 	Model slimeModel;
 	Model toadModel;
+	Model batModel;
 public:
 	Enemy();
 	~Enemy();
 	void createSlime(glm::vec3 enemyStartPos);
 	void createToad(glm::vec3 enemyStartPos);
+	void createGiantBat(glm::vec3 enemyStartPos);
 	void sortEnemies(glm::vec3 playerPos);
 	glm::vec3 getEnemyPos()const;
 	int getDamage()const;

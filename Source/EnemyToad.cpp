@@ -19,6 +19,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 {
 	groundCheck();
 
+	//Patrol check - no need to be in toad
 	if (fabs(enemyPos.x) < checkPoint.x - 2)
 	{
 		checkPointReached = true;
@@ -28,8 +29,8 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 		checkPointReached = false;
 	}
 
-	//Move
-	if (glm::length(enemyPos - playerPos) < 5.0f)
+	//Jump
+	if (glm::length(enemyPos - playerPos) < 5.0f || playerSeen)
 	{
 		if (enemyPos.x > playerPos.x)
 		{
@@ -53,6 +54,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 				jumpTimer.restart();
 			}
 		}
+		playerSeen = true;
 	}
 
 	if (isOnGround)
@@ -61,6 +63,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 		movingLeft = false;
 	}
 
+	//Move in air only
 	if (!isOnGround)
 	{
 		if (movingLeft == false)
@@ -92,9 +95,13 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 	{
 		velocityY = -10;
 	}
-	if (velocityX > 12)
+	if (velocityX > 3)
 	{
-		velocityX = 12;
+		velocityX = 3;
+	}
+	if (velocityX < -3)
+	{
+		velocityX = -3;
 	}
 
 	//Apply velocity

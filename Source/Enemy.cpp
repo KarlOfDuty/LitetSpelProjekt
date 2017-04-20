@@ -37,6 +37,7 @@ Enemy::Enemy()
 	this->initiate();
 	slimeModel = Model("models/cube/cube.obj");
 	toadModel = Model("models/sphere/sphere.obj");
+	batModel = Model("models/sphere/sphere.obj");
 }
 
 Enemy::~Enemy()
@@ -50,7 +51,7 @@ void Enemy::createSlime(glm::vec3 enemyStartPos)
 	{
 		this->expand();
 	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemySlime(6, slimeModel, 1, enemyStartPos);
+	this->enemyCharacters[this->nrOfEnemies] = new EnemySlime(3, slimeModel, 1, enemyStartPos);
 	this->nrOfEnemies++;
 }
 
@@ -60,7 +61,17 @@ void Enemy::createToad(glm::vec3 enemyStartPos)
 	{
 		this->expand();
 	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyToad(8, toadModel, 2, enemyStartPos);
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyToad(5, toadModel, 2, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::createGiantBat(glm::vec3 enemyStartPos)
+{
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(5, batModel, 2, enemyStartPos);
 	this->nrOfEnemies++;
 }
 

@@ -15,6 +15,7 @@ EnemyChar::EnemyChar(int HP, Model model, int damage, glm::vec3 enemyStartPos)
 	this->enemyPos = enemyStartPos;
 	setEnemyPos(enemyPos);
 	isOnGround = true;
+	playerSeen = false;
 	this->checkPoint.x = enemyStartPos.x;
 }
 
