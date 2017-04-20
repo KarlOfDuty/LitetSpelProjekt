@@ -258,25 +258,32 @@ bool Player::checkCollision(Model* object, glm::vec2 &mtv)
 
 	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
 	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
-	float radians = std::atan2(t3, t4);
-	std::cout << std::atan2(t3,t4) << std::endl;
-	debugCubes.clear();
+	float radians = -std::atan2(t3, t4);
+	//std::cout << std::atan2(t3,t4) << std::endl;
+	//debugCubes.clear();
 	for (int i = 0; i < playerPoints.size(); i++)
 	{
 		playerPoints[i] += glm::vec2(playerPos);
 		
-		//std::cout << i << " : " << objectPoints[i].x << ", " << objectPoints[i].y << std::endl;
 		glm::vec2 center = object->getModelMatrix()[3];
 		objectPoints[i] += center;
-		objectPoints[i].x = center.x + (objectPoints[i].x - center.x) * cos(radians) - (objectPoints[i].y - center.y) * sin(radians);
-		objectPoints[i].y = center.y + (objectPoints[i].x - center.x) * sin(radians) + (objectPoints[i].y - center.y) * cos(radians);
+		float x = center.x + (objectPoints[i].x - center.x) * cos(radians) - (objectPoints[i].y - center.y) * sin(radians);
+		float y = center.y + (objectPoints[i].x - center.x) * sin(radians) + (objectPoints[i].y - center.y) * cos(radians);
+		
+		objectPoints[i].x = x;
+		objectPoints[i].y = y;
+		
 		glm::mat4 modelMat({
-			0.5, 0.0, 0.0, 0.0,
-			0.0, 0.5, 0.0, 0.0,
-			0.0, 0.0, 0.5, 0.0,
-			objectPoints[i].x, objectPoints[i].y, 3.5, 1.0
+			0.2, 0.0, 0.0, 0.0,
+			0.0, 0.2, 0.0, 0.0,
+			0.0, 0.0, 0.2, 0.0,
+			objectPoints[i].x, objectPoints[i].y, 2.5, 1.0
 		});
-		debugCubes.push_back(new Model(playerCharacters[2]->getModel(), modelMat));
+
+		if (debugCubes.size() < i+1)
+			debugCubes.push_back(new Model(playerCharacters[1]->getModel(), modelMat));
+		else
+			debugCubes[i]->setModelMatrix(modelMat);
 	}
 
 	std::vector<glm::vec2> axis = getAxis(playerPoints, objectPoints);
@@ -318,7 +325,9 @@ bool Player::checkCollision(Model* object, glm::vec2 &mtv)
 			overlap = -(s2max - s1min);
 
 		if (abs(overlap) < length(mtv))
+		{
 			mtv = axis[i] * overlap;
+		}
 	}
 
 	return true;
