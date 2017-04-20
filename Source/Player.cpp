@@ -176,8 +176,10 @@ void Player::draw(Shader shader)
 		debugCubes[i]->draw(shader);
 	}
 }
+
 void Player::fixCollision(std::vector<Model*> &allModels)
 {
+	//GÖR FINAR GÖR WHILE
 	for (int i = 0; i < 3; i++)
 	{
 		glm::vec2 mtv(1000, 1000);
@@ -225,6 +227,67 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 		
 		if (index != -1)
 		{
+			std::vector<glm::vec2> playerPoints;
+			playerPoints.push_back(glm::vec2(-0.5f, -0.0f));
+			playerPoints.push_back(glm::vec2(0.5f, -0.0f));
+			playerPoints.push_back(glm::vec2(0.5f, 1.0f));
+			playerPoints.push_back(glm::vec2(-0.5f, 1.0f));
+			for (int k = 0; k < playerPoints.size(); k++)
+			{
+				playerPoints[k] += glm::vec2(playerPos);
+			}
+
+			glm::mat4 modelMat = allModels[index]->getModelMatrix();
+			glm::vec3 scale;
+			glm::quat rotation;
+			glm::decompose(modelMat, scale, rotation, glm::vec3(), glm::vec3(), glm::vec4());
+
+			double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
+			double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
+			float radians = -std::atan2(t3, t4);
+			float scaleValue = sqrt(allModels[index]->getModelMatrix()[0][0] * allModels[index]->getModelMatrix()[0][0] + allModels[index]->getModelMatrix()[1][0] * allModels[index]->getModelMatrix()[1][0] + allModels[index]->getModelMatrix()[2][0] * allModels[index]->getModelMatrix()[2][0]);
+			std::vector<glm::vec2> objectPoints = allModels[index]->getPoints(scaleValue);
+
+			for (int k = 0; k < objectPoints.size(); k++)
+			{
+				glm::vec2 center = allModels[index]->getModelMatrix()[3];
+				objectPoints[k] += center;
+				float x = center.x + (objectPoints[k].x - center.x) * cos(radians) - (objectPoints[k].y - center.y) * sin(radians);
+				float y = center.y + (objectPoints[k].x - center.x) * sin(radians) + (objectPoints[k].y - center.y) * cos(radians);
+
+				objectPoints[k].x = x;
+				objectPoints[k].y = y;
+
+				glm::mat4 modelMat({
+					0.2, 0.0, 0.0, 0.0,
+					0.0, 0.2, 0.0, 0.0,
+					0.0, 0.0, 0.2, 0.0,
+					objectPoints[k].x, objectPoints[k].y, 2.5, 1.0
+				});
+
+				if (debugCubes.size() < k+1)
+					debugCubes.push_back(new Model(playerCharacters[1]->getModel(), modelMat));
+				else
+					debugCubes[k]->setModelMatrix(modelMat);
+			}
+			glm::vec2 mtv;
+			if (collision::fixCollision(playerPoints, objectPoints, mtv))
+			{
+				playerPos.x += mtv.x;
+				playerPos.y += mtv.y;
+				std::cout << mtv.x << ", " << mtv.y << std::endl;
+				if (mtv.y < 0)
+				{
+					velocityY = 0;
+				}
+				else if (mtv.y > 0)
+				{
+					groundPos = playerPos.y;
+				}
+			}
+
+
+			/*
 			if (checkCollision(allModels[index], mtv))
 			{
 				playerPos.x -= mtv.x;
@@ -238,106 +301,7 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 					velocityY = 0;
 				}
 			}
+			*/
 		}
 	}
-}
-bool Player::checkCollision(Model* object, glm::vec2 &mtv)
-{
-	//std::vector<glm::vec2> playerPoints = player->getModel().getPoints(this->modelMatrix[1][1]);
-	std::vector<glm::vec2> playerPoints;
-	playerPoints.push_back(glm::vec2(-0.5f,-0.0f));
-	playerPoints.push_back(glm::vec2(0.5f, -0.0f));
-	playerPoints.push_back(glm::vec2(0.5f, 1.0f));
-	playerPoints.push_back(glm::vec2(-0.5f, 1.0f));
-	float scaleValue = sqrt(object->getModelMatrix()[0][0] * object->getModelMatrix()[0][0] + object->getModelMatrix()[1][0] * object->getModelMatrix()[1][0] + object->getModelMatrix()[2][0] * object->getModelMatrix()[2][0]);
-	std::vector<glm::vec2> objectPoints = object->getPoints(scaleValue);
-
-	glm::mat4 modelMat = object->getModelMatrix();
-	glm::quat rotation;
-	glm::decompose(modelMat, glm::vec3(), rotation, glm::vec3(), glm::vec3(), glm::vec4());
-
-	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
-	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
-	float radians = -std::atan2(t3, t4);
-	//std::cout << std::atan2(t3,t4) << std::endl;
-	//debugCubes.clear();
-	for (int i = 0; i < playerPoints.size(); i++)
-	{
-		playerPoints[i] += glm::vec2(playerPos);
-		
-		glm::vec2 center = object->getModelMatrix()[3];
-		objectPoints[i] += center;
-		float x = center.x + (objectPoints[i].x - center.x) * cos(radians) - (objectPoints[i].y - center.y) * sin(radians);
-		float y = center.y + (objectPoints[i].x - center.x) * sin(radians) + (objectPoints[i].y - center.y) * cos(radians);
-		
-		objectPoints[i].x = x;
-		objectPoints[i].y = y;
-		
-		glm::mat4 modelMat({
-			0.2, 0.0, 0.0, 0.0,
-			0.0, 0.2, 0.0, 0.0,
-			0.0, 0.0, 0.2, 0.0,
-			objectPoints[i].x, objectPoints[i].y, 2.5, 1.0
-		});
-
-		if (debugCubes.size() < i+1)
-			debugCubes.push_back(new Model(playerCharacters[1]->getModel(), modelMat));
-		else
-			debugCubes[i]->setModelMatrix(modelMat);
-	}
-
-	std::vector<glm::vec2> axis = getAxis(playerPoints, objectPoints);
-
-	std::vector<float> s1;
-	std::vector<float> s2;
-
-	for (size_t i = 0; i < axis.size(); i++)
-	{
-		s1.clear();
-		s2.clear();
-		for (size_t j = 0; j < playerPoints.size(); j++)
-		{
-			for (size_t k = 0; k < j; k++)
-			{
-				s1.push_back(glm::dot(playerPoints[k], axis[i]));
-				s2.push_back(glm::dot(objectPoints[k], axis[i]));
-			}
-		}
-
-		float s1min = s1[0];
-		float s1max = s1[0];
-		float s2min = s2[0];
-		float s2max = s2[0];
-		for (size_t x = 1; x < s1.size(); x++)
-		{
-			if (s1min > s1[x]) s1min = s1[x];
-			if (s1max < s1[x]) s1max = s1[x];
-			if (s2min > s2[x]) s2min = s2[x];
-			if (s2max < s2[x]) s2max = s2[x];
-		}
-		if (s2min > s1max || s2max < s1min) 
-			return false;
-
-		float overlap;
-		if (s1min < s2min)
-			overlap = s1max - s2min;
-		else 
-			overlap = -(s2max - s1min);
-
-		if (abs(overlap) < length(mtv))
-		{
-			mtv = axis[i] * overlap;
-		}
-	}
-
-	return true;
-}
-std::vector<glm::vec2> Player::getAxis(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2)
-{
-	std::vector<glm::vec2> axis;
-	axis.push_back(glm::normalize(points1[1] - points1[0]));
-	axis.push_back(glm::normalize(points1[3] - points1[0]));
-	axis.push_back(glm::normalize(points2[1] - points2[0]));
-	axis.push_back(glm::normalize(points2[3] - points2[0]));
-	return axis;
 }
