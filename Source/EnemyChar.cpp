@@ -3,8 +3,8 @@
 
 EnemyChar::EnemyChar()
 {
-	this->HP = 50;
-	this->damage = 10;
+	this->HP = 10;
+	this->damage = 1;
 }
 
 EnemyChar::EnemyChar(int HP, Model model, int damage, glm::vec3 enemyStartPos)

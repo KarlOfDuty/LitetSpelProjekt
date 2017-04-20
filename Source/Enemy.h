@@ -1,6 +1,7 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 #include "EnemySlime.h"
+#include "EnemyToad.h"
 #include "Player.h"
 #include "Shader.h"
 #include <SFML\Window.hpp>
@@ -19,10 +20,12 @@ private:
 	void freeMemory();
 	glm::vec3 enemyPos;
 	Model slimeModel;
+	Model toadModel;
 public:
 	Enemy();
 	~Enemy();
-	void createSlime(glm::vec3 enemyPos);
+	void createSlime(glm::vec3 enemyStartPos);
+	void createToad(glm::vec3 enemyStartPos);
 	glm::vec3 getEnemyPos()const;
 	int getDamage()const;
 	void update(float dt, glm::vec3 playerPos);
