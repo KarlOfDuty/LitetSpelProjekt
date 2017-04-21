@@ -260,7 +260,7 @@ void Player::getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::ve
 	//Convert from quat to radians
 	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
 	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
-	radians = -std::atan2(t3, t4);
+	radians = (float)-std::atan2(t3, t4);
 
 	//Get object points
 	objectPoints = object->getPoints(scale);

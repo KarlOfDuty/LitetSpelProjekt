@@ -7,7 +7,7 @@ bool collision::fixCollision(std::vector<glm::vec2> points1, std::vector<glm::ve
 	std::vector<glm::vec2> axis1 = getAxis(points1);
 	std::vector<glm::vec2> axis2 = getAxis(points2);
 
-	for (size_t i = 0; i < axis1.size(); i++) {
+	for (int i = 0; i < axis1.size(); i++) {
 		glm::vec2 thisAxis = axis1[i];
 
 		float s1min, s1max;
@@ -33,7 +33,7 @@ bool collision::fixCollision(std::vector<glm::vec2> points1, std::vector<glm::ve
 			smallestAxis = thisAxis;
 		}
 	}
-	for (size_t i = 0; i < axis2.size(); i++) {
+	for (int i = 0; i < axis2.size(); i++) {
 		glm::vec2 thisAxis = axis2[i];
 
 		float s1min, s1max;
@@ -69,7 +69,7 @@ bool collision::fixCollision(std::vector<glm::vec2> points1, std::vector<glm::ve
 std::vector<glm::vec2> collision::getAxis(std::vector<glm::vec2> allPoints)
 {
 	std::vector<glm::vec2> axis;
-	for (size_t i = 0; i < allPoints.size(); i++) {
+	for (int i = 0; i < allPoints.size(); i++) {
 		glm::vec2 p1 = allPoints[i];
 		glm::vec2 p2;
 		if (i + 1 < allPoints.size())
@@ -89,7 +89,7 @@ void collision::projectOnAxis(std::vector<glm::vec2> allPoints, glm::vec2 thisAx
 {
 	min = dot(thisAxis, allPoints[0]);
 	max = min;
-	for (size_t i = 1; i < allPoints.size(); i++) {
+	for (int i = 1; i < allPoints.size(); i++) {
 		float p = dot(thisAxis, allPoints[i]);
 		if (p < min) min = p;
 		else if (p > max) max = p;

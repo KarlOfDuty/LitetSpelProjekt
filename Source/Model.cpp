@@ -381,7 +381,7 @@ void Model::draw(Shader shader)
 		glBindTexture(GL_TEXTURE_2D, meshes[i]->material.normalMapTexture);
 		glUniform1i(glGetUniformLocation(shader.program, "normalMap"), 3);
 		
-		glDrawArrays(GL_TRIANGLES, 0, this->meshes[i]->vertices.size()*3);
+		glDrawArrays(GL_TRIANGLES, 0, (int)this->meshes[i]->vertices.size()*3);
 	}
 	glBindVertexArray(0);
 }
