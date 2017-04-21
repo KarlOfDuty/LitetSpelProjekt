@@ -49,7 +49,6 @@ void Player::jump()
 {
 	if (player->getMaxJumps() > jumps)
 	{
-		std::cout << "JUMPED" << std::endl;
 		velocityY = player->getJumpHeight();
 		jumps++;
 	}
