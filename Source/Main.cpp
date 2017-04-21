@@ -69,8 +69,6 @@ GLuint quadVBO;
 
 std::vector<Model*> modelsToBeDrawn;
 std::vector<Light*> lights;
-bool unloaded = false;
-bool reloaded = false;
 //Functions
 void render();
 void update(sf::Window &window);
@@ -115,7 +113,6 @@ int main()
 	bool running = true;
 	while (running)
 	{
-		//TODO: Check triggers
 		running = eventHandler.handleEvents(window, player);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -379,39 +376,29 @@ void loadLevel()
 }
 void unloadLevel()
 {
-	//if (timer.getElapsedTime().asSeconds() > 3)
-	//{
-		levelManager.currentLevel->unloadModels();
-		//std::cout << "Done" << std::endl;
-		modelsToBeDrawn.clear();
-		//playerCamera.destroyQuadTree();
-		//for (int i = 0; i < lights.size(); i++)
-		//{
-		//	delete lights[i];
-		//}
-		//lights.clear();
-		//unloaded = true;
-	//}
+	levelManager.currentLevel->unloadModels();
+	modelsToBeDrawn.clear();
+	//playerCamera.destroyQuadTree();
+	for (int i = 0; i < lights.size(); i++)
+	{
+		delete lights[i];
+	}
+	lights.clear();
 }
 void reloadLevel()
 {
-	//if (timer.getElapsedTime().asSeconds() > 6)
-	//{
-		levelManager.currentLevel->loadModels();
-		levelManager.currentLevel->setupModels();
-		modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
-		//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
-		//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
-
-		//Some lights with random values
-		//std::srand(time(0));
-		//for (int i = 0; i < NR_LIGHTS; i++)
-		//{
-		//	lights.push_back(new Light(
-		//		rand() % 50 - 25, 2.0f, 4.0f,
-		//		0.6f, 0.9f, 0.9f,
-		//		0.0001f, 0.02f));
-		//}
-		//reloaded = true;
-	//}
+	levelManager.currentLevel->loadModels();
+	levelManager.currentLevel->setupModels();
+	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
+	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
+	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+	//Some lights with random values
+	std::srand(time(0));
+	for (int i = 0; i < NR_LIGHTS; i++)
+	{
+		lights.push_back(new Light(
+			rand() % 50 - 25, 2.0f, 4.0f,
+			0.6f, 0.9f, 0.9f,
+			0.0001f, 0.02f));
+	}
 }
