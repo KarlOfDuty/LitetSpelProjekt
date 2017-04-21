@@ -1,21 +1,21 @@
-#include "EnemyBat.h"
+#include "EnemyBoss.h"
 
-EnemyBat::EnemyBat(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemyBoss::EnemyBoss(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
 {
 	findPlayer = true;
 }
 
-EnemyBat::~EnemyBat()
+EnemyBoss::~EnemyBoss()
 {
 
 }
 
-void EnemyBat::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
+void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
 {
 
 }
 
-void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
+void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
 {
 	groundCheck();
 
@@ -129,4 +129,3 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm
 
 	setEnemyPos(enemyPos);
 }
-

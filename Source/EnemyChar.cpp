@@ -33,6 +33,7 @@ void EnemyChar::setEnemyPos(glm::vec3 position)
 		0.0, 0.0, 1.0, 0.0,
 		enemyPos.x, enemyPos.y, enemyPos.z, 1.0
 	);
+	this->enemyModelMatrix *= glm::scale(glm::vec3(0.075f, 0.075f, 0.075f));
 }
 
 glm::vec3 EnemyChar::getEnemyPos() const
@@ -58,9 +59,9 @@ void EnemyChar::groundCheck()
 	}
 }
 
-void EnemyChar::update(float dt, glm::vec3 playerPos)
+void EnemyChar::update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> smallBatsPos)
 {
-	updateThis(dt, playerPos, enemyPos, checkPoint);
+	updateThis(dt, playerPos, enemyPos, checkPoint, smallBatsPos);
 	attackPlayer(dt, playerPos, enemyPos);
 }
 

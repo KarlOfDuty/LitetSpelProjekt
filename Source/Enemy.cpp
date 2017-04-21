@@ -10,7 +10,7 @@ void Enemy::initiate(int from)
 
 void Enemy::expand()
 {
-	this->CAP += 5;
+	this->CAP += 10;
 	EnemyChar* *temp = new EnemyChar*[this->CAP];
 	for (int i = 0; i < this->nrOfEnemies; i++)
 	{
@@ -32,12 +32,15 @@ void Enemy::freeMemory()
 Enemy::Enemy()
 {
 	this->nrOfEnemies = 0;
-	this->CAP = 5;
+	this->CAP = 10;
 	this->enemyCharacters = new EnemyChar*[this->CAP];
 	this->initiate();
-	slimeModel = Model("models/Enemies/Slime.obj");
-	toadModel = Model("models/Enemies/Toad.obj");
-	batModel = Model("models/Enemies/BigBat.obj");
+	slimeModel = Model("models/Enemies/Slime/Slime.obj");
+	toadModel = Model("models/Enemies/Toad/Toad.obj");
+	batModel = Model("models/Enemies/Bat/BigBat.obj");
+	batSmallModel = Model("models/Enemies/BatSmall/SmallBat.obj");
+	bossModel = Model("models/cube/cube.obj");
+	skeletonModel = Model("models/sphere/sphere.obj");
 }
 
 Enemy::~Enemy()
@@ -72,6 +75,36 @@ void Enemy::createGiantBat(glm::vec3 enemyStartPos)
 		this->expand();
 	}
 	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(5, batModel, 2, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::createBatSwarm(glm::vec3 enemyStartPos)
+{
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyBatSmall(1, batSmallModel, 1, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::createSkeleton(glm::vec3 enemyStartPos)
+{
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(15, batModel, 2, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::createBoss(glm::vec3 enemyStartPos)
+{
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyBoss(100, bossModel, 2, enemyStartPos);
 	this->nrOfEnemies++;
 }
 
@@ -111,9 +144,19 @@ int Enemy::getDamage() const
 void Enemy::update(float dt, glm::vec3 playerPos)
 {
 	sortEnemies(playerPos);
+
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
-		enemyCharacters[i]->update(dt, playerPos);
+		EnemyBatSmall *smallBatPtr = dynamic_cast<EnemyBatSmall*>(enemyCharacters[i]);
+		if (smallBatPtr != nullptr)
+		{
+			smallBatsPos.push_back(enemyCharacters[i]);
+		}
+	}
+
+	for (int i = 0; i < nrOfEnemies; i++)
+	{
+		enemyCharacters[i]->update(dt, playerPos, smallBatsPos);
 	}
 }
 

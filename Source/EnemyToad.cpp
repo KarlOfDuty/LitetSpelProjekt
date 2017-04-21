@@ -15,7 +15,7 @@ void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
 
 }
 
-void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint)
+void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
 {
 	groundCheck();
 
@@ -29,36 +29,24 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 		checkPointReached = false;
 	}
 
-	//Jump
-	if (glm::length(enemyPos - playerPos) < 5.0f || playerSeen)
-	{
-		if (enemyPos.x > playerPos.x)
-		{
-			if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
-			{
-				if (isOnGround)
-				{
-					velocityY = 17 * dt;
-				}
-				jumpTimer.restart();
-			}
-		}
-		else
-		{
-			if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
-			{
-				if (isOnGround)
-				{
-					velocityY = 17 * dt;
-				}
-				jumpTimer.restart();
-			}
-		}
-		playerSeen = true;
-	}
+	
 
 	if (isOnGround)
 	{
+		//Jump
+		if (glm::length(enemyPos - playerPos) < 5.0f || playerSeen)
+		{
+			if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
+			{
+				if (isOnGround)
+				{
+					velocityY = 15;
+				}
+				jumpTimer.restart();
+			}
+
+			playerSeen = true;
+		}
 		movingRight = false;
 		movingLeft = false;
 	}
@@ -88,12 +76,12 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 		{
 			velocityX += 3.0f*dt;
 		}
-		velocityY -= 0.7*dt;
+		velocityY -= 30 * dt;
 	}
 
-	if (velocityY < -10)
+	if (velocityY < -30)
 	{
-		velocityY = -10;
+		velocityY = -30;
 	}
 	if (velocityX > 3)
 	{
@@ -107,10 +95,10 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 	//Apply velocity
 	enemyPos.x += velocityX;
 	velocityX = 0;
-	enemyPos.y += velocityY;
+	enemyPos.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (enemyPos.y < 0) {
+	if (enemyPos.y <= 0) {
 		velocityY = 0;
 		enemyPos.y = 0;
 		isOnGround = true;

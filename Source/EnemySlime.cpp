@@ -15,7 +15,7 @@ void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
 
 }
 
-void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint)
+void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
 {
 	groundCheck();
 
@@ -59,13 +59,18 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, g
 	{
 		if (fabs(enemyPos.x - playerPos.x) < 0.1)
 		{
-			velocityY = 10 * dt;
+			velocityY = 10;
 		}
 	}
 
 	if (!isOnGround)
 	{
-		velocityY -= 0.7*dt;
+		velocityY -= 30*dt;
+	}
+
+	if (velocityY > 10)
+	{
+		velocityY = 10;
 	}
 
 	if (velocityY < -10)
@@ -76,10 +81,10 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, g
 	//Apply velocity
 	enemyPos.x += velocityX;
 	velocityX = 0;
-	enemyPos.y += velocityY;
+	enemyPos.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (enemyPos.y < 0) {
+	if (enemyPos.y <= 0) {
 		velocityY = 0;
 		enemyPos.y = 0;
 		isOnGround = true;
