@@ -59,7 +59,7 @@ void Player::setPos(glm::vec3 playerPos)
 	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
 }
 
-bool Player::playerDead()
+bool Player::playerIsDead()
 {
 	if (playerCharacters[0]->getHP() <= 0)
 	{
@@ -169,7 +169,6 @@ void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
-
 	for (int i = 0; i < debugCubes.size(); i++)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &debugCubes[i]->getModelMatrix()[0][0]);
