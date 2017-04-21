@@ -26,6 +26,24 @@ Material Model::getMaterial(int index)
 {
 	return this->meshes.at(index)->material;
 }
+std::vector<glm::vec2> Model::getPoints(glm::vec3 scale)
+{
+	this->allPoints.clear();
+	glm::vec2 minPos;
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		for (int j = 0; j < meshes[i]->vertices.size(); j++)
+		{
+			if (meshes[i]->vertices[j].pos.x < minPos.x) minPos.x = meshes[i]->vertices[j].pos.x;
+			if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
+		}
+	}
+	allPoints.push_back(glm::vec2(minPos.x*scale.x,minPos.y*scale.y));
+	allPoints.push_back(glm::vec2(-minPos.x*scale.x, minPos.y*scale.y));
+	allPoints.push_back(glm::vec2(-minPos.x*scale.x,-minPos.y*scale.y));
+	allPoints.push_back(glm::vec2(minPos.x*scale.x, -minPos.y*scale.y));
+	return this->allPoints;
+}
 //Setters
 void Model::setModelMatrix(glm::mat4 modelMat)
 {

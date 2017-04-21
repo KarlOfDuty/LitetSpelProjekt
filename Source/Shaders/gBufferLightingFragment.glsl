@@ -61,7 +61,7 @@ void main()
     vec3 diffuse = texture(gAlbedoSpec, texCoords).rgb;
 	float specular = texture(gAlbedoSpec, texCoords).a;
 	vec3 ambient = texture(gAmbient, texCoords).rgb;
-	//Multiplies the diffuse 
+	//Adds the ambient
 	vec3 lighting = ambient;
 	vec3 viewDir = normalize(viewPos - fragPos);
 	vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);

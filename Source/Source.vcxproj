@@ -120,6 +120,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyChar.cpp" />
+    <ClCompile Include="EnemySlime.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="FrustumCulling.cpp" />
     <ClCompile Include="EventHandler.cpp" />
@@ -137,6 +141,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collision.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyChar.h" />
+    <ClInclude Include="EnemySlime.h" />
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="FrustumCulling.h" />
     <ClInclude Include="EventHandler.h" />
@@ -152,6 +160,8 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="simpleVertex.glsl" />
+    <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleFragment.glsl" />
     <None Include="ClassDiagram.cd" />
     <None Include="Shaders\gBufferGeometryFragment.glsl" />
     <None Include="Shaders\gBufferGeometryVertex.glsl" />

@@ -9,6 +9,7 @@
 #include "FreeCamera.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Model.h"
 #include "FrustumCulling.h"
 #include "EventHandler.h"
@@ -24,6 +25,8 @@ EventHandler eventHandler;
 sf::Clock deltaClock;
 sf::Clock timer;
 float dt;
+//Enemies
+Enemy *enemy;
 int jumpPress;
 bool keyReleased;
 const bool aboveView = false;
@@ -32,6 +35,15 @@ const bool aboveView = false;
 Shader deferredGeometryPass;
 Shader deferredLightingPass;
 GLuint gBuffer;
+Shader simpleShadowShader;
+
+//Shadows
+GLuint depthMap;
+GLuint depthMapFBO;
+const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+
+// Light source
+glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
 
 //Textures
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
@@ -46,6 +58,7 @@ float nearDistance = 0.01f;
 float farDistance = 10000;
 glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
+
 //Lights
 const GLuint NR_LIGHTS = 10;
 
@@ -91,6 +104,9 @@ int main()
 
 	//Player
 	player = new Player();
+	enemy = new Enemy();
+	enemy->createSlime(glm::vec3(10.0f, 0.0f, 0.0f));
+	// run the main loop
 	eventHandler = EventHandler();
 
 	timer.restart();
@@ -118,6 +134,31 @@ int main()
 //Render function for all drawings
 void render()
 {
+	// 1. Render depth of scene to texture (from ligth's perspective)
+	// - Get light projection/view matrix.
+	glm::mat4 lightProjection, lightView;
+	glm::mat4 lightSpaceMatrix;
+	GLfloat near_plane = 0.01f, far_plane = 7.5f;
+	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	lightSpaceMatrix = lightProjection * lightView;
+	// - now render scene from light's point of view
+	simpleShadowShader.use();
+	glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
+
+	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	for (int i = 0; i < modelsToBeDrawn.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
+		modelsToBeDrawn.at(i)->draw(simpleShadowShader);
+	}
+	player->draw(simpleShadowShader);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, windowWidth, windowHeight);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	// Geometry pass
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -137,7 +178,11 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
 	}
-	player->draw(deferredGeometryPass);
+	if (player->playerDead() != true)
+	{
+		player->draw(deferredGeometryPass);
+	}
+	enemy->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -154,6 +199,8 @@ void render()
 	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, gAmbient);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
 
 	//Send all lights to the shader
 	for (GLuint i = 0; i < lights.size(); i++)
@@ -164,6 +211,7 @@ void render()
 		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].linear").c_str()), lights[i]->linear);
 		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].quadratic").c_str()), lights[i]->quadratic);
 	}
+	glUniformMatrix4fv(glGetUniformLocation(deferredLightingPass.program, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
 	glUniform3fv(glGetUniformLocation(deferredLightingPass.program, "viewPos"), 1, &playerCamera.getCameraPos()[0]);
 	
 	//Draw a fullscreen quad combining the information
@@ -174,7 +222,6 @@ void render()
 void update(sf::Window &window)
 {	
 	dt = deltaClock.restart().asSeconds();
-	player->update(dt, window);
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
@@ -187,7 +234,13 @@ void update(sf::Window &window)
 	else
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
+		//viewMatrix = freeCamera.Update(dt,window);
 	}
+	if (player->playerDead() != true)
+	{
+		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
+	}
+		enemy->update(dt, player->getPlayerPos());
 	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
@@ -197,16 +250,38 @@ void createGBuffer()
 	//Load the shaders
 	deferredGeometryPass = Shader("Shaders/gBufferGeometryVertex.glsl", "Shaders/gBufferGeometryFragment.glsl");
 	deferredLightingPass = Shader("Shaders/gBufferLightingVertex.glsl", "Shaders/gBufferLightingFragment.glsl");
+	simpleShadowShader = Shader("simpleVertex.glsl", "simpleFragment.glsl");
 
+
+	//Shadow buffer
+	glGenFramebuffers(1, &depthMapFBO);
+
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
 	// Set samplers
 	deferredLightingPass.use();
 	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "gPosition"), 0);
 	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "gNormal"), 1);
 	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "gAlbedoSpec"), 2);
 	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "gAmbient"), 3);
+	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "depthMap"), 4);
 
 	glGenFramebuffers(1, &gBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+
+
 
 	//Position color buffer
 	glGenTextures(1, &gPosition);
