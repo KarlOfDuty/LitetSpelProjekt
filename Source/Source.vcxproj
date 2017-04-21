@@ -129,6 +129,7 @@
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelManager.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -137,6 +138,7 @@
     <ClCompile Include="PlayerChar.cpp" />
     <ClCompile Include="PlayerShark.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Trigger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -149,6 +151,7 @@
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelManager.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerBird.h" />
@@ -156,6 +159,7 @@
     <ClInclude Include="PlayerChar.h" />
     <ClInclude Include="PlayerShark.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Trigger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="simpleVertex.glsl" />
