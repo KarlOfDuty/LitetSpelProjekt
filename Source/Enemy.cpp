@@ -35,9 +35,9 @@ Enemy::Enemy()
 	this->CAP = 5;
 	this->enemyCharacters = new EnemyChar*[this->CAP];
 	this->initiate();
-	slimeModel = Model("models/cube/cube.obj");
-	toadModel = Model("models/sphere/sphere.obj");
-	batModel = Model("models/sphere/sphere.obj");
+	slimeModel = Model("models/Enemies/Slime.obj");
+	toadModel = Model("models/Enemies/Toad.obj");
+	batModel = Model("models/Enemies/BigBat.obj");
 }
 
 Enemy::~Enemy()
