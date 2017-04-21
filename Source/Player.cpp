@@ -178,42 +178,14 @@ void Player::draw(Shader shader)
 
 void Player::fixCollision(std::vector<Model*> &allModels)
 {
-	//GÖR FINAR GÖR WHILE
-	for (int i = 0; i < 3; i++)
+	bool collides = true;
+	int collisionChecks = 0;
+	while (collides && collisionChecks < 5)
 	{
 		glm::vec2 mtv(1000, 1000);
 		int index = -1;
 		float minDistance = 1000;
-		/*
-		for (int j = 0; j < allModels.size(); j++)
-		{
-			std::vector<glm::vec2> playerPoints;
-			playerPoints.push_back(glm::vec2(-0.5f, -0.0f));
-			playerPoints.push_back(glm::vec2(0.5f, -0.0f));
-			playerPoints.push_back(glm::vec2(0.5f, 1.0f));
-			playerPoints.push_back(glm::vec2(-0.5f, 1.0f));
-			std::vector<glm::vec2> objectPoints = allModels[j]->getPoints(allModels[j]->getModelMatrix()[1][1]);
-			for (int h = 0; h < playerPoints.size(); h++)
-			{
-				playerPoints[h] += glm::vec2(playerPos);
-				objectPoints[h] += glm::vec2(allModels[j]->getModelMatrix()[3]);
-			}
-			for (int k = 0; k < playerPoints.size(); k++)
-			{
-				for (int o = 0; o < objectPoints.size(); o++)
-				{
-					float distance = glm::length(playerPoints[k] - objectPoints[o]);
-					if (distance < minDistance)
-					{
-						minDistance = distance;
-						index = j;
-					}
-				}
-			}
-		}
-		*/
-		
-		glm::vec2 player2dPos = glm::vec2(playerPos.x,playerPos.y+0.5f);
+		glm::vec2 player2dPos = glm::vec2(playerPos.x, playerPos.y + 0.5f);
 		for (int i = 0; i < allModels.size(); i++)
 		{
 			float distance = glm::length(player2dPos - glm::vec2(allModels[i]->getModelMatrix()[3]));
@@ -223,7 +195,7 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 				index = i;
 			}
 		}
-		
+
 		if (index != -1)
 		{
 			std::vector<glm::vec2> playerPoints;
@@ -237,7 +209,7 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 				{
 					if (mtv.y > 0)
 					{
-						playerPos.y -= 0.1f;
+						playerPos.y -= 0.05f;
 					}
 					else
 					{
@@ -259,7 +231,12 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 					groundPos = playerPos.y;
 				}
 			}
+			else
+			{
+				collides = false;
+			}
 		}
+		collisionChecks++;
 	}
 }
 void Player::getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::vec2> &objectPoints, Model *object, float &radians)
