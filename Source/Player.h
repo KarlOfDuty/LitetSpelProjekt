@@ -33,6 +33,10 @@ private:
 	float groundPos;
 	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3 };
 	std::vector<Model*> debugCubes;
+	Model* arrow;
+	glm::vec2 arrowDirection;
+	glm::vec2 arrowVelocity;
+	float arrowRotation;
 public:
 	Player();
 	~Player();
@@ -40,7 +44,7 @@ public:
 	void groundCheck();
 	bool playerDead();
 	glm::vec3 getPlayerPos() const;
-	void update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
+	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
 	glm::vec3 getPlayerPos();
 	void jump();
 	void setPos(glm::vec3 playerPos);

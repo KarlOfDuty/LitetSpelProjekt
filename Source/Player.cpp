@@ -76,9 +76,72 @@ glm::vec3 Player::getPlayerPos() const
 }
 
 //Update function
-void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage)
+void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage)
 {
 	groundPos = 0.0f;
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+	{
+		if (arrow == nullptr)
+		{
+			glm::mat4 modelMat({
+				1.0, 0.0, 0.0, 0.0,
+				0.0, 0.2, 0.0, 0.0,
+				0.0, 0.0, 0.2, 0.0,
+				playerPos.x, playerPos.y+1.5f, 0.0, 1.0
+			});
+			arrow = new Model(playerCharacters[2]->getModel(), modelMat);
+		}
+		else
+		{
+			arrow->setModelMatrix({
+				1.0, 0.0, 0.0, 0.0,
+				0.0, 1.0, 0.0, 0.0,
+				0.0, 0.0, 1.0, 0.0,
+				playerPos.x, playerPos.y+1.5f, 0.0, 1.0
+			});
+			glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+			glm::vec2 middleScreen(window.getSize().x/2, window.getSize().y/2);
+			arrowRotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
+			arrow->setRotationMatrix(glm::rotate(glm::mat4(), arrowRotation, glm::vec3(0.0f, 0.0f, 1.0f)));
+			arrow->rotate();
+			arrowDirection = glm::normalize(glm::vec2(sin(arrowRotation), -cos(arrowRotation)));
+			arrowVelocity = glm::vec2(glm::abs(arrowDirection.x),arrowDirection.y) * 0.5f;
+			std::cout << arrowVelocity.y << std::endl;
+		}
+	}
+	if (arrow != nullptr)
+	{
+		glm::vec2 arrowPos(arrow->getModelMatrix()[3]);
+		arrow->setModelMatrix({
+			1.0, 0.0, 0.0, 0.0,
+			0.0, 1.0, 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0,
+			arrowPos.x + (arrowVelocity.x*arrowDirection.x), arrowPos.y + arrowVelocity.y , 0.0, 1.0
+		});
+		arrow->setRotationMatrix(glm::rotate(glm::mat4(), arrowRotation, glm::vec3(0.0f, 0.0f, 1.0f)));
+		arrow->rotate();
+		arrowVelocity.x -= 0.1*dt;
+		if (arrowVelocity.x < 0) arrowVelocity.x = 0;
+		arrowVelocity.y -= 0.5*dt;
+		for (int i = 0; i < allModels.size(); i++)
+		{
+			std::vector<glm::vec2> arrowPoints;
+			std::vector<glm::vec2> objectPoints;
+			float radians;
+			getPoints(arrowPoints, objectPoints, allModels[i], radians);
+			arrowPoints.clear();
+			arrowPoints = arrow->getPoints(glm::vec3(1.f));
+			for (int i = 0; i < arrowPoints.size(); i++)
+			{
+				arrowPoints[i] += arrowPos;
+			}
+			glm::vec2 mtv;
+			if (collision::fixCollision(arrowPoints, objectPoints, mtv))
+			{
+				arrowVelocity = glm::vec2(0);
+			}
+		}
+	}
 	if (playerPos.y > groundPos && isOnGround)
 	{
 		isOnGround = false;
@@ -174,6 +237,11 @@ void Player::draw(Shader shader)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &debugCubes[i]->getModelMatrix()[0][0]);
 		debugCubes[i]->draw(shader);
+	}
+	if (arrow != nullptr)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &arrow->getModelMatrix()[0][0]);
+		arrow->draw(shader);
 	}
 }
 

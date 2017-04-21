@@ -234,7 +234,7 @@ void update(sf::Window &window)
 	}
 	if (player->playerDead() != true)
 	{
-		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
+		player->update(window, dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
 	}
 		enemy->update(dt, player->getPlayerPos());
 	//playerCamera.frustumCulling(modelsToBeDrawn);
