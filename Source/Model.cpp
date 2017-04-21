@@ -593,7 +593,8 @@ Model::Model(Model *otherModel)
 	this->modelMatrix = otherModel->modelMatrix;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->meshes = otherModel->meshes;
-	setupModel();
+	this->VAO = otherModel->VAO;
+	this->VBO = otherModel->VBO;
 }
 Model::Model(Model &otherModel, glm::mat4 modelMat)
 {
@@ -602,16 +603,25 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 	this->meshes = otherModel.meshes;
 	setupModel();
 }
-Model::Model(Model * otherModel, glm::mat4 modelMat)
+Model::Model(Model *otherModel, glm::mat4 modelMat)
 {
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->meshes = otherModel->meshes;
-	setupModel();
+	this->VAO = otherModel->VAO;
+	this->VBO = otherModel->VBO;
 }
 //Destructor
 Model::~Model()
 {
-
+	meshes.clear();
 }
-
+//As models share pointers this can not be done in the destructor
+void Model::deleteMeshes()
+{
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		delete meshes[i];
+	}
+	meshes.clear();
+}

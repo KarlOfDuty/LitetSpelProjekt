@@ -13,11 +13,12 @@ private:
 		"models/cube/cube.obj"
 		,"models/sphere/sphere.obj"
 		,"models/cube/cubeGreen.obj"
-		//, "models/Characters/Bird/BirdTest1.obj"
+		,"models/Characters/Bird/BirdTest1.obj"
 	};
 public:
 	void loadModels();
 	void setupModels();
+	void unloadModels();
 	std::vector<Model*> getStaticModels();
 	Level();
 	~Level();

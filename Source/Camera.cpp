@@ -52,3 +52,8 @@ void Camera::setupQuadTree(std::vector<Model*> &staticModels)
 	frustumObject.getRoot()->buildQuadTree(staticModels, 0, mapSize);
 	frustumObject.getRoot()->cleanTree();
 }
+
+void Camera::destroyQuadTree()
+{
+	frustumObject.destroyQuadTree();
+}

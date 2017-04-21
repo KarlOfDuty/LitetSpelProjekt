@@ -13,7 +13,7 @@ void Level::loadModels()
 }
 void Level::setupModels()
 {
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	staticModels.push_back(new Model(modelLibrary[0],
 	{
 		5.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
@@ -74,15 +74,37 @@ void Level::setupModels()
 	}));
 
 	std::srand(time(0));
-	//Loads 1000 spheres randomly
+	//Loads spheres in random positions
 	for (int i = 0; i < 0; i++)
 	{
-		staticModels.push_back(new Model(modelLibrary.at(1), {
+		staticModels.push_back(new Model(modelLibrary[0], {
 			1.0, 0.0, 0.0, 0.0,
 			0.0, 1.0, 0.0, 0.0,
 			0.0, 0.0, 1.0, 0.0,
 			(rand() % 100) - 50, (rand() % 100) - 50, (rand() % 100) - 100, 1.0 }));
+		//std::cout << "Loaded." << std::endl;
 	}
+}
+void Level::unloadModels()
+{
+	for (int i = 0; i < modelLibrary.size(); i++)
+	{
+		modelLibrary[i]->deleteMeshes();
+		delete modelLibrary[i];
+	}
+	modelLibrary.clear();
+
+	for (int i = 0; i < staticModels.size(); i++)
+	{
+		delete staticModels[i];
+	}
+	staticModels.clear();
+
+	for (int i = 0; i < dynamicModels.size(); i++)
+	{
+		delete dynamicModels[i];
+	}
+	dynamicModels.clear();
 }
 Level::Level()
 {

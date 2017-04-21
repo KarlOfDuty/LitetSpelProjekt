@@ -14,7 +14,7 @@
 #include "FrustumCulling.h"
 #include "EventHandler.h"
 #include "LevelManager.h"
-
+#include "Light.h"
 #pragma comment(lib, "opengl32.lib")
 
 LevelManager levelManager;
@@ -23,12 +23,12 @@ LevelManager levelManager;
 Player *player;
 EventHandler eventHandler;
 sf::Clock deltaClock;
+sf::Clock timer;
 float dt;
 //Enemies
 Enemy *enemy;
 int jumpPress;
 bool keyReleased;
-
 const bool aboveView = false;
 
 //gBuffer
@@ -61,8 +61,6 @@ glm::mat4 viewMatrix;
 
 //Lights
 const GLuint NR_LIGHTS = 10;
-std::vector<glm::vec3> lightPositions;
-std::vector<glm::vec3> lightColors;
 
 //VBO VAO
 GLuint VBO, VAO, EBO;
@@ -70,13 +68,15 @@ GLuint quadVAO = 0;
 GLuint quadVBO;
 
 std::vector<Model*> modelsToBeDrawn;
-
+std::vector<Light*> lights;
 //Functions
 void render();
 void update(sf::Window &window);
 void createGBuffer();
 void drawQuad();
 void loadLevel();
+void unloadLevel();
+void reloadLevel();
 
 //Main function
 int main()
@@ -107,6 +107,8 @@ int main()
 	// run the main loop
 	eventHandler = EventHandler();
 
+	timer.restart();
+
 	//Main loop
 	bool running = true;
 	while (running)
@@ -116,6 +118,8 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		update(window);
+		//unloadLevel();
+		//reloadLevel();
 		render();
 
 		//End the current frame (internally swaps the front and back buffers)
@@ -172,7 +176,7 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
 	}
-	if (player->playerDead() != true)
+	if (player->playerIsDead() != true)
 	{
 		player->draw(deferredGeometryPass);
 	}
@@ -197,15 +201,13 @@ void render()
 	glBindTexture(GL_TEXTURE_2D, depthMap);
 
 	//Send all lights to the shader
-	for (GLuint i = 0; i < lightPositions.size(); i++)
+	for (GLuint i = 0; i < lights.size(); i++)
 	{
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].position").c_str()), 1, &lightPositions[i][0]);
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].color").c_str()), 1, &lightColors[i][0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].position").c_str()), 1, &lights[i]->pos[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].color").c_str()), 1, &lights[i]->colour[0]);
 		// Linear and quadratic for calculation of the lights radius
-		const GLfloat linear = 0.7f;
-		const GLfloat quadratic = 1.8f;
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].linear").c_str()), linear);
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].quadratic").c_str()), quadratic);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].linear").c_str()), lights[i]->linear);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].quadratic").c_str()), lights[i]->quadratic);
 	}
 	glUniformMatrix4fv(glGetUniformLocation(deferredLightingPass.program, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
 	glUniform3fv(glGetUniformLocation(deferredLightingPass.program, "viewPos"), 1, &playerCamera.getCameraPos()[0]);
@@ -218,6 +220,11 @@ void render()
 void update(sf::Window &window)
 {	
 	dt = deltaClock.restart().asSeconds();
+	//Update player if not dead
+	if (!player->playerIsDead())
+	{
+		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
+	}
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
@@ -230,11 +237,6 @@ void update(sf::Window &window)
 	else
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
-		//viewMatrix = freeCamera.Update(dt,window);
-	}
-	if (player->playerDead() != true)
-	{
-		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
 	}
 		enemy->update(dt, player->getPlayerPos());
 	//playerCamera.frustumCulling(modelsToBeDrawn);
@@ -324,20 +326,6 @@ void createGBuffer()
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "Framebuffer not complete!" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//Some lights with random values
-	std::srand(13);
-	for (int i = 0; i < NR_LIGHTS; i++)
-	{
-		GLfloat xPos = -2.0f;
-		GLfloat yPos = 4.0f;
-		GLfloat zPos = -1.0f;
-		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-		GLfloat rColor = 0.9f;
-		GLfloat gColor = 0.9f;
-		GLfloat bColor = 0.9f;
-		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
-	}
 }
 
 //Quad used for lighting pass fullscreen quad
@@ -373,5 +361,44 @@ void loadLevel()
 	levelManager.currentLevel->loadModels();
 	levelManager.currentLevel->setupModels();
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
-	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
+	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+
+	//Some lights with random values
+	std::srand(time(0));
+	for (int i = 0; i < NR_LIGHTS; i++)
+	{
+		lights.push_back(new Light(
+			rand()%50-25,2.0f,4.0f,
+			0.6f,0.9f,0.9f,
+			0.0001f,0.02f));
+	}
+}
+void unloadLevel()
+{
+	levelManager.currentLevel->unloadModels();
+	modelsToBeDrawn.clear();
+	//playerCamera.destroyQuadTree();
+	for (int i = 0; i < lights.size(); i++)
+	{
+		delete lights[i];
+	}
+	lights.clear();
+}
+void reloadLevel()
+{
+	levelManager.currentLevel->loadModels();
+	levelManager.currentLevel->setupModels();
+	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
+	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
+	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+	//Some lights with random values
+	std::srand(time(0));
+	for (int i = 0; i < NR_LIGHTS; i++)
+	{
+		lights.push_back(new Light(
+			rand() % 50 - 25, 2.0f, 4.0f,
+			0.6f, 0.9f, 0.9f,
+			0.0001f, 0.02f));
+	}
 }
