@@ -59,7 +59,7 @@ void Player::setPos(glm::vec3 playerPos)
 	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
 }
 
-bool Player::playerDead()
+bool Player::playerIsDead()
 {
 	if (playerCharacters[0]->getHP() <= 0)
 	{

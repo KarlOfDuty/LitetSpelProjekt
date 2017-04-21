@@ -115,13 +115,14 @@ int main()
 	bool running = true;
 	while (running)
 	{
+		//TODO: Check triggers
 		running = eventHandler.handleEvents(window, player);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		update(window);
-		unloadLevel();
-		reloadLevel();
+		//unloadLevel();
+		//reloadLevel();
 		render();
 
 		//End the current frame (internally swaps the front and back buffers)
@@ -178,7 +179,7 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
 	}
-	if (player->playerDead() != true)
+	if (player->playerIsDead() != true)
 	{
 		player->draw(deferredGeometryPass);
 	}
@@ -222,6 +223,11 @@ void render()
 void update(sf::Window &window)
 {	
 	dt = deltaClock.restart().asSeconds();
+	//Update player if not dead
+	if (!player->playerIsDead())
+	{
+		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
+	}
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
@@ -234,11 +240,6 @@ void update(sf::Window &window)
 	else
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
-		//viewMatrix = freeCamera.Update(dt,window);
-	}
-	if (player->playerDead() != true)
-	{
-		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
 	}
 		enemy->update(dt, player->getPlayerPos());
 	//playerCamera.frustumCulling(modelsToBeDrawn);
@@ -381,7 +382,7 @@ void unloadLevel()
 	//if (timer.getElapsedTime().asSeconds() > 3)
 	//{
 		levelManager.currentLevel->unloadModels();
-		std::cout << "Done" << std::endl;
+		//std::cout << "Done" << std::endl;
 		modelsToBeDrawn.clear();
 		//playerCamera.destroyQuadTree();
 		//for (int i = 0; i < lights.size(); i++)
