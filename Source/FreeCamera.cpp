@@ -7,7 +7,7 @@ FreeCamera::FreeCamera()
 	this->oldMouseY = resolutionHeight / 2;
 	this->mouseSensitivity = 0.05f;
 	this->cameraSpeed = 0.05f;
-	this->cameraPos = glm::vec3(0.0f, 0.0f, 2.0f);
+	this->cameraPos = glm::vec3(0.0f, 0.0f, 10.0f);
 	this->cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	this->cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	this->cameraYaw = -90.0f;
@@ -58,15 +58,15 @@ glm::mat4 FreeCamera::Update(float deltaTime, sf::Window &window)
 			cameraHasMoved = true;
 		}
 		//Left
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
-			cameraPos -= glm::normalize(glm::cross(flattenedCameraFront, cameraUp)) * cameraSpeed;
+			cameraPos -= glm::normalize(glm::cross(flattenedCameraFront, cameraUp)) * cameraSpeed*5.0f;
 			cameraHasMoved = true;
 		}
 		//Right
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		{
-			cameraPos += glm::normalize(glm::cross(flattenedCameraFront, cameraUp)) * cameraSpeed;
+			cameraPos += glm::normalize(glm::cross(flattenedCameraFront, cameraUp)) * cameraSpeed*5.0f;
 			cameraHasMoved = true;
 		}
 		//Executed only once on startup
