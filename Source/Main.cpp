@@ -76,7 +76,7 @@ void createGBuffer();
 void drawQuad();
 void loadLevel();
 void unloadLevel();
-void reloadLevel();
+bool endLevel();
 
 //Main function
 int main()
@@ -97,14 +97,17 @@ int main()
 	//Create the gbuffer textures and lights
 	createGBuffer();
 
-	//Models
-	loadLevel();
-
 	//Player
 	player = new Player();
 	enemy = new Enemy();
 	enemy->createSlime(glm::vec3(10.0f, 0.0f, 0.0f));
-	// run the main loop
+
+	levelManager = LevelManager();
+
+	//Models
+	loadLevel();
+
+	//Run the main loop
 	eventHandler = EventHandler();
 
 	timer.restart();
@@ -118,8 +121,11 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		update(window);
-		//unloadLevel();
-		//reloadLevel();
+		if (endLevel())
+		{
+			unloadLevel();
+			loadLevel();
+		}
 		render();
 
 		//End the current frame (internally swaps the front and back buffers)
@@ -363,16 +369,16 @@ void loadLevel()
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
 	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
-
 	//Some lights with random values
 	std::srand(time(0));
 	for (int i = 0; i < NR_LIGHTS; i++)
 	{
 		lights.push_back(new Light(
-			rand()%50-25,2.0f,4.0f,
-			0.6f,0.9f,0.9f,
-			0.0001f,0.02f));
+			glm::vec3(rand() % 50 - 25, 2.0f, 4.0f),
+			glm::vec3(0.6f, 0.9f, 0.9f),
+			0.0001f, 0.02f));
 	}
+	player->setPos(levelManager.currentLevel->getPlayerPos());
 }
 void unloadLevel()
 {
@@ -385,20 +391,7 @@ void unloadLevel()
 	}
 	lights.clear();
 }
-void reloadLevel()
+bool endLevel()
 {
-	levelManager.currentLevel->loadModels();
-	levelManager.currentLevel->setupModels();
-	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
-	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
-	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
-	//Some lights with random values
-	std::srand(time(0));
-	for (int i = 0; i < NR_LIGHTS; i++)
-	{
-		lights.push_back(new Light(
-			rand() % 50 - 25, 2.0f, 4.0f,
-			0.6f, 0.9f, 0.9f,
-			0.0001f, 0.02f));
-	}
+	return player->getPlayerPos().x > 6;
 }

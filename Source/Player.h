@@ -4,7 +4,7 @@
 #include "PlayerShark.h"
 #include "PlayerButterfly.h"
 #include "Shader.h"
-#include "collision.h"
+#include "Collision.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
 #include <vector>
@@ -40,7 +40,6 @@ public:
 	bool playerIsDead();
 	glm::vec3 getPlayerPos() const;
 	void update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
-	glm::vec3 getPlayerPos();
 	void jump();
 	void setPos(glm::vec3 playerPos);
 	void draw(Shader shader);
