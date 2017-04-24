@@ -144,7 +144,7 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 	velocityX = 0;
 	playerPos.y += velocityY*dt;
 	
-	fixCollision(allModels);
+	testCollision(allModels);
 
 	//Handle collision detection with ground
 	if (playerPos.y <= groundPos && !isOnGround)
@@ -180,13 +180,12 @@ void Player::draw(Shader shader)
 	}
 }
 
-void Player::fixCollision(std::vector<Model*> &allModels)
+void Player::testCollision(std::vector<Model*> &allModels)
 {
 	bool collides = true;
 	int collisionChecks = 0;
 	while (collides && collisionChecks < 5)
 	{
-		glm::vec2 mtv(1000, 1000);
 		int index = -1;
 		float minDistance = 1000;
 		glm::vec2 player2dPos = glm::vec2(playerPos.x, playerPos.y + 0.5f);
@@ -202,12 +201,12 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 
 		if (index != -1)
 		{
-			std::vector<glm::vec2> playerPoints;
+			std::vector<glm::vec2> playerPoints = getPlayerPoints();
 			std::vector<glm::vec2> objectPoints;
 			float radians = 0.0f;
-			getPoints(playerPoints, objectPoints, allModels[index], radians);
+			getPoints(objectPoints, allModels[index], radians);
 			glm::vec2 mtv;
-			if (collision::fixCollision(playerPoints, objectPoints, mtv))
+			if (collision::testCollision(playerPoints, objectPoints, mtv))
 			{
 				if (radians > 0.0f && radians < 0.79f)
 				{
@@ -243,9 +242,10 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 		collisionChecks++;
 	}
 }
-void Player::getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::vec2> &objectPoints, Model *object, float &radians)
+//Get playerPoints
+std::vector<glm::vec2> Player::getPlayerPoints()
 {
-	//Set playerPoints
+	std::vector<glm::vec2> playerPoints;
 	playerPoints.push_back(glm::vec2(-0.5f, -0.0f));
 	playerPoints.push_back(glm::vec2(0.5f, -0.0f));
 	playerPoints.push_back(glm::vec2(0.5f, 1.0f));
@@ -254,7 +254,10 @@ void Player::getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::ve
 	{
 		playerPoints[k] += glm::vec2(playerPos);
 	}
-
+	return playerPoints;
+}
+void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians)
+{
 	//Get rotation and scale from modelMat
 	glm::mat4 modelMat = object->getModelMatrix();
 	glm::vec3 scale;

@@ -111,8 +111,8 @@ void Level::unloadModels()
 void Level::setupTriggers()
 {
 	triggerBoxes.push_back(new Trigger(
-		glm::vec2(3,6), 
-		glm::vec2(6,6), 
+		glm::vec2(3,2), 
+		glm::vec2(6,2), 
 		glm::vec2(3,0), 
 		glm::vec2(6,0)));
 }

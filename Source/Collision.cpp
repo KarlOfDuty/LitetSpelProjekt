@@ -1,6 +1,6 @@
 #include "Collision.h"
 
-bool collision::fixCollision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2, glm::vec2 &mtv)
+bool collision::testCollision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2, glm::vec2 &mtv)
 {
 	float o = 1000000000;
 	glm::vec2 smallestAxis;
@@ -66,6 +66,81 @@ bool collision::fixCollision(std::vector<glm::vec2> points1, std::vector<glm::ve
 	}
 	return true;
 }
+
+bool collision::testCollision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2)
+{
+	glm::vec2 mtv = glm::vec2();
+	float o = 1000000000;
+	glm::vec2 smallestAxis;
+	std::vector<glm::vec2> axis1 = getAxis(points1);
+	std::vector<glm::vec2> axis2 = getAxis(points2);
+
+	for (int i = 0; i < axis1.size(); i++) 
+	{
+		glm::vec2 thisAxis = axis1[i];
+
+		float s1min, s1max;
+		projectOnAxis(points1, thisAxis, s1min, s1max);
+		float s2min, s2max;
+		projectOnAxis(points2, thisAxis, s2min, s2max);
+
+		if (s2min > s1max || s2max < s1min) 
+		{
+			return false;
+		}
+
+		float overlap;
+		if (s1max < s2min) 
+		{
+			overlap = s1max - s2min;
+		}
+		else
+		{
+			overlap = s2max - s1min;
+		}
+		if (overlap < o)
+		{
+			o = overlap;
+			smallestAxis = thisAxis;
+		}
+	}
+	for (int i = 0; i < axis2.size(); i++) 
+	{
+		glm::vec2 thisAxis = axis2[i];
+
+		float s1min, s1max;
+		projectOnAxis(points1, thisAxis, s1min, s1max);
+		float s2min, s2max;
+		projectOnAxis(points2, thisAxis, s2min, s2max);
+
+		if (s2max < s1min || s1max < s2min) 
+		{
+			return false;
+		}
+
+		float overlap;
+		if (s1max < s2min) 
+		{
+			overlap = s1max - s2min;
+		}
+		else
+		{
+			overlap = s2max - s1min;
+		}
+		if (overlap < o)
+		{
+			o = overlap;
+			smallestAxis = thisAxis;
+		}
+	}
+	mtv = smallestAxis*o;
+	if (mtv == glm::vec2())
+	{
+		return false;
+	}
+	return true;
+}
+
 std::vector<glm::vec2> collision::getAxis(std::vector<glm::vec2> allPoints)
 {
 	std::vector<glm::vec2> axis;
