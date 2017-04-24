@@ -7,6 +7,7 @@ uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gAmbient;
 uniform sampler2D depthMap;
+uniform sampler2D deaptMap2;
 
 struct light 
 {
@@ -20,6 +21,7 @@ const int NR_LIGHTS = 10;
 uniform light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 uniform mat4 lightSpaceMatrix;
+uniform mat4 lightSpaceMatrix2;
 
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection)
 {
@@ -64,7 +66,20 @@ void main()
 	//Adds the ambient
 	vec3 lighting = ambient;
 	vec3 viewDir = normalize(viewPos - fragPos);
+	vec4 lightSpaces[10];
+	lightSpaces[0] = lightSpaceMatrix * vec4(fragPos, 1.0);
+	lightSpaces[1] = lightSpaceMatrix2 * vec4(fragPos, 1.0);
+	lightSpaces[2] = lightSpaceMatrix * vec4(fragPos, 1.0);
+	lightSpaces[3] = lightSpaceMatrix * vec4(fragPos, 1.0);
+	lightSpaces[4] = lightSpaceMatrix * vec4(fragPos, 1.0);
+	lightSpaces[5] = lightSpaceMatrix * vec4(fragPos, 1.0);
+	lightSpaces[6] = lightSpaceMatrix * vec4(fragPos, 1.0);
+	lightSpaces[7] = lightSpaceMatrix * vec4(fragPos, 1.0);
+	lightSpaces[8] = lightSpaceMatrix * vec4(fragPos, 1.0);
+	lightSpaces[9] = lightSpaceMatrix * vec4(fragPos, 1.0);
 	vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
+	vec4 fragPosLightSpace2 = lightSpaceMatrix2 * vec4(fragPos, 1.0);
+	 
 
 	for(int i = 0; i < NR_LIGHTS; ++i)
 	{
@@ -78,7 +93,7 @@ void main()
 		float spec = pow(max(dot(normal, halfwayDir), 0.0), 16.0);
 		vec3 thisSpecular = lights[i].color * spec * specular;
 		// Calculate shadows
-		float shadow = ShadowCalculation(fragPosLightSpace, normal, lightDir);
+		float shadow = ShadowCalculation(lightSpaces[i], normal, lightDir);
         thisDiffuse *= attenuation;
         thisSpecular *= attenuation;
 		lighting += (1.0 - shadow) * (thisDiffuse + thisSpecular);
