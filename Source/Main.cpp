@@ -103,7 +103,12 @@ int main()
 	//Player
 	player = new Player();
 	enemy = new Enemy();
-	enemy->createSlime(glm::vec3(10.0f, 0.0f, 0.0f));
+	enemy->createSlime(glm::vec3(10.0f, 5.0f, 0.0f));
+	enemy->createToad(glm::vec3(-10.0f, 5.0f, 0.0f));
+	enemy->createGiantBat(glm::vec3(15.0f, 8.0f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-16.0f, 5.0f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-15.8f, 5.0f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-15.4f, 5.0f, 0.0f));
 	// run the main loop
 	eventHandler = EventHandler();
 

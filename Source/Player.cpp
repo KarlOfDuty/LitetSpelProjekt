@@ -23,9 +23,9 @@ Player::Player()
 	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->playerCharacters[0] = new PlayerBird(100, birdModel);
-	this->playerCharacters[1] = new PlayerShark(100, sharkModel);
-	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
+	this->playerCharacters[0] = new PlayerBird(20, birdModel);
+	this->playerCharacters[1] = new PlayerShark(20, sharkModel);
+	this->playerCharacters[2] = new PlayerButterfly(20, butterflyModel);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 }
@@ -157,7 +157,7 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 	//Player taking damage
 	if (damageImmunity.getElapsedTime().asSeconds() >= 1.0)
 	{
-		if (fabs(enemyPos.x - playerPos.x) < 0.1 && fabs(enemyPos.y - playerPos.y) < 1.0)
+		if (fabs(enemyPos.x - playerPos.x) < 0.2 && fabs(enemyPos.y - playerPos.y) < 1.0)
 		{
 			playerCharacters[0]->takingDamage(enemyDamage);
 			damageImmunity.restart();

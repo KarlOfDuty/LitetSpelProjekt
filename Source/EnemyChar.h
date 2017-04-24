@@ -1,6 +1,13 @@
 #ifndef ENEMYCHAR_H
 #define ENEMYCHAR_H
 #include "Model.h"
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <SFML\Window.hpp>
+#include <vector>
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>  
 
 class EnemyChar
 {
@@ -17,6 +24,7 @@ public:
 	float velocityX;
 	float velocityY;
 	bool isOnGround;
+	bool playerSeen;
 
 	//Functions
 	EnemyChar();
@@ -28,8 +36,8 @@ public:
 	glm::mat4 getModelMatrix() const;
 	void groundCheck();
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos) = 0;
-	void update(float dt, glm::vec3 playerPos);
-	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint) = 0;
+	void update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> smallBatsPos);
+	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos) = 0;
 	void draw(Shader shader);
 };
 #endif
