@@ -88,9 +88,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
-	  <Filter>Source Files</Filter>
-	</ClCompile>
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyCrab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -159,12 +162,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EnemyFireFly.h">
-	<Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
-	  <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Collision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyCrab.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

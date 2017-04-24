@@ -109,6 +109,7 @@ int main()
 	enemy->createBatSwarm(glm::vec3(-16.0f, 5.0f, 0.0f));
 	enemy->createBatSwarm(glm::vec3(-15.8f, 5.0f, 0.0f));
 	enemy->createBatSwarm(glm::vec3(-15.4f, 5.0f, 0.0f));
+	enemy->createCrab(glm::vec3(15.0f, 5.0f, 0.0f));
 	// run the main loop
 	eventHandler = EventHandler();
 

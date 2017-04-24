@@ -41,6 +41,7 @@ Enemy::Enemy()
 	batSmallModel = Model("models/Enemies/BatSmall/SmallBat.obj");
 	bossModel = Model("models/cube/cube.obj");
 	skeletonModel = Model("models/sphere/sphere.obj");
+	crabModel = Model("models/Enemies/Crab/Crab.obj");
 }
 
 Enemy::~Enemy()
@@ -94,7 +95,17 @@ void Enemy::createSkeleton(glm::vec3 enemyStartPos)
 	{
 		this->expand();
 	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(15, batModel, 2, enemyStartPos);
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(10, batModel, 4, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::createCrab(glm::vec3 enemyStartPos)
+{
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyCrab(6, crabModel, 3, enemyStartPos);
 	this->nrOfEnemies++;
 }
 
