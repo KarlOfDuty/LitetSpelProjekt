@@ -39,9 +39,11 @@ public:
 	void swap(int charType);
 	bool playerIsDead();
 	glm::vec3 getPlayerPos() const;
+	glm::vec3 getActualPlayerPos() const;
 	void update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
 	void jump();
 	void setPos(glm::vec3 playerPos);
+	void setActualPos(glm::vec3 playerPos);
 	void draw(Shader shader);
 	void fixCollision(std::vector<Model*> &allModels);
 	void getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::vec2> &objectPoints, Model *object, float &radians);

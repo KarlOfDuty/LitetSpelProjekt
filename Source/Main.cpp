@@ -121,11 +121,6 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		update(window);
-		if (endLevel())
-		{
-			unloadLevel();
-			loadLevel();
-		}
 		render();
 
 		//End the current frame (internally swaps the front and back buffers)
@@ -229,7 +224,7 @@ void update(sf::Window &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
+		player->update(dt, levelManager.currentLevel->getStaticModels(),enemy->getEnemyPos(), enemy->getDamage());
 	}
 	//Camera update, get new viewMatrix
 	if (aboveView)
@@ -244,7 +239,12 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
-		enemy->update(dt, player->getPlayerPos());
+	enemy->update(dt, player->getPlayerPos());
+	if (endLevel())
+	{
+		unloadLevel();
+		loadLevel();
+	}
 	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
@@ -378,6 +378,7 @@ void loadLevel()
 			glm::vec3(0.6f, 0.9f, 0.9f),
 			0.0001f, 0.02f));
 	}
+	player->setActualPos(levelManager.currentLevel->getPlayerPos());
 	player->setPos(levelManager.currentLevel->getPlayerPos());
 }
 void unloadLevel()
@@ -393,5 +394,5 @@ void unloadLevel()
 }
 bool endLevel()
 {
-	return player->getPlayerPos().x > 6;
+	return player->getActualPlayerPos().x > 6;
 }

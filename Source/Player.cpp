@@ -17,7 +17,7 @@ Player::Player()
 	Model* butterflyModel = new Model("models/cube/cubeGreen.obj", modelMatrix);
 
 	this->playerPos = glm::vec3(0.0f, 2.0f, 0.0f);
-	setPos(playerPos);
+	setActualPos(playerPos);
 	this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	this->modelMatrix *= glm::scale(glm::vec3(0.08f, 0.08f, 0.08f));
 	angle = 0;
@@ -40,6 +40,11 @@ glm::vec3 Player::getPlayerPos() const
 	return this->playerPos;
 }
 
+glm::vec3 Player::getActualPlayerPos() const
+{
+	return this->modelMatrix[3];
+}
+
 void Player::swap(int character)
 {
 	player = playerCharacters[character];
@@ -55,6 +60,11 @@ void Player::jump()
 }
 
 void Player::setPos(glm::vec3 playerPos)
+{
+	this->playerPos = playerPos;
+}
+
+void Player::setActualPos(glm::vec3 playerPos)
 {
 	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
 }
@@ -147,7 +157,7 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 		}
 		isOnGround = true;
 	}
-	setPos(playerPos);
+	setActualPos(playerPos);
 	//Player taking damage
 	if (damageImmunity.getElapsedTime().asSeconds() >= 1.0)
 	{
