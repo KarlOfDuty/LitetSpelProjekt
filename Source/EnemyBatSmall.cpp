@@ -3,6 +3,7 @@
 EnemyBatSmall::EnemyBatSmall(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
 {
 	std::srand(time(0));
+	findPlayer = true;
 }
 
 EnemyBatSmall::~EnemyBatSmall()
@@ -35,25 +36,38 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		}
 	}
 
-	if(fabs(enemyPos.x - playerPos.x) < 1 && fabs(enemyPos.y - playerPos.y) < 1)
+	if(fabs(enemyPos.x - playerPos.x) < 0.5f && fabs(enemyPos.y - playerPos.y) < 0.5f)
 	{
-		
-		newCheckpoint.x = playerPos.x + RandomNumber(-3.0f, 3.0f);
-		newCheckpoint.y = playerPos.y + RandomNumber(-3.0f, 3.0f);
-		newCheckpoint.z = playerPos.z;
-		std::cout << RandomNumber(-5.0f, 5.0f) << std::endl;
-
-		findPlayer = false;
+		goForPlayer = false;
+		if (findPlayer)
+		{
+			newCheckpoint.x = playerPos.x + RandomNumber(-2.0f, 2.0f);
+			newCheckpoint.y = playerPos.y + RandomNumber(-1.0f, 2.0f);
+			newCheckpoint.z = playerPos.z;
+			findPlayer = false;
+		}
 	}
-	else
+	if (glm::length(enemyPos - playerPos) > 3.0f)
 	{
 		findPlayer = true;
+	}
+
+	if (!findPlayer && !goForPlayer)
+	{
+		if (fabs(enemyPos.x - newCheckpoint.x) < 0.1f && fabs(enemyPos.y - newCheckpoint.y) < 0.1f)
+		{
+			newCheckpoint.x = playerPos.x + RandomNumber(-2.0f, 2.0f);
+			newCheckpoint.y = playerPos.y + RandomNumber(-1.0f, 2.0f);
+			newCheckpoint.z = playerPos.z;
+			std::cout << RandomNumber(-2.0f, 2.0f) << std::endl;
+			goForPlayer = true;
+		}
 	}
 
 
 	
 	//Move
-	if (findPlayer)
+	if (findPlayer || goForPlayer)
 	{
 		if (glm::length(enemyPos - playerPos) < 10.0f || playerSeen)
 		{

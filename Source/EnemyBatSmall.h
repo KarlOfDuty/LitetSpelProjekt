@@ -3,6 +3,7 @@
 class EnemyBatSmall : public EnemyChar
 {
 private:
+	bool goForPlayer;
 	bool findPlayer;
 	glm::vec3 newCheckpoint;
 	sf::Clock checkPointClock;
