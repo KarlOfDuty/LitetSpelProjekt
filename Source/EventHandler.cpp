@@ -37,6 +37,33 @@ bool EventHandler::handleEvents(sf::Window & window, Player *player)
 		{
 			keyPressed[sf::Keyboard::Space] = false;
 		}
+		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Z && !keyPressed[sf::Keyboard::Z])
+		{
+			keyPressed[sf::Keyboard::Z] = true;
+			player->swap(0);
+		}
+		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::X && !keyPressed[sf::Keyboard::X])
+		{
+			keyPressed[sf::Keyboard::X] = true;
+			player->swap(1);
+		}
+		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::C && !keyPressed[sf::Keyboard::C])
+		{
+			keyPressed[sf::Keyboard::C] = true;
+			player->swap(2);
+		}
+		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::X)
+		{
+			keyPressed[sf::Keyboard::X] = false;
+		}
+		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Z)
+		{
+			keyPressed[sf::Keyboard::Z] = false;
+		}
+		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::C)
+		{
+			keyPressed[sf::Keyboard::C] = false;
+		}
 		else if (windowEvent.type == sf::Event::Closed)
 		{
 			//End the program

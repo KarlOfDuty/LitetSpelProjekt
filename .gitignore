@@ -253,3 +253,6 @@ paket-files/
 .idea/
 *.sln.iml
 *.exe
+
+Source/LitetSpel/x64/Debug/*.obj
+*.exe

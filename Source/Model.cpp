@@ -26,26 +26,23 @@ Material Model::getMaterial(int index)
 {
 	return this->meshes.at(index)->material;
 }
-std::vector<glm::vec2> Model::getPoints() const
+std::vector<glm::vec2> Model::getPoints(glm::vec3 scale)
 {
-	std::vector<glm::vec2> allPoints;
+	this->allPoints.clear();
 	glm::vec2 minPos;
-	glm::vec2 maxPos;
 	for (int i = 0; i < meshes.size(); i++)
 	{
 		for (int j = 0; j < meshes[i]->vertices.size(); j++)
 		{
 			if (meshes[i]->vertices[j].pos.x < minPos.x) minPos.x = meshes[i]->vertices[j].pos.x;
 			if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
-			if (meshes[i]->vertices[j].pos.x > maxPos.x) maxPos.x = meshes[i]->vertices[j].pos.x;
-			if (meshes[i]->vertices[j].pos.y > maxPos.y) maxPos.y = meshes[i]->vertices[j].pos.y;
 		}
 	}
-	allPoints.push_back(minPos);
-	allPoints.push_back(glm::vec2(-minPos.x, minPos.y));
-	allPoints.push_back(maxPos);
-	allPoints.push_back(glm::vec2(-maxPos.x, maxPos.y));
-	return allPoints;
+	allPoints.push_back(glm::vec2(minPos.x*scale.x,minPos.y*scale.y));
+	allPoints.push_back(glm::vec2(-minPos.x*scale.x, minPos.y*scale.y));
+	allPoints.push_back(glm::vec2(-minPos.x*scale.x,-minPos.y*scale.y));
+	allPoints.push_back(glm::vec2(minPos.x*scale.x, -minPos.y*scale.y));
+	return this->allPoints;
 }
 //Setters
 void Model::setModelMatrix(glm::mat4 modelMat)
@@ -596,7 +593,8 @@ Model::Model(Model *otherModel)
 	this->modelMatrix = otherModel->modelMatrix;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->meshes = otherModel->meshes;
-	setupModel();
+	this->VAO = otherModel->VAO;
+	this->VBO = otherModel->VBO;
 }
 Model::Model(Model &otherModel, glm::mat4 modelMat)
 {
@@ -605,16 +603,25 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 	this->meshes = otherModel.meshes;
 	setupModel();
 }
-Model::Model(Model * otherModel, glm::mat4 modelMat)
+Model::Model(Model *otherModel, glm::mat4 modelMat)
 {
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->meshes = otherModel->meshes;
-	setupModel();
+	this->VAO = otherModel->VAO;
+	this->VBO = otherModel->VBO;
 }
 //Destructor
 Model::~Model()
 {
-
+	meshes.clear();
 }
-
+//As models share pointers this can not be done in the destructor
+void Model::deleteMeshes()
+{
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		delete meshes[i];
+	}
+	meshes.clear();
+}

@@ -87,6 +87,12 @@
     <ClCompile Include="EnemyFireFly.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Light.cpp">
+	  <Filter>Source Files</Filter>
+	</ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -153,6 +159,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EnemyFireFly.h">
+	<Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+	  <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -170,5 +182,11 @@
       <Filter>Source Files\Shader</Filter>
     </None>
     <None Include="ClassDiagram.cd" />
+    <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleFragment.glsl">
+      <Filter>Source Files\Shader</Filter>
+    </None>
+    <None Include="simpleVertex.glsl">
+      <Filter>Source Files\Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
