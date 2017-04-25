@@ -44,9 +44,9 @@ GLuint depthMap2;
 GLuint depthMapFBO2;
 const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
-//Light source
-glm::vec3 lightPos(-5.0f, 6.0f, -1.0f);
-glm::vec3 lightPos2(6.0f, 8.0f, 0.0f);
+// Light source
+glm::vec3 lightPos(-5.0f, 6.0f, 0.0f);
+glm::vec3 lightPos2(4.0f, 8.0f, 0.0f);
 
 //Textures
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
@@ -63,7 +63,7 @@ glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / 
 glm::mat4 viewMatrix;
 
 //Lights
-const GLuint NR_LIGHTS = 3;
+const GLuint NR_LIGHTS = 10;
 std::vector<glm::vec3> lightPositions;
 std::vector<glm::vec3> lightColors;
 
@@ -374,7 +374,7 @@ void createGBuffer()
 		{
 			GLfloat xPos = -5.0f;
 			GLfloat yPos = 6.0f;
-			GLfloat zPos = -1.0f;
+			GLfloat zPos = 0.0f;
 			lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 			GLfloat rColor = 0.9f;
 			GLfloat gColor = 0.9f;
