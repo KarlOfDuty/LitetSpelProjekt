@@ -7,9 +7,10 @@ private:
 	int maxJumps;
 	float jumpHeight;
 public:
-	PlayerBird(int HP, Model model);
+	PlayerBird(int HP, Model model, bool inWater);
 	virtual ~PlayerBird();
 	void operator=(const PlayerBird &originalObject);
 	float getJumpHeight();
 	int getMaxJumps();
+	void waterEffect();
 };

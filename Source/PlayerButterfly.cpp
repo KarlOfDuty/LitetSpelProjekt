@@ -1,6 +1,6 @@
 #include "PlayerButterfly.h"
 
-PlayerButterfly::PlayerButterfly(int HP, Model model) :PlayerChar(HP, model)
+PlayerButterfly::PlayerButterfly(int HP, Model model, bool inWater) :PlayerChar(HP, model, inWater)
 {
 	this->maxJumps = 1;
 	this->jumpHeight = 10;
@@ -24,6 +24,10 @@ int PlayerButterfly::getMaxJumps()
 float PlayerButterfly::getJumpHeight()
 {
 	return jumpHeight;
+}
+void PlayerButterfly::waterEffect()
+{
+	this->setHP(0);
 }
 void PlayerButterfly::teleport()
 {

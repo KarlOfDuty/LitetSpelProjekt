@@ -23,9 +23,9 @@ Player::Player()
 	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->playerCharacters[0] = new PlayerBird(100, birdModel);
-	this->playerCharacters[1] = new PlayerShark(100, sharkModel);
-	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
+	this->playerCharacters[0] = new PlayerBird(100, birdModel, false);
+	this->playerCharacters[1] = new PlayerShark(100, sharkModel, false);
+	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel, false);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 }
