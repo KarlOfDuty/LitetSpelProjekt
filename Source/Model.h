@@ -8,6 +8,7 @@
 #include <GL\GL.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <glm\gtx\matrix_decompose.hpp>
 #include <SOIL.h>
 #include "Shader.h"
 //A material specifying how shading, coloring and texturing works

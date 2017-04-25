@@ -3,6 +3,7 @@
 #include <glm/gtx/transform.hpp>
 #include <SFML/Graphics.hpp>
 #include <math.h>
+#include "Model.h"
 namespace collision
 {
     bool fixCollision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2, glm::vec2 &mtv);

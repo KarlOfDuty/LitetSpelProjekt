@@ -42,6 +42,29 @@ std::vector<glm::vec2> Model::getPoints(glm::vec3 scale)
 	allPoints.push_back(glm::vec2(-minPos.x*scale.x, minPos.y*scale.y));
 	allPoints.push_back(glm::vec2(-minPos.x*scale.x,-minPos.y*scale.y));
 	allPoints.push_back(glm::vec2(minPos.x*scale.x, -minPos.y*scale.y));
+	
+	//Get rotation and scale from modelMat
+	glm::vec3 scale2;
+	glm::quat rotation;
+	glm::decompose(this->modelMatrix, scale, rotation, glm::vec3(), glm::vec3(), glm::vec4());
+
+	//Convert from quat to radians
+	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
+	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
+	float radians = -std::atan2(t3, t4);
+
+	//Translate to right position depending on rotation
+	for (int k = 0; k < allPoints.size(); k++)
+	{
+		glm::vec2 center = this->modelMatrix[3];
+		allPoints[k] += center;
+		float x = center.x + (allPoints[k].x - center.x) * cos(radians) - (allPoints[k].y - center.y) * sin(radians);
+		float y = center.y + (allPoints[k].x - center.x) * sin(radians) + (allPoints[k].y - center.y) * cos(radians);
+
+		allPoints[k].x = x;
+		allPoints[k].y = y;
+	}
+
 	return this->allPoints;
 }
 //Setters

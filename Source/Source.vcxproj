@@ -136,6 +136,7 @@
     <ClCompile Include="PlayerButterfly.cpp" />
     <ClCompile Include="PlayerChar.cpp" />
     <ClCompile Include="PlayerShark.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +156,7 @@
     <ClInclude Include="PlayerButterfly.h" />
     <ClInclude Include="PlayerChar.h" />
     <ClInclude Include="PlayerShark.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>

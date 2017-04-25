@@ -16,6 +16,8 @@ Player::Player()
 	Model* sharkModel = new Model("models/sphere/sphere.obj", modelMatrix);
 	Model* butterflyModel = new Model("models/cube/cubeGreen.obj", modelMatrix);
 
+	arrow = new Model("models/cube/cubeGreen.obj");
+
 	this->playerPos = glm::vec3(0.0f, 2.0f, 0.0f);
 	setPos(playerPos);
 	this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -28,6 +30,8 @@ Player::Player()
 	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
+
+	arrows = std::vector<Projectile*>(30,nullptr);
 }
 
 Player::~Player()
@@ -51,6 +55,33 @@ void Player::jump()
 	{
 		velocityY = player->getJumpHeight();
 		jumps++;
+	}
+}
+
+void Player::shoot(sf::Window &window)
+{
+	int activeArrows = 0;
+	for (int i = 0; i < arrows.size(); i++)
+	{
+		if (arrows[i] != nullptr && arrows[i]->isInUse())
+			activeArrows++;
+
+	}
+	std::cout << activeArrows << std::endl;
+	for (int i = 0; i < arrows.size(); i++)
+	{
+		if (arrows[i] == nullptr)
+		{
+			Projectile* temp = new Projectile();
+			temp->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
+			arrows.push_back(temp);
+			i = arrows.size();
+		}
+		else if (!arrows[i]->isInUse())
+		{
+			arrows[i]->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
+			i = arrows.size();
+		}
 	}
 }
 
@@ -79,7 +110,8 @@ glm::vec3 Player::getPlayerPos() const
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage)
 {
 	groundPos = 0.0f;
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+
+	/*if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 	{
 		if (arrow == nullptr)
 		{
@@ -123,25 +155,55 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		arrowVelocity.x -= 0.1*dt;
 		if (arrowVelocity.x < 0) arrowVelocity.x = 0;
 		arrowVelocity.y -= 0.5*dt;
+		std::vector<glm::vec2> arrowPoints = arrow->getPoints(glm::vec3(1.f));
 		for (int i = 0; i < allModels.size(); i++)
 		{
-			std::vector<glm::vec2> arrowPoints;
-			std::vector<glm::vec2> objectPoints;
-			float radians;
-			getPoints(arrowPoints, objectPoints, allModels[i], radians);
-			arrowPoints.clear();
-			arrowPoints = arrow->getPoints(glm::vec3(1.f));
-			for (int i = 0; i < arrowPoints.size(); i++)
-			{
-				arrowPoints[i] += arrowPos;
-			}
+			std::vector<glm::vec2> objectPoints = allModels[i]->getPoints(glm::vec3(5.f));
 			glm::vec2 mtv;
 			if (collision::fixCollision(arrowPoints, objectPoints, mtv))
 			{
 				arrowVelocity = glm::vec2(0);
 			}
 		}
+	}*/
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+	{
+		//shoot(window);
+		/*int knas = 0;
+		for (int i = 0; i < arrows.size(); i++)
+		{
+			if (arrows[i] != nullptr && arrows[i]->isInUse())
+				knas++;
+
+		}
+		if (knas < 10)
+		{
+			for (int i = 0; i < arrows.size(); i++)
+			{
+				if (arrows[i] == nullptr)
+				{
+					Projectile* temp = new Projectile();
+					temp->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
+					arrows.push_back(temp);
+					i = arrows.size();
+				}
+				else if (!arrows[i]->isInUse())
+				{
+					arrows[i]->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
+					i = arrows.size();
+				}
+			}
+		}*/
 	}
+	for (int i = 0; i < arrows.size(); i++)
+	{
+		if (arrows[i] != nullptr && arrows[i]->isInUse())
+		{
+			arrows[i]->update(dt, allModels);
+		}
+	}
+
 	if (playerPos.y > groundPos && isOnGround)
 	{
 		isOnGround = false;
@@ -238,10 +300,10 @@ void Player::draw(Shader shader)
 		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &debugCubes[i]->getModelMatrix()[0][0]);
 		debugCubes[i]->draw(shader);
 	}
-	if (arrow != nullptr)
+	for (int i = 0; i < arrows.size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &arrow->getModelMatrix()[0][0]);
-		arrow->draw(shader);
+		if(arrows[i] != nullptr)
+			arrows[i]->draw(shader);
 	}
 }
 
@@ -251,7 +313,6 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 	int collisionChecks = 0;
 	while (collides && collisionChecks < 5)
 	{
-		glm::vec2 mtv(1000, 1000);
 		int index = -1;
 		float minDistance = 1000;
 		glm::vec2 player2dPos = glm::vec2(playerPos.x, playerPos.y + 0.5f);
@@ -333,29 +394,4 @@ void Player::getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::ve
 
 	//Get object points
 	objectPoints = object->getPoints(scale);
-
-	//Translate to right position depending on rotation
-	for (int k = 0; k < objectPoints.size(); k++)
-	{
-		glm::vec2 center = object->getModelMatrix()[3];
-		objectPoints[k] += center;
-		float x = center.x + (objectPoints[k].x - center.x) * cos(radians) - (objectPoints[k].y - center.y) * sin(radians);
-		float y = center.y + (objectPoints[k].x - center.x) * sin(radians) + (objectPoints[k].y - center.y) * cos(radians);
-
-		objectPoints[k].x = x;
-		objectPoints[k].y = y;
-		/*
-		glm::mat4 modelMat({
-			0.2, 0.0, 0.0, 0.0,
-			0.0, 0.2, 0.0, 0.0,
-			0.0, 0.0, 0.2, 0.0,
-			objectPoints[k].x, objectPoints[k].y, 2.5, 1.0
-		});
-
-		if (debugCubes.size() < k + 1)
-			debugCubes.push_back(new Model(playerCharacters[1]->getModel(), modelMat));
-		else
-			debugCubes[k]->setModelMatrix(modelMat);
-		*/
-	}
 }
