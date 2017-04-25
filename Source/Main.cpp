@@ -44,9 +44,9 @@ GLuint depthMap2;
 GLuint depthMapFBO2;
 const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
-// Light source
-glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
-glm::vec3 lightPos2(2.0f, -4.0f, 1.0f);
+//Light source
+glm::vec3 lightPos(-5.0f, 6.0f, -1.0f);
+glm::vec3 lightPos2(6.0f, 8.0f, 0.0f);
 
 //Textures
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
@@ -63,7 +63,7 @@ glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / 
 glm::mat4 viewMatrix;
 
 //Lights
-const GLuint NR_LIGHTS = 10;
+const GLuint NR_LIGHTS = 3;
 std::vector<glm::vec3> lightPositions;
 std::vector<glm::vec3> lightColors;
 
@@ -135,7 +135,7 @@ void render()
 	// - Get light projection/view matrix.
 	glm::mat4 lightProjection, lightView;
 	glm::mat4 lightSpaceMatrix;
-	GLfloat near_plane = 0.01f, far_plane = 7.5f;
+	GLfloat near_plane = 0.01f, far_plane = 15.0f;
 	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 	lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = lightProjection * lightView;
@@ -372,8 +372,8 @@ void createGBuffer()
 	{
 		if(i != 1)
 		{
-			GLfloat xPos = -4.0f;
-			GLfloat yPos = 4.0f;
+			GLfloat xPos = -5.0f;
+			GLfloat yPos = 6.0f;
 			GLfloat zPos = -1.0f;
 			lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 			GLfloat rColor = 0.9f;
@@ -382,9 +382,9 @@ void createGBuffer()
 			lightColors.push_back(glm::vec3(rColor, gColor, bColor));
 		}
 		{
-			GLfloat xPos = 4.0f;
-			GLfloat yPos = 4.0f;
-			GLfloat zPos = 1.0f;
+			GLfloat xPos = 6.0f;
+			GLfloat yPos = 8.0f;
+			GLfloat zPos = 0.0f;
 			lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 			GLfloat rColor = 0.9f;
 			GLfloat gColor = 0.9f;
