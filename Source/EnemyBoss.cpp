@@ -1,6 +1,6 @@
 #include "EnemyBoss.h"
 
-EnemyBoss::EnemyBoss(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemyBoss::EnemyBoss(int HP, Model model, int damage, glm::vec3 enemyPosCurrent) :EnemyChar(HP, model, damage, enemyPosCurrent)
 {
 	findPlayer = true;
 }
@@ -10,18 +10,18 @@ EnemyBoss::~EnemyBoss()
 
 }
 
-void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
+void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
 
 }
 
-void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
+void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
 {
 	groundCheck();
 
 	if (findPlayer)
 	{
-		if (fabs(enemyPos.x - playerPos.x) < 0.2 && fabs(enemyPos.y - playerPos.y) < 0.3)
+		if (fabs(enemyPosCurrent.x - playerPos.x) < 0.2 && fabs(enemyPosCurrent.y - playerPos.y) < 0.3)
 		{
 			if (goingRight)
 			{
@@ -42,7 +42,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 
 	if (!findPlayer)
 	{
-		if (fabs(enemyPos.x - newCheckpoint.x) < 0.2 && fabs(enemyPos.y - newCheckpoint.y) < 0.3)
+		if (fabs(enemyPosCurrent.x - newCheckpoint.x) < 0.2 && fabs(enemyPosCurrent.y - newCheckpoint.y) < 0.3)
 		{
 			if (clockRestart)
 			{
@@ -59,25 +59,25 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 	//Move
 	if (findPlayer == true)
 	{
-		if (glm::length(enemyPos - playerPos) < 10.0f || playerSeen)
+		if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
 		{
-			if (enemyPos.x > playerPos.x)
+			if (enemyPosCurrent.x > playerPos.x)
 			{
 				velocityX -= 1.7f*dt;
 				goingLeft = true;
 				goingRight = false;
 			}
-			else if (enemyPos.x < playerPos.x)
+			else if (enemyPosCurrent.x < playerPos.x)
 			{
 				velocityX += 1.7f*dt;
 				goingRight = true;
 				goingLeft = false;
 			}
-			if (enemyPos.y > playerPos.y)
+			if (enemyPosCurrent.y > playerPos.y)
 			{
 				velocityY -= 1.7f*dt;
 			}
-			else if (enemyPos.y < playerPos.y)
+			else if (enemyPosCurrent.y < playerPos.y)
 			{
 				velocityY += 1.7f*dt;
 			}
@@ -86,19 +86,19 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 	}
 	else
 	{
-		if (enemyPos.x > newCheckpoint.x)
+		if (enemyPosCurrent.x > newCheckpoint.x)
 		{
 			velocityX -= 1.7f*dt;
 		}
-		else if (enemyPos.x < newCheckpoint.x)
+		else if (enemyPosCurrent.x < newCheckpoint.x)
 		{
 			velocityX += 1.7f*dt;
 		}
-		if (enemyPos.y > newCheckpoint.y)
+		if (enemyPosCurrent.y > newCheckpoint.y)
 		{
 			velocityY -= 1.7f*dt;
 		}
-		else if (enemyPos.y < newCheckpoint.y)
+		else if (enemyPosCurrent.y < newCheckpoint.y)
 		{
 			velocityY += 1.7f*dt;
 		}
@@ -116,16 +116,16 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 	}
 
 	//Apply velocity
-	enemyPos.x += velocityX;
+	enemyPosCurrent.x += velocityX;
 	velocityX = 0;
-	enemyPos.y += velocityY;
+	enemyPosCurrent.y += velocityY;
 	velocityY = 0;
 
 	//Handle collision detection with ground
-	if (enemyPos.y <= 0) {
-		enemyPos.y = 0;
+	if (enemyPosCurrent.y <= 0) {
+		enemyPosCurrent.y = 0;
 		isOnGround = true;
 	}
 
-	setEnemyPos(enemyPos);
+	setEnemyPos(enemyPosCurrent);
 }

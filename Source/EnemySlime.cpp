@@ -1,6 +1,6 @@
 #include "EnemySlime.h"
 
-EnemySlime::EnemySlime(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemySlime::EnemySlime(int HP, Model model, int damage, glm::vec3 enemyPosCurrent) :EnemyChar(HP, model, damage, enemyPosCurrent)
 {
 	
 }
@@ -10,29 +10,31 @@ EnemySlime::~EnemySlime()
 
 }
 
-void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
+void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
 
 }
 
-void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
+void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
 {
 	groundCheck();
 
 	//Patrol check 
-	if (fabs(enemyPos.x) < checkPoint.x-2)
+	if (fabs(enemyPosCurrent.x) < checkPoint.x-2)
 	{
 		checkPointReached = true;
+		
 	}
-	else if (fabs(enemyPos.x) > checkPoint.x+2)
+	else if (fabs(enemyPosCurrent.x) > checkPoint.x+2)
 	{
 		checkPointReached = false;
+
 	}
 
 	//Move
-	if (glm::length(enemyPos - playerPos) < 5.0f || playerSeen)
+	if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
 	{
-		if (enemyPos.x > playerPos.x)
+		if (enemyPosCurrent.x > playerPos.x)
 		{
 			velocityX -= 1.0f*dt;
 		}
@@ -57,7 +59,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, g
 
 	if (isOnGround)
 	{
-		if (fabs(enemyPos.x - playerPos.x) < 0.1)
+		if (fabs(enemyPosCurrent.x - playerPos.x) < 0.1)
 		{
 			velocityY = 10;
 		}
@@ -79,17 +81,17 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, g
 	}
 
 	//Apply velocity
-	enemyPos.x += velocityX;
+	enemyPosCurrent.x += velocityX;
 	velocityX = 0;
-	enemyPos.y += velocityY*dt;
+	enemyPosCurrent.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (enemyPos.y <= 0) {
+	if (enemyPosCurrent.y <= 0) {
 		velocityY = 0;
-		enemyPos.y = 0;
+		enemyPosCurrent.y = 0;
 		isOnGround = true;
 	}
 
-	setEnemyPos(enemyPos);
+	setEnemyPos(enemyPosCurrent);
 }
 

@@ -7,6 +7,7 @@
 #include "EnemyBoss.h"
 #include "EnemySkeleton.h"
 #include "EnemyCrab.h"
+#include "EnemyFireFly.h"
 #include "Player.h"
 #include "Shader.h"
 #include <SFML\Window.hpp>
@@ -32,6 +33,7 @@ private:
 	Model batSmallModel;
 	Model skeletonModel;
 	Model crabModel;
+	Model fireflyModel;
 public:
 	Enemy();
 	~Enemy();
@@ -42,6 +44,7 @@ public:
 	void createSkeleton(glm::vec3 enemyStartPos);
 	void createCrab(glm::vec3 enemyStartPos);
 	void createBoss(glm::vec3 enemyStartPos);
+	void createFirefly(glm::vec3 enemyStartPos);
 	void sortEnemies(glm::vec3 playerPos);
 	glm::vec3 getEnemyPos()const;
 	int getDamage()const;

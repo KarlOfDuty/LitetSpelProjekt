@@ -40,8 +40,9 @@ Enemy::Enemy()
 	batModel = Model("models/Enemies/Bat/BigBat.obj");
 	batSmallModel = Model("models/Enemies/BatSmall/SmallBat.obj");
 	bossModel = Model("models/cube/cube.obj");
-	skeletonModel = Model("models/sphere/sphere.obj");
+	skeletonModel = Model("models/Enemies/Skeleton/Skeleton.obj");
 	crabModel = Model("models/Enemies/Crab/Crab.obj");
+	fireflyModel = Model("models/cube/cube.obj");
 }
 
 Enemy::~Enemy()
@@ -95,7 +96,7 @@ void Enemy::createSkeleton(glm::vec3 enemyStartPos)
 	{
 		this->expand();
 	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(10, batModel, 4, enemyStartPos);
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(10, skeletonModel, 4, enemyStartPos);
 	this->nrOfEnemies++;
 }
 
@@ -116,6 +117,16 @@ void Enemy::createBoss(glm::vec3 enemyStartPos)
 		this->expand();
 	}
 	this->enemyCharacters[this->nrOfEnemies] = new EnemyBoss(100, bossModel, 2, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::createFirefly(glm::vec3 enemyStartPos)
+{
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyFireFly(1, fireflyModel, 1, enemyStartPos);
 	this->nrOfEnemies++;
 }
 
