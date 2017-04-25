@@ -157,10 +157,11 @@ void render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// 1.2 second shadow
+	glm::mat4 lightProjection2, lightView2;
 	glm::mat4 lightSpaceMatrix2;
-	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-	lightView = glm::lookAt(lightPos2, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-	lightSpaceMatrix2 = lightProjection * lightView;
+	lightProjection2 = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	lightView2 = glm::lookAt(lightPos2, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	lightSpaceMatrix2 = lightProjection2 * lightView2;
 	// - now render scene from light's point of view
 	simpleShadowShader.use();
 	glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix2));

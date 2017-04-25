@@ -108,8 +108,8 @@ void main()
 	}
 	fragColor = vec4(lighting, 1.0f);
 	float depthValue = texture(depthMap,texCoords).r;
-	//float depthValue2 = texture(depthMap2,texCoords).r;
+	float depthValue2 = texture(depthMap2,texCoords).r;
 	// Test depthmap
-	fragColor = vec4(vec3(depthValue),1.0);
+	fragColor = vec4(vec3(depthValue2),1.0);
 }
 
