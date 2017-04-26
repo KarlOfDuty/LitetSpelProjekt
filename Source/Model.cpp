@@ -26,7 +26,7 @@ Material Model::getMaterial(int index)
 {
 	return this->meshes.at(index)->material;
 }
-std::vector<glm::vec2> Model::getPoints(glm::vec3 scale)
+std::vector<glm::vec2> Model::getPoints()
 {
 	this->allPoints.clear();
 	glm::vec2 minPos;
@@ -38,13 +38,8 @@ std::vector<glm::vec2> Model::getPoints(glm::vec3 scale)
 			if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
 		}
 	}
-	allPoints.push_back(glm::vec2(minPos.x*scale.x,minPos.y*scale.y));
-	allPoints.push_back(glm::vec2(-minPos.x*scale.x, minPos.y*scale.y));
-	allPoints.push_back(glm::vec2(-minPos.x*scale.x,-minPos.y*scale.y));
-	allPoints.push_back(glm::vec2(minPos.x*scale.x, -minPos.y*scale.y));
-	
 	//Get rotation and scale from modelMat
-	glm::vec3 scale2;
+	glm::vec3 scale;
 	glm::quat rotation;
 	glm::decompose(this->modelMatrix, scale, rotation, glm::vec3(), glm::vec3(), glm::vec4());
 
@@ -52,6 +47,12 @@ std::vector<glm::vec2> Model::getPoints(glm::vec3 scale)
 	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
 	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
 	float radians = -std::atan2(t3, t4);
+
+	//Pushback points without rotation
+	allPoints.push_back(glm::vec2(minPos.x*scale.x, minPos.y*scale.y));
+	allPoints.push_back(glm::vec2(-minPos.x*scale.x, minPos.y*scale.y));
+	allPoints.push_back(glm::vec2(-minPos.x*scale.x, -minPos.y*scale.y));
+	allPoints.push_back(glm::vec2(minPos.x*scale.x, -minPos.y*scale.y));
 
 	//Translate to right position depending on rotation
 	for (int k = 0; k < allPoints.size(); k++)

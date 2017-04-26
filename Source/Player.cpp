@@ -31,7 +31,7 @@ Player::Player()
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 
-	arrows = std::vector<Projectile*>(30,nullptr);
+	arrows = std::vector<Projectile*>();
 }
 
 Player::~Player()
@@ -68,25 +68,26 @@ void Player::shoot(sf::Window &window)
 	int activeArrows = 0;
 	for (int i = 0; i < arrows.size(); i++)
 	{
-		if (arrows[i] != nullptr && arrows[i]->isInUse())
+		if (arrows[i]->isInUse())
 			activeArrows++;
 
 	}
-	std::cout << activeArrows << std::endl;
-	for (int i = 0; i < arrows.size(); i++)
+	if (activeArrows < arrows.size())
 	{
-		if (arrows[i] == nullptr)
+		for (int i = 0; i < arrows.size(); i++)
 		{
-			Projectile* temp = new Projectile();
-			temp->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
-			arrows.push_back(temp);
-			i = arrows.size();
+			if (!arrows[i]->isInUse())
+			{
+				arrows[i]->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
+				i = arrows.size();
+			}
 		}
-		else if (!arrows[i]->isInUse())
-		{
-			arrows[i]->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
-			i = arrows.size();
-		}
+	}
+	else
+	{
+		Projectile* temp = new Projectile();
+		temp->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
+		arrows.push_back(temp);
 	}
 }
 //Sets the playerPos variable
@@ -171,38 +172,48 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 	}*/
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
 	{
-		//shoot(window);
-		/*int knas = 0;
-		for (int i = 0; i < arrows.size(); i++)
+		glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+		glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
+		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
+		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
+
+		glm::vec2 startposition = glm::vec2(playerPos.x, playerPos.y + 2.f);
+		glm::vec2 startvelocity = glm::vec2(glm::abs(direction.x*0.5f), direction.y*0.5f);
+
+		for (int i = 0; i < 30; i++)
 		{
-			if (arrows[i] != nullptr && arrows[i]->isInUse())
-				knas++;
+			glm::vec2 velocity;
+			glm::vec2 position = startposition;
+
+			velocity.x = startvelocity.x - 0.1*(float)i;
+			velocity.y = startvelocity.y - 0.5*(float)i;
+			position.x += direction.x*velocity.x;
+			position.y += velocity.y;
+
+			glm::mat4 modelMat({
+				0.1, 0.0, 0.0, 0.0,
+				0.0, 0.1, 0.0, 0.0,
+				0.0, 0.0, 0.1, 0.0,
+				position.x, position.y , 0.0, 1.0
+			});
+
+			if (debugCubes.size() <= i)
+			{
+				debugCubes.push_back(new Model(arrow, modelMat));
+			}
+			else
+			{
+				debugCubes[i]->setModelMatrix(modelMat);
+			}
 
 		}
-		if (knas < 10)
-		{
-			for (int i = 0; i < arrows.size(); i++)
-			{
-				if (arrows[i] == nullptr)
-				{
-					Projectile* temp = new Projectile();
-					temp->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
-					arrows.push_back(temp);
-					i = arrows.size();
-				}
-				else if (!arrows[i]->isInUse())
-				{
-					arrows[i]->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
-					i = arrows.size();
-				}
-			}
-		}*/
+
 	}
 	for (int i = 0; i < arrows.size(); i++)
 	{
-		if (arrows[i] != nullptr && arrows[i]->isInUse())
+		if (arrows[i]->isInUse())
 		{
 			arrows[i]->update(dt, allModels);
 		}
@@ -305,8 +316,19 @@ void Player::draw(Shader shader)
 	}
 	for (int i = 0; i < arrows.size(); i++)
 	{
-		if(arrows[i] != nullptr)
+		if (arrows[i]->isInUse())
+		{
 			arrows[i]->draw(shader);
+		}
+	}
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+	{
+		for (int i = 0; i < debugCubes.size(); i++)
+		{
+			glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &debugCubes[i]->getModelMatrix()[0][0]);
+			debugCubes[i]->draw(shader);
+		}
 	}
 }
 //Tests collision with other objects
@@ -400,5 +422,5 @@ void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, floa
 	radians = (float)-std::atan2(t3, t4);
 
 	//Get object points
-	objectPoints = object->getPoints(scale);
+	objectPoints = object->getPoints();
 }
