@@ -1,6 +1,6 @@
 #include "EnemySkeleton.h"
 
-EnemySkeleton::EnemySkeleton(int HP, Model model, int damage, bool patrol, glm::vec3 enemyPosCurrent) :EnemyChar(HP, model, damage, enemyPosCurrent)
+EnemySkeleton::EnemySkeleton(int HP, Model model, int damage, bool patrol, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
 	this->patrol = patrol;
 	std::srand(time(0));

@@ -1,6 +1,6 @@
 #include "EnemyFireFly.h"
 
-EnemyFireFly::EnemyFireFly(int HP, Model model, int damage, glm::vec3 enemyPosCurrent) :EnemyChar(HP, model, damage, enemyPosCurrent)
+EnemyFireFly::EnemyFireFly(int HP, Model model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
 	this->attackRange = 9;
 }

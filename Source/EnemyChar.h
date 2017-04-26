@@ -29,7 +29,7 @@ public:
 
 	//Functions
 	EnemyChar();
-	EnemyChar(int HP, Model model, int damage, glm::vec3 enemyPos);
+	EnemyChar(int HP, Model model, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyChar();
 	void setEnemyPos(glm::vec3 position);
 	void setHP(int HP);

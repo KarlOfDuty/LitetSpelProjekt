@@ -1,6 +1,6 @@
 #include "EnemyToad.h"
 
-EnemyToad::EnemyToad(int HP, Model model, int damage, glm::vec3 enemyPosCurrent) :EnemyChar(HP, model, damage, enemyPosCurrent)
+EnemyToad::EnemyToad(int HP, Model model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
 
 }

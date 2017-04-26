@@ -1,6 +1,6 @@
 #include "EnemyBatSmall.h"
 
-EnemyBatSmall::EnemyBatSmall(int HP, Model model, int damage, glm::vec3 enemyPosCurrent) :EnemyChar(HP, model, damage, enemyPosCurrent)
+EnemyBatSmall::EnemyBatSmall(int HP, Model model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
 	std::srand(time(0));
 	findPlayer = true;

@@ -1,6 +1,6 @@
 #include "EnemySlime.h"
 
-EnemySlime::EnemySlime(int HP, Model model, int damage, glm::vec3 enemyPosCurrent) :EnemyChar(HP, model, damage, enemyPosCurrent)
+EnemySlime::EnemySlime(int HP, Model model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
 	
 }

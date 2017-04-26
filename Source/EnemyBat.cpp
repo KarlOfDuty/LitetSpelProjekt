@@ -1,6 +1,6 @@
 #include "EnemyBat.h"
 
-EnemyBat::EnemyBat(int HP, Model model, int damage, glm::vec3 enemyPosCurrent) :EnemyChar(HP, model, damage, enemyPosCurrent)
+EnemyBat::EnemyBat(int HP, Model model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
 	findPlayer = true;
 }

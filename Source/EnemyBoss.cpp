@@ -1,8 +1,14 @@
 #include "EnemyBoss.h"
 
-EnemyBoss::EnemyBoss(int HP, Model model, int damage, glm::vec3 enemyPosCurrent) :EnemyChar(HP, model, damage, enemyPosCurrent)
+EnemyBoss::EnemyBoss(int HP, Model model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
-	findPlayer = true;
+	this->acceleration = 0.3f;
+	this->originPoint = enemyStartPos;
+	this->attackNow = true;
+	this->phase1 = true;
+	this->phase2 = false;
+	this->phase3 = false;
+	this->chargeCounter = 0;
 }
 
 EnemyBoss::~EnemyBoss()
@@ -19,110 +25,116 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 {
 	groundCheck();
 
-	if (findPlayer)
+	if (phase1)
 	{
-		if (fabs(enemyPosCurrent.x - playerPos.x) < 0.2 && fabs(enemyPosCurrent.y - playerPos.y) < 0.3)
+		if (!attackNow)
 		{
-			if (goingRight)
+			if (walkTimer.getElapsedTime().asSeconds() >= 1.5)
 			{
-				newCheckpoint.x = playerPos.x + 7;
-				newCheckpoint.y = playerPos.y + 6;
-				newCheckpoint.z = playerPos.z;
+				attackNow = true;
 			}
-			if (goingLeft)
-			{
-				newCheckpoint.x = playerPos.x - 7;
-				newCheckpoint.y = playerPos.y + 6;
-				newCheckpoint.z = playerPos.z;
-			}
-			findPlayer = false;
-			clockRestart = true;
 		}
+
+		if (attackNow)
+		{
+			if (glm::length(enemyPosCurrent - originPoint) > 8.0f)//replace with when collision happens
+			{
+				originPoint = enemyPosCurrent;
+				attackNow = false;
+				movingRight = false;
+				movingLeft = false;
+				velocityX = 0;
+				walkTimer.restart();
+				chargeCounter = chargeCounter + 1;
+				if (chargeCounter >= 3)
+				{
+					dazeTimer.restart();
+				}
+			}
+		}
+
+		if (playerSeen)
+		{
+			if (isOnGround)
+			{
+				//Charge
+				if (chargeCounter < 3)
+				{
+					if (attackNow)
+					{
+						if (movingLeft == false)
+						{
+							if (enemyPosCurrent.x >= playerPos.x)
+							{
+								movingRight = true;
+							}
+						}
+						if (movingRight == false)
+						{
+							if (enemyPosCurrent.x <= playerPos.x)
+							{
+								movingLeft = true;
+							}
+						}
+						if (movingRight == true)
+						{
+							velocityX = velocityX - acceleration * dt;
+						}
+						else if (movingLeft == true)
+						{
+							velocityX = velocityX + acceleration * dt;
+						}
+					}
+				}
+
+				if (chargeCounter >= 3)
+				{
+					if (dazeTimer.getElapsedTime().asSeconds() >= 5)
+					{
+						chargeCounter = 0;
+					}
+				}
+			}
+		}
+
+		if (velocityX < -0.4) velocityX = -0.4f;
+		if (velocityX > 0.4) velocityX = 0.4f;
+
+		//Apply velocity
+		enemyPosCurrent.x += velocityX;
+		enemyPosCurrent.y += velocityY*dt;
 	}
 
-	if (!findPlayer)
+	if (phase2)
 	{
-		if (fabs(enemyPosCurrent.x - newCheckpoint.x) < 0.2 && fabs(enemyPosCurrent.y - newCheckpoint.y) < 0.3)
-		{
-			if (clockRestart)
-			{
-				waitInAir.restart();
-				clockRestart = false;
-			}
-			if (waitInAir.getElapsedTime().asSeconds() >= 1.0)
-			{
-				findPlayer = true;
-			}
-		}
+		 
 	}
 
-	//Move
-	if (findPlayer == true)
-	{
-		if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
-		{
-			if (enemyPosCurrent.x > playerPos.x)
-			{
-				velocityX -= 1.7f*dt;
-				goingLeft = true;
-				goingRight = false;
-			}
-			else if (enemyPosCurrent.x < playerPos.x)
-			{
-				velocityX += 1.7f*dt;
-				goingRight = true;
-				goingLeft = false;
-			}
-			if (enemyPosCurrent.y > playerPos.y)
-			{
-				velocityY -= 1.7f*dt;
-			}
-			else if (enemyPosCurrent.y < playerPos.y)
-			{
-				velocityY += 1.7f*dt;
-			}
-			playerSeen = true;
-		}
-	}
-	else
-	{
-		if (enemyPosCurrent.x > newCheckpoint.x)
-		{
-			velocityX -= 1.7f*dt;
-		}
-		else if (enemyPosCurrent.x < newCheckpoint.x)
-		{
-			velocityX += 1.7f*dt;
-		}
-		if (enemyPosCurrent.y > newCheckpoint.y)
-		{
-			velocityY -= 1.7f*dt;
-		}
-		else if (enemyPosCurrent.y < newCheckpoint.y)
-		{
-			velocityY += 1.7f*dt;
-		}
-	}
-
-
-	if (isOnGround)
+	if (phase3)
 	{
 
 	}
+
+
 
 	if (!isOnGround)
 	{
-
+		velocityY -= 30 * dt;
 	}
 
-	//Apply velocity
-	enemyPosCurrent.x += velocityX;
-	velocityX = 0;
-	enemyPosCurrent.y += velocityY;
-	velocityY = 0;
+	if (velocityY > 10)
+	{
+		velocityY = 10;
+	}
+
+	if (velocityY < -10)
+	{
+		velocityY = -10;
+	}
 
 	//Handle collision detection with ground
 	if (enemyPosCurrent.y <= 0) {
+		velocityY = 0;
 		enemyPosCurrent.y = 0;
 		isOnGround = true;
 	}

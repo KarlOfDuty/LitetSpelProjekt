@@ -1,8 +1,10 @@
 #include "EnemyCrab.h"
 
-EnemyCrab::EnemyCrab(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemyCrab::EnemyCrab(int HP, Model model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
-	acceleration = 0.2f;
+	this->acceleration = 0.2f;
+	this->originPoint = enemyStartPos;
+	this->attackNow = true;
 }
 
 EnemyCrab::~EnemyCrab()
@@ -10,7 +12,7 @@ EnemyCrab::~EnemyCrab()
 
 }
 
-void EnemyCrab::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
+void EnemyCrab::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
 
 }
@@ -29,19 +31,25 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 		checkPointReached = false;
 	}
 
-	if (walkTimer.getElapsedTime().asSeconds() >= 2.0)
+	if (!attackNow)
 	{
-		attackNow = true;
-		originPoint = enemyPosCurrent;
-		walkTimer.restart();
+		if (walkTimer.getElapsedTime().asSeconds() >= 1.5)
+		{
+			attackNow = true;
+		}
 	}
 
-	if (glm::length(enemyPosCurrent - originPoint) > 4.0f)
+	if (attackNow)
 	{
-		attackNow = false;
-		movingRight = false;
-		movingLeft = false;
-		velocityX = 0;
+		if (glm::length(enemyPosCurrent - originPoint) > 4.0f)
+		{
+			originPoint = enemyPosCurrent;
+			attackNow = false;
+			movingRight = false;
+			movingLeft = false;
+			velocityX = 0;
+			walkTimer.restart();
+		}
 	}
 
 	if (isOnGround)
