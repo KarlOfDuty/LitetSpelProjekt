@@ -309,11 +309,6 @@ void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
-	for (int i = 0; i < debugCubes.size(); i++)
-	{
-		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &debugCubes[i]->getModelMatrix()[0][0]);
-		debugCubes[i]->draw(shader);
-	}
 	for (int i = 0; i < arrows.size(); i++)
 	{
 		if (arrows[i]->isInUse())
