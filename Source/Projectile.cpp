@@ -63,7 +63,7 @@ void Projectile::update(float dt,std::vector<Model*> &allObjects)
 			{
 				std::vector<glm::vec2> objectPoints = allObjects[index]->getPoints(glm::vec3(5.f));
 				glm::vec2 mtv;
-				if (collision::fixCollision(arrowPoints, objectPoints, mtv))
+				if (collision::testCollision(arrowPoints, objectPoints, mtv))
 				{
 					position += mtv;
 					model->setModelMatrix({
