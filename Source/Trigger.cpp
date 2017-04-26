@@ -8,15 +8,38 @@ template<class T>
 bool Trigger<T>::update()
 {
 	//Find how many models intersect this one
+	int numOfModels = 0;
 	for (int i = 0; i < activators.size(); i++)
 	{
-		collision::testCollision(corners,activators[i]->getPoints());
+		if (collision::testCollision(corners, activators[i]->getPoints()))
+		{
+			numOfModels++;
+		}
 	}
+	if (onEnter && numOfModels > objectsInside)
+	{
+		for (int i = 0; i < numOfModels - objectsInside; i++)
+		{
+			activate();
+		}
+	}
+	if (onEnterAll && activators.size() == numOfModels && numOfModels > 0)
+	{
+		activate();
+	}
+	if (whileInside && objectsInside)
+	{
+		for (int i = 0; i < numOfModels; i++)
+		{
+			activate();
+		}
+	}
+	objectsInside = numberOfActivations;
 }
 template<class T>
 void Trigger<T>::activate()
 {
-
+	std::cout << "Hello gais" << std::endl;
 }
 //Constructors
 template<class T>

@@ -48,7 +48,7 @@ glm::vec3 Player::getActualPlayerPos() const
 {
 	return this->modelMatrix[3];
 }
-
+//Swaps the current player
 void Player::swap(int character)
 {
 	player = playerCharacters[character];
