@@ -175,16 +175,13 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
 		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
 
-		glm::vec2 startposition = glm::vec2(playerPos.x, playerPos.y + 2.f);
-		glm::vec2 startvelocity = glm::vec2(glm::abs(direction.x*0.5f), direction.y*0.5f);
+		glm::vec2 position = glm::vec2(playerPos.x, playerPos.y + 2.f);
+		glm::vec2 velocity = glm::vec2(glm::abs(direction.x*0.5f), direction.y*0.5f);
 
 		for (int i = 0; i < 30; i++)
 		{
-			glm::vec2 velocity;
-			glm::vec2 position = startposition;
-
-			velocity.x = startvelocity.x - 0.1*(float)i;
-			velocity.y = startvelocity.y - 0.5*(float)i;
+			velocity.x -= 0.1*dt;
+			velocity.y -= 0.5*dt;
 			position.x += direction.x*velocity.x;
 			position.y += velocity.y;
 
