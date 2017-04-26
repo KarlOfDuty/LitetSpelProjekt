@@ -31,6 +31,6 @@ void PlayerShark::waterEffect()
 }
 void PlayerShark::dive()
 {
-
+	setDiving(true);
 }
 
