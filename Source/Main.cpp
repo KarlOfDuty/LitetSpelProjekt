@@ -366,7 +366,7 @@ void loadLevel()
 {
 	levelManager.currentLevel->loadModels();
 	levelManager.currentLevel->setupModels();
-	levelManager.currentLevel->setupTriggers();
+	//levelManager.currentLevel->setupTriggers();
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
 	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
@@ -385,7 +385,7 @@ void loadLevel()
 void unloadLevel()
 {
 	levelManager.currentLevel->unloadModels();
-	levelManager.currentLevel->deleteTriggers();
+	//levelManager.currentLevel->deleteTriggers();
 	modelsToBeDrawn.clear();
 	//playerCamera.destroyQuadTree();
 	for (int i = 0; i < lights.size(); i++)
@@ -397,9 +397,9 @@ void unloadLevel()
 bool endLevel()
 {
 	bool end = false;
-	for (int i = 0; i < levelManager.currentLevel->getTriggers().size(); i++)
-	{
-		end = collision::testCollision(player->getPlayerPoints(),levelManager.currentLevel->getTriggers()[i]->getCorners());
-	}
+	//for (int i = 0; i < levelManager.currentLevel->getTriggers().size(); i++)
+	//{
+	//	end = collision::testCollision(player->getPlayerPoints(),levelManager.currentLevel->getTriggers()[i]->getCorners());
+	//}
 	return end;
 }

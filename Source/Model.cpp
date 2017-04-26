@@ -67,6 +67,10 @@ std::vector<glm::vec2> Model::getPoints(glm::vec3 scale)
 
 	return this->allPoints;
 }
+float Model::getBoundingSphereRadius() const
+{
+	return boundingSphereRadius;
+}
 //Setters
 void Model::setModelMatrix(glm::mat4 modelMat)
 {
@@ -75,6 +79,20 @@ void Model::setModelMatrix(glm::mat4 modelMat)
 void Model::setRotationMatrix(glm::mat4 rotationMat)
 {
 	this->rotationMatrix = rotationMat;
+}
+//Sets the radius of the bounding sphere around this model
+void Model::setBoundingSphereRadius()
+{
+	//Takes the distance to the furthest away vertex and sets it as the radius
+	float radius = 0.0f;
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		for (int j = 0; j < meshes[i]->vertices.size(); j++)
+		{
+			radius = glm::max(radius, (float)meshes[i]->vertices[j].pos.length());
+		}
+	}
+	this->boundingSphereRadius = radius;
 }
 //Multiplies the model matrix with the rotation matrix
 void Model::rotate()
@@ -553,24 +571,6 @@ void Model::loadTextures(int i)
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-}
-//Sets the radius of the bounding sphere around this model
-void Model::setBoundingSphereRadius()
-{
-	//Takes the distance to the furthest away vertex and sets it as the radius
-	float radius = 0.0f;
-	for (int i = 0; i < meshes.size(); i++)
-	{
-		for (int j = 0; j < meshes[i]->vertices.size(); j++)
-		{
-			radius = glm::max(radius, (float)meshes[i]->vertices[j].pos.length());
-		}
-	}
-	this->boundingSphereRadius = radius;
-}
-float Model::getBoundingSphereRadius() const
-{
-	return boundingSphereRadius;
 }
 //Constructors
 Model::Model(std::string filename)

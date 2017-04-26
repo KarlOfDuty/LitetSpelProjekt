@@ -53,7 +53,7 @@ void Player::swap(int character)
 {
 	player = playerCharacters[character];
 }
-
+//Makes the player jump
 void Player::jump()
 {
 	if (player->getMaxJumps() > jumps)
@@ -62,7 +62,7 @@ void Player::jump()
 		jumps++;
 	}
 }
-
+//Makes the player shoot
 void Player::shoot(sf::Window &window)
 {
 	int activeArrows = 0;
@@ -89,17 +89,17 @@ void Player::shoot(sf::Window &window)
 		}
 	}
 }
-
+//Sets the playerPos variable
 void Player::setPos(glm::vec3 playerPos)
 {
 	this->playerPos = playerPos;
 }
-
+//Sets the actual model position in the model matrix
 void Player::setActualPos(glm::vec3 playerPos)
 {
 	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
 }
-
+//True if player is dead
 bool Player::playerIsDead()
 {
 	if (playerCharacters[0]->getHP() <= 0)
@@ -309,7 +309,7 @@ void Player::draw(Shader shader)
 			arrows[i]->draw(shader);
 	}
 }
-
+//Tests collision with other objects
 void Player::testCollision(std::vector<Model*> &allModels)
 {
 	bool collides = true;

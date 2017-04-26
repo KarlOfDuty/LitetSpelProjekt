@@ -10,16 +10,16 @@ private:
 	std::vector<Model*> modelLibrary;
 	std::vector<Model*> staticModels;
 	std::vector<Model*> dynamicModels;
-	std::vector<Trigger*> triggerBoxes;
+	std::vector<Trigger<Model>*> triggerBoxes;
 	std::vector<std::string> modelFilePaths;
 public:
 	void loadModels();
 	void setupModels();
 	void unloadModels();
-	void setupTriggers();
+	//void setupTriggers();
 	void deleteTriggers();
 	std::vector<Model*> getStaticModels();
-	std::vector<Trigger*> getTriggers();
+	//std::vector<Trigger<Model>*> getTriggers();
 	glm::vec3 getPlayerPos();
 	Level();
 	Level(std::string filepath);
