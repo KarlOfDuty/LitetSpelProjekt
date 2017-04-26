@@ -5,6 +5,7 @@ class EnemySkeleton : public EnemyChar
 private:
 	bool checkPointReached;
 	bool patrol;
+	int doValue;
 public:
 	EnemySkeleton(int HP, Model enemyModel, int damage, bool patrol, glm::vec3 enemyStartPos);
 	virtual ~EnemySkeleton();

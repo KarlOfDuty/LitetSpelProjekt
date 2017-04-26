@@ -90,13 +90,13 @@ void Enemy::createBatSwarm(glm::vec3 enemyStartPos)
 	this->nrOfEnemies++;
 }
 
-void Enemy::createSkeleton(glm::vec3 enemyStartPos)
+void Enemy::createSkeleton(glm::vec3 enemyStartPos, bool patrol)
 {
 	if (this->nrOfEnemies == this->CAP)
 	{
 		this->expand();
 	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(10, skeletonModel, 4, enemyStartPos);
+	this->enemyCharacters[this->nrOfEnemies] = new EnemySkeleton(10, skeletonModel, 4, patrol, enemyStartPos);
 	this->nrOfEnemies++;
 }
 
@@ -126,7 +126,7 @@ void Enemy::createFirefly(glm::vec3 enemyStartPos)
 	{
 		this->expand();
 	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyFireFly(1, fireflyModel, 1, enemyStartPos);
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyFireFly(1, fireflyModel, 2, enemyStartPos);
 	this->nrOfEnemies++;
 }
 
@@ -153,6 +153,22 @@ void Enemy::sortEnemies(glm::vec3 playerPos)
 	}
 }
 
+void Enemy::enemyDead()
+{
+	for (int i = 0; i < this->nrOfEnemies; i++)
+	{
+		if (enemyCharacters[i]->getHP() <= 0)
+		{
+			for (int j = (i + 1); j < this->nrOfEnemies; j++)
+			{
+				std::swap(enemyCharacters[j - 1], enemyCharacters[j]);
+			}
+			nrOfEnemies--;
+			delete enemyCharacters[nrOfEnemies];
+		}
+	}
+}
+
 glm::vec3 Enemy::getEnemyPos() const
 {
 	return enemyCharacters[0]->getEnemyPos();
@@ -163,9 +179,10 @@ int Enemy::getDamage() const
 	return enemyCharacters[0]->getDamage();
 }
 
-void Enemy::update(float dt, glm::vec3 playerPos)
+void Enemy::update(float dt, glm::vec3 playerPos, int playerDamage)
 {
 	sortEnemies(playerPos);
+	enemyDead();
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
@@ -178,7 +195,16 @@ void Enemy::update(float dt, glm::vec3 playerPos)
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
-		enemyCharacters[i]->update(dt, playerPos, smallBatsPos);
+			enemyCharacters[i]->update(dt, playerPos, smallBatsPos);
+	}
+
+	//Enemy taking damage
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
+	{
+			if (fabs(getEnemyPos().x - playerPos.x) < 1.0 && fabs(getEnemyPos().y - playerPos.y) < 1.0)
+			{
+				enemyCharacters[0]->takingDamage(playerDamage);
+			}
 	}
 }
 

@@ -4,6 +4,7 @@ class EnemyFireFly : public EnemyChar
 {
 private:
 	glm::vec3 newCheckpoint;
+	int attackRange;
 	bool goingRight;
 	bool goingLeft;
 	bool findPlayer;

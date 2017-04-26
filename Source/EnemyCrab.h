@@ -10,8 +10,6 @@ private:
 	bool movingLeft;
 	bool movingRight;
 	sf::Clock walkTimer;
-	glm::vec3 checkPointThis;
-	bool test;
 public:
 	EnemyCrab(int HP, Model enemyModel, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyCrab();

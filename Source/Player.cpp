@@ -40,6 +40,11 @@ glm::vec3 Player::getPlayerPos()
 	return this->playerPos;
 }
 
+int Player::getDamage() const
+{
+	return playerCharacters[0]->getDamage();
+}
+
 void Player::swap(int character)
 {
 	player = playerCharacters[character];
@@ -155,12 +160,12 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 	}
 	setPos(playerPos);
 	//Player taking damage
-	if (damageImmunity.getElapsedTime().asSeconds() >= 1.0)
+	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.0)
 	{
 		if (fabs(enemyPos.x - playerPos.x) < 0.2 && fabs(enemyPos.y - playerPos.y) < 1.0)
 		{
 			playerCharacters[0]->takingDamage(enemyDamage);
-			damageImmunity.restart();
+			this->damageImmunity.restart();
 		}
 	}	
 }

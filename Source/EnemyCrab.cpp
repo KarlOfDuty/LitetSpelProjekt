@@ -3,7 +3,6 @@
 EnemyCrab::EnemyCrab(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
 {
 	acceleration = 0.2f;
-	this->checkPointThis.x = enemyPos.x;
 }
 
 EnemyCrab::~EnemyCrab()
@@ -21,22 +20,16 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 	groundCheck();
 
 
-	if (fabs(enemyPosCurrent.x) > checkPoint.x+5)
+	if (enemyPosCurrent.x < checkPoint.x-3)
 	{
-		test = true;
-		std::cout << "go right" << std::endl;
-		std::cout << enemyPosCurrent.x << std::endl;
-		std::cout << checkPoint.x+5 << std::endl;
+		checkPointReached = true;
 	}
-	if (fabs(enemyPosCurrent.x) < checkPoint.x-5)
+	if (enemyPosCurrent.x > checkPoint.x+3)
 	{
-		test = false;
-		std::cout << "go left" << std::endl;
-		std::cout << enemyPosCurrent.x << std::endl;
-		std::cout << checkPoint.x-5 << std::endl;
+		checkPointReached = false;
 	}
 
-	if (walkTimer.getElapsedTime().asSeconds() >= 3.0)
+	if (walkTimer.getElapsedTime().asSeconds() >= 2.0)
 	{
 		attackNow = true;
 		originPoint = enemyPosCurrent;
@@ -85,11 +78,25 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 			else
 			{
 				//Patrol
-				if (!test)
+				if (movingLeft == false)
+				{
+					if ((!checkPointReached))
+					{
+						movingRight = true;
+					}
+				}
+				if (movingRight == false)
+				{
+					if (checkPointReached)
+					{
+						movingLeft = true;
+					}
+				}
+				if (movingRight == true)
 				{
 					velocityX = velocityX - acceleration * dt;
 				}
-				else if (test)
+				else if (movingLeft == true)
 				{
 					velocityX = velocityX + acceleration * dt;
 				}

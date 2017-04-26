@@ -41,14 +41,15 @@ public:
 	void createToad(glm::vec3 enemyStartPos);
 	void createGiantBat(glm::vec3 enemyStartPos);
 	void createBatSwarm(glm::vec3 enemyStartPos);
-	void createSkeleton(glm::vec3 enemyStartPos);
+	void createSkeleton(glm::vec3 enemyStartPos, bool patrol);
 	void createCrab(glm::vec3 enemyStartPos);
 	void createBoss(glm::vec3 enemyStartPos);
 	void createFirefly(glm::vec3 enemyStartPos);
 	void sortEnemies(glm::vec3 playerPos);
+	void enemyDead();
 	glm::vec3 getEnemyPos()const;
 	int getDamage()const;
-	void update(float dt, glm::vec3 playerPos);
+	void update(float dt, glm::vec3 playerPos, int playerDamage);
 	void draw(Shader shader);
 };
 #endif

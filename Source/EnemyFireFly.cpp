@@ -2,7 +2,7 @@
 
 EnemyFireFly::EnemyFireFly(int HP, Model model, int damage, glm::vec3 enemyPosCurrent) :EnemyChar(HP, model, damage, enemyPosCurrent)
 {
-
+	this->attackRange = 9;
 }
 
 EnemyFireFly::~EnemyFireFly()
@@ -22,21 +22,21 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 	//Move
 	if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
 	{
-		if (enemyPosCurrent.x > playerPos.x)
+		if (enemyPosCurrent.x > playerPos.x+attackRange)
 		{
-			velocityX -= 1.8f*dt;
+			velocityX -= 1.5f*dt;
 		}
-		else if (enemyPosCurrent.x < playerPos.x)
+		else if (enemyPosCurrent.x < playerPos.x-attackRange)
 		{
-			velocityX += 1.8f*dt;
+			velocityX += 1.5f*dt;
 		}
 		if (enemyPosCurrent.y > playerPos.y)
 		{
-			velocityY -= 1.8f*dt;
+			velocityY -= 1.5f*dt;
 		}
 		else if (enemyPosCurrent.y < playerPos.y)
 		{
-			velocityY += 1.8f*dt;
+			velocityY += 1.5f*dt;
 		}
 		playerSeen = true;
 	}

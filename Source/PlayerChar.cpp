@@ -9,6 +9,7 @@ PlayerChar::PlayerChar(int HP, Model model)
 {
 	this->HP = HP;
 	this->playerModel = model;
+	this->damage = 1;
 }
 
 PlayerChar::~PlayerChar()
@@ -23,6 +24,11 @@ void PlayerChar::takingDamage(int appliedDamage)
 void PlayerChar::setHP(int HP)
 {
 	this->HP = HP;
+}
+
+int PlayerChar::getDamage() const
+{
+	return this->damage;
 }
 
 int PlayerChar::getHP() const

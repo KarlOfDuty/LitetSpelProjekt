@@ -20,12 +20,12 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 	groundCheck();
 
 	//Patrol check 
-	if (fabs(enemyPosCurrent.x) < checkPoint.x-2)
+	if (enemyPosCurrent.x < checkPoint.x-2)
 	{
 		checkPointReached = true;
 		
 	}
-	else if (fabs(enemyPosCurrent.x) > checkPoint.x+2)
+	else if (enemyPosCurrent.x > checkPoint.x+2)
 	{
 		checkPointReached = false;
 

@@ -41,6 +41,7 @@ public:
 	glm::vec3 getPlayerPos() const;
 	void update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
 	glm::vec3 getPlayerPos();
+	int getDamage() const;
 	void jump();
 	void setPos(glm::vec3 playerPos);
 	void draw(Shader shader);

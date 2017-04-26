@@ -6,6 +6,7 @@ class PlayerChar
 {
 private:
 	int HP;
+	int damage;
 	Model playerModel;
 	//Animation animation;
 public:
@@ -14,6 +15,7 @@ public:
 	virtual ~PlayerChar();
 	void takingDamage(int appliedDamage);
 	void setHP(int HP);
+	int getDamage() const;
 	int getHP()const;
 	void attack();
 	void draw(Shader shader);

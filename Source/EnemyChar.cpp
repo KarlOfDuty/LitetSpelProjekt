@@ -36,6 +36,11 @@ void EnemyChar::setEnemyPos(glm::vec3 position)
 	this->enemyModelMatrix *= glm::scale(glm::vec3(0.075f, 0.075f, 0.075f));
 }
 
+void EnemyChar::setHP(int HP)
+{
+	this->HP = HP;
+}
+
 glm::vec3 EnemyChar::getEnemyPos() const
 {
 	return enemyPos;
@@ -46,9 +51,23 @@ int EnemyChar::getDamage() const
 	return damage;
 }
 
+int EnemyChar::getHP() const
+{
+	return this->HP;
+}
+
 glm::mat4 EnemyChar::getModelMatrix() const
 {
 	return enemyModelMatrix;
+}
+
+void EnemyChar::takingDamage(int appliedDamage)
+{
+	if (this->damageImmunity.getElapsedTime().asSeconds() >= 0.5)
+	{
+		this->HP -= appliedDamage;
+		this->damageImmunity.restart();
+	}
 }
 
 void EnemyChar::groundCheck()
