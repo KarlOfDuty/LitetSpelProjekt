@@ -40,12 +40,18 @@ void Projectile::update(float dt,std::vector<Model*> &allObjects)
 				0.0, 1.0, 0.0, 0.0,
 				0.0, 0.0, 1.0, 0.0,
 				position.x, position.y , 0.0, 1.0
-			});
+			}); 
 
-			model->setRotationMatrix(glm::rotate(glm::mat4(), rotation, glm::vec3(0.0f, 0.0f, 1.0f)));
+			rotation = -atan2(velocity.x*direction.x, velocity.y);
+
+			glm::mat4 rotMat = glm::rotate(glm::mat4(), rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+			glm::mat4 scaleMat = glm::scale(glm::mat4(), glm::vec3(0.1, 1.0, 0.1));
+			
+			model->setRotationMatrix(rotMat*scaleMat);
+			
 			model->rotate();
 
-			std::vector<glm::vec2> arrowPoints = model->getPoints(glm::vec3(1.f));
+			std::vector<glm::vec2> arrowPoints = model->getPoints();
 
 			int index = -1;
 			float minDistance = 1000;
@@ -61,7 +67,7 @@ void Projectile::update(float dt,std::vector<Model*> &allObjects)
 			}
 			if (index != -1)
 			{
-				std::vector<glm::vec2> objectPoints = allObjects[index]->getPoints(glm::vec3(5.f));
+				std::vector<glm::vec2> objectPoints = allObjects[index]->getPoints();
 				glm::vec2 mtv;
 				if (collision::fixCollision(arrowPoints, objectPoints, mtv))
 				{
@@ -110,19 +116,25 @@ void Projectile::shoot(sf::Window &window ,glm::vec2 startPos, Model* arrow)
 		1.0, 0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0, 0.0,
 		0.0, 0.0, 1.0, 0.0,
-		position.x, position.y + 1.5f, 0.0, 1.0
+		position.x, position.y, 0.0, 1.0
 	});
 	model = new Model(arrow, modelMat);
 	
 	glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 	glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
 	rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
-	model->setRotationMatrix(glm::rotate(glm::mat4(), rotation, glm::vec3(0.0f, 0.0f, 1.0f)));
+
+	glm::mat4 rotMat = glm::rotate(glm::mat4(), rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 scaleMat = glm::scale(glm::mat4(), glm::vec3(0.1, 1.0, 0.1));
+
+	model->setRotationMatrix(rotMat*scaleMat);
 	model->rotate();
 	
 	direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
 	
-	velocity = glm::vec2(glm::abs(direction.x*0.5f), direction.y*0.5f);
+	float startVelocity = 0.5f;
+
+	velocity = glm::vec2(glm::abs(direction.x*startVelocity), direction.y*startVelocity);
 	hasCollided = false;
 	isUsed = true;
 }

@@ -107,3 +107,35 @@ glm::vec2 collision::normalize(glm::vec2 thisVector)
 	normalized.y = thisVector.y / length;
 	return normalized;
 }
+bool collision::isInside(std::vector<glm::vec2> object1Points, std::vector<glm::vec2> object2Points)
+{
+	glm::vec2 object1Min = glm::vec2(1000000);
+	glm::vec2 object1Max = glm::vec2(-1000000);
+	for (int i = 0; i < object1Points.size(); i++)
+	{
+		if (object1Points[i].x < object1Min.x) object1Min.x = object1Points[i].x;
+		if (object1Points[i].y < object1Min.y) object1Min.y = object1Points[i].y;
+		if (object1Points[i].x > object1Max.x) object1Max.x = object1Points[i].x;
+		if (object1Points[i].y > object1Max.y) object1Max.y = object1Points[i].y;
+	}
+
+	glm::vec2 object2Min = glm::vec2(1000000);
+	glm::vec2 object2Max = glm::vec2(-1000000);
+	for (int i = 0; i < object2Points.size(); i++)
+	{
+		if (object2Points[i].x < object2Min.x) object2Min.x = object2Points[i].x;
+		if (object2Points[i].y < object2Min.y) object2Min.y = object2Points[i].y;
+		if (object2Points[i].x > object2Max.x) object2Max.x = object2Points[i].x;
+		if (object2Points[i].y > object2Max.y) object2Max.y = object2Points[i].y;
+	}
+
+	if (object1Max.x > object2Min.x &&
+		object1Min.x < object2Max.x &&
+		object1Max.y > object2Min.y &&
+		object1Min.y < object2Max.y)
+	{
+		return true;
+	}
+
+	return false;
+}

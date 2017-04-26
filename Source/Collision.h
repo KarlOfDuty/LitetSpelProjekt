@@ -11,5 +11,6 @@ namespace collision
     void projectOnAxis(std::vector<glm::vec2> allPoints, glm::vec2 thisAxis, float &min, float &max);
     float dot(glm::vec2 vec1, glm::vec2 vec2);
 	glm::vec2 normalize(glm::vec2 theVector);
+	bool isInside(std::vector<glm::vec2> object1Points, std::vector<glm::vec2> object2Points);
 };
 #endif
