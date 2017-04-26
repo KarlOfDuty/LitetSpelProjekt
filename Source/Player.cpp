@@ -47,7 +47,7 @@ void Player::swap(int character)
 
 void Player::jump()
 {
-	if(player->getDiving() == true)
+	if(player->getDiving() != true)
 	{	if (player->getMaxJumps() > jumps)
 		{
 			velocityY = player->getJumpHeight();
@@ -94,7 +94,7 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 	}
 	int controller = CONTROLLER0;
 	//Move
-	if(player->getDiving() == true)
+	if(player->getDiving() != true)
 	{
 		if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
 		{
@@ -198,6 +198,22 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 		if (velocityY < -5)
 		{
 			velocityY = -5;
+		}
+	}
+
+	if (playerCharacters[2] == player)
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && tpCooldown.getElapsedTime().asSeconds() >= 5.0)
+		{
+			if (goingLeft == true)
+			{
+				playerPos.x += -4;
+			}
+			else
+			{
+				playerPos.x += 4;
+			}
+			tpCooldown.restart();
 		}
 	}
 
