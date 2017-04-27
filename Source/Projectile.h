@@ -1,5 +1,5 @@
 #ifndef PROJECTILE_H
-
+#define PROJECTILE_H
 #include "Model.h"
 #include "Collision.h"
 #include "SFML\Window.hpp"

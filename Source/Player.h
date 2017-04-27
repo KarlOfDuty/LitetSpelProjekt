@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "Collision.h"
 #include "Projectile.h"
+#include "GameObject.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
 #include <vector>
@@ -13,7 +14,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-class Player
+class Player : GameObject
 {
 private:
 	PlayerChar* playerCharacters[3];
@@ -41,8 +42,10 @@ public:
 	~Player();
 	void swap(int charType);
 	bool playerIsDead();
+	glm::vec3 getPos() const;
 	glm::vec3 getPlayerPos() const;
 	glm::vec3 getActualPlayerPos() const;
+	std::vector<glm::vec2> getPoints();
 	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
 	void jump();
 	void shoot(sf::Window &window);

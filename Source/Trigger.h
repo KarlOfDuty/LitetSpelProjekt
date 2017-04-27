@@ -2,14 +2,20 @@
 #define TRIGGER_H
 #include <glm\glm.hpp>
 #include <vector>
+#include "GameObject.h"
 #include "Model.h"
+#include "Enemy.h"
+#include "Player.h"
+#include "Light.h"
+#include "Projectile.h"
 #include "Collision.h"
-template<class T> class Trigger
+
+class Trigger : GameObject
 {
 private:
 	std::vector<glm::vec2> corners;
 	std::vector<Model*> activators;
-	std::vector<T*> targets;
+	std::vector<GameObject*> targets;
 	//Settings flags
 	bool onEnter;
 	bool onEnterAll;
@@ -21,12 +27,12 @@ private:
 	int numberOfActivations;
 	int objectsInside;
 public:
-	std::vector<glm::vec2> getCorners() const;
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
 	bool update();
 	void activate();
-	Trigger<T>();
-	Trigger<T>(glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight);
-	Trigger<T>(std::vector<glm::vec2> corners);
+	Trigger();
+	Trigger(std::vector<glm::vec2> corners, std::vector<Model*> activators, std::vector<GameObject*> targets);
 	~Trigger();
 };
 #endif

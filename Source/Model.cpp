@@ -68,6 +68,10 @@ std::vector<glm::vec2> Model::getPoints()
 
 	return this->allPoints;
 }
+glm::vec3 Model::getPos() const
+{
+	return modelMatrix[3];
+}
 float Model::getBoundingSphereRadius() const
 {
 	return boundingSphereRadius;

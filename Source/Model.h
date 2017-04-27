@@ -11,6 +11,7 @@
 #include <glm\gtx\matrix_decompose.hpp>
 #include <SOIL.h>
 #include "Shader.h"
+#include "GameObject.h"
 //A material specifying how shading, coloring and texturing works
 struct Material
 {
@@ -50,7 +51,7 @@ struct Mesh
 static bool modelDebug = false;
 //Turns on console feedback for reading of material files
 static bool matDebug = false;
-class Model
+class Model : GameObject
 {
 private:
 	glm::mat4 modelMatrix;
@@ -67,6 +68,7 @@ public:
 	glm::mat4 getModelMatrix() const;
 	glm::mat4 getRotationMatrix() const;
 	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
 	void setModelMatrix(glm::mat4 modelMat);
 	void setRotationMatrix(glm::mat4 rotationMat);
 	void rotate();

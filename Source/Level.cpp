@@ -107,15 +107,23 @@ void Level::unloadModels()
 	}
 	dynamicModels.clear();
 }
+void Level::setupTriggers()
+{
+
+}
+void Level::deleteTriggers()
+{
+
+}
 //Getters
 std::vector<Model*> Level::getStaticModels()
 {
 	return staticModels;
 }
-//std::vector<Trigger<Model*>*> Level::getTriggers()
-//{
-//	return triggerBoxes;
-//}
+std::vector<Trigger*> Level::getTriggers()
+{
+	return std::vector<Trigger*>();
+}
 glm::vec3 Level::getPlayerPos()
 {
 	return playerPos;

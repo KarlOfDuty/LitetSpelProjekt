@@ -48,6 +48,10 @@ glm::vec3 Player::getActualPlayerPos() const
 {
 	return this->modelMatrix[3];
 }
+std::vector<glm::vec2> Player::getPoints()
+{
+	return player->getModel().getPoints();
+}
 //Swaps the current player
 void Player::swap(int character)
 {
@@ -110,6 +114,10 @@ bool Player::playerIsDead()
 		return true;
 	}
 	return false;
+}
+glm::vec3 Player::getPos() const
+{
+	return getActualPlayerPos();
 }
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage)

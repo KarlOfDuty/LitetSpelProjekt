@@ -1,12 +1,15 @@
 #include "Trigger.h"
-template<class T>
-std::vector<glm::vec2> Trigger<T>::getCorners() const
+std::vector<glm::vec2> Trigger::getPoints()
 {
 	return corners;
 }
-template<class T>
-bool Trigger<T>::update()
+glm::vec3 Trigger::getPos() const
 {
+	return glm::vec3();
+}
+bool Trigger::update()
+{
+	bool triggered = false;
 	//Find how many models intersect this one
 	int numOfModels = 0;
 	for (int i = 0; i < activators.size(); i++)
@@ -22,10 +25,12 @@ bool Trigger<T>::update()
 		{
 			activate();
 		}
+		triggered = true;
 	}
 	if (onEnterAll && activators.size() == numOfModels && numOfModels > 0)
 	{
 		activate();
+		triggered = true;
 	}
 	if (whileInside && objectsInside)
 	{
@@ -33,37 +38,26 @@ bool Trigger<T>::update()
 		{
 			activate();
 		}
+		triggered = true;
 	}
 	objectsInside = numberOfActivations;
+	return triggered;
 }
-template<class T>
-void Trigger<T>::activate()
+void Trigger::activate()
 {
 	std::cout << "Hello gais" << std::endl;
 }
 //Constructors
-template<class T>
-Trigger<T>::Trigger()
+Trigger::Trigger()
 {
 
 }
-template<class T>
-Trigger<T>::Trigger(glm::vec2 topLeft, glm::vec2 topRight, glm::vec2 bottomLeft, glm::vec2 bottomRight)
+Trigger::Trigger(std::vector<glm::vec2> corners, std::vector<Model*> activators, std::vector<GameObject*> targets)
 {
-	corners = std::vector<glm::vec2>(4);
-	this->corners[0] = topLeft;
-	this->corners[1] = topRight;
-	this->corners[2] = bottomLeft;
-	this->corners[3] = bottomRight;
-}
-template<class T>
-Trigger<T>::Trigger(std::vector<glm::vec2> corners)
-{
-	this->corners = corners;
+
 }
 //Destructors
-template<class T>
-Trigger<T>::~Trigger()
+Trigger::~Trigger()
 {
 
 }
