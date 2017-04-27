@@ -2,9 +2,14 @@
 #define LIGHT_H
 #include <glm\glm.hpp>
 #include <GL/glew.h>
-class Light
+#include "GameObject.h"
+class Light : public GameObject
 {
 public:
+	//Parent inherited functions
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	//Own functions
 	//1 / (linear * distance) + (quadratic * distance) 
 	//aka decrease values to make light reach further
 	GLfloat linear;

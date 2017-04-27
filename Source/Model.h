@@ -51,7 +51,7 @@ struct Mesh
 static bool modelDebug = false;
 //Turns on console feedback for reading of material files
 static bool matDebug = false;
-class Model : GameObject
+class Model : public GameObject
 {
 private:
 	glm::mat4 modelMatrix;
@@ -62,13 +62,15 @@ private:
 	void setupModel();
 	void loadTextures(int meshNr);
 public:
+	//Parent inherited functions
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	//Own functions
 	GLuint VAO; //Vertex Array Object
 	GLuint VBO; //Vertex Buffer Object
 	Material getMaterial(int index);
 	glm::mat4 getModelMatrix() const;
 	glm::mat4 getRotationMatrix() const;
-	std::vector<glm::vec2> getPoints();
-	glm::vec3 getPos() const;
 	void setModelMatrix(glm::mat4 modelMat);
 	void setRotationMatrix(glm::mat4 rotationMat);
 	void rotate();

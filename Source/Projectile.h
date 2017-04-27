@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <math.h>
 
-class Projectile
+class Projectile : public GameObject
 {
 private:
 	Model* model;
@@ -18,6 +18,10 @@ private:
 	sf::Clock timeSinceCollision;
 	bool isUsed;
 public:
+	//Parent inherited functions
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	//Own functions
 	Projectile();
 	~Projectile();
 	

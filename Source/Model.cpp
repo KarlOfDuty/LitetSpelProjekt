@@ -46,7 +46,7 @@ std::vector<glm::vec2> Model::getPoints()
 	//Convert from quat to radians
 	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
 	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
-	float radians = -std::atan2(t3, t4);
+	float radians = (float)-std::atan2(t3, t4);
 
 	//Pushback points without rotation
 	allPoints.push_back(glm::vec2(minPos.x*scale.x, minPos.y*scale.y));

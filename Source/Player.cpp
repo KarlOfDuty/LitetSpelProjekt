@@ -83,7 +83,7 @@ void Player::shoot(sf::Window &window)
 			if (!arrows[i]->isInUse())
 			{
 				arrows[i]->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
-				i = arrows.size();
+				i = (int)arrows.size();
 			}
 		}
 	}
@@ -195,8 +195,8 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			glm::vec2 velocity;
 			glm::vec2 position = startposition;
 
-			velocity.x = startvelocity.x - 0.1*(float)i;
-			velocity.y = startvelocity.y - 0.5*(float)i;
+			velocity.x = startvelocity.x - 0.1f*(float)i;
+			velocity.y = startvelocity.y - 0.5f*(float)i;
 			position.x += direction.x*velocity.x;
 			position.y += velocity.y;
 

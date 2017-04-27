@@ -1,5 +1,15 @@
 #include "Projectile.h"
 
+std::vector<glm::vec2> Projectile::getPoints()
+{
+	return model->getPoints();
+}
+
+glm::vec3 Projectile::getPos() const
+{
+	return model->getPos();
+}
+
 Projectile::Projectile()
 {
 	hasCollided = false;
@@ -27,10 +37,10 @@ void Projectile::update(float dt,std::vector<Model*> &allObjects)
 	{
 		if (timeSinceCollision.getElapsedTime().asSeconds() < 10)
 		{
-			velocity.x -= 0.1*dt;
+			velocity.x -= 0.1f*dt;
 			if (velocity.x < 0) velocity.x = 0;
 
-			velocity.y -= 0.5*dt;
+			velocity.y -= 0.5f*dt;
 
 			position.x += direction.x*velocity.x;
 			position.y += velocity.y;

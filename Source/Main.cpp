@@ -371,7 +371,7 @@ void loadLevel()
 	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
 	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 	//Some lights with random values
-	std::srand(time(0));
+	std::srand((int)time(0));
 	for (int i = 0; i < NR_LIGHTS; i++)
 	{
 		lights.push_back(new Light(

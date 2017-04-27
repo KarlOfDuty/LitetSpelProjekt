@@ -10,7 +10,7 @@
 #include "Projectile.h"
 #include "Collision.h"
 
-class Trigger : GameObject
+class Trigger : public GameObject
 {
 private:
 	std::vector<glm::vec2> corners;

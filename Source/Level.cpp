@@ -72,7 +72,7 @@ void Level::setupModels()
 		19.0, 3.0, 0.0, 1.0
 	}));
 
-	std::srand(time(0));
+	std::srand((int)time(0));
 	//Loads spheres in random positions
 	for (int i = 0; i < 0; i++)
 	{
