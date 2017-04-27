@@ -16,7 +16,7 @@ public:
 	void loadModels();
 	void setupModels();
 	void unloadModels();
-	void setupTriggers();
+	void setupTriggers(Player* player);
 	void deleteTriggers();
 	std::vector<Model*> getStaticModels();
 	std::vector<Trigger*> getTriggers();

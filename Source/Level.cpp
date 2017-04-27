@@ -107,13 +107,19 @@ void Level::unloadModels()
 	}
 	dynamicModels.clear();
 }
-void Level::setupTriggers()
+//Sets the triggerboxes for this level
+void Level::setupTriggers(Player* player)
 {
-
+	std::vector<glm::vec2> corners = { glm::vec2(3,2), glm::vec2(6,2), glm::vec2(3,0), glm::vec2(6,0) };
+	triggerBoxes.push_back(new Trigger(corners, player, player));
 }
 void Level::deleteTriggers()
 {
-
+	for (int i = 0; i < triggerBoxes.size(); i++)
+	{
+		delete triggerBoxes[i];
+	}
+	triggerBoxes.clear();
 }
 //Getters
 std::vector<Model*> Level::getStaticModels()

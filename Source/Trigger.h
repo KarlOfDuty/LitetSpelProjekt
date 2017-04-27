@@ -14,7 +14,7 @@ class Trigger : GameObject
 {
 private:
 	std::vector<glm::vec2> corners;
-	std::vector<Model*> activators;
+	std::vector<GameObject*> activators;
 	std::vector<GameObject*> targets;
 	//Settings flags
 	bool onEnter;
@@ -27,12 +27,17 @@ private:
 	int numberOfActivations;
 	int objectsInside;
 public:
+	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
 	glm::vec3 getPos() const;
+	//Own functions
 	bool update();
 	void activate();
 	Trigger();
-	Trigger(std::vector<glm::vec2> corners, std::vector<Model*> activators, std::vector<GameObject*> targets);
+	Trigger(std::vector<glm::vec2> corners, std::vector<GameObject*> activators, std::vector<GameObject*> targets);
+	Trigger(std::vector<glm::vec2> corners, GameObject* activator, std::vector<GameObject*> targets);
+	Trigger(std::vector<glm::vec2> corners, std::vector<GameObject*> activators, GameObject* target);
+	Trigger(std::vector<glm::vec2> corners, GameObject* activator, GameObject* target);
 	~Trigger();
 };
 #endif

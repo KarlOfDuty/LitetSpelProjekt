@@ -1,6 +1,6 @@
 #include "EnemySlime.h"
 
-EnemySlime::EnemySlime(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemySlime::EnemySlime(int HP, Model* model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
 {
 	
 }
@@ -62,7 +62,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, g
 
 	if (!isOnGround)
 	{
-		velocityY -= 0.5*dt;
+		velocityY -= 0.5f*dt;
 	}
 
 	if (velocityY > 5)
@@ -80,6 +80,6 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, g
 		isOnGround = true;
 	}
 
-	setEnemyPos(enemyPos);
+	setPos(enemyPos);
 }
 

@@ -38,14 +38,16 @@ private:
 	Model* arrow;
 	std::vector<Projectile*> arrows;
 public:
+	//Parent inherited functions
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	//Own functions
 	Player();
 	~Player();
 	void swap(int charType);
 	bool playerIsDead();
-	glm::vec3 getPos() const;
 	glm::vec3 getPlayerPos() const;
 	glm::vec3 getActualPlayerPos() const;
-	std::vector<glm::vec2> getPoints();
 	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
 	void jump();
 	void shoot(sf::Window &window);

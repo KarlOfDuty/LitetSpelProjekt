@@ -224,7 +224,7 @@ void update(sf::Window &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window,dt, levelManager.currentLevel->getStaticModels(),enemy->getEnemyPos(), enemy->getDamage());
+		player->update(window,dt, levelManager.currentLevel->getStaticModels(),enemy->getPos(), enemy->getDamage());
 	}
 	//Camera update, get new viewMatrix
 	if (aboveView)

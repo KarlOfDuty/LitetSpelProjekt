@@ -35,7 +35,7 @@ Enemy::Enemy()
 	this->CAP = 5;
 	this->enemyCharacters = new EnemyChar*[this->CAP];
 	this->initiate();
-	slimeModel = Model("models/cube/cube.obj");
+	slimeModel = new Model("models/cube/cube.obj");
 }
 
 Enemy::~Enemy()
@@ -53,9 +53,9 @@ void Enemy::createSlime(glm::vec3 enemyStartPos)
 	this->nrOfEnemies++;
 }
 
-glm::vec3 Enemy::getEnemyPos() const
+glm::vec3 Enemy::getPos() const
 {
-	return enemyCharacters[0]->getEnemyPos();
+	return enemyCharacters[0]->getPos();
 }
 
 int Enemy::getDamage() const
