@@ -35,14 +35,14 @@ Enemy::Enemy()
 	this->CAP = 10;
 	this->enemyCharacters = new EnemyChar*[this->CAP];
 	this->initiate();
-	slimeModel = Model("models/Enemies/Slime/Slime.obj");
-	toadModel = Model("models/Enemies/Toad/Toad.obj");
-	batModel = Model("models/Enemies/Bat/BigBat.obj");
-	batSmallModel = Model("models/Enemies/BatSmall/SmallBat.obj");
-	bossModel = Model("models/cube/cube.obj");
-	skeletonModel = Model("models/Enemies/Skeleton/Skeleton.obj");
-	crabModel = Model("models/Enemies/Crab/Crab.obj");
-	fireflyModel = Model("models/cube/cube.obj");
+	slimeModel = new Model("models/Enemies/Slime/Slime.obj");
+	toadModel = new Model("models/Enemies/Toad/Toad.obj");
+	batModel = new Model("models/Enemies/Bat/BigBat.obj");
+	batSmallModel = new Model("models/Enemies/BatSmall/SmallBat.obj");
+	bossModel = new Model("models/cube/cube.obj");
+	skeletonModel = new Model("models/Enemies/Skeleton/Skeleton.obj");
+	crabModel = new Model("models/Enemies/Crab/Crab.obj");
+	fireflyModel = new Model("models/cube/cube.obj");
 }
 
 Enemy::~Enemy()
@@ -179,7 +179,7 @@ int Enemy::getDamage() const
 	return enemyCharacters[0]->getDamage();
 }
 
-void Enemy::update(float dt, glm::vec3 playerPos, int playerDamage)
+void Enemy::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels)
 {
 	sortEnemies(playerPos);
 	enemyDead();
@@ -195,7 +195,7 @@ void Enemy::update(float dt, glm::vec3 playerPos, int playerDamage)
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
-			enemyCharacters[i]->update(dt, playerPos, smallBatsPos);
+			enemyCharacters[i]->update(dt, playerPos, smallBatsPos, allModels);
 	}
 
 	//Enemy taking damage

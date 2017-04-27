@@ -268,30 +268,5 @@ void Player::getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::ve
 	radians = -std::atan2(t3, t4);
 
 	//Get object points
-	objectPoints = object->getPoints(scale);
-
-	//Translate to right position depending on rotation
-	for (int k = 0; k < objectPoints.size(); k++)
-	{
-		glm::vec2 center = object->getModelMatrix()[3];
-		objectPoints[k] += center;
-		float x = center.x + (objectPoints[k].x - center.x) * cos(radians) - (objectPoints[k].y - center.y) * sin(radians);
-		float y = center.y + (objectPoints[k].x - center.x) * sin(radians) + (objectPoints[k].y - center.y) * cos(radians);
-
-		objectPoints[k].x = x;
-		objectPoints[k].y = y;
-		/*
-		glm::mat4 modelMat({
-			0.2, 0.0, 0.0, 0.0,
-			0.0, 0.2, 0.0, 0.0,
-			0.0, 0.0, 0.2, 0.0,
-			objectPoints[k].x, objectPoints[k].y, 2.5, 1.0
-		});
-
-		if (debugCubes.size() < k + 1)
-			debugCubes.push_back(new Model(playerCharacters[1]->getModel(), modelMat));
-		else
-			debugCubes[k]->setModelMatrix(modelMat);
-		*/
-	}
+	objectPoints = object->getPoints();
 }

@@ -8,6 +8,7 @@
 #include <GL\GL.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 #include <SOIL.h>
 #include "Shader.h"
 //A material specifying how shading, coloring and texturing works
@@ -65,7 +66,7 @@ public:
 	Material getMaterial(int index);
 	glm::mat4 getModelMatrix() const;
 	glm::mat4 getRotationMatrix() const;
-	std::vector<glm::vec2> getPoints(glm::vec3 scale);
+	std::vector<glm::vec2> getPoints();
 	void setModelMatrix(glm::mat4 modelMat);
 	void setRotationMatrix(glm::mat4 rotationMat);
 	void rotate();
