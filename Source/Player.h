@@ -4,6 +4,7 @@
 #include "PlayerShark.h"
 #include "PlayerButterfly.h"
 #include "Shader.h"
+#include "collision.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
 #include <vector>
@@ -31,12 +32,12 @@ private:
 	float movementSpeed;
 	float groundPos;
 	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3 };
+	std::vector<Model*> debugCubes;
 public:
 	Player();
 	~Player();
 	void swap(int charType);
-	void groundCheck();
-	bool playerDead();
+	bool playerIsDead();
 	glm::vec3 getPlayerPos() const;
 	void update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
 	glm::vec3 getPlayerPos();
@@ -44,7 +45,6 @@ public:
 	void setPos(glm::vec3 playerPos);
 	void draw(Shader shader);
 	void fixCollision(std::vector<Model*> &allModels);
-	bool checkCollision(Model* object, glm::vec2 &mtv);
-	std::vector<glm::vec2> getAxis(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2);
+	void getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::vec2> &objectPoints, Model *object, float &radians);
 };
 #endif

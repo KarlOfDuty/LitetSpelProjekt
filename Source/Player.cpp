@@ -1,5 +1,5 @@
 #include "Player.h"
-
+#include <glm\gtx\matrix_decompose.hpp>
 const double PI = 3.14159265358979323846;
 
 void Player::freeMemory()
@@ -23,9 +23,9 @@ Player::Player()
 	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->playerCharacters[0] = new PlayerBird(100, birdModel);
-	this->playerCharacters[1] = new PlayerShark(100, sharkModel);
-	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
+	this->playerCharacters[0] = new PlayerBird(20, birdModel);
+	this->playerCharacters[1] = new PlayerShark(20, sharkModel);
+	this->playerCharacters[2] = new PlayerButterfly(20, butterflyModel);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 }
@@ -59,7 +59,7 @@ void Player::setPos(glm::vec3 playerPos)
 	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
 }
 
-bool Player::playerDead()
+bool Player::playerIsDead()
 {
 	if (playerCharacters[0]->getHP() <= 0)
 	{
@@ -112,7 +112,6 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 			this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			angle += 12;
 		}
-		
 	}
 
 	if (goingRight == true)
@@ -158,7 +157,7 @@ void Player::update(float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos
 	//Player taking damage
 	if (damageImmunity.getElapsedTime().asSeconds() >= 1.0)
 	{
-		if (fabs(enemyPos.x - playerPos.x) < 0.1 && fabs(enemyPos.y - playerPos.y) < 1.0)
+		if (fabs(enemyPos.x - playerPos.x) < 0.2 && fabs(enemyPos.y - playerPos.y) < 1.0)
 		{
 			playerCharacters[0]->takingDamage(enemyDamage);
 			damageImmunity.restart();
@@ -170,102 +169,124 @@ void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
+	for (int i = 0; i < debugCubes.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &debugCubes[i]->getModelMatrix()[0][0]);
+		debugCubes[i]->draw(shader);
+	}
 }
+
 void Player::fixCollision(std::vector<Model*> &allModels)
 {
-	for (int i = 0; i < 2; i++)
+	bool collides = true;
+	int collisionChecks = 0;
+	while (collides && collisionChecks < 5)
 	{
 		glm::vec2 mtv(1000, 1000);
 		int index = -1;
 		float minDistance = 1000;
+		glm::vec2 player2dPos = glm::vec2(playerPos.x, playerPos.y + 0.5f);
 		for (int i = 0; i < allModels.size(); i++)
 		{
-			float distance = glm::length(glm::vec2(playerPos) - glm::vec2(allModels[i]->getModelMatrix()[3]));
+			float distance = glm::length(player2dPos - glm::vec2(allModels[i]->getModelMatrix()[3]));
 			if (distance < minDistance)
 			{
 				minDistance = distance;
 				index = i;
 			}
 		}
+
 		if (index != -1)
 		{
-			if (checkCollision(allModels[index], mtv))
+			std::vector<glm::vec2> playerPoints;
+			std::vector<glm::vec2> objectPoints;
+			float radians = 0.0f;
+			getPoints(playerPoints, objectPoints, allModels[index], radians);
+			glm::vec2 mtv;
+			if (collision::fixCollision(playerPoints, objectPoints, mtv))
 			{
-				playerPos.x -= mtv.x;
-				playerPos.y -= mtv.y;
-				if (mtv.y < 0)
+				if (radians > 0.0f && radians < 0.79f)
 				{
+					if (mtv.y > 0)
+					{
+						playerPos.y -= 0.05f;
+					}
+					else
+					{
+						velocityY -= 0.5f;
+					}
+				}
+				else
+				{
+					playerPos.x += mtv.x;
+					if (mtv.y < 0)
+					{
+						velocityY = 0;
+					}
+				}
+				playerPos.y += mtv.y;
+				if (mtv.y > 0)
+				{
+					if (playerPos.y < 0) playerPos.y = 0;
 					groundPos = playerPos.y;
 				}
-				else if (mtv.y > 0)
-				{
-					velocityY = 0;
-				}
 			}
-		}
-	}
-}
-bool Player::checkCollision(Model* object, glm::vec2 &mtv)
-{
-	std::vector<glm::vec2> playerPoints = player->getModel().getPoints(this->modelMatrix[1][1]);
-	std::vector<glm::vec2> objectPoints = object->getPoints(object->getModelMatrix()[1][1]);
-
-	for (int i = 0; i < playerPoints.size(); i++)
-	{
-		playerPoints[i] += glm::vec2(playerPos);
-		objectPoints[i] += glm::vec2(object->getModelMatrix()[3]);
-	}
-
-	std::vector<glm::vec2> axis = getAxis(playerPoints, objectPoints);
-
-	std::vector<float> s1;
-	std::vector<float> s2;
-
-	for (size_t i = 0; i < axis.size(); i++)
-	{
-		s1.clear();
-		s2.clear();
-		for (size_t j = 0; j < playerPoints.size(); j++)
-		{
-			for (size_t k = 0; k < j; k++)
+			else
 			{
-				s1.push_back(glm::dot(playerPoints[k], axis[i]));
-				s2.push_back(glm::dot(objectPoints[k], axis[i]));
+				collides = false;
 			}
 		}
-
-		float s1min = s1[0];
-		float s1max = s1[0];
-		float s2min = s2[0];
-		float s2max = s2[0];
-		for (size_t x = 1; x < s1.size(); x++)
-		{
-			if (s1min > s1[x]) s1min = s1[x];
-			if (s1max < s1[x]) s1max = s1[x];
-			if (s2min > s2[x]) s2min = s2[x];
-			if (s2max < s2[x]) s2max = s2[x];
-		}
-		if (s2min > s1max || s2max < s1min) 
-			return false;
-
-		float overlap;
-		if (s1min < s2min)
-			overlap = s1max - s2min;
-		else 
-			overlap = -(s2max - s1min);
-
-		if (abs(overlap) < length(mtv))
-			mtv = axis[i] * overlap;
+		collisionChecks++;
+	}
+}
+void Player::getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::vec2> &objectPoints, Model *object, float &radians)
+{
+	//Set playerPoints
+	playerPoints.push_back(glm::vec2(-0.5f, -0.0f));
+	playerPoints.push_back(glm::vec2(0.5f, -0.0f));
+	playerPoints.push_back(glm::vec2(0.5f, 1.0f));
+	playerPoints.push_back(glm::vec2(-0.5f, 1.0f));
+	for (int k = 0; k < playerPoints.size(); k++)
+	{
+		playerPoints[k] += glm::vec2(playerPos);
 	}
 
-	return true;
-}
-std::vector<glm::vec2> Player::getAxis(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2)
-{
-	std::vector<glm::vec2> axis;
-	axis.push_back(glm::normalize(points1[1] - points1[0]));
-	axis.push_back(glm::normalize(points1[3] - points1[0]));
-	axis.push_back(glm::normalize(points2[1] - points2[0]));
-	axis.push_back(glm::normalize(points2[3] - points2[0]));
-	return axis;
+	//Get rotation and scale from modelMat
+	glm::mat4 modelMat = object->getModelMatrix();
+	glm::vec3 scale;
+	glm::quat rotation;
+	glm::decompose(modelMat, scale, rotation, glm::vec3(), glm::vec3(), glm::vec4());
+
+	//Convert from quat to radians
+	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
+	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
+	radians = -std::atan2(t3, t4);
+
+	//Get object points
+	objectPoints = object->getPoints(scale);
+
+	//Translate to right position depending on rotation
+	for (int k = 0; k < objectPoints.size(); k++)
+	{
+		glm::vec2 center = object->getModelMatrix()[3];
+		objectPoints[k] += center;
+		float x = center.x + (objectPoints[k].x - center.x) * cos(radians) - (objectPoints[k].y - center.y) * sin(radians);
+		float y = center.y + (objectPoints[k].x - center.x) * sin(radians) + (objectPoints[k].y - center.y) * cos(radians);
+
+		objectPoints[k].x = x;
+		objectPoints[k].y = y;
+		/*
+		glm::mat4 modelMat({
+			0.2, 0.0, 0.0, 0.0,
+			0.0, 0.2, 0.0, 0.0,
+			0.0, 0.0, 0.2, 0.0,
+			objectPoints[k].x, objectPoints[k].y, 2.5, 1.0
+		});
+
+		if (debugCubes.size() < k + 1)
+			debugCubes.push_back(new Model(playerCharacters[1]->getModel(), modelMat));
+		else
+			debugCubes[k]->setModelMatrix(modelMat);
+		*/
+	}
 }
