@@ -36,6 +36,7 @@ Shader deferredGeometryPass;
 Shader deferredLightingPass;
 GLuint gBuffer;
 Shader simpleShadowShader;
+Shader simpleShadowShader2;
 
 //Shadows
 GLuint depthMap;
@@ -45,7 +46,7 @@ GLuint depthMapFBO2;
 const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
 // Light source
-glm::vec3 lightPos(-5.0f, 6.0f, 0.0f);
+glm::vec3 lightPos(-4.0f, 4.0f, 0.0f);
 glm::vec3 lightPos2(4.0f, 8.0f, 0.0f);
 
 //Textures
@@ -135,7 +136,7 @@ void render()
 	// - Get light projection/view matrix.
 	glm::mat4 lightProjection, lightView;
 	glm::mat4 lightSpaceMatrix;
-	GLfloat near_plane = 0.01f, far_plane = 15.0f;
+	GLfloat near_plane = 0.01f, far_plane = 20.0f;
 	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 	lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = lightProjection * lightView;
@@ -163,18 +164,18 @@ void render()
 	lightView2 = glm::lookAt(lightPos2, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix2 = lightProjection2 * lightView2;
 	// - now render scene from light's point of view
-	simpleShadowShader.use();
-	glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix2));
+	simpleShadowShader2.use();
+	glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader2.program, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix2));
 
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO2);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	for (int i = 0; i < modelsToBeDrawn.size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
-		modelsToBeDrawn.at(i)->draw(simpleShadowShader);
+		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader2.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
+		modelsToBeDrawn.at(i)->draw(simpleShadowShader2);
 	}
-	player->draw(simpleShadowShader);
+	player->draw(simpleShadowShader2);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -275,6 +276,7 @@ void createGBuffer()
 	deferredGeometryPass = Shader("Shaders/gBufferGeometryVertex.glsl", "Shaders/gBufferGeometryFragment.glsl");
 	deferredLightingPass = Shader("Shaders/gBufferLightingVertex.glsl", "Shaders/gBufferLightingFragment.glsl");
 	simpleShadowShader = Shader("simpleVertex.glsl", "simpleFragment.glsl");
+	simpleShadowShader2 = Shader("simpleVertex2.glsl", "simpleFragment.glsl");
 
 
 	//Shadow buffer
@@ -373,8 +375,8 @@ void createGBuffer()
 	{
 		if(i != 1)
 		{
-			GLfloat xPos = -5.0f;
-			GLfloat yPos = 6.0f;
+			GLfloat xPos = -4.0f;
+			GLfloat yPos = 4.0f;
 			GLfloat zPos = 0.0f;
 			lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 			GLfloat rColor = 0.9f;

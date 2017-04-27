@@ -17,7 +17,7 @@ struct light
     float quadratic;
 };
 
-const int NR_LIGHTS = 10;
+const int NR_LIGHTS = 2;
 uniform light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 uniform mat4 lightSpaceMatrix;
@@ -110,6 +110,6 @@ void main()
 	float depthValue = texture(depthMap,texCoords).r;
 	float depthValue2 = texture(depthMap2,texCoords).r;
 	// Test depthmap
-	fragColor = vec4(vec3(depthValue2),1.0);
+	//fragColor = vec4(vec3(depthValue2),1.0);
 }
 
