@@ -76,7 +76,7 @@ void createGBuffer();
 void drawQuad();
 void loadLevel();
 void unloadLevel();
-void reloadLevel();
+bool endLevel();
 
 //Main function
 int main()
@@ -97,10 +97,7 @@ int main()
 	//Create the gbuffer textures and lights
 	createGBuffer();
 
-	//Models
-	loadLevel();
-
-	//Player
+	//Characters
 	player = new Player();
 	enemy = new Enemy();
 	enemy->createSlime(glm::vec3(10.0f, 5.0f, 0.0f));
@@ -109,7 +106,13 @@ int main()
 	enemy->createBatSwarm(glm::vec3(-16.0f, 5.0f, 0.0f));
 	enemy->createBatSwarm(glm::vec3(-15.8f, 5.0f, 0.0f));
 	enemy->createBatSwarm(glm::vec3(-15.4f, 5.0f, 0.0f));
-	// run the main loop
+
+	//Levelmanager
+	levelManager = LevelManager();
+
+	//Models
+	loadLevel();
+
 	eventHandler = EventHandler();
 
 	timer.restart();
@@ -123,8 +126,6 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		update(window);
-		//unloadLevel();
-		//reloadLevel();
 		render();
 
 		//End the current frame (internally swaps the front and back buffers)
@@ -228,7 +229,7 @@ void update(sf::Window &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
+		player->update(window,dt, levelManager.currentLevel->getStaticModels(),enemy->getPos(), enemy->getDamage());
 	}
 	//Camera update, get new viewMatrix
 	if (aboveView)
@@ -243,7 +244,13 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
-		enemy->update(dt, player->getPlayerPos());
+	enemy->update(dt, player->getPlayerPos());
+	if (endLevel())
+	{
+		unloadLevel();
+		loadLevel();
+	}
+	levelManager.currentLevel->updateTriggers();
 	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
@@ -365,23 +372,26 @@ void loadLevel()
 {
 	levelManager.currentLevel->loadModels();
 	levelManager.currentLevel->setupModels();
+	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
 	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
-
 	//Some lights with random values
-	std::srand(time(0));
+	std::srand((int)time(0));
 	for (int i = 0; i < NR_LIGHTS; i++)
 	{
 		lights.push_back(new Light(
-			rand()%50-25,2.0f,4.0f,
-			0.6f,0.9f,0.9f,
-			0.0001f,0.02f));
+			glm::vec3(rand() % 50 - 25, 2.0f, 4.0f),
+			glm::vec3(0.6f, 0.9f, 0.9f),
+			0.0001f, 0.02f));
 	}
+	player->setActualPos(levelManager.currentLevel->getPlayerPos());
+	player->setPos(levelManager.currentLevel->getPlayerPos());
 }
 void unloadLevel()
 {
 	levelManager.currentLevel->unloadModels();
+	levelManager.currentLevel->deleteTriggers();
 	modelsToBeDrawn.clear();
 	//playerCamera.destroyQuadTree();
 	for (int i = 0; i < lights.size(); i++)
@@ -390,20 +400,12 @@ void unloadLevel()
 	}
 	lights.clear();
 }
-void reloadLevel()
+bool endLevel()
 {
-	levelManager.currentLevel->loadModels();
-	levelManager.currentLevel->setupModels();
-	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
-	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
-	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
-	//Some lights with random values
-	std::srand(time(0));
-	for (int i = 0; i < NR_LIGHTS; i++)
-	{
-		lights.push_back(new Light(
-			rand() % 50 - 25, 2.0f, 4.0f,
-			0.6f, 0.9f, 0.9f,
-			0.0001f, 0.02f));
-	}
+	bool end = false;
+	//for (int i = 0; i < levelManager.currentLevel->getTriggers().size(); i++)
+	//{
+	//	end = collision::testCollision(player->getPlayerPoints(),levelManager.currentLevel->getTriggers()[i]->getCorners());
+	//}
+	return end;
 }

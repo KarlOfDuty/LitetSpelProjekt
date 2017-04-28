@@ -1,6 +1,6 @@
 #include "EnemyToad.h"
 
-EnemyToad::EnemyToad(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemyToad::EnemyToad(int HP, Model* model, int damage, glm::vec3 enemyPos) : EnemyChar(HP, model, damage, enemyPos)
 {
 
 }
@@ -104,6 +104,6 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 		isOnGround = true;
 	}
 
-	setEnemyPos(enemyPos);
+	setPos(enemyPos);
 }
 

@@ -24,12 +24,12 @@ private:
 	void freeMemory();
 	glm::vec3 enemyPos;
 	std::vector<EnemyChar*> smallBatsPos;
-	Model slimeModel;
-	Model toadModel;
-	Model batModel;
-	Model bossModel;
-	Model batSmallModel;
-	Model skeletonModel;
+	Model* slimeModel;
+	Model* toadModel;
+	Model* batModel;
+	Model* bossModel;
+	Model* batSmallModel;
+	Model* skeletonModel;
 public:
 	Enemy();
 	~Enemy();
@@ -40,7 +40,7 @@ public:
 	void createSkeleton(glm::vec3 enemyStartPos);
 	void createBoss(glm::vec3 enemyStartPos);
 	void sortEnemies(glm::vec3 playerPos);
-	glm::vec3 getEnemyPos()const;
+	glm::vec3 getPos()const;
 	int getDamage()const;
 	void update(float dt, glm::vec3 playerPos);
 	void draw(Shader shader);

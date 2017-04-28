@@ -252,11 +252,11 @@ void FrustumCulling::setFrustumShape(float fovAngle, float aspectRatio, float ne
 	this->fovAngle = fovAngle;
 	//Near plane
 	this->nearDistance = nearDistance;
-	this->planes[NEAR_P].height = nearDistance * std::tan(fovAngle * PI / 180);
+	this->planes[NEAR_P].height = nearDistance * (float)std::tan(fovAngle * PI / 180);
 	this->planes[NEAR_P].width = planes[NEAR_P].height * aspectRatio;
 	//Far plane
 	this->farDistance = farDistance;
-	this->planes[FAR_P].height = farDistance * std::tan(fovAngle * PI / 180);
+	this->planes[FAR_P].height = farDistance * (float)std::tan(fovAngle * PI / 180);
 	this->planes[FAR_P].width = planes[FAR_P].height * aspectRatio;
 }
 //Sets the frustum planes used for culling, has to be called after setFrustumShape()
@@ -354,6 +354,7 @@ bool FrustumCulling::boxInFrustum(const glm::vec4 &quad) const
 		}
 		return true;
 	}
+	return false;
 }
 //Gets the root of the quadtree
 FrustumCulling::Node* FrustumCulling::getRoot()

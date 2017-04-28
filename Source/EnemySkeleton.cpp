@@ -1,6 +1,6 @@
 #include "EnemySkeleton.h"
 
-EnemySkeleton::EnemySkeleton(int HP, Model model, int damage, bool patrol, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemySkeleton::EnemySkeleton(int HP, Model* model, int damage, bool patrol, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
 {
 	this->patrol = patrol;
 }
@@ -96,5 +96,5 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		isOnGround = true;
 	}
 
-	setEnemyPos(enemyPos);
+	setPos(enemyPos);
 }
