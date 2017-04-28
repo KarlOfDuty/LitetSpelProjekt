@@ -116,11 +116,11 @@ void Level::setupTriggers(Player* player)
 	settings.onExit = true;
 	triggerBoxes.push_back(new Trigger(corners, settings, player, player));
 }
-void Level::updateTriggers()
+void Level::updateTriggers(float dt)
 {
 	for (int i = 0; i < triggerBoxes.size(); i++)
 	{
-		triggerBoxes[i]->update();
+		triggerBoxes[i]->update(dt);
 	}
 }
 void Level::deleteTriggers()

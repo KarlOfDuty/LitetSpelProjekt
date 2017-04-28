@@ -8,7 +8,7 @@ glm::vec3 Trigger::getPos() const
 	return pos;
 }
 //Update function, checks for activators and runs activate(), also returns true if any activations were made
-bool Trigger::update()
+bool Trigger::update(float dt)
 {
 	bool triggered = false;
 	//Find how many activators intersect this one
@@ -20,7 +20,9 @@ bool Trigger::update()
 			numOfModels++;
 		}
 	}
-	//Check settings flags - objectsInside is how many objects were inside last frame, 
+	//Check settings flags
+	
+	//objectsInside is how many objects were inside last frame, 
 	//used to make sure triggers only fire once if that is it's setting
 	if (settings.onEnter && numOfModels > objectsInside)
 	{

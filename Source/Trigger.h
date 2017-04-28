@@ -49,7 +49,7 @@ public:
 	std::vector<glm::vec2> getPoints();
 	glm::vec3 getPos() const;
 	//Own functions
-	bool update();
+	bool update(float dt);
 	void activate();
 	//Constructors
 	Trigger();
