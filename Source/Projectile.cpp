@@ -27,10 +27,10 @@ void Projectile::update(float dt,std::vector<Model*> &allObjects)
 	{
 		if (timeSinceCollision.getElapsedTime().asSeconds() < 10)
 		{
-			velocity.x -= 0.1*dt;
+			velocity.x -= 0.05*0.1f;
 			if (velocity.x < 0) velocity.x = 0;
 
-			velocity.y -= 0.5*dt;
+			velocity.y -= 0.1*0.1f;
 
 			position.x += direction.x*velocity.x;
 			position.y += velocity.y;
@@ -81,6 +81,7 @@ void Projectile::update(float dt,std::vector<Model*> &allObjects)
 					model->rotate();
 					velocity = glm::vec2(0);
 					hasCollided = true;
+					std::cout << "COLLISH : " << timeSinceCollision.getElapsedTime().asSeconds() << std::endl;
 					timeSinceCollision.restart();
 				}
 			}
@@ -118,7 +119,10 @@ void Projectile::shoot(sf::Window &window ,glm::vec2 startPos, Model* arrow)
 		0.0, 0.0, 1.0, 0.0,
 		position.x, position.y, 0.0, 1.0
 	});
-	model = new Model(arrow, modelMat);
+	if (model == nullptr)
+	{
+		model = new Model(arrow, modelMat);
+	}
 	
 	glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
 	glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
@@ -137,4 +141,5 @@ void Projectile::shoot(sf::Window &window ,glm::vec2 startPos, Model* arrow)
 	velocity = glm::vec2(glm::abs(direction.x*startVelocity), direction.y*startVelocity);
 	hasCollided = false;
 	isUsed = true;
+	timeSinceCollision.restart();
 }

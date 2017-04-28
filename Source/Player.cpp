@@ -177,11 +177,11 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 
 		glm::vec2 position = glm::vec2(playerPos.x, playerPos.y + 2.f);
 		glm::vec2 velocity = glm::vec2(glm::abs(direction.x*0.5f), direction.y*0.5f);
-
 		for (int i = 0; i < 30; i++)
 		{
-			velocity.x -= 0.1*dt;
-			velocity.y -= 0.5*dt;
+			velocity.x -= 0.05*0.1f;
+			if (velocity.x < 0) velocity.x = 0;
+			velocity.y -= 0.1*0.1f;
 			position.x += direction.x*velocity.x;
 			position.y += velocity.y;
 
