@@ -14,10 +14,12 @@
 #include <glm\glm.hpp>
 #include <vector>
 #include <iostream>
+#include <thread>
 
 class Enemy
 {
 private:
+	std::vector<std::thread> allThreads;
 	int nrOfEnemies;
 	int CAP;
 	EnemyChar* *enemyCharacters;

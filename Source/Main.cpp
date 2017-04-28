@@ -246,7 +246,7 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
-		enemy->update(dt, player->getPlayerPos(), player->getDamage(), modelsToBeDrawn);
+	enemy->update(dt, player->getPlayerPos(), player->getDamage(), modelsToBeDrawn);
 	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 

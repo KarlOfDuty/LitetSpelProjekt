@@ -184,10 +184,20 @@ void Enemy::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<
 {
 	sortEnemies(playerPos);
 	enemyDead();
-
 	for (int i = 0; i < nrOfEnemies; i++)
 	{
-			enemyCharacters[i]->update(dt, playerPos, smallBatsPos, allModels);
+		if (allThreads.size() <= i)
+		{
+			allThreads.push_back(std::thread([&](EnemyChar * enemy) {enemy->update(dt, playerPos, smallBatsPos, allModels);}, enemyCharacters[i]));
+		}
+		else
+		{
+			allThreads[i] = std::thread([&](EnemyChar * enemy) {enemy->update(dt, playerPos, smallBatsPos, allModels);}, enemyCharacters[i]);
+		}
+	}
+	for (int i = 0; i < allThreads.size(); i++)
+	{
+		allThreads[i].join();
 	}
 
 	//Enemy taking damage
