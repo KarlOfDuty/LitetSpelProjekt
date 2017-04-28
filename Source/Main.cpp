@@ -245,6 +245,7 @@ void update(sf::Window &window)
 		unloadLevel();
 		loadLevel();
 	}
+	levelManager.currentLevel->updateTriggers();
 	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
@@ -366,7 +367,7 @@ void loadLevel()
 {
 	levelManager.currentLevel->loadModels();
 	levelManager.currentLevel->setupModels();
-	//levelManager.currentLevel->setupTriggers();
+	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
 	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
@@ -385,7 +386,7 @@ void loadLevel()
 void unloadLevel()
 {
 	levelManager.currentLevel->unloadModels();
-	//levelManager.currentLevel->deleteTriggers();
+	levelManager.currentLevel->deleteTriggers();
 	modelsToBeDrawn.clear();
 	//playerCamera.destroyQuadTree();
 	for (int i = 0; i < lights.size(); i++)

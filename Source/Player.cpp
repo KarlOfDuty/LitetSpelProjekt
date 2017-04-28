@@ -50,7 +50,7 @@ glm::vec3 Player::getActualPlayerPos() const
 }
 std::vector<glm::vec2> Player::getPoints()
 {
-	return player->getModel().getPoints();
+	return getPlayerPoints();
 }
 //Swaps the current player
 void Player::swap(int character)

@@ -111,7 +111,17 @@ void Level::unloadModels()
 void Level::setupTriggers(Player* player)
 {
 	std::vector<glm::vec2> corners = { glm::vec2(3,2), glm::vec2(6,2), glm::vec2(3,0), glm::vec2(6,0) };
-	triggerBoxes.push_back(new Trigger(corners, player, player));
+	TriggerSettings settings;
+	settings.onEnter = true;
+	settings.onExit = true;
+	triggerBoxes.push_back(new Trigger(corners, settings, player, player));
+}
+void Level::updateTriggers()
+{
+	for (int i = 0; i < triggerBoxes.size(); i++)
+	{
+		triggerBoxes[i]->update();
+	}
 }
 void Level::deleteTriggers()
 {

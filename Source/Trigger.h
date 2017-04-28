@@ -9,22 +9,39 @@
 #include "Light.h"
 #include "Projectile.h"
 #include "Collision.h"
-
+struct TriggerSettings
+{
+	//Activates once an activator enters the trigger
+	bool onEnter = false;
+	//Activates once when all activators enter the trigger
+	bool onEnterAll = false;
+	//Activates every time an activator leaves the trigger
+	bool onExit = false;
+	//Activates once when all activators have left the trigger
+	bool onExitAll = false;
+	//Activates each frame an activator is inside the 
+	bool whileInside = false;
+	//Activates each frame while all activators are inside of the trigger
+	bool whileAllInside = false;
+	//Activates once for each activator inside the trigger, only works if whileInside is true
+	bool perModel = false;
+	//Delay in ms between repeated activations, 0 for each frame
+	float delay = 0;
+	//Maximum allowed activations, set to 0 for infinite
+	int numberOfActivationsAllowed = 0;
+	//Decides what actions will be taken on the targets
+	std::vector<std::string> actions;
+};
 class Trigger : public GameObject
 {
 private:
 	std::vector<glm::vec2> corners;
+	glm::vec3 pos;
 	std::vector<GameObject*> activators;
 	std::vector<GameObject*> targets;
-	//Settings flags
-	bool onEnter;
-	bool onEnterAll;
-	bool onExit;
-	bool onExitAll;
-	bool whileInside;
-
+	TriggerSettings settings;
 	float delay;
-	int numberOfActivations;
+	int activations;
 	int objectsInside;
 public:
 	//Parent inherited functions
@@ -33,11 +50,13 @@ public:
 	//Own functions
 	bool update();
 	void activate();
+	//Constructors
 	Trigger();
-	Trigger(std::vector<glm::vec2> corners, std::vector<GameObject*> activators, std::vector<GameObject*> targets);
-	Trigger(std::vector<glm::vec2> corners, GameObject* activator, std::vector<GameObject*> targets);
-	Trigger(std::vector<glm::vec2> corners, std::vector<GameObject*> activators, GameObject* target);
-	Trigger(std::vector<glm::vec2> corners, GameObject* activator, GameObject* target);
+	Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::vector<GameObject*> activators, std::vector<GameObject*> targets);
+	Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, GameObject* activator, std::vector<GameObject*> targets);
+	Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::vector<GameObject*> activators, GameObject* target);
+	Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, GameObject* activator, GameObject* target);
+	//Destructors
 	~Trigger();
 };
 #endif
