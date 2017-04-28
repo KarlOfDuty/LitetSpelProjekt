@@ -64,8 +64,7 @@ glm::mat4 viewMatrix;
 
 //Lights
 const GLuint NR_LIGHTS = 10;
-std::vector<glm::vec3> lightPositions;
-std::vector<glm::vec3> lightColors;
+std::vector<Light*> lights;
 
 //VBO VAO
 GLuint VBO, VAO, EBO;
@@ -80,6 +79,8 @@ void update(sf::Window &window);
 void createGBuffer();
 void drawQuad();
 void loadLevel();
+void unloadLevel();
+bool endLevel();
 
 //Main function
 int main()
@@ -100,14 +101,22 @@ int main()
 	//Create the gbuffer textures and lights
 	createGBuffer();
 
+	//Characters
+	player = new Player();
+	enemy = new Enemy();
+	enemy->createSlime(glm::vec3(10.0f, 5.0f, 0.0f));
+	enemy->createToad(glm::vec3(-10.0f, 5.0f, 0.0f));
+	enemy->createGiantBat(glm::vec3(15.0f, 8.0f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-16.0f, 5.0f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-15.8f, 5.0f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-15.4f, 5.0f, 0.0f));
+
+	//Levelmanager
+	levelManager = LevelManager();
+
 	//Models
 	loadLevel();
 
-	//Player
-	player = new Player();
-	enemy = new Enemy();
-	enemy->createSlime(glm::vec3(10.0f, 0.0f, 0.0f));
-	// run the main loop
 	eventHandler = EventHandler();
 
 	//Main loop
@@ -224,15 +233,13 @@ void render()
 	glBindTexture(GL_TEXTURE_2D, depthMap2);
 
 	//Send all lights to the shader
-	for (GLuint i = 0; i < lightPositions.size(); i++)
+	for (GLuint i = 0; i < lights.size(); i++)
 	{
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].position").c_str()), 1, &lightPositions[i][0]);
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].color").c_str()), 1, &lightColors[i][0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].position").c_str()), 1, &lights[i]->pos[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].color").c_str()), 1, &lights[i]->colour[0]);
 		// Linear and quadratic for calculation of the lights radius
-		const GLfloat linear = 0.7f;
-		const GLfloat quadratic = 1.8f;
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].linear").c_str()), linear);
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].quadratic").c_str()), quadratic);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].linear").c_str()), lights[i]->linear);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].quadratic").c_str()), lights[i]->quadratic);
 	}
 	glUniformMatrix4fv(glGetUniformLocation(deferredLightingPass.program, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(deferredLightingPass.program, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix2));
@@ -259,11 +266,19 @@ void update(sf::Window &window)
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
 	}
+
 	if (player->playerIsDead() != true)
 	{
-		player->update(dt, modelsToBeDrawn, enemy->getEnemyPos(), enemy->getDamage());
+		player->update(window, dt, modelsToBeDrawn, enemy->getPos(), enemy->getDamage());
 	}
+
 	enemy->update(dt, player->getPlayerPos());
+	if (endLevel())
+	{
+		unloadLevel();
+		loadLevel();
+	}
+	levelManager.currentLevel->updateTriggers();
 	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
@@ -366,32 +381,6 @@ void createGBuffer()
 		std::cout << "Framebuffer not complete!" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	//Some lights with random values
-	std::srand(13);
-	for (int i = 0; i < NR_LIGHTS; i++)
-	{
-		if (i != 1)
-		{
-			GLfloat xPos = -4.0f;
-			GLfloat yPos = 4.0f;
-			GLfloat zPos = -1.0f;
-			lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-			GLfloat rColor = 0.9f;
-			GLfloat gColor = 0.9f;
-			GLfloat bColor = 0.9f;
-			lightColors.push_back(glm::vec3(rColor, gColor, bColor));
-		}
-		{
-			GLfloat xPos = 4.0f;
-			GLfloat yPos = 4.0f;
-			GLfloat zPos = 1.0f;
-			lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-			GLfloat rColor = 0.9f;
-			GLfloat gColor = 0.9f;
-			GLfloat bColor = 0.9f;
-			lightColors.push_back(glm::vec3(rColor, gColor, bColor));
-		}
-	}
 }
 
 //Quad used for lighting pass fullscreen quad
@@ -426,6 +415,42 @@ void loadLevel()
 {
 	levelManager.currentLevel->loadModels();
 	levelManager.currentLevel->setupModels();
+	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
-	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+
+	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
+	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+	//Some lights with random values
+	std::srand((int)time(0));
+	for (int i = 0; i < NR_LIGHTS; i++)
+	{
+		lights.push_back(new Light(
+			glm::vec3(rand() % 50 - 25, 2.0f, 4.0f),
+			glm::vec3(0.6f, 0.9f, 0.9f),
+			0.0001f, 0.02f));
+	}
+	player->setActualPos(levelManager.currentLevel->getPlayerPos());
+	player->setPos(levelManager.currentLevel->getPlayerPos());
+}
+void unloadLevel()
+{
+	levelManager.currentLevel->unloadModels();
+	levelManager.currentLevel->deleteTriggers();
+	modelsToBeDrawn.clear();
+	//playerCamera.destroyQuadTree();
+	for (int i = 0; i < lights.size(); i++)
+	{
+		delete lights[i];
+	}
+	lights.clear();
+}
+bool endLevel()
+{
+	bool end = false;
+	//for (int i = 0; i < levelManager.currentLevel->getTriggers().size(); i++)
+	//{
+	//	end = collision::testCollision(player->getPlayerPoints(),levelManager.currentLevel->getTriggers()[i]->getCorners());
+	//}
+	return end;
+	//test
 }
