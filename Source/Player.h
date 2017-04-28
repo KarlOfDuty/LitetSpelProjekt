@@ -40,8 +40,7 @@ public:
 	Player();
 	~Player();
 	void swap(int charType);
-	void groundCheck();
-	bool playerDead();
+	bool playerIsDead();
 	glm::vec3 getPlayerPos() const;
 	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
 	glm::vec3 getPlayerPos();

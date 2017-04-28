@@ -20,6 +20,7 @@ static const int quadTreeLevels = 4;
 enum { XMIN, ZMIN, XMAX, ZMAX };
 static const int mapHeight = 100;
 static const int mapBottom = -100;
+static bool quadTreeExists = false;
 class FrustumCulling
 {
 private:
@@ -42,6 +43,7 @@ private:
 		void buildQuadTree(const std::vector<Model*> models, int level, glm::vec4 quad);
 		void cleanTree();
 		std::vector<Model*> getModelsToDraw(const FrustumCulling &fcObject) const;
+		~Node();
 	};
 	//Planes in the order of the enum below
 	Plane planes[6];
@@ -57,6 +59,7 @@ public:
 	enum { RIGHT_P, LEFT_P, FAR_P, NEAR_P, TOP_P, BOTTOM_P };
 	void setFrustumShape(float fovAngle, float aspectRatio, float nearDistance, float farDistance);
 	void setFrustumPlanes(glm::vec3 cameraPos, glm::vec3 cameraForward, glm::vec3 cameraUp);
+	void destroyQuadTree();
 	bool boxInFrustum(const glm::vec4 &quad) const;
 	Node* getRoot();
 	FrustumCulling();

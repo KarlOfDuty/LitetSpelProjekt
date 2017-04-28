@@ -25,9 +25,9 @@ Player::Player()
 	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->playerCharacters[0] = new PlayerBird(100, birdModel);
-	this->playerCharacters[1] = new PlayerShark(100, sharkModel);
-	this->playerCharacters[2] = new PlayerButterfly(100, butterflyModel);
+	this->playerCharacters[0] = new PlayerBird(20, birdModel);
+	this->playerCharacters[1] = new PlayerShark(20, sharkModel);
+	this->playerCharacters[2] = new PlayerButterfly(20, butterflyModel);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 
@@ -91,7 +91,7 @@ void Player::setPos(glm::vec3 playerPos)
 	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
 }
 
-bool Player::playerDead()
+bool Player::playerIsDead()
 {
 	if (playerCharacters[0]->getHP() <= 0)
 	{
@@ -290,7 +290,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	//Player taking damage
 	if (damageImmunity.getElapsedTime().asSeconds() >= 1.0)
 	{
-		if (fabs(enemyPos.x - playerPos.x) < 0.1 && fabs(enemyPos.y - playerPos.y) < 1.0)
+		if (fabs(enemyPos.x - playerPos.x) < 0.2 && fabs(enemyPos.y - playerPos.y) < 1.0)
 		{
 			playerCharacters[0]->takingDamage(enemyDamage);
 			damageImmunity.restart();
@@ -302,6 +302,7 @@ void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
+	
 	for (int i = 0; i < arrows.size(); i++)
 	{
 		if (arrows[i]->isInUse())
