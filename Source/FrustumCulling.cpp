@@ -22,6 +22,7 @@ bool FrustumCulling::Node::intersectsQuadrant(Model *model, glm::vec4 quad)
 //Models are all models that can be in this quadrant, level is which level in the quadtree the node is in, quad vector are the bounds of the quadrant
 void FrustumCulling::Node::buildQuadTree(std::vector<Model*> models, int level, glm::vec4 quad)
 {
+	quadTreeExists = true;
 	this->quad = quad;
 	//Check which models are inside of or intersecting this quadrant
 	std::vector<Model*> foundModels;
@@ -108,7 +109,6 @@ void FrustumCulling::Node::cleanTree()
 		}
 		else
 		{
-			northEast->cleanTree();
 			delete northEast;
 			northEast = nullptr;
 		}
@@ -122,7 +122,6 @@ void FrustumCulling::Node::cleanTree()
 		}
 		else
 		{
-			southEast->cleanTree();
 			delete southEast;
 			southEast = nullptr;
 		}
@@ -136,7 +135,6 @@ void FrustumCulling::Node::cleanTree()
 		}
 		else
 		{
-			southWest->cleanTree();
 			delete southWest;
 			southWest = nullptr;
 		}
@@ -150,7 +148,6 @@ void FrustumCulling::Node::cleanTree()
 		}
 		else
 		{
-			northWest->cleanTree();
 			delete northWest;
 			northWest = nullptr;
 		}
@@ -159,65 +156,89 @@ void FrustumCulling::Node::cleanTree()
 //Recursive function which gets all models to draw
 std::vector<Model*> FrustumCulling::Node::getModelsToDraw(const FrustumCulling &fcObject) const
 {
-	//Run this function in all child nodes until a leaf is reached, then return the vector of models back upwards, combining it with the adjacent ones
 	std::vector<Model*> foundModels;
-	if (this->models.empty())
+	if (quadTreeExists == true)
 	{
-		if (this->northEast != nullptr)
+		//Run this function in all child nodes until a leaf is reached, then return the vector of models back upwards, combining it with the adjacent ones
+		if (this->models.empty())
 		{
-			if (fcObject.boxInFrustum(this->northEast->quad))
+			if (this->northEast != nullptr)
 			{
-				//Gather all models from this branch
-				std::vector<Model*> tempVector = northEast->getModelsToDraw(fcObject);
-				for (int i = 0; i < tempVector.size(); i++)
+				if (fcObject.boxInFrustum(this->northEast->quad))
 				{
-					foundModels.push_back(tempVector[i]);
+					//Gather all models from this branch
+					std::vector<Model*> tempVector = northEast->getModelsToDraw(fcObject);
+					for (int i = 0; i < tempVector.size(); i++)
+					{
+						foundModels.push_back(tempVector[i]);
+					}
+				}
+			}
+			if (this->southEast != nullptr)
+			{
+				if (fcObject.boxInFrustum(this->southEast->quad))
+				{
+					//Gather all models from this branch
+					std::vector<Model*> tempVector = southEast->getModelsToDraw(fcObject);
+					for (int i = 0; i < tempVector.size(); i++)
+					{
+						foundModels.push_back(tempVector[i]);
+					}
+				}
+			}
+			if (this->southWest != nullptr)
+			{
+				if (fcObject.boxInFrustum(this->southWest->quad))
+				{
+					//Gather all models from this branch
+					std::vector<Model*> tempVector = southWest->getModelsToDraw(fcObject);
+					for (int i = 0; i < tempVector.size(); i++)
+					{
+						foundModels.push_back(tempVector[i]);
+					}
+				}
+			}
+			if (this->northWest != nullptr)
+			{
+				if (fcObject.boxInFrustum(this->northWest->quad))
+				{
+					//Gather all models from this branch
+					std::vector<Model*> tempVector = northWest->getModelsToDraw(fcObject);
+					for (int i = 0; i < tempVector.size(); i++)
+					{
+						foundModels.push_back(tempVector[i]);
+					}
 				}
 			}
 		}
-		if (this->southEast != nullptr)
+		else
 		{
-			if (fcObject.boxInFrustum(this->southEast->quad))
-			{
-				//Gather all models from this branch
-				std::vector<Model*> tempVector = southEast->getModelsToDraw(fcObject);
-				for (int i = 0; i < tempVector.size(); i++)
-				{
-					foundModels.push_back(tempVector[i]);
-				}
-			}
+			//This is a leaf node
+			foundModels = this->models;
 		}
-		if (this->southWest != nullptr)
-		{
-			if (fcObject.boxInFrustum(this->southWest->quad))
-			{
-				//Gather all models from this branch
-				std::vector<Model*> tempVector = southWest->getModelsToDraw(fcObject);
-				for (int i = 0; i < tempVector.size(); i++)
-				{
-					foundModels.push_back(tempVector[i]);
-				}
-			}
-		}
-		if (this->northWest != nullptr)
-		{
-			if (fcObject.boxInFrustum(this->northWest->quad))
-			{
-				//Gather all models from this branch
-				std::vector<Model*> tempVector = northWest->getModelsToDraw(fcObject);
-				for (int i = 0; i < tempVector.size(); i++)
-				{
-					foundModels.push_back(tempVector[i]);
-				}
-			}
-		}
-	}
-	else
-	{
-		//This is a leaf node
-		foundModels = this->models;
+
 	}
 	return foundModels;
+}
+//Destructor
+FrustumCulling::Node::~Node()
+{
+	if (this->northEast != nullptr)
+	{
+		delete northEast;
+	}
+	if (this->southEast != nullptr)
+	{
+		delete southEast;
+	}
+	if (this->southWest != nullptr)
+	{
+		delete southWest;
+	}
+	if (this->northWest != nullptr)
+	{
+		delete northWest;
+	}
 }
 //Constructors
 FrustumCulling::Node::Node()
@@ -231,11 +252,11 @@ void FrustumCulling::setFrustumShape(float fovAngle, float aspectRatio, float ne
 	this->fovAngle = fovAngle;
 	//Near plane
 	this->nearDistance = nearDistance;
-	this->planes[NEAR_P].height = nearDistance * std::tan(fovAngle * PI / 180);
+	this->planes[NEAR_P].height = nearDistance * (float)std::tan(fovAngle * PI / 180);
 	this->planes[NEAR_P].width = planes[NEAR_P].height * aspectRatio;
 	//Far plane
 	this->farDistance = farDistance;
-	this->planes[FAR_P].height = farDistance * std::tan(fovAngle * PI / 180);
+	this->planes[FAR_P].height = farDistance * (float)std::tan(fovAngle * PI / 180);
 	this->planes[FAR_P].width = planes[FAR_P].height * aspectRatio;
 }
 //Sets the frustum planes used for culling, has to be called after setFrustumShape()
@@ -284,46 +305,56 @@ void FrustumCulling::setFrustumPlanes(glm::vec3 cameraPos, glm::vec3 cameraForwa
 	this->planes[BOTTOM_P].normal = glm::normalize(glm::cross(planeVector,cameraRight));
 	this->planes[BOTTOM_P].pointInPlane = cameraPos;
 }
+void FrustumCulling::destroyQuadTree()
+{
+	delete root;
+	root = nullptr;
+	quadTreeExists = false;
+}
 //Quads are in 2d and only hold two diagonal corners: x,z min and x,z max
 bool FrustumCulling::boxInFrustum(const glm::vec4 &quad) const 
 {
-	//Check which quadrants can be seen from the frustum
-	int out;
-	int in;
-	//Corners of the box
-	std::vector<glm::vec3> points;
-	points.push_back(glm::vec3(quad[XMIN], mapHeight, quad[ZMIN]));
-	points.push_back(glm::vec3(quad[XMIN], mapBottom, quad[ZMIN]));
-	points.push_back(glm::vec3(quad[XMAX], mapHeight, quad[ZMAX]));
-	points.push_back(glm::vec3(quad[XMAX], mapBottom, quad[ZMAX]));
-	points.push_back(glm::vec3(quad[XMIN], mapHeight, quad[ZMAX]));
-	points.push_back(glm::vec3(quad[XMIN], mapBottom, quad[ZMAX]));
-	points.push_back(glm::vec3(quad[XMAX], mapHeight, quad[ZMIN]));
-	points.push_back(glm::vec3(quad[XMAX], mapBottom, quad[ZMIN]));
-	//Cycle through planes of the frustum
-	for (int i = 0; i < 6; i++) 
+	if (quadTreeExists)
 	{
-		out = 0;
-		in = 0;
-		for (int j = 0; j < points.size() && (in == 0 || out == 0); j++)
+		//Check which quadrants can be seen from the frustum
+		int out;
+		int in;
+		//Corners of the box
+		std::vector<glm::vec3> points;
+		points.push_back(glm::vec3(quad[XMIN], mapHeight, quad[ZMIN]));
+		points.push_back(glm::vec3(quad[XMIN], mapBottom, quad[ZMIN]));
+		points.push_back(glm::vec3(quad[XMAX], mapHeight, quad[ZMAX]));
+		points.push_back(glm::vec3(quad[XMAX], mapBottom, quad[ZMAX]));
+		points.push_back(glm::vec3(quad[XMIN], mapHeight, quad[ZMAX]));
+		points.push_back(glm::vec3(quad[XMIN], mapBottom, quad[ZMAX]));
+		points.push_back(glm::vec3(quad[XMAX], mapHeight, quad[ZMIN]));
+		points.push_back(glm::vec3(quad[XMAX], mapBottom, quad[ZMIN]));
+		//Cycle through planes of the frustum
+		for (int i = 0; i < 6; i++) 
 		{
-			//Check if the corner is inside or outside
-			if (planes[i].getSignedDistanceTo(points[j]) < 0)
+			out = 0;
+			in = 0;
+			for (int j = 0; j < points.size() && (in == 0 || out == 0); j++)
 			{
-				out++;
+				//Check if the corner is inside or outside
+				if (planes[i].getSignedDistanceTo(points[j]) < 0)
+				{
+					out++;
+				}
+				else
+				{
+					in++;
+				}
 			}
-			else
+			//If all corners are outside of this plane, it cannot be inside the frustum
+			if (in == 0)
 			{
-				in++;
+				return false;
 			}
 		}
-		//If all corners are outside of this plane, it cannot be inside the frustum
-		if (in == 0)
-		{
-			return false;
-		}
+		return true;
 	}
-	return true;
+	return false;
 }
 //Gets the root of the quadtree
 FrustumCulling::Node* FrustumCulling::getRoot()

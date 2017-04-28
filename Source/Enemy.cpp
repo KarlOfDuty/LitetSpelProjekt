@@ -10,7 +10,7 @@ void Enemy::initiate(int from)
 
 void Enemy::expand()
 {
-	this->CAP += 5;
+	this->CAP += 10;
 	EnemyChar* *temp = new EnemyChar*[this->CAP];
 	for (int i = 0; i < this->nrOfEnemies; i++)
 	{
@@ -32,10 +32,15 @@ void Enemy::freeMemory()
 Enemy::Enemy()
 {
 	this->nrOfEnemies = 0;
-	this->CAP = 5;
+	this->CAP = 10;
 	this->enemyCharacters = new EnemyChar*[this->CAP];
 	this->initiate();
-	slimeModel = Model("models/cube/cube.obj");
+	slimeModel = new Model("models/Enemies/Slime/Slime.obj");
+	toadModel = new Model("models/Enemies/Toad/Toad.obj");
+	batModel = new Model("models/Enemies/Bat/BigBat.obj");
+	batSmallModel = new Model("models/Enemies/BatSmall/SmallBat.obj");
+	bossModel = new Model("models/cube/cube.obj");
+	skeletonModel = new Model("models/sphere/sphere.obj");
 }
 
 Enemy::~Enemy()
@@ -49,13 +54,86 @@ void Enemy::createSlime(glm::vec3 enemyStartPos)
 	{
 		this->expand();
 	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemySlime(15, slimeModel, 4, enemyStartPos);
+	this->enemyCharacters[this->nrOfEnemies] = new EnemySlime(3, slimeModel, 1, enemyStartPos);
 	this->nrOfEnemies++;
 }
 
-glm::vec3 Enemy::getEnemyPos() const
+void Enemy::createToad(glm::vec3 enemyStartPos)
 {
-	return enemyCharacters[0]->getEnemyPos();
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyToad(5, toadModel, 2, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::createGiantBat(glm::vec3 enemyStartPos)
+{
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(5, batModel, 2, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::createBatSwarm(glm::vec3 enemyStartPos)
+{
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyBatSmall(1, batSmallModel, 1, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::createSkeleton(glm::vec3 enemyStartPos)
+{
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(15, batModel, 2, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::createBoss(glm::vec3 enemyStartPos)
+{
+	if (this->nrOfEnemies == this->CAP)
+	{
+		this->expand();
+	}
+	this->enemyCharacters[this->nrOfEnemies] = new EnemyBoss(100, bossModel, 2, enemyStartPos);
+	this->nrOfEnemies++;
+}
+
+void Enemy::sortEnemies(glm::vec3 playerPos)
+{
+	//Bubble sort
+	glm::vec3 enemyPos1;
+	glm::vec3 enemyPos2;
+	bool sorted = false;
+	while (!sorted)
+	{
+		sorted = true;
+		for (int i = 0; i < this->nrOfEnemies - 1; i++)
+		{
+			enemyPos1 = this->enemyCharacters[i]->getPos();
+			enemyPos2 = this->enemyCharacters[i + 1]->getPos();
+			//Compare distance to enemy1 and distance to enemy2 and swap if out of order
+			if (glm::distance(enemyPos1, playerPos) > glm::distance(enemyPos2, playerPos))
+			{
+				std::swap(enemyCharacters[i], enemyCharacters[i + 1]);
+				sorted = false;
+			}
+		}
+	}
+}
+
+glm::vec3 Enemy::getPos() const
+{
+	return enemyCharacters[0]->getPos();
 }
 
 int Enemy::getDamage() const
@@ -65,11 +143,28 @@ int Enemy::getDamage() const
 
 void Enemy::update(float dt, glm::vec3 playerPos)
 {
-		enemyCharacters[0]->update(dt, playerPos);
+	sortEnemies(playerPos);
+
+	for (int i = 0; i < nrOfEnemies; i++)
+	{
+		EnemyBatSmall *smallBatPtr = dynamic_cast<EnemyBatSmall*>(enemyCharacters[i]);
+		if (smallBatPtr != nullptr)
+		{
+			smallBatsPos.push_back(enemyCharacters[i]);
+		}
+	}
+
+	for (int i = 0; i < nrOfEnemies; i++)
+	{
+		enemyCharacters[i]->update(dt, playerPos, smallBatsPos);
+	}
 }
 
 void Enemy::draw(Shader shader)
 {
-	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &enemyCharacters[0]->getModelMatrix()[0][0]);
-	enemyCharacters[0]->draw(shader);
+	for (int i = 0; i < nrOfEnemies; i++)
+	{
+	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &enemyCharacters[i]->getModelMatrix()[0][0]);
+	enemyCharacters[i]->draw(shader);
+	}
 }

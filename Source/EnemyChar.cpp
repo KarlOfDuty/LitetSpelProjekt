@@ -3,18 +3,19 @@
 
 EnemyChar::EnemyChar()
 {
-	this->HP = 50;
-	this->damage = 10;
+	this->HP = 10;
+	this->damage = 1;
 }
 
-EnemyChar::EnemyChar(int HP, Model model, int damage, glm::vec3 enemyStartPos)
+EnemyChar::EnemyChar(int HP, Model *model, int damage, glm::vec3 enemyStartPos)
 {
 	this->HP = HP;
-	this->enemyModel = model;
+	this->model = model;
 	this->damage = damage;
 	this->enemyPos = enemyStartPos;
-	setEnemyPos(enemyPos);
+	setPos(enemyPos);
 	isOnGround = true;
+	playerSeen = false;
 	this->checkPoint.x = enemyStartPos.x;
 }
 
@@ -23,7 +24,7 @@ EnemyChar::~EnemyChar()
 
 }
 
-void EnemyChar::setEnemyPos(glm::vec3 position)
+void EnemyChar::setPos(glm::vec3 position)
 {
 	enemyPos = position;
 	this->enemyModelMatrix = glm::mat4(
@@ -32,11 +33,17 @@ void EnemyChar::setEnemyPos(glm::vec3 position)
 		0.0, 0.0, 1.0, 0.0,
 		enemyPos.x, enemyPos.y, enemyPos.z, 1.0
 	);
+	this->enemyModelMatrix *= glm::scale(glm::vec3(0.075f, 0.075f, 0.075f));
 }
 
-glm::vec3 EnemyChar::getEnemyPos() const
+glm::vec3 EnemyChar::getPos() const
 {
 	return enemyPos;
+}
+
+std::vector<glm::vec2> EnemyChar::getPoints()
+{
+	return model->getPoints();
 }
 
 int EnemyChar::getDamage() const
@@ -57,13 +64,13 @@ void EnemyChar::groundCheck()
 	}
 }
 
-void EnemyChar::update(float dt, glm::vec3 playerPos)
+void EnemyChar::update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> smallBatsPos)
 {
-	updateThis(dt, playerPos, enemyPos, checkPoint);
+	updateThis(dt, playerPos, enemyPos, checkPoint, smallBatsPos);
 	attackPlayer(dt, playerPos, enemyPos);
 }
 
 void EnemyChar::draw(Shader shader)
 {
-	enemyModel.draw(shader);
+	model->draw(shader);
 }
