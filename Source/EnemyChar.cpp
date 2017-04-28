@@ -3,8 +3,8 @@
 
 EnemyChar::EnemyChar()
 {
-	this->HP = 50;
-	this->damage = 10;
+	this->HP = 10;
+	this->damage = 1;
 }
 
 EnemyChar::EnemyChar(int HP, Model *model, int damage, glm::vec3 enemyStartPos)
@@ -15,6 +15,7 @@ EnemyChar::EnemyChar(int HP, Model *model, int damage, glm::vec3 enemyStartPos)
 	this->enemyPos = enemyStartPos;
 	setPos(enemyPos);
 	isOnGround = true;
+	playerSeen = false;
 	this->checkPoint.x = enemyStartPos.x;
 }
 
@@ -32,6 +33,7 @@ void EnemyChar::setPos(glm::vec3 position)
 		0.0, 0.0, 1.0, 0.0,
 		enemyPos.x, enemyPos.y, enemyPos.z, 1.0
 	);
+	this->enemyModelMatrix *= glm::scale(glm::vec3(0.075f, 0.075f, 0.075f));
 }
 
 glm::vec3 EnemyChar::getPos() const
@@ -62,9 +64,9 @@ void EnemyChar::groundCheck()
 	}
 }
 
-void EnemyChar::update(float dt, glm::vec3 playerPos)
+void EnemyChar::update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> smallBatsPos)
 {
-	updateThis(dt, playerPos, enemyPos, checkPoint);
+	updateThis(dt, playerPos, enemyPos, checkPoint, smallBatsPos);
 	attackPlayer(dt, playerPos, enemyPos);
 }
 
