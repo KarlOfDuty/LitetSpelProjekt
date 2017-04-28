@@ -32,7 +32,17 @@ bool Trigger::update()
 	}
 	if (settings.onEnterAll && activators.size() == numOfModels && numOfModels > 0 && numOfModels > objectsInside)
 	{
-		activate();
+		if (settings.perActivator)
+		{
+			for (int i = 0; i < numOfModels; i++)
+			{
+				activate();
+			}
+		}
+		else
+		{
+			activate();
+		}
 		triggered = true;
 	}
 	if (settings.onExit && numOfModels < objectsInside)
@@ -45,12 +55,29 @@ bool Trigger::update()
 	}
 	if (settings.onEnterAll &&  numOfModels == 0 && numOfModels < objectsInside)
 	{
-		activate();
+		if (settings.perActivator)
+		{
+			for (int i = 0; i < numOfModels; i++)
+			{
+				activate();
+			}
+		}
+		else
+		{
+			activate();
+		}
 		triggered = true;
 	}
 	if (settings.whileInside && numOfModels > 0)
 	{
-		for (int i = 0; i < numOfModels; i++)
+		if (settings.perActivator)
+		{
+			for (int i = 0; i < numOfModels; i++)
+			{
+				activate();
+			}
+		}
+		else
 		{
 			activate();
 		}
@@ -58,7 +85,17 @@ bool Trigger::update()
 	}
 	if (settings.whileAllInside && numOfModels > 0 && numOfModels == activators.size())
 	{
-		activate();
+		if (settings.perActivator)
+		{
+			for (int i = 0; i < numOfModels; i++)
+			{
+				activate();
+			}
+		}
+		else
+		{
+			activate();
+		}
 		triggered = true;
 	}
 	objectsInside = numOfModels;

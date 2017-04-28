@@ -19,12 +19,13 @@ struct TriggerSettings
 	bool onExit = false;
 	//Activates once when all activators have left the trigger
 	bool onExitAll = false;
-	//Activates each frame an activator is inside the 
+	//Activates each frame an activator is inside the trigger
 	bool whileInside = false;
 	//Activates each frame while all activators are inside of the trigger
 	bool whileAllInside = false;
-	//Activates once for each activator inside the trigger, only works if whileInside is true
-	bool perModel = false;
+	//Modifies previous flags to activate once for each activator inside the trigger 
+	//Works with onEnterAll, onExitAll, whileInside and whileAllInside
+	bool perActivator = false;
 	//Delay in ms between repeated activations, 0 for each frame
 	float delay = 0;
 	//Maximum allowed activations, set to 0 for infinite
