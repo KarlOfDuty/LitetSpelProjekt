@@ -4,6 +4,7 @@ EnemyBatSmall::EnemyBatSmall(int HP, Model* model, int damage, glm::vec3 enemySt
 {
 	std::srand(time(0));
 	findPlayer = true;
+	startPosition = enemyStartPos;
 }
 
 EnemyBatSmall::~EnemyBatSmall()
@@ -36,7 +37,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		}
 	}
 
-	if(fabs(enemyPosCurrent.x - playerPos.x) < 0.5f && fabs(enemyPosCurrent.y - playerPos.y) < 0.5f)
+	if (fabs(enemyPosCurrent.x - playerPos.x) < 0.5f && fabs(enemyPosCurrent.y - playerPos.y) < 0.5f)
 	{
 		goForPlayer = false;
 		if (findPlayer)
@@ -64,48 +65,76 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	}
 
 
-	
 	//Move
-	if (findPlayer || goForPlayer)
+	if (!checkCollision(allModels))
 	{
-		if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
+		if (findPlayer || goForPlayer)
 		{
-			if (enemyPosCurrent.x > playerPos.x)
+			if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
+			{
+				if (enemyPosCurrent.x > playerPos.x)
+				{
+					velocityX -= 1.8f*dt;
+				}
+				else if (enemyPosCurrent.x < playerPos.x)
+				{
+					velocityX += 1.8f*dt;
+				}
+				if (enemyPosCurrent.y > playerPos.y)
+				{
+					velocityY -= 1.8f*dt;
+				}
+				else if (enemyPosCurrent.y < playerPos.y)
+				{
+					velocityY += 1.8f*dt;
+				}
+				playerSeen = true;
+			}
+		}
+		else
+		{
+			if (enemyPosCurrent.x > newCheckpoint.x)
 			{
 				velocityX -= 1.8f*dt;
 			}
-			else if (enemyPosCurrent.x < playerPos.x)
+			else if (enemyPosCurrent.x < newCheckpoint.x)
 			{
 				velocityX += 1.8f*dt;
 			}
-			if (enemyPosCurrent.y > playerPos.y)
+			if (enemyPosCurrent.y > newCheckpoint.y)
 			{
 				velocityY -= 1.8f*dt;
 			}
-			else if (enemyPosCurrent.y < playerPos.y)
+			else if (enemyPosCurrent.y < newCheckpoint.y)
 			{
 				velocityY += 1.8f*dt;
 			}
-			playerSeen = true;
 		}
+		collisionClock.restart();
 	}
 	else
 	{
-		if (enemyPosCurrent.x > newCheckpoint.x)
+		if (collisionClock.getElapsedTime().asSeconds() >= 5)
 		{
-			velocityX -= 1.8f*dt;
-		}
-		else if (enemyPosCurrent.x < newCheckpoint.x)
-		{
-			velocityX += 1.8f*dt;
-		}
-		if (enemyPosCurrent.y > newCheckpoint.y)
-		{
-			velocityY -= 1.8f*dt;
-		}
-		else if (enemyPosCurrent.y < newCheckpoint.y)
-		{
-			velocityY += 1.8f*dt;
+			if (glm::length(enemyPosCurrent - startPosition) > 1.0f)
+			{
+				if (enemyPosCurrent.x > startPosition.x)
+				{
+					velocityX -= 1.8f*dt;
+				}
+				else if (enemyPosCurrent.x < startPosition.x)
+				{
+					velocityX += 1.8f*dt;
+				}
+				if (enemyPosCurrent.y > startPosition.y)
+				{
+					velocityY -= 1.8f*dt;
+				}
+				else if (enemyPosCurrent.y < startPosition.y)
+				{
+					velocityY += 1.8f*dt;
+				}
+			}
 		}
 	}
 

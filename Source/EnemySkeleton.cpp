@@ -45,15 +45,15 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	if (isOnGround)
 	{
 		//Move
-		if (glm::length(enemyPosCurrent - playerPos) < 8.0f || playerSeen)
+		if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
 		{
 			if (enemyPosCurrent.x > playerPos.x)
 			{
-				velocityX -= 4.0f*dt;
+				velocityX -= 3.8f*dt;
 			}
 			else
 			{
-				velocityX += 4.0f*dt;
+				velocityX += 3.8f*dt;
 			}
 			playerSeen = true;
 		}
@@ -64,11 +64,11 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 			{
 				if (checkPointReached == false)
 				{
-					velocityX -= 2.0f*dt;
+					velocityX -= 1.8f*dt;
 				}
 				else if (checkPointReached == true)
 				{
-					velocityX += 2.0f*dt;
+					velocityX += 1.8f*dt;
 				}
 			}
 		}

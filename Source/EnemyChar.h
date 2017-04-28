@@ -41,6 +41,7 @@ public:
 	glm::mat4 getModelMatrix() const;
 	void takingDamage(int appliedDamage);
 	void groundCheck();
+	bool checkCollision(std::vector<Model*> &allModels);
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos) = 0;
 	void update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels);
 	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels) = 0;

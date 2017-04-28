@@ -87,6 +87,7 @@ void Enemy::createBatSwarm(glm::vec3 enemyStartPos)
 		this->expand();
 	}
 	this->enemyCharacters[this->nrOfEnemies] = new EnemyBatSmall(1, batSmallModel, 1, enemyStartPos);
+	smallBatsPos.push_back(enemyCharacters[this->nrOfEnemies]);
 	this->nrOfEnemies++;
 }
 
@@ -183,15 +184,6 @@ void Enemy::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<
 {
 	sortEnemies(playerPos);
 	enemyDead();
-
-	for (int i = 0; i < nrOfEnemies; i++)
-	{
-		EnemyBatSmall *smallBatPtr = dynamic_cast<EnemyBatSmall*>(enemyCharacters[i]);
-		if (smallBatPtr != nullptr)
-		{
-			smallBatsPos.push_back(enemyCharacters[i]);
-		}
-	}
 
 	for (int i = 0; i < nrOfEnemies; i++)
 	{

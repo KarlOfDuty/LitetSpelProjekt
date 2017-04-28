@@ -6,7 +6,8 @@ private:
 	bool goForPlayer;
 	bool findPlayer;
 	glm::vec3 newCheckpoint;
-	sf::Clock checkPointClock;
+	glm::vec3 startPosition;
+	sf::Clock collisionClock;
 public:
 	EnemyBatSmall(int HP, Model* enemyModel, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyBatSmall();

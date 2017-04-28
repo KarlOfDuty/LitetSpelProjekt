@@ -82,11 +82,8 @@ void EnemyChar::groundCheck()
 	}
 }
 
-void EnemyChar::update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
+bool EnemyChar::checkCollision(std::vector<Model*> &allModels)
 {
-	updateThis(dt, playerPos, enemyPos, checkPoint, smallBatsPos, allModels);
-	attackPlayer(dt, playerPos, enemyPos);
-
 	int index = -1;
 	float minDist = 1000;
 	for (int i = 0; i < allModels.size(); i++)
@@ -107,9 +104,22 @@ void EnemyChar::update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> sm
 		{
 			enemyPos.x += mtv.x;
 			enemyPos.y += mtv.y;
+			setEnemyPos(enemyPos);
+			return true;
 		}
 	}
-	setEnemyPos(enemyPos);
+	return false;
+}
+
+void EnemyChar::update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
+{
+	if (glm::length(enemyPos - playerPos) < 25.0f)
+	{
+		updateThis(dt, playerPos, enemyPos, checkPoint, smallBatsPos, allModels);
+		attackPlayer(dt, playerPos, enemyPos);
+
+		checkCollision(allModels);
+	}
 }
 
 void EnemyChar::draw(Shader shader)
