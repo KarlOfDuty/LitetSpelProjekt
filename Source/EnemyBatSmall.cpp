@@ -1,6 +1,6 @@
 #include "EnemyBatSmall.h"
 
-EnemyBatSmall::EnemyBatSmall(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemyBatSmall::EnemyBatSmall(int HP, Model* model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
 {
 	std::srand(time(0));
 	findPlayer = true;
@@ -27,7 +27,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 
 	for (int i = 0; i < smallBatsPos.size(); i++)
 	{
-		if (glm::length(enemyPos - smallBatsPos[i]->getEnemyPos()) < 5.0f)
+		if (glm::length(enemyPos - smallBatsPos[i]->getPos()) < 5.0f)
 		{
 			if (playerSeen)
 			{
@@ -132,5 +132,5 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		isOnGround = true;
 	}
 
-	setEnemyPos(enemyPos);
+	setPos(enemyPos);
 }

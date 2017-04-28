@@ -35,12 +35,12 @@ Enemy::Enemy()
 	this->CAP = 10;
 	this->enemyCharacters = new EnemyChar*[this->CAP];
 	this->initiate();
-	slimeModel = Model("models/Enemies/Slime/Slime.obj");
-	toadModel = Model("models/Enemies/Toad/Toad.obj");
-	batModel = Model("models/Enemies/Bat/BigBat.obj");
-	batSmallModel = Model("models/Enemies/BatSmall/SmallBat.obj");
-	bossModel = Model("models/cube/cube.obj");
-	skeletonModel = Model("models/sphere/sphere.obj");
+	slimeModel = new Model("models/Enemies/Slime/Slime.obj");
+	toadModel = new Model("models/Enemies/Toad/Toad.obj");
+	batModel = new Model("models/Enemies/Bat/BigBat.obj");
+	batSmallModel = new Model("models/Enemies/BatSmall/SmallBat.obj");
+	bossModel = new Model("models/cube/cube.obj");
+	skeletonModel = new Model("models/sphere/sphere.obj");
 }
 
 Enemy::~Enemy()
@@ -119,8 +119,8 @@ void Enemy::sortEnemies(glm::vec3 playerPos)
 		sorted = true;
 		for (int i = 0; i < this->nrOfEnemies - 1; i++)
 		{
-			enemyPos1 = this->enemyCharacters[i]->getEnemyPos();
-			enemyPos2 = this->enemyCharacters[i + 1]->getEnemyPos();
+			enemyPos1 = this->enemyCharacters[i]->getPos();
+			enemyPos2 = this->enemyCharacters[i + 1]->getPos();
 			//Compare distance to enemy1 and distance to enemy2 and swap if out of order
 			if (glm::distance(enemyPos1, playerPos) > glm::distance(enemyPos2, playerPos))
 			{
@@ -131,9 +131,9 @@ void Enemy::sortEnemies(glm::vec3 playerPos)
 	}
 }
 
-glm::vec3 Enemy::getEnemyPos() const
+glm::vec3 Enemy::getPos() const
 {
-	return enemyCharacters[0]->getEnemyPos();
+	return enemyCharacters[0]->getPos();
 }
 
 int Enemy::getDamage() const

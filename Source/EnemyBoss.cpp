@@ -1,6 +1,6 @@
 #include "EnemyBoss.h"
 
-EnemyBoss::EnemyBoss(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemyBoss::EnemyBoss(int HP, Model* model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
 {
 	findPlayer = true;
 }
@@ -127,5 +127,5 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 		isOnGround = true;
 	}
 
-	setEnemyPos(enemyPos);
+	setPos(enemyPos);
 }

@@ -26,7 +26,7 @@ Material Model::getMaterial(int index)
 {
 	return this->meshes.at(index)->material;
 }
-std::vector<glm::vec2> Model::getPoints(glm::vec3 scale)
+std::vector<glm::vec2> Model::getPoints()
 {
 	this->allPoints.clear();
 	glm::vec2 minPos;
@@ -38,11 +38,43 @@ std::vector<glm::vec2> Model::getPoints(glm::vec3 scale)
 			if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
 		}
 	}
-	allPoints.push_back(glm::vec2(minPos.x*scale.x,minPos.y*scale.y));
+	//Get rotation and scale from modelMat
+	glm::vec3 scale;
+	glm::quat rotation;
+	glm::decompose(this->modelMatrix, scale, rotation, glm::vec3(), glm::vec3(), glm::vec4());
+
+	//Convert from quat to radians
+	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
+	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
+	float radians = (float)-std::atan2(t3, t4);
+
+	//Pushback points without rotation
+	allPoints.push_back(glm::vec2(minPos.x*scale.x, minPos.y*scale.y));
 	allPoints.push_back(glm::vec2(-minPos.x*scale.x, minPos.y*scale.y));
-	allPoints.push_back(glm::vec2(-minPos.x*scale.x,-minPos.y*scale.y));
+	allPoints.push_back(glm::vec2(-minPos.x*scale.x, -minPos.y*scale.y));
 	allPoints.push_back(glm::vec2(minPos.x*scale.x, -minPos.y*scale.y));
+
+	//Translate to right position depending on rotation
+	for (int k = 0; k < allPoints.size(); k++)
+	{
+		glm::vec2 center = this->modelMatrix[3];
+		allPoints[k] += center;
+		float x = center.x + (allPoints[k].x - center.x) * cos(radians) - (allPoints[k].y - center.y) * sin(radians);
+		float y = center.y + (allPoints[k].x - center.x) * sin(radians) + (allPoints[k].y - center.y) * cos(radians);
+
+		allPoints[k].x = x;
+		allPoints[k].y = y;
+	}
+
 	return this->allPoints;
+}
+glm::vec3 Model::getPos() const
+{
+	return modelMatrix[3];
+}
+float Model::getBoundingSphereRadius() const
+{
+	return boundingSphereRadius;
 }
 //Setters
 void Model::setModelMatrix(glm::mat4 modelMat)
@@ -52,6 +84,20 @@ void Model::setModelMatrix(glm::mat4 modelMat)
 void Model::setRotationMatrix(glm::mat4 rotationMat)
 {
 	this->rotationMatrix = rotationMat;
+}
+//Sets the radius of the bounding sphere around this model
+void Model::setBoundingSphereRadius()
+{
+	//Takes the distance to the furthest away vertex and sets it as the radius
+	float radius = 0.0f;
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		for (int j = 0; j < meshes[i]->vertices.size(); j++)
+		{
+			radius = glm::max(radius, (float)meshes[i]->vertices[j].pos.length());
+		}
+	}
+	this->boundingSphereRadius = radius;
 }
 //Multiplies the model matrix with the rotation matrix
 void Model::rotate()
@@ -381,7 +427,7 @@ void Model::draw(Shader shader)
 		glBindTexture(GL_TEXTURE_2D, meshes[i]->material.normalMapTexture);
 		glUniform1i(glGetUniformLocation(shader.program, "normalMap"), 3);
 		
-		glDrawArrays(GL_TRIANGLES, 0, this->meshes[i]->vertices.size()*3);
+		glDrawArrays(GL_TRIANGLES, 0, (int)this->meshes[i]->vertices.size()*3);
 	}
 	glBindVertexArray(0);
 }
@@ -531,24 +577,6 @@ void Model::loadTextures(int i)
 	}
 
 }
-//Sets the radius of the bounding sphere around this model
-void Model::setBoundingSphereRadius()
-{
-	//Takes the distance to the furthest away vertex and sets it as the radius
-	float radius = 0.0f;
-	for (int i = 0; i < meshes.size(); i++)
-	{
-		for (int j = 0; j < meshes[i]->vertices.size(); j++)
-		{
-			radius = glm::max(radius, (float)meshes[i]->vertices[j].pos.length());
-		}
-	}
-	this->boundingSphereRadius = radius;
-}
-float Model::getBoundingSphereRadius() const
-{
-	return boundingSphereRadius;
-}
 //Constructors
 Model::Model(std::string filename)
 {
@@ -586,7 +614,8 @@ Model::Model(Model &otherModel)
 	this->modelMatrix = otherModel.modelMatrix;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->meshes = otherModel.meshes;
-	setupModel();
+	this->VAO = otherModel.VAO;
+	this->VBO = otherModel.VBO;
 }
 Model::Model(Model *otherModel)
 {
@@ -601,7 +630,8 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 	this->modelMatrix =  modelMat;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->meshes = otherModel.meshes;
-	setupModel();
+	this->VAO = otherModel.VAO;
+	this->VBO = otherModel.VBO;
 }
 Model::Model(Model *otherModel, glm::mat4 modelMat)
 {
