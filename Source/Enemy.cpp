@@ -1,40 +1,8 @@
 #include "Enemy.h"
 
-void Enemy::initiate(int from)
-{
-	for (int i = from; i < this->CAP; i++)
-	{
-		this->enemyCharacters[i] = nullptr;
-	}
-}
-
-void Enemy::expand()
-{
-	this->CAP += 10;
-	EnemyChar* *temp = new EnemyChar*[this->CAP];
-	for (int i = 0; i < this->nrOfEnemies; i++)
-	{
-		temp[i] = this->enemyCharacters[i];
-	}
-	delete[] this->enemyCharacters;
-	this->enemyCharacters = temp;
-}
-
-void Enemy::freeMemory()
-{
-	for (int i = 0; i < this->nrOfEnemies; i++)
-	{
-		delete this->enemyCharacters[i];
-	}
-	delete[] this->enemyCharacters;
-}
 
 Enemy::Enemy()
 {
-	this->nrOfEnemies = 0;
-	this->CAP = 10;
-	this->enemyCharacters = new EnemyChar*[this->CAP];
-	this->initiate();
 	slimeModel = new Model("models/Enemies/Slime/Slime.obj");
 	toadModel = new Model("models/Enemies/Toad/Toad.obj");
 	batModel = new Model("models/Enemies/Bat/BigBat.obj");
@@ -47,88 +15,48 @@ Enemy::Enemy()
 
 Enemy::~Enemy()
 {
-	this->freeMemory();
+
 }
 
 void Enemy::createSlime(glm::vec3 enemyStartPos)
 {
-	if (this->nrOfEnemies == this->CAP)
-	{
-		this->expand();
-	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemySlime(3, slimeModel, 1, enemyStartPos);
-	this->nrOfEnemies++;
+	this->enemyCharacters.push_back(new EnemySlime(3, new Model(slimeModel), 1, enemyStartPos));
 }
 
 void Enemy::createToad(glm::vec3 enemyStartPos)
 {
-	if (this->nrOfEnemies == this->CAP)
-	{
-		this->expand();
-	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyToad(5, toadModel, 2, enemyStartPos);
-	this->nrOfEnemies++;
+	this->enemyCharacters.push_back(new EnemyToad(5, new Model(toadModel), 2, enemyStartPos));
 }
 
 void Enemy::createGiantBat(glm::vec3 enemyStartPos)
 {
-	if (this->nrOfEnemies == this->CAP)
-	{
-		this->expand();
-	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyBat(5, batModel, 2, enemyStartPos);
-	this->nrOfEnemies++;
+	this->enemyCharacters.push_back(new EnemyBat(5, new Model(batModel), 2, enemyStartPos));
 }
 
 void Enemy::createBatSwarm(glm::vec3 enemyStartPos)
 {
-	if (this->nrOfEnemies == this->CAP)
-	{
-		this->expand();
-	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyBatSmall(1, batSmallModel, 1, enemyStartPos);
-	smallBatsPos.push_back(enemyCharacters[this->nrOfEnemies]);
-	this->nrOfEnemies++;
+	this->enemyCharacters.push_back(new EnemyBatSmall(1, new Model(batSmallModel), 1, enemyStartPos));
+	smallBatsPos.push_back(enemyCharacters.back());
 }
 
 void Enemy::createSkeleton(glm::vec3 enemyStartPos, bool patrol)
 {
-	if (this->nrOfEnemies == this->CAP)
-	{
-		this->expand();
-	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemySkeleton(10, skeletonModel, 4, patrol, enemyStartPos);
-	this->nrOfEnemies++;
+	this->enemyCharacters.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, patrol, enemyStartPos));
 }
 
 void Enemy::createCrab(glm::vec3 enemyStartPos)
 {
-	if (this->nrOfEnemies == this->CAP)
-	{
-		this->expand();
-	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyCrab(6, crabModel, 3, enemyStartPos);
-	this->nrOfEnemies++;
+	this->enemyCharacters.push_back(new EnemyCrab(6, new Model(crabModel), 3, enemyStartPos));
 }
 
 void Enemy::createBoss(glm::vec3 enemyStartPos)
 {
-	if (this->nrOfEnemies == this->CAP)
-	{
-		this->expand();
-	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyBoss(100, bossModel, 2, enemyStartPos);
-	this->nrOfEnemies++;
+	this->enemyCharacters.push_back(new EnemyBoss(100, new Model(bossModel), 2, enemyStartPos));
 }
 
 void Enemy::createFirefly(glm::vec3 enemyStartPos)
 {
-	if (this->nrOfEnemies == this->CAP)
-	{
-		this->expand();
-	}
-	this->enemyCharacters[this->nrOfEnemies] = new EnemyFireFly(1, fireflyModel, 2, enemyStartPos);
-	this->nrOfEnemies++;
+	this->enemyCharacters.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, enemyStartPos));
 }
 
 void Enemy::sortEnemies(glm::vec3 playerPos)
@@ -140,7 +68,7 @@ void Enemy::sortEnemies(glm::vec3 playerPos)
 	while (!sorted)
 	{
 		sorted = true;
-		for (int i = 0; i < this->nrOfEnemies - 1; i++)
+		for (int i = 0; i < this->enemyCharacters.size()-1; i++)
 		{
 			enemyPos1 = this->enemyCharacters[i]->getEnemyPos();
 			enemyPos2 = this->enemyCharacters[i + 1]->getEnemyPos();
@@ -156,16 +84,15 @@ void Enemy::sortEnemies(glm::vec3 playerPos)
 
 void Enemy::enemyDead()
 {
-	for (int i = 0; i < this->nrOfEnemies; i++)
+	for (int i = 0; i < this->enemyCharacters.size(); i++)
 	{
 		if (enemyCharacters[i]->getHP() <= 0)
 		{
-			for (int j = (i + 1); j < this->nrOfEnemies; j++)
+			for (int j = (i + 1); j < this->enemyCharacters.size(); j++)
 			{
 				std::swap(enemyCharacters[j - 1], enemyCharacters[j]);
 			}
-			nrOfEnemies--;
-			delete enemyCharacters[nrOfEnemies];
+			enemyCharacters.pop_back();
 		}
 	}
 }
@@ -184,7 +111,7 @@ void Enemy::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<
 {
 	sortEnemies(playerPos);
 	enemyDead();
-	for (int i = 0; i < nrOfEnemies; i++)
+	for (int i = 0; i < this->enemyCharacters.size(); i++)
 	{
 		if (allThreads.size() <= i)
 		{
@@ -212,7 +139,7 @@ void Enemy::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<
 
 void Enemy::draw(Shader shader)
 {
-	for (int i = 0; i < nrOfEnemies; i++)
+	for (int i = 0; i < this->enemyCharacters.size(); i++)
 	{
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &enemyCharacters[i]->getModelMatrix()[0][0]);
 	enemyCharacters[i]->draw(shader);

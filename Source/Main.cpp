@@ -106,9 +106,9 @@ int main()
 	enemy->createSlime(glm::vec3(30.0f, 5.0f, 0.0f));
 	enemy->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
 	enemy->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-16.2f, 5.0f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-15.8f, 5.1f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-15.3f, 5.3f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
 	enemy->createCrab(glm::vec3(-30.0f, 5.0f, 0.0f));
 	enemy->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
 	enemy->createSkeleton(glm::vec3(30.0f, 15.0f, 0.0f), false);

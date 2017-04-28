@@ -20,12 +20,7 @@ class Enemy
 {
 private:
 	std::vector<std::thread> allThreads;
-	int nrOfEnemies;
-	int CAP;
-	EnemyChar* *enemyCharacters;
-	void initiate(int from = 0);
-	void expand();
-	void freeMemory();
+	std::vector<EnemyChar*> enemyCharacters;
 	glm::vec3 enemyPos;
 	std::vector<EnemyChar*> smallBatsPos;
 	Model* slimeModel;
