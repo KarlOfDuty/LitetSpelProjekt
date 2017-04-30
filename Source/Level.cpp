@@ -114,7 +114,7 @@ void Level::setupTriggers(Player* player)
 	TriggerSettings settings;
 	settings.onEnter = true;
 	settings.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners, settings, player, player));
+	triggerBoxes.push_back(new Trigger(corners, settings, player, player, "hellogais"));
 }
 void Level::updateTriggers(float dt)
 {
