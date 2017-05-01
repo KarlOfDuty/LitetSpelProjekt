@@ -135,17 +135,42 @@ bool Trigger::update(float dt)
 //Activates the trigger
 void Trigger::activate()
 {
-	for (int i = 0; i < commands.size() && i < targets.size(); i++)
+	if (settings.accociativeActions)
 	{
-		if (commands[i] == "hellogais")
+		//Activate each command on their counterpart in targets
+		for (int i = 0; i < commands.size() && i < targets.size(); i++)
 		{
-			std::cout << "Hello gais" << std::endl;
+			runCommand(i,i);
 		}
-		else if (commands[i] == "kill" && targets[i]->type() == "Player")
+	}
+	else
+	{	
+		//Activates each command on each target
+		for (int i = 0; i < commands.size(); i++)
 		{
-			Player* player = dynamic_cast<Player*>(targets[i]);
-			player->getCurrentCharacter()->takingDamage(1000000);
+			for (int j = 0; j < targets.size(); j++)
+			{
+				runCommand(i,j);
+			}
 		}
+	}
+}
+void Trigger::runCommand(int commandID, int targetID)
+{
+	//Add new commands here
+	if (commands[commandID] == "hellogais")
+	{
+		std::cout << "Hello gais" << std::endl;
+	}
+	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->getCurrentCharacter()->takingDamage(1000000);
+	}
+	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Enemy")
+	{
+		EnemyChar* enemy = dynamic_cast<EnemyChar*>(targets[targetID]);
+		enemy->takeDamage(10000000);
 	}
 }
 //Constructors

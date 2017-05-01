@@ -36,6 +36,11 @@ void EnemyChar::setPos(glm::vec3 position)
 	this->enemyModelMatrix *= glm::scale(glm::vec3(0.075f, 0.075f, 0.075f));
 }
 
+void EnemyChar::takeDamage(float damage)
+{
+	this->HP = HP - damage;
+}
+
 glm::vec3 EnemyChar::getPos() const
 {
 	return enemyPos;

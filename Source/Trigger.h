@@ -33,7 +33,8 @@ struct TriggerSettings
 	int numberOfActivationsAllowed = -1;
 	//Decides what actions will be taken on the targets
 	std::vector<std::string> actions;
-	//
+	//If false, all commands will try to execute on all targets
+	//If true, each command will execute on their counterpart in the targets vector
 	bool accociativeActions = false;
 };
 class Trigger : public GameObject
@@ -51,7 +52,6 @@ private:
 	int activations;
 	//Saved between function calls to be able to tell how many activators entered/exited
 	int objectsInside;
-
 public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
@@ -60,6 +60,7 @@ public:
 	//Own functions
 	bool update(float dt);
 	void activate();
+	void runCommand(int commandID, int targetID);
 	//Constructors
 	Trigger();
 	Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::vector<GameObject*> activators, std::vector<GameObject*> targets, std::vector<std::string> commands);

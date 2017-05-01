@@ -12,7 +12,7 @@
 class EnemyChar : GameObject
 {
 private:
-	int HP;
+	float HP;
 	int damage;
 	Model *model;
 	glm::vec3 enemyPos;
@@ -35,6 +35,7 @@ public:
 	EnemyChar(int HP, Model *model, int damage, glm::vec3 enemyPos);
 	virtual ~EnemyChar();
 	void setPos(glm::vec3 position);
+	void takeDamage(float damage);
 	int getDamage()const;
 	glm::mat4 getModelMatrix() const;
 	void groundCheck();
