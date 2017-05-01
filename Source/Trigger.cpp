@@ -7,6 +7,10 @@ glm::vec3 Trigger::getPos() const
 {
 	return pos;
 }
+std::string Trigger::type() const
+{
+	return "Trigger";
+}
 //Update function, checks for activators and runs activate(), also returns true if any activations were made
 bool Trigger::update(float dt)
 {
@@ -27,7 +31,7 @@ bool Trigger::update(float dt)
 	}
 	timer += dt;
 	//If there is no cooldown active, activate commands according to the settings
-	if (timer > settings.delay)
+	if (timer > settings.frequency)
 	{
 
 		//onEnter
@@ -131,11 +135,16 @@ bool Trigger::update(float dt)
 //Activates the trigger
 void Trigger::activate()
 {
-	for (int i = 0; i < commands.size(); i++)
+	for (int i = 0; i < commands.size() && i < targets.size(); i++)
 	{
 		if (commands[i] == "hellogais")
 		{
 			std::cout << "Hello gais" << std::endl;
+		}
+		else if (commands[i] == "kill" && targets[i]->type() == "Player")
+		{
+			Player* player = dynamic_cast<Player*>(targets[i]);
+			player->getCurrentCharacter()->takingDamage(1000000);
 		}
 	}
 }

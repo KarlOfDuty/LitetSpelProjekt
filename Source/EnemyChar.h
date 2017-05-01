@@ -29,6 +29,7 @@ public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
 	glm::vec3 getPos() const;
+	virtual std::string type() const;
 	//Own functions
 	EnemyChar();
 	EnemyChar(int HP, Model *model, int damage, glm::vec3 enemyPos);

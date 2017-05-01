@@ -41,6 +41,11 @@ glm::vec3 EnemyChar::getPos() const
 	return enemyPos;
 }
 
+std::string EnemyChar::type() const
+{
+	return "Enemy";
+}
+
 std::vector<glm::vec2> EnemyChar::getPoints()
 {
 	return model->getPoints();

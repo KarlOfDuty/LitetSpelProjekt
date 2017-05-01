@@ -28,11 +28,13 @@ struct TriggerSettings
 	bool perActivator = false;
 	//Delay in ms between repeated activations, 0 for each frame.
 	//Any changes in state will be recorded but not cause activations
-	float delay = 0;
-	//Maximum allowed activations, set to 0 for infinite
-	int numberOfActivationsAllowed = 0;
+	float frequency = 0;
+	//Maximum allowed activations
+	int numberOfActivationsAllowed = -1;
 	//Decides what actions will be taken on the targets
 	std::vector<std::string> actions;
+	//
+	bool accociativeActions = false;
 };
 class Trigger : public GameObject
 {
@@ -54,6 +56,7 @@ public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
 	glm::vec3 getPos() const;
+	std::string type() const;
 	//Own functions
 	bool update(float dt);
 	void activate();
