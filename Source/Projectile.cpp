@@ -27,20 +27,20 @@ void Projectile::update(float dt,std::vector<Model*> &allObjects)
 	{
 		if (timeSinceCollision.getElapsedTime().asSeconds() < 10)
 		{
-			velocity.x -= 0.05*0.1f;
+			velocity.x -= 5.0*dt;
 			if (velocity.x < 0) velocity.x = 0;
 
-			velocity.y -= 0.1*0.1f;
+			velocity.y -= 40.0*dt;
 
-			position.x += direction.x*velocity.x;
-			position.y += velocity.y;
+			position.x += direction.x*velocity.x*dt;
+			position.y += velocity.y*dt;
 
 			model->setModelMatrix({
 				1.0, 0.0, 0.0, 0.0,
 				0.0, 1.0, 0.0, 0.0,
 				0.0, 0.0, 1.0, 0.0,
 				position.x, position.y , 0.0, 1.0
-			}); 
+			});
 
 			rotation = -atan2(velocity.x*direction.x, velocity.y);
 
@@ -81,7 +81,6 @@ void Projectile::update(float dt,std::vector<Model*> &allObjects)
 					model->rotate();
 					velocity = glm::vec2(0);
 					hasCollided = true;
-					std::cout << "COLLISH : " << timeSinceCollision.getElapsedTime().asSeconds() << std::endl;
 					timeSinceCollision.restart();
 				}
 			}
@@ -135,8 +134,7 @@ void Projectile::shoot(sf::Window &window ,glm::vec2 startPos, Model* arrow)
 	model->rotate();
 	
 	direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
-	
-	float startVelocity = 0.5f;
+	float startVelocity = 30.0f;
 
 	velocity = glm::vec2(glm::abs(direction.x*startVelocity), direction.y*startVelocity);
 	hasCollided = false;

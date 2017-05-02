@@ -46,6 +46,7 @@ public:
 	glm::vec3 getPlayerPos();
 	void jump();
 	void shoot(sf::Window &window);
+	void aiming(sf::Window &window, float dt);
 	void setPos(glm::vec3 playerPos);
 	void draw(Shader shader);
 	void fixCollision(std::vector<Model*> &allModels);
