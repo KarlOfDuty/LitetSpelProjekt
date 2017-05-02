@@ -1,5 +1,6 @@
 #include "EnemySlime.h"
 
+
 EnemySlime::EnemySlime(int HP, Model* model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
 	
@@ -92,7 +93,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 		isOnGround = true;
 	}
 
-	setEnemyPos(enemyPosCurrent);
+	setPos(enemyPosCurrent);
 	checkCollision(allModels);
 }
 

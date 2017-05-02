@@ -11,13 +11,13 @@
 #include <time.h>  
 #include <random>
 
-class EnemyChar
+class EnemyChar : GameObject
 {
 private:
-	int HP;
+	float HP;
 	int damage;
-	Model* enemyModel;
 	sf::Clock damageImmunity;
+	Model *model;
 	glm::vec3 enemyPos;
 	//glm::mat4 enemyModelMatrix;
 	glm::vec3 checkPoint;
@@ -29,13 +29,17 @@ public:
 	bool isOnGround;
 	bool playerSeen;
 
-	//Functions
+	//Parent inherited functions
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	virtual std::string type() const;
+	//Own functions
 	EnemyChar();
 	EnemyChar(int HP, Model* model, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyChar();
-	void setEnemyPos(glm::vec3 position);
+	void setPos(glm::vec3 position);
 	void setHP(int HP);
-	glm::vec3 getEnemyPos() const;
+	glm::vec3 getPos() const;
 	int getDamage()const;
 	int getHP() const;
 	Model* getModel();

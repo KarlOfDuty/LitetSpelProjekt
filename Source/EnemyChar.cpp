@@ -7,13 +7,14 @@ EnemyChar::EnemyChar()
 	this->damage = 1;
 }
 
+
 EnemyChar::EnemyChar(int HP, Model* model, int damage, glm::vec3 enemyStartPos)
 {
 	this->HP = HP;
-	this->enemyModel = model;
+	this->model = model;
 	this->damage = damage;
 	this->enemyPos = enemyStartPos;
-	setEnemyPos(enemyPos);
+	setPos(enemyPos);
 	isOnGround = true;
 	playerSeen = false;
 	this->checkPoint.x = enemyStartPos.x;
@@ -24,10 +25,10 @@ EnemyChar::~EnemyChar()
 
 }
 
-void EnemyChar::setEnemyPos(glm::vec3 position)
+void EnemyChar::setPos(glm::vec3 position)
 {
 	enemyPos = position;
-	this->enemyModel->setModelMatrix(glm::mat4(
+	this->model->setModelMatrix(glm::mat4(
 		0.075, 0.0, 0.0, 0.0,
 		0.0, 0.075, 0.0, 0.0,
 		0.0, 0.0, 0.075, 0.0,
@@ -40,9 +41,19 @@ void EnemyChar::setHP(int HP)
 	this->HP = HP;
 }
 
-glm::vec3 EnemyChar::getEnemyPos() const
+glm::vec3 EnemyChar::getPos() const
 {
 	return enemyPos;
+}
+
+std::string EnemyChar::type() const
+{
+	return "Enemy";
+}
+
+std::vector<glm::vec2> EnemyChar::getPoints()
+{
+	return model->getPoints();
 }
 
 int EnemyChar::getDamage() const
@@ -56,12 +67,12 @@ int EnemyChar::getHP() const
 }
 Model* EnemyChar::getModel()
 {
-	return this->enemyModel;
+	return this->model;
 }
 
 glm::mat4 EnemyChar::getModelMatrix() const
 {
-	return this->enemyModel->getModelMatrix();
+	return this->model->getModelMatrix();
 }
 
 void EnemyChar::takingDamage(int appliedDamage)
@@ -99,11 +110,11 @@ bool EnemyChar::checkCollision(std::vector<Model*> &allModels)
 		std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
 		std::vector<glm::vec2> objectPoints = allModels[index]->getPoints();
 		glm::vec2 mtv;
-		if (collision::fixCollision(enemyPoints, objectPoints, mtv))
+		if (collision::testCollision(enemyPoints, objectPoints, mtv))
 		{
 			enemyPos.x += mtv.x;
 			enemyPos.y += mtv.y;
-			setEnemyPos(enemyPos);
+			setPos(enemyPos);
 			return true;
 		}
 	}
@@ -122,5 +133,5 @@ void EnemyChar::update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> sm
 
 void EnemyChar::draw(Shader shader)
 {
-	enemyModel->draw(shader);
+	model->draw(shader);
 }

@@ -70,8 +70,8 @@ void Enemy::sortEnemies(glm::vec3 playerPos)
 		sorted = true;
 		for (int i = 0; i < this->enemyCharacters.size()-1; i++)
 		{
-			enemyPos1 = this->enemyCharacters[i]->getEnemyPos();
-			enemyPos2 = this->enemyCharacters[i + 1]->getEnemyPos();
+			enemyPos1 = this->enemyCharacters[i]->getPos();
+			enemyPos2 = this->enemyCharacters[i + 1]->getPos();
 			//Compare distance to enemy1 and distance to enemy2 and swap if out of order
 			if (glm::distance(enemyPos1, playerPos) > glm::distance(enemyPos2, playerPos))
 			{
@@ -97,9 +97,9 @@ void Enemy::enemyDead()
 	}
 }
 
-glm::vec3 Enemy::getEnemyPos() const
+glm::vec3 Enemy::getPos() const
 {
-	return enemyCharacters[0]->getEnemyPos();
+	return enemyCharacters[0]->getPos();
 }
 
 int Enemy::getDamage() const
@@ -130,7 +130,7 @@ void Enemy::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<
 	//Enemy taking damage
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
 	{
-			if (fabs(getEnemyPos().x - playerPos.x) < 1.0 && fabs(getEnemyPos().y - playerPos.y) < 1.0)
+			if (fabs(getPos().x - playerPos.x) < 1.0 && fabs(getPos().y - playerPos.y) < 1.0)
 			{
 				enemyCharacters[0]->takingDamage(playerDamage);
 			}

@@ -1,5 +1,6 @@
 #include "EnemyBoss.h"
 
+
 EnemyBoss::EnemyBoss(int HP, Model* model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
 	this->acceleration = 0.3f;
@@ -141,7 +142,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 			isOnGround = true;
 		}
 
-		setEnemyPos(enemyPosCurrent);
+		setPos(enemyPosCurrent);
 		checkCollision(allModels);
 	}
 }

@@ -44,7 +44,7 @@ public:
 	void createFirefly(glm::vec3 enemyStartPos);
 	void sortEnemies(glm::vec3 playerPos);
 	void enemyDead();
-	glm::vec3 getEnemyPos()const;
+	glm::vec3 getPos()const;
 	int getDamage()const;
 	void update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels);
 	void draw(Shader shader);

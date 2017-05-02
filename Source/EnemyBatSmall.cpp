@@ -26,7 +26,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 
 	for (int i = 0; i < smallBatsPos.size(); i++)
 	{
-		if (glm::length(enemyPosCurrent - smallBatsPos[i]->getEnemyPos()) < 2.0f)
+		if (glm::length(enemyPosCurrent - smallBatsPos[i]->getPos()) < 2.0f)
 		{
 			if (playerSeen)
 			{
@@ -183,6 +183,6 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		isOnGround = true;
 	}
 
-	setEnemyPos(enemyPosCurrent);
+	setPos(enemyPosCurrent);
 	collision = checkCollision(allModels);
 }
