@@ -41,9 +41,11 @@ public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
 	glm::vec3 getPos() const;
+	std::string type() const;
 	//Own functions
 	Player();
 	~Player();
+	PlayerChar* getCurrentCharacter();
 	void swap(int charType);
 	bool playerIsDead();
 	glm::vec3 getPlayerPos() const;

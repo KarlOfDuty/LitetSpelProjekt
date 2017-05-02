@@ -72,6 +72,10 @@ glm::vec3 Model::getPos() const
 {
 	return modelMatrix[3];
 }
+std::string Model::type() const
+{
+	return "Model";
+}
 float Model::getBoundingSphereRadius() const
 {
 	return boundingSphereRadius;

@@ -39,6 +39,11 @@ Player::~Player()
 	this->freeMemory();
 }
 
+PlayerChar* Player::getCurrentCharacter()
+{
+	return player;
+}
+
 glm::vec3 Player::getPlayerPos() const
 {
 	return this->playerPos;
@@ -118,6 +123,10 @@ bool Player::playerIsDead()
 glm::vec3 Player::getPos() const
 {
 	return getActualPlayerPos();
+}
+std::string Player::type() const
+{
+	return "Player";
 }
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage)

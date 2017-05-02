@@ -9,9 +9,10 @@ public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
 	glm::vec3 getPos() const;
+	std::string type() const;
 	//Own functions
 	//1 / (linear * distance) + (quadratic * distance) 
-	//aka decrease values to make light reach further
+	//aka decrease linear and quadratic values to make light reach further
 	GLfloat linear;
 	GLfloat quadratic;
 	glm::vec3 pos;

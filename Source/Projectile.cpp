@@ -10,6 +10,11 @@ glm::vec3 Projectile::getPos() const
 	return model->getPos();
 }
 
+std::string Projectile::type() const
+{
+	return "Projectile";
+}
+
 Projectile::Projectile()
 {
 	hasCollided = false;

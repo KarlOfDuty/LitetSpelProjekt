@@ -250,7 +250,7 @@ void update(sf::Window &window)
 		unloadLevel();
 		loadLevel();
 	}
-	levelManager.currentLevel->updateTriggers();
+	levelManager.currentLevel->updateTriggers(dt);
 	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
