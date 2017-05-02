@@ -260,6 +260,11 @@ void render()
 void update(sf::Window &window)
 {
 	dt = deltaClock.restart().asSeconds();
+	//Update player if not dead
+	if (!player->playerIsDead())
+	{
+		player->update(window, dt, modelsToBeDrawn ,enemy->getPos(), enemy->getDamage());
+	}
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
@@ -272,13 +277,9 @@ void update(sf::Window &window)
 	else
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
+
 	}
 	enemy->update(dt, player->getPlayerPos(), player->getDamage(), modelsToBeDrawn);
-
-	if (player->playerIsDead() != true)
-	{
-		player->update(window, dt, modelsToBeDrawn, enemy->getPos(), enemy->getDamage());
-	}
 
 	if (endLevel())
 	{
