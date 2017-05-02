@@ -206,5 +206,8 @@
     <None Include="simpleVertex.glsl">
       <Filter>Source Files\Shader</Filter>
     </None>
+    <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleVertex2.glsl">
+      <Filter>Source Files\Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -178,6 +178,7 @@
     <ClInclude Include="Trigger.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleVertex2.glsl" />
     <None Include="simpleVertex.glsl" />
     <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleFragment.glsl" />
     <None Include="ClassDiagram.cd" />
