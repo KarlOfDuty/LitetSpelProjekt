@@ -99,6 +99,42 @@ void Player::shoot(sf::Window &window)
 		arrows.push_back(temp);
 	}
 }
+
+void Player::aiming(sf::Window &window,float dt)
+{
+	glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+	glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
+	float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
+	glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
+
+	glm::vec2 position = glm::vec2(playerPos.x, playerPos.y + 2.f);
+	glm::vec2 velocity = glm::vec2(glm::abs(direction.x*30.0f), direction.y*30.0f);
+	for (int i = 0; i < 30; i++)
+	{
+		velocity.x -= 5.0f*0.02;
+		if (velocity.x < 0) velocity.x = 0;
+		velocity.y -= 40.0f*0.02;
+		position.x += direction.x*velocity.x*0.02;
+		position.y += velocity.y*0.02;
+
+		glm::mat4 modelMat({
+			0.1, 0.0, 0.0, 0.0,
+			0.0, 0.1, 0.0, 0.0,
+			0.0, 0.0, 0.1, 0.0,
+			position.x, position.y , 0.0, 1.0
+		});
+
+		if (debugCubes.size() <= i)
+		{
+			debugCubes.push_back(new Model(arrow, modelMat));
+		}
+		else
+		{
+			debugCubes[i]->setModelMatrix(modelMat);
+		}
+	}
+}
+
 //Sets the playerPos variable
 void Player::setPos(glm::vec3 playerPos)
 {
@@ -133,107 +169,18 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 {
 	groundPos = 0.0f;
 
-	/*if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-	{
-		if (arrow == nullptr)
-		{
-			glm::mat4 modelMat({
-				1.0, 0.0, 0.0, 0.0,
-				0.0, 0.2, 0.0, 0.0,
-				0.0, 0.0, 0.2, 0.0,
-				playerPos.x, playerPos.y+1.5f, 0.0, 1.0
-			});
-			arrow = new Model(playerCharacters[2]->getModel(), modelMat);
-		}
-		else
-		{
-			arrow->setModelMatrix({
-				1.0, 0.0, 0.0, 0.0,
-				0.0, 1.0, 0.0, 0.0,
-				0.0, 0.0, 1.0, 0.0,
-				playerPos.x, playerPos.y+1.5f, 0.0, 1.0
-			});
-			glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
-			glm::vec2 middleScreen(window.getSize().x/2, window.getSize().y/2);
-			arrowRotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
-			arrow->setRotationMatrix(glm::rotate(glm::mat4(), arrowRotation, glm::vec3(0.0f, 0.0f, 1.0f)));
-			arrow->rotate();
-			arrowDirection = glm::normalize(glm::vec2(sin(arrowRotation), -cos(arrowRotation)));
-			arrowVelocity = glm::vec2(glm::abs(arrowDirection.x),arrowDirection.y) * 0.5f;
-			std::cout << arrowVelocity.y << std::endl;
-		}
-	}
-	if (arrow != nullptr)
-	{
-		glm::vec2 arrowPos(arrow->getModelMatrix()[3]);
-		arrow->setModelMatrix({
-			1.0, 0.0, 0.0, 0.0,
-			0.0, 1.0, 0.0, 0.0,
-			0.0, 0.0, 1.0, 0.0,
-			arrowPos.x + (arrowVelocity.x*arrowDirection.x), arrowPos.y + arrowVelocity.y , 0.0, 1.0
-		});
-		arrow->setRotationMatrix(glm::rotate(glm::mat4(), arrowRotation, glm::vec3(0.0f, 0.0f, 1.0f)));
-		arrow->rotate();
-		arrowVelocity.x -= 0.1*dt;
-		if (arrowVelocity.x < 0) arrowVelocity.x = 0;
-		arrowVelocity.y -= 0.5*dt;
-		std::vector<glm::vec2> arrowPoints = arrow->getPoints(glm::vec3(1.f));
-		for (int i = 0; i < allModels.size(); i++)
-		{
-			std::vector<glm::vec2> objectPoints = allModels[i]->getPoints(glm::vec3(5.f));
-			glm::vec2 mtv;
-			if (collision::fixCollision(arrowPoints, objectPoints, mtv))
-			{
-				arrowVelocity = glm::vec2(0);
-			}
-		}
-	}*/
-
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
-	{
-		glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
-		glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
-		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
-		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
-
-		glm::vec2 startposition = glm::vec2(playerPos.x, playerPos.y + 2.f);
-		glm::vec2 startvelocity = glm::vec2(glm::abs(direction.x*0.5f), direction.y*0.5f);
-
-		for (int i = 0; i < 30; i++)
-		{
-			glm::vec2 velocity;
-			glm::vec2 position = startposition;
-
-			velocity.x = startvelocity.x - 0.1f*(float)i;
-			velocity.y = startvelocity.y - 0.5f*(float)i;
-			position.x += direction.x*velocity.x;
-			position.y += velocity.y;
-
-			glm::mat4 modelMat({
-				0.1, 0.0, 0.0, 0.0,
-				0.0, 0.1, 0.0, 0.0,
-				0.0, 0.0, 0.1, 0.0,
-				position.x, position.y , 0.0, 1.0
-			});
-
-			if (debugCubes.size() <= i)
-			{
-				debugCubes.push_back(new Model(arrow, modelMat));
-			}
-			else
-			{
-				debugCubes[i]->setModelMatrix(modelMat);
-			}
-
-		}
-
-	}
 	for (int i = 0; i < arrows.size(); i++)
 	{
 		if (arrows[i]->isInUse())
 		{
 			arrows[i]->update(dt, allModels);
 		}
+	}
+	
+	//Check if aiming
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+	{
+		aiming(window,dt);
 	}
 
 	if (playerPos.y > groundPos && isOnGround)
@@ -326,6 +273,7 @@ void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
+
 	for (int i = 0; i < arrows.size(); i++)
 	{
 		if (arrows[i]->isInUse())
