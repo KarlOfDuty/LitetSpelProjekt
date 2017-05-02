@@ -4,8 +4,9 @@
 #include "PlayerShark.h"
 #include "PlayerButterfly.h"
 #include "Shader.h"
+#include "Collision.h"
 #include "Projectile.h"
-#include "collision.h"
+#include "GameObject.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
 #include <vector>
@@ -13,7 +14,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-class Player
+class Player : public GameObject
 {
 private:
 	PlayerChar* playerCharacters[3];
@@ -37,19 +38,27 @@ private:
 	Model* arrow;
 	std::vector<Projectile*> arrows;
 public:
+	//Parent inherited functions
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	std::string type() const;
+	//Own functions
 	Player();
 	~Player();
+	PlayerChar* getCurrentCharacter();
 	void swap(int charType);
 	bool playerIsDead();
 	glm::vec3 getPlayerPos() const;
+	glm::vec3 getActualPlayerPos() const;
 	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
-	glm::vec3 getPlayerPos();
 	void jump();
 	void shoot(sf::Window &window);
 	void aiming(sf::Window &window, float dt);
 	void setPos(glm::vec3 playerPos);
+	void setActualPos(glm::vec3 playerPos);
 	void draw(Shader shader);
-	void fixCollision(std::vector<Model*> &allModels);
-	void getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::vec2> &objectPoints, Model *object, float &radians);
+	void testCollision(std::vector<Model*> &allModels);
+	std::vector<glm::vec2> getPlayerPoints();
+	void getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians);
 };
 #endif

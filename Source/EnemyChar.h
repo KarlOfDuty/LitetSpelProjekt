@@ -9,12 +9,12 @@
 #include <stdlib.h>
 #include <time.h>  
 
-class EnemyChar
+class EnemyChar : GameObject
 {
 private:
-	int HP;
+	float HP;
 	int damage;
-	Model enemyModel;
+	Model *model;
 	glm::vec3 enemyPos;
 	glm::mat4 enemyModelMatrix;
 	glm::vec3 checkPoint;
@@ -26,12 +26,16 @@ public:
 	bool isOnGround;
 	bool playerSeen;
 
-	//Functions
+	//Parent inherited functions
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	virtual std::string type() const;
+	//Own functions
 	EnemyChar();
-	EnemyChar(int HP, Model model, int damage, glm::vec3 enemyPos);
+	EnemyChar(int HP, Model *model, int damage, glm::vec3 enemyPos);
 	virtual ~EnemyChar();
-	void setEnemyPos(glm::vec3 position);
-	glm::vec3 getEnemyPos() const;
+	void setPos(glm::vec3 position);
+	void takeDamage(float damage);
 	int getDamage()const;
 	glm::mat4 getModelMatrix() const;
 	void groundCheck();

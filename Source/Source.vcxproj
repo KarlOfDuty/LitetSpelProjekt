@@ -133,6 +133,7 @@
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="FrustumCulling.cpp" />
     <ClCompile Include="EventHandler.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="PlayerShark.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Trigger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -161,6 +163,7 @@
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="FrustumCulling.h" />
     <ClInclude Include="EventHandler.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="Light.h" />
@@ -172,8 +175,10 @@
     <ClInclude Include="PlayerShark.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Trigger.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleVertex2.glsl" />
     <None Include="simpleVertex.glsl" />
     <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleFragment.glsl" />
     <None Include="ClassDiagram.cd" />

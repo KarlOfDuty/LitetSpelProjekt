@@ -1,12 +1,12 @@
 #ifndef PROJECTILE_H
-
+#define PROJECTILE_H
 #include "Model.h"
 #include "Collision.h"
 #include "SFML\Window.hpp"
 #include <glm/glm.hpp>
 #include <math.h>
 
-class Projectile
+class Projectile : public GameObject
 {
 private:
 	Model* model;
@@ -18,6 +18,11 @@ private:
 	sf::Clock timeSinceCollision;
 	bool isUsed;
 public:
+	//Parent inherited functions
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	std::string type() const;
+	//Own functions
 	Projectile();
 	~Projectile();
 	

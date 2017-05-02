@@ -1,6 +1,6 @@
 #include "EnemyFireFly.h"
 
-EnemyFireFly::EnemyFireFly(int HP, Model model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemyFireFly::EnemyFireFly(int HP, Model* model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
 {
 
 }
@@ -64,5 +64,5 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos,
 		isOnGround = true;
 	}
 
-	setEnemyPos(enemyPos);
+	setPos(enemyPos);
 }

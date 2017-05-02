@@ -8,7 +8,7 @@ private:
 	glm::vec3 newCheckpoint;
 	sf::Clock checkPointClock;
 public:
-	EnemyBatSmall(int HP, Model enemyModel, int damage, glm::vec3 enemyStartPos);
+	EnemyBatSmall(int HP, Model* enemyModel, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyBatSmall();
 	float RandomNumber(float Min, float Max);
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos);

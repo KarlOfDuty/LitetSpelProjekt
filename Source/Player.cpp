@@ -19,15 +19,15 @@ Player::Player()
 	arrow = new Model("models/cube/cubeGreen.obj");
 
 	this->playerPos = glm::vec3(0.0f, 2.0f, 0.0f);
-	setPos(playerPos);
+	setActualPos(playerPos);
 	this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	this->modelMatrix *= glm::scale(glm::vec3(0.08f, 0.08f, 0.08f));
 	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->playerCharacters[0] = new PlayerBird(20, birdModel);
-	this->playerCharacters[1] = new PlayerShark(20, sharkModel);
-	this->playerCharacters[2] = new PlayerButterfly(20, butterflyModel);
+	this->playerCharacters[0] = new PlayerBird(10000, birdModel);
+	this->playerCharacters[1] = new PlayerShark(10000, sharkModel);
+	this->playerCharacters[2] = new PlayerButterfly(10000, butterflyModel);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 
@@ -39,16 +39,30 @@ Player::~Player()
 	this->freeMemory();
 }
 
-glm::vec3 Player::getPlayerPos()
+PlayerChar* Player::getCurrentCharacter()
+{
+	return player;
+}
+
+glm::vec3 Player::getPlayerPos() const
 {
 	return this->playerPos;
 }
 
+glm::vec3 Player::getActualPlayerPos() const
+{
+	return this->modelMatrix[3];
+}
+std::vector<glm::vec2> Player::getPoints()
+{
+	return getPlayerPoints();
+}
+//Swaps the current player
 void Player::swap(int character)
 {
 	player = playerCharacters[character];
 }
-
+//Makes the player jump
 void Player::jump()
 {
 	if (player->getMaxJumps() > jumps)
@@ -57,7 +71,7 @@ void Player::jump()
 		jumps++;
 	}
 }
-
+//Makes the player shoot
 void Player::shoot(sf::Window &window)
 {
 	int activeArrows = 0;
@@ -74,7 +88,7 @@ void Player::shoot(sf::Window &window)
 			if (!arrows[i]->isInUse())
 			{
 				arrows[i]->shoot(window, glm::vec2(playerPos.x, playerPos.y + 2.f), arrow);
-				i = arrows.size();
+				i = (int)arrows.size();
 			}
 		}
 	}
@@ -121,11 +135,17 @@ void Player::aiming(sf::Window &window,float dt)
 	}
 }
 
+//Sets the playerPos variable
 void Player::setPos(glm::vec3 playerPos)
+{
+	this->playerPos = playerPos;
+}
+//Sets the actual model position in the model matrix
+void Player::setActualPos(glm::vec3 playerPos)
 {
 	this->modelMatrix[3] = glm::vec4(playerPos,1.0f);
 }
-
+//True if player is dead
 bool Player::playerIsDead()
 {
 	if (playerCharacters[0]->getHP() <= 0)
@@ -136,18 +156,19 @@ bool Player::playerIsDead()
 	}
 	return false;
 }
-
-glm::vec3 Player::getPlayerPos() const
+glm::vec3 Player::getPos() const
 {
-	return playerPos;
+	return getActualPlayerPos();
 }
-
+std::string Player::type() const
+{
+	return "Player";
+}
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage)
 {
 	groundPos = 0.0f;
 
-	//Update all arrows
 	for (int i = 0; i < arrows.size(); i++)
 	{
 		if (arrows[i]->isInUse())
@@ -223,7 +244,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	velocityX = 0;
 	playerPos.y += velocityY*dt;
 	
-	fixCollision(allModels);
+	testCollision(allModels);
 
 	//Handle collision detection with ground
 	if (playerPos.y <= groundPos && !isOnGround)
@@ -236,7 +257,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 		isOnGround = true;
 	}
-	setPos(playerPos);
+	setActualPos(playerPos);
 	//Player taking damage
 	if (damageImmunity.getElapsedTime().asSeconds() >= 1.0)
 	{
@@ -252,7 +273,7 @@ void Player::draw(Shader shader)
 {
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
-	
+
 	for (int i = 0; i < arrows.size(); i++)
 	{
 		if (arrows[i]->isInUse())
@@ -270,8 +291,8 @@ void Player::draw(Shader shader)
 		}
 	}
 }
-
-void Player::fixCollision(std::vector<Model*> &allModels)
+//Tests collision with other objects
+void Player::testCollision(std::vector<Model*> &allModels)
 {
 	bool collides = true;
 	int collisionChecks = 0;
@@ -292,12 +313,12 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 
 		if (index != -1)
 		{
-			std::vector<glm::vec2> playerPoints;
+			std::vector<glm::vec2> playerPoints = getPlayerPoints();
 			std::vector<glm::vec2> objectPoints;
 			float radians = 0.0f;
-			getPoints(playerPoints, objectPoints, allModels[index], radians);
+			getPoints(objectPoints, allModels[index], radians);
 			glm::vec2 mtv;
-			if (collision::fixCollision(playerPoints, objectPoints, mtv))
+			if (collision::testCollision(playerPoints, objectPoints, mtv))
 			{
 				if (radians > 0.0f && radians < 0.79f)
 				{
@@ -333,9 +354,10 @@ void Player::fixCollision(std::vector<Model*> &allModels)
 		collisionChecks++;
 	}
 }
-void Player::getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::vec2> &objectPoints, Model *object, float &radians)
+//Get playerPoints
+std::vector<glm::vec2> Player::getPlayerPoints()
 {
-	//Set playerPoints
+	std::vector<glm::vec2> playerPoints;
 	playerPoints.push_back(glm::vec2(-0.5f, -0.0f));
 	playerPoints.push_back(glm::vec2(0.5f, -0.0f));
 	playerPoints.push_back(glm::vec2(0.5f, 1.0f));
@@ -344,7 +366,10 @@ void Player::getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::ve
 	{
 		playerPoints[k] += glm::vec2(playerPos);
 	}
-
+	return playerPoints;
+}
+void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians)
+{
 	//Get rotation and scale from modelMat
 	glm::mat4 modelMat = object->getModelMatrix();
 	glm::vec3 scale;
@@ -354,7 +379,7 @@ void Player::getPoints(std::vector<glm::vec2> &playerPoints, std::vector<glm::ve
 	//Convert from quat to radians
 	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
 	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
-	radians = -std::atan2(t3, t4);
+	radians = (float)-std::atan2(t3, t4);
 
 	//Get object points
 	objectPoints = object->getPoints();

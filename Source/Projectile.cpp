@@ -1,5 +1,20 @@
 #include "Projectile.h"
 
+std::vector<glm::vec2> Projectile::getPoints()
+{
+	return model->getPoints();
+}
+
+glm::vec3 Projectile::getPos() const
+{
+	return model->getPos();
+}
+
+std::string Projectile::type() const
+{
+	return "Projectile";
+}
+
 Projectile::Projectile()
 {
 	hasCollided = false;
@@ -69,7 +84,7 @@ void Projectile::update(float dt,std::vector<Model*> &allObjects)
 			{
 				std::vector<glm::vec2> objectPoints = allObjects[index]->getPoints();
 				glm::vec2 mtv;
-				if (collision::fixCollision(arrowPoints, objectPoints, mtv))
+				if (collision::testCollision(arrowPoints, objectPoints, mtv))
 				{
 					position += mtv;
 					model->setModelMatrix({

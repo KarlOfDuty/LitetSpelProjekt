@@ -1,4 +1,17 @@
 #include "Light.h"
+std::vector<glm::vec2> Light::getPoints()
+{
+	std::vector<glm::vec2> point = { glm::vec2(pos.x,pos.y) };
+	return point;
+}
+glm::vec3 Light::getPos() const
+{
+	return pos;
+}
+std::string Light::type() const
+{
+	return "Light";
+}
 Light::Light(glm::vec3 pos, glm::vec3 colour, float linear, float quadratic)
 {
 	this->pos = pos;

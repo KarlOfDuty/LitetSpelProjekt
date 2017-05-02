@@ -88,12 +88,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
-	  <Filter>Source Files</Filter>
-	</ClCompile>
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Trigger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Projectile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -165,12 +171,18 @@
 	<Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
-	  <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Trigger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Projectile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -192,6 +204,9 @@
       <Filter>Source Files\Shader</Filter>
     </None>
     <None Include="simpleVertex.glsl">
+      <Filter>Source Files\Shader</Filter>
+    </None>
+    <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleVertex2.glsl">
       <Filter>Source Files\Shader</Filter>
     </None>
   </ItemGroup>
