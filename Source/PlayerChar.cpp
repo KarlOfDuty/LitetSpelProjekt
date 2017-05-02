@@ -2,12 +2,12 @@
 
 PlayerChar::PlayerChar()
 {
-	this->HP = 100;
+	this->health = 100;
 }
 
-PlayerChar::PlayerChar(int HP, Model model)
+PlayerChar::PlayerChar(int health, Model model)
 {
-	this->HP = HP;
+	this->health = health;
 	this->playerModel = model;
 	this->damage = 1;
 }
@@ -16,14 +16,14 @@ PlayerChar::~PlayerChar()
 {
 
 }
-void PlayerChar::takingDamage(int appliedDamage)
+void PlayerChar::applyDamage(int appliedDamage)
 {
-	this->HP -= appliedDamage;
+	this->health -= appliedDamage;
 }
 
-void PlayerChar::setHP(int HP)
+void PlayerChar::setHealth(int health)
 {
-	this->HP = HP;
+	this->health = health;
 }
 
 int PlayerChar::getDamage() const
@@ -31,9 +31,9 @@ int PlayerChar::getDamage() const
 	return this->damage;
 }
 
-int PlayerChar::getHP() const
+int PlayerChar::getHealth() const
 {
-	return HP;
+	return health;
 }
 void PlayerChar::attack()
 {

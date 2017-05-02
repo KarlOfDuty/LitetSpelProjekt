@@ -5,18 +5,18 @@
 class PlayerChar
 {
 private:
-	int HP;
+	int health;
 	int damage;
 	Model playerModel;
 	//Animation animation;
 public:
 	PlayerChar();
-	PlayerChar(int HP, Model model);
+	PlayerChar(int health, Model model);
 	virtual ~PlayerChar();
-	void takingDamage(int appliedDamage);
-	void setHP(int HP);
+	void applyDamage(int appliedDamage);
+	void setHealth(int health);
 	int getDamage() const;
-	int getHP()const;
+	int getHealth()const;
 	void attack();
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;

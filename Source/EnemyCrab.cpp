@@ -1,10 +1,10 @@
 #include "EnemyCrab.h"
 
-EnemyCrab::EnemyCrab(int HP, Model* model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
+EnemyCrab::EnemyCrab(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
 	this->acceleration = 0.2f;
 	this->originPoint = enemyStartPos;
-	this->attackNow = true;
+	this->attacking = true;
 }
 
 EnemyCrab::~EnemyCrab()
@@ -17,7 +17,7 @@ void EnemyCrab::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 }
 
-void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
+void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
 {
 	groundCheck();
 
@@ -31,20 +31,20 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 		checkPointReached = false;
 	}
 
-	if (!attackNow)
+	if (!attacking)
 	{
 		if (walkTimer.getElapsedTime().asSeconds() >= 1.5)
 		{
-			attackNow = true;
+			attacking = true;
 		}
 	}
 
-	if (attackNow)
+	if (attacking)
 	{
 		if (glm::length(enemyPosCurrent - originPoint) > 4.0f)
 		{
 			originPoint = enemyPosCurrent;
-			attackNow = false;
+			attacking = false;
 			movingRight = false;
 			movingLeft = false;
 			velocityX = 0;
@@ -55,7 +55,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 	if (isOnGround)
 	{
 		//Move
-		if (attackNow)
+		if (attacking)
 		{
 			if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
 			{
@@ -143,5 +143,5 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 	}
 
 	setPos(enemyPosCurrent);
-	checkCollision(allModels);
+	collision(allModels);
 }

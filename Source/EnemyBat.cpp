@@ -1,6 +1,6 @@
 #include "EnemyBat.h"
 
-EnemyBat::EnemyBat(int HP, Model* model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
+EnemyBat::EnemyBat(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
 	findPlayer = true;
 }
@@ -15,21 +15,21 @@ void EnemyBat::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 
 }
 
-void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
+void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
 {
 	groundCheck();
 
 	if (goingRight)
 	{
-		newCheckpoint.x = playerPos.x + 12.0f;
-		newCheckpoint.y = playerPos.y + 7.0f;
-		newCheckpoint.z = playerPos.z;
+		checkpoint.x = playerPos.x + 12.0f;
+		checkpoint.y = playerPos.y + 7.0f;
+		checkpoint.z = playerPos.z;
 	}
 	if (goingLeft)
 	{
-		newCheckpoint.x = playerPos.x - 12.0f;
-		newCheckpoint.y = playerPos.y + 7.0f;
-		newCheckpoint.z = playerPos.z;
+		checkpoint.x = playerPos.x - 12.0f;
+		checkpoint.y = playerPos.y + 7.0f;
+		checkpoint.z = playerPos.z;
 	}
 
 	if (findPlayer)
@@ -43,7 +43,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 
 	if (!findPlayer)
 	{
-		if (fabs(enemyPosCurrent.x - newCheckpoint.x) < 5.0f && fabs(enemyPosCurrent.y - newCheckpoint.y) < 5.0f)
+		if (fabs(enemyPosCurrent.x - checkpoint.x) < 5.0f && fabs(enemyPosCurrent.y - checkpoint.y) < 5.0f)
 		{
 			if (clockRestart)
 			{
@@ -59,7 +59,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 
 	//Move
 	midX = playerPos.y;
-	yValue = glm::pow(enemyPosCurrent.y - midX, 0.3);
+	float curve = glm::pow(enemyPosCurrent.y - midX, 0.3);
 	if (findPlayer == true)
 	{
 		if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
@@ -67,14 +67,14 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 			if (enemyPosCurrent.x > playerPos.x)
 			{
 				velocityX -= 2.6f*dt;
-				velocityY -= yValue*dt;
+				velocityY -= curve*dt;
 				goingLeft = true;
 				goingRight = false;
 			}
 			else if (enemyPosCurrent.x < playerPos.x)
 			{
 				velocityX += 2.6f*dt;
-				velocityY -= yValue*dt;
+				velocityY -= curve*dt;
 				goingRight = true;
 				goingLeft = false;
 			}
@@ -83,22 +83,22 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 	}
 	else
 	{
-		if (enemyPosCurrent.x > newCheckpoint.x)
+		if (enemyPosCurrent.x > checkpoint.x)
 		{
 			velocityX -= 2.6f*dt;
 		}
-		else if (enemyPosCurrent.x < newCheckpoint.x)
+		else if (enemyPosCurrent.x < checkpoint.x)
 		{
 			velocityX += 2.6f*dt;
 			
 		}
-		if (enemyPosCurrent.y > newCheckpoint.y)
+		if (enemyPosCurrent.y > checkpoint.y)
 		{
-			velocityY -= yValue*dt;
+			velocityY -= curve*dt;
 		}
-		else if (enemyPosCurrent.y < newCheckpoint.y)
+		else if (enemyPosCurrent.y < checkpoint.y)
 		{
-			velocityY += yValue*dt;
+			velocityY += curve*dt;
 		}
 	}
 
@@ -126,6 +126,6 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 	}*/
 
 	setPos(enemyPosCurrent);
-	checkCollision(allModels);
+	collision(allModels);
 }
 

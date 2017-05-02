@@ -1,6 +1,6 @@
 #include "EnemyToad.h"
 
-EnemyToad::EnemyToad(int HP, Model* model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
+EnemyToad::EnemyToad(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
 
 }
@@ -15,7 +15,7 @@ void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 }
 
-void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
+void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
 {
 	groundCheck();
 
@@ -105,6 +105,6 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 	}
 
 	setPos(enemyPosCurrent);
-	checkCollision(allModels);
+	collision(allModels);
 }
 

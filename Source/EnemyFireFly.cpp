@@ -1,6 +1,6 @@
 #include "EnemyFireFly.h"
 
-EnemyFireFly::EnemyFireFly(int HP, Model* model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
+EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
 	this->attackRange = 9;
 }
@@ -15,7 +15,7 @@ void EnemyFireFly::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPo
 
 }
 
-void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
+void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
 {
 	groundCheck();
 
@@ -65,5 +65,5 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 	}
 
 	setPos(enemyPosCurrent);
-	checkCollision(allModels);
+	collision(allModels);
 }

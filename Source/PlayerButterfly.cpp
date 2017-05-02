@@ -1,6 +1,6 @@
 #include "PlayerButterfly.h"
 
-PlayerButterfly::PlayerButterfly(int HP, Model model) :PlayerChar(HP, model)
+PlayerButterfly::PlayerButterfly(int health, Model model) :PlayerChar(health, model)
 {
 	this->maxJumps = 1;
 	this->jumpHeight = 10;

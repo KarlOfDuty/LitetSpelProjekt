@@ -1,6 +1,6 @@
 #include "PlayerBird.h"
 
-PlayerBird::PlayerBird(int HP, Model model) :PlayerChar(HP, model)
+PlayerBird::PlayerBird(int health, Model model) :PlayerChar(health, model)
 {
 	this->maxJumps = 2;
 	this->jumpHeight = 15;

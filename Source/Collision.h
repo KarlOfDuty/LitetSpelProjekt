@@ -6,8 +6,8 @@
 #include "Model.h"
 namespace collision
 {
-    bool testCollision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2, glm::vec2 &mtv);
-	bool testCollision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2);
+    bool collision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2, glm::vec2 &mtv);
+	bool collision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2);
 	std::vector<glm::vec2> getAxis(std::vector<glm::vec2> allPoints);
     void projectOnAxis(std::vector<glm::vec2> allPoints, glm::vec2 thisAxis, float &min, float &max);
     float dot(glm::vec2 vec1, glm::vec2 vec2);

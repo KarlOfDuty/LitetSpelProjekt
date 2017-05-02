@@ -16,13 +16,12 @@
 #include <iostream>
 #include <thread>
 
-class Enemy
+class EnemyManager
 {
 private:
 	std::vector<std::thread> allThreads;
-	std::vector<EnemyChar*> enemyCharacters;
-	glm::vec3 enemyPos;
-	std::vector<EnemyChar*> smallBatsPos;
+	std::vector<Enemy*> allEnemies;
+	std::vector<Enemy*> allSmallBats;
 	Model* slimeModel;
 	Model* toadModel;
 	Model* batModel;
@@ -32,8 +31,8 @@ private:
 	Model* crabModel;
 	Model* fireflyModel;
 public:
-	Enemy();
-	~Enemy();
+	EnemyManager();
+	~EnemyManager();
 	void createSlime(glm::vec3 enemyStartPos);
 	void createToad(glm::vec3 enemyStartPos);
 	void createGiantBat(glm::vec3 enemyStartPos);
@@ -43,7 +42,7 @@ public:
 	void createBoss(glm::vec3 enemyStartPos);
 	void createFirefly(glm::vec3 enemyStartPos);
 	void sortEnemies(glm::vec3 playerPos);
-	void enemyDead();
+	void clearDeadEnemies();
 	glm::vec3 getPos()const;
 	int getDamage()const;
 	void update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels);
