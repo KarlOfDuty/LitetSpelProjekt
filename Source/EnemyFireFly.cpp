@@ -65,4 +65,5 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 	}
 
 	setEnemyPos(enemyPosCurrent);
+	checkCollision(allModels);
 }

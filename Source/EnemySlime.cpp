@@ -85,29 +85,6 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 	velocityX = 0;
 	enemyPosCurrent.y += velocityY*dt;
 
-	/*int index = -1;
-	float minDist = 1000;
-	for (int i = 0; i < allModels.size(); i++)
-	{
-		float distance = glm::length(enemyPosCurrent - glm::vec3(allModels[i]->getModelMatrix()[3]));
-		if (minDist > distance)
-		{
-			minDist = distance;
-			index = i;
-		}
-	}
-	if (index != -1)
-	{
-		std::vector<glm::vec2> enemyPoints = this->getModel().getPoints();
-		std::vector<glm::vec2> objectPoints = allModels[index]->getPoints();
-		glm::vec2 mtv;
-		if (collision::fixCollision(enemyPoints, objectPoints, mtv))
-		{
-			enemyPosCurrent.x += mtv.x;
-			enemyPosCurrent.y += mtv.y;
-		}
-	}*/
-
 	//Handle collision detection with ground
 	if (enemyPosCurrent.y <= 0) {
 		velocityY = 0;
@@ -116,5 +93,6 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 	}
 
 	setEnemyPos(enemyPosCurrent);
+	checkCollision(allModels);
 }
 

@@ -33,7 +33,6 @@ void EnemyChar::setEnemyPos(glm::vec3 position)
 		0.0, 0.0, 0.075, 0.0,
 		enemyPos.x, enemyPos.y, enemyPos.z, 1.0
 	));
-	//this->enemyModelMatrix *= glm::scale(glm::vec3(0.075f, 0.075f, 0.075f));
 }
 
 void EnemyChar::setHP(int HP)
@@ -118,7 +117,6 @@ void EnemyChar::update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> sm
 		updateThis(dt, playerPos, enemyPos, checkPoint, smallBatsPos, allModels);
 		attackPlayer(dt, playerPos, enemyPos);
 
-		checkCollision(allModels);
 	}
 }
 

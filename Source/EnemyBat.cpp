@@ -126,5 +126,6 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 	}*/
 
 	setEnemyPos(enemyPosCurrent);
+	checkCollision(allModels);
 }
 

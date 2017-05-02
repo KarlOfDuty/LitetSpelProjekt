@@ -30,7 +30,6 @@ std::vector<glm::vec2> Model::getPoints()
 {
 	if (allPoints.empty())
 	{
-		std::cout << "knas" << std::endl;
 		glm::vec2 minPos;
 		for (int i = 0; i < meshes.size(); i++)
 		{

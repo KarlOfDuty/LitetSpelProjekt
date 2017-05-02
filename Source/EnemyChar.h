@@ -9,6 +9,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>  
+#include <random>
 
 class EnemyChar
 {
