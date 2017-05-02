@@ -39,7 +39,6 @@ public:
 	virtual ~EnemyChar();
 	void setPos(glm::vec3 position);
 	void setHP(int HP);
-	glm::vec3 getPos() const;
 	int getDamage()const;
 	int getHP() const;
 	Model* getModel();

@@ -170,7 +170,7 @@ void Trigger::runCommand(int commandID, int targetID)
 	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Enemy")
 	{
 		EnemyChar* enemy = dynamic_cast<EnemyChar*>(targets[targetID]);
-		enemy->takeDamage(10000000);
+		enemy->takingDamage(10000000);
 	}
 }
 //Constructors
