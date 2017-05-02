@@ -8,6 +8,10 @@ glm::vec3 Light::getPos() const
 {
 	return pos;
 }
+std::string Light::type() const
+{
+	return "Light";
+}
 Light::Light(glm::vec3 pos, glm::vec3 colour, float linear, float quadratic)
 {
 	this->pos = pos;
