@@ -7,7 +7,8 @@ EnemyChar::EnemyChar()
 	this->damage = 1;
 }
 
-EnemyChar::EnemyChar(int HP, Model *model, int damage, glm::vec3 enemyStartPos)
+
+EnemyChar::EnemyChar(int HP, Model* model, int damage, glm::vec3 enemyStartPos)
 {
 	this->HP = HP;
 	this->model = model;
@@ -27,18 +28,17 @@ EnemyChar::~EnemyChar()
 void EnemyChar::setPos(glm::vec3 position)
 {
 	enemyPos = position;
-	this->enemyModelMatrix = glm::mat4(
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
+	this->model->setModelMatrix(glm::mat4(
+		0.075, 0.0, 0.0, 0.0,
+		0.0, 0.075, 0.0, 0.0,
+		0.0, 0.0, 0.075, 0.0,
 		enemyPos.x, enemyPos.y, enemyPos.z, 1.0
-	);
-	this->enemyModelMatrix *= glm::scale(glm::vec3(0.075f, 0.075f, 0.075f));
+	));
 }
 
-void EnemyChar::takeDamage(float damage)
+void EnemyChar::setHP(int HP)
 {
-	this->HP = HP - damage;
+	this->HP = HP;
 }
 
 glm::vec3 EnemyChar::getPos() const
@@ -61,9 +61,27 @@ int EnemyChar::getDamage() const
 	return damage;
 }
 
+int EnemyChar::getHP() const
+{
+	return this->HP;
+}
+Model* EnemyChar::getModel()
+{
+	return this->model;
+}
+
 glm::mat4 EnemyChar::getModelMatrix() const
 {
-	return enemyModelMatrix;
+	return this->model->getModelMatrix();
+}
+
+void EnemyChar::takingDamage(int appliedDamage)
+{
+	if (this->damageImmunity.getElapsedTime().asSeconds() >= 0.5)
+	{
+		this->HP -= appliedDamage;
+		this->damageImmunity.restart();
+	}
 }
 
 void EnemyChar::groundCheck()
@@ -74,10 +92,43 @@ void EnemyChar::groundCheck()
 	}
 }
 
-void EnemyChar::update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> smallBatsPos)
+bool EnemyChar::checkCollision(std::vector<Model*> &allModels)
 {
-	updateThis(dt, playerPos, enemyPos, checkPoint, smallBatsPos);
-	attackPlayer(dt, playerPos, enemyPos);
+	int index = -1;
+	float minDist = 1000;
+	for (int i = 0; i < allModels.size(); i++)
+	{
+		float distance = glm::length(enemyPos - glm::vec3(allModels[i]->getModelMatrix()[3]));
+		if (minDist > distance)
+		{
+			minDist = distance;
+			index = i;
+		}
+	}
+	if (index != -1)
+	{
+		std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
+		std::vector<glm::vec2> objectPoints = allModels[index]->getPoints();
+		glm::vec2 mtv;
+		if (collision::testCollision(enemyPoints, objectPoints, mtv))
+		{
+			enemyPos.x += mtv.x;
+			enemyPos.y += mtv.y;
+			setPos(enemyPos);
+			return true;
+		}
+	}
+	return false;
+}
+
+void EnemyChar::update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
+{
+	if (glm::length(enemyPos - playerPos) < 25.0f)
+	{
+		updateThis(dt, playerPos, enemyPos, checkPoint, smallBatsPos, allModels);
+		attackPlayer(dt, playerPos, enemyPos);
+
+	}
 }
 
 void EnemyChar::draw(Shader shader)

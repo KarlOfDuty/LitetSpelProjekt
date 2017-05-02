@@ -1,8 +1,8 @@
 #include "EnemyFireFly.h"
 
-EnemyFireFly::EnemyFireFly(int HP, Model* model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemyFireFly::EnemyFireFly(int HP, Model* model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
-
+	this->attackRange = 9;
 }
 
 EnemyFireFly::~EnemyFireFly()
@@ -10,33 +10,33 @@ EnemyFireFly::~EnemyFireFly()
 
 }
 
-void EnemyFireFly::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
+void EnemyFireFly::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
 
 }
 
-void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
+void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
 {
 	groundCheck();
 
 	//Move
-	if (glm::length(enemyPos - playerPos) < 10.0f || playerSeen)
+	if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
 	{
-		if (enemyPos.x > playerPos.x)
+		if (enemyPosCurrent.x > playerPos.x+attackRange)
 		{
-			velocityX -= 1.8f*dt;
+			velocityX -= 1.5f*dt;
 		}
-		else if (enemyPos.x < playerPos.x)
+		else if (enemyPosCurrent.x < playerPos.x-attackRange)
 		{
-			velocityX += 1.8f*dt;
+			velocityX += 1.5f*dt;
 		}
-		if (enemyPos.y > playerPos.y)
+		if (enemyPosCurrent.y > playerPos.y)
 		{
-			velocityY -= 1.8f*dt;
+			velocityY -= 1.5f*dt;
 		}
-		else if (enemyPos.y < playerPos.y)
+		else if (enemyPosCurrent.y < playerPos.y)
 		{
-			velocityY += 1.8f*dt;
+			velocityY += 1.5f*dt;
 		}
 		playerSeen = true;
 	}
@@ -53,16 +53,17 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos,
 	}
 
 	//Apply velocity
-	enemyPos.x += velocityX;
+	enemyPosCurrent.x += velocityX;
 	velocityX = 0;
-	enemyPos.y += velocityY;
+	enemyPosCurrent.y += velocityY;
 	velocityY = 0;
 
 	//Handle collision detection with ground
-	if (enemyPos.y <= 0) {
-		enemyPos.y = 0;
+	if (enemyPosCurrent.y <= 0) {
+		enemyPosCurrent.y = 0;
 		isOnGround = true;
 	}
 
-	setPos(enemyPos);
+	setPos(enemyPosCurrent);
+	checkCollision(allModels);
 }

@@ -1,8 +1,9 @@
 #include "EnemySkeleton.h"
 
-EnemySkeleton::EnemySkeleton(int HP, Model* model, int damage, bool patrol, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemySkeleton::EnemySkeleton(int HP, Model* model, int damage, bool patrol, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
 	this->patrol = patrol;
+	std::srand(time(0));
 }
 
 EnemySkeleton::~EnemySkeleton()
@@ -10,68 +11,72 @@ EnemySkeleton::~EnemySkeleton()
 
 }
 
-void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
+void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
-
+	//randomize doValue, if above 3 attack, if 1/2/3 block
+	doValue = rand() % 10 + 1;
+	if (doValue >= 4)
+	{
+		//attackPlayer
+	}
+	else if (doValue <= 3)
+	{
+		//block, or dodge
+	}
 }
 
-void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
+void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*>& allModels)
 {
 	groundCheck();
 
 	//Patrol check 
 	if (patrol)
 	{
-		if (fabs(enemyPos.x) < checkPoint.x - 2)
+		if (enemyPosCurrent.x < checkPoint.x - 3)
 		{
 			checkPointReached = true;
 		}
-		else if (fabs(enemyPos.x) > checkPoint.x + 2)
+		else if (enemyPosCurrent.x > checkPoint.x + 3)
 		{
 			checkPointReached = false;
 		}
 	}
 
-	//Move
-	if (glm::length(enemyPos - playerPos) < 5.0f || playerSeen)
+	if (isOnGround)
 	{
-		if (enemyPos.x > playerPos.x)
+		//Move
+		if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
 		{
-			velocityX -= 3.0f*dt;
+			if (enemyPosCurrent.x > playerPos.x)
+			{
+				velocityX -= 3.8f*dt;
+			}
+			else
+			{
+				velocityX += 3.8f*dt;
+			}
+			playerSeen = true;
 		}
 		else
 		{
-			velocityX += 3.0f*dt;
-		}
-		playerSeen = true;
-	}
-	else
-	{
-		//Patrol
-		if (patrol)
-		{
-			if (checkPointReached == false)
+			//Patrol
+			if (patrol)
 			{
-				velocityX -= 1.0f*dt;
+				if (checkPointReached == false)
+				{
+					velocityX -= 1.8f*dt;
+				}
+				else if (checkPointReached == true)
+				{
+					velocityX += 1.8f*dt;
+				}
 			}
-			else if (checkPointReached == true)
-			{
-				velocityX += 1.0f*dt;
-			}
-		}
-	}
-
-	if (isOnGround)
-	{
-		if (fabs(enemyPos.x - playerPos.x) < 0.1)
-		{
-			velocityY = 10 * dt;
 		}
 	}
 
 	if (!isOnGround)
 	{
-		velocityY -= 0.7*dt;
+		velocityY -= 0.8*dt;
 	}
 
 	if (velocityY > 10)
@@ -85,16 +90,17 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	}
 
 	//Apply velocity
-	enemyPos.x += velocityX;
+	enemyPosCurrent.x += velocityX;
 	velocityX = 0;
-	enemyPos.y += velocityY;
+	enemyPosCurrent.y += velocityY;
 
 	//Handle collision detection with ground
-	if (enemyPos.y <= 0) {
+	if (enemyPosCurrent.y <= 0) {
 		velocityY = 0;
-		enemyPos.y = 0;
+		enemyPosCurrent.y = 0;
 		isOnGround = true;
 	}
 
-	setPos(enemyPos);
+	setPos(enemyPosCurrent);
+	checkCollision(allModels);
 }

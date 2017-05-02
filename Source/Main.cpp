@@ -105,12 +105,17 @@ int main()
 	//Characters
 	player = new Player();
 	enemy = new Enemy();
-	enemy->createSlime(glm::vec3(10.0f, 5.0f, 0.0f));
-	enemy->createToad(glm::vec3(-10.0f, 5.0f, 0.0f));
-	enemy->createGiantBat(glm::vec3(15.0f, 8.0f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-16.0f, 5.0f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-15.8f, 5.0f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-15.4f, 5.0f, 0.0f));
+	enemy->createSlime(glm::vec3(30.0f, 5.0f, 0.0f));
+	enemy->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
+	enemy->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
+	enemy->createCrab(glm::vec3(-30.0f, 5.0f, 0.0f));
+	enemy->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
+	enemy->createSkeleton(glm::vec3(30.0f, 15.0f, 0.0f), false);
+	// run the main loop
+	eventHandler = EventHandler();
 
 	//Levelmanager
 	levelManager = LevelManager();
@@ -272,10 +277,10 @@ void update(sf::Window &window)
 	else
 	{
 		viewMatrix = playerCamera.update(player->getPlayerPos());
-		//viewMatrix = freeCamera.Update(dt,window);
-	}
 
-	enemy->update(dt, player->getPlayerPos());
+	}
+	enemy->update(dt, player->getPlayerPos(), player->getDamage(), modelsToBeDrawn);
+
 	if (endLevel())
 	{
 		unloadLevel();

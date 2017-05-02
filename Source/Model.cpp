@@ -28,16 +28,25 @@ Material Model::getMaterial(int index)
 }
 std::vector<glm::vec2> Model::getPoints()
 {
-	this->allPoints.clear();
-	glm::vec2 minPos;
-	for (int i = 0; i < meshes.size(); i++)
+	if (allPoints.empty())
 	{
-		for (int j = 0; j < meshes[i]->vertices.size(); j++)
+		glm::vec2 minPos;
+		for (int i = 0; i < meshes.size(); i++)
 		{
-			if (meshes[i]->vertices[j].pos.x < minPos.x) minPos.x = meshes[i]->vertices[j].pos.x;
-			if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
+			for (int j = 0; j < meshes[i]->vertices.size(); j++)
+			{
+				if (meshes[i]->vertices[j].pos.x < minPos.x) minPos.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
+			}
 		}
+		//Pushback points without rotation
+		allPoints.push_back(glm::vec2(minPos.x, minPos.y));
+		allPoints.push_back(glm::vec2(-minPos.x, minPos.y));
+		allPoints.push_back(glm::vec2(-minPos.x, -minPos.y));
+		allPoints.push_back(glm::vec2(minPos.x, -minPos.y));
 	}
+
+	std::vector<glm::vec2> translatedPoint;
 	//Get rotation and scale from modelMat
 	glm::vec3 scale;
 	glm::quat rotation;
@@ -46,27 +55,27 @@ std::vector<glm::vec2> Model::getPoints()
 	//Convert from quat to radians
 	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
 	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
-	float radians = (float)-std::atan2(t3, t4);
+	float radians = -std::atan2(t3, t4);
 
 	//Pushback points without rotation
-	allPoints.push_back(glm::vec2(minPos.x*scale.x, minPos.y*scale.y));
-	allPoints.push_back(glm::vec2(-minPos.x*scale.x, minPos.y*scale.y));
-	allPoints.push_back(glm::vec2(-minPos.x*scale.x, -minPos.y*scale.y));
-	allPoints.push_back(glm::vec2(minPos.x*scale.x, -minPos.y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[0].x*scale.x, allPoints[0].y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[1].x*scale.x, allPoints[1].y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[2].x*scale.x, allPoints[2].y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[3].x*scale.x, allPoints[3].y*scale.y));
 
 	//Translate to right position depending on rotation
-	for (int k = 0; k < allPoints.size(); k++)
+	for (int k = 0; k < translatedPoint.size(); k++)
 	{
 		glm::vec2 center = this->modelMatrix[3];
-		allPoints[k] += center;
-		float x = center.x + (allPoints[k].x - center.x) * cos(radians) - (allPoints[k].y - center.y) * sin(radians);
-		float y = center.y + (allPoints[k].x - center.x) * sin(radians) + (allPoints[k].y - center.y) * cos(radians);
+		translatedPoint[k] += center;
+		float x = center.x + (translatedPoint[k].x - center.x) * cos(radians) - (translatedPoint[k].y - center.y) * sin(radians);
+		float y = center.y + (translatedPoint[k].x - center.x) * sin(radians) + (translatedPoint[k].y - center.y) * cos(radians);
 
-		allPoints[k].x = x;
-		allPoints[k].y = y;
+		translatedPoint[k].x = x;
+		translatedPoint[k].y = y;
 	}
 
-	return this->allPoints;
+	return translatedPoint;
 }
 glm::vec3 Model::getPos() const
 {

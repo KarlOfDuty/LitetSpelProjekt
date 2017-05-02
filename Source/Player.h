@@ -49,6 +49,7 @@ public:
 	void swap(int charType);
 	bool playerIsDead();
 	glm::vec3 getPlayerPos() const;
+	int getDamage() const;
 	glm::vec3 getActualPlayerPos() const;
 	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
 	void jump();

@@ -1,9 +1,10 @@
 #include "EnemyBatSmall.h"
 
-EnemyBatSmall::EnemyBatSmall(int HP, Model* model, int damage, glm::vec3 enemyPos) :EnemyChar(HP, model, damage, enemyPos)
+EnemyBatSmall::EnemyBatSmall(int HP, Model* model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
-	std::srand(time(0));
 	findPlayer = true;
+	startPosition = enemyStartPos;
+	returnToStart = false;
 }
 
 EnemyBatSmall::~EnemyBatSmall()
@@ -11,23 +12,21 @@ EnemyBatSmall::~EnemyBatSmall()
 
 }
 
-float EnemyBatSmall::RandomNumber(float Min, float Max)
-{
-	return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;
-}
-
-void EnemyBatSmall::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
+void EnemyBatSmall::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
 
 }
 
-void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
+void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
 {
 	groundCheck();
+	std::mt19937 rng(rd());
+	std::uniform_int_distribution<> distX(-2, 2);
+	std::uniform_int_distribution<> distY(0, 3);
 
 	for (int i = 0; i < smallBatsPos.size(); i++)
 	{
-		if (glm::length(enemyPos - smallBatsPos[i]->getPos()) < 5.0f)
+		if (glm::length(enemyPosCurrent - smallBatsPos[i]->getPos()) < 2.0f)
 		{
 			if (playerSeen)
 			{
@@ -36,78 +35,130 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		}
 	}
 
-	if(fabs(enemyPos.x - playerPos.x) < 0.5f && fabs(enemyPos.y - playerPos.y) < 0.5f)
+	if (fabs(enemyPosCurrent.x - playerPos.x) < 0.5f && fabs(enemyPosCurrent.y - playerPos.y) < 0.5f)
 	{
 		goForPlayer = false;
 		if (findPlayer)
 		{
-			newCheckpoint.x = playerPos.x + RandomNumber(-2.0f, 2.0f);
-			newCheckpoint.y = playerPos.y + RandomNumber(-1.0f, 2.0f);
+			newCheckpoint.x = playerPos.x + distX(rng);
+			newCheckpoint.y = playerPos.y + distY(rng);
 			newCheckpoint.z = playerPos.z;
 			findPlayer = false;
 		}
 	}
-	if (glm::length(enemyPos - playerPos) > 3.0f)
+	if (glm::length(enemyPosCurrent - playerPos) > 3.0f)
 	{
 		findPlayer = true;
 	}
 
 	if (!findPlayer && !goForPlayer)
 	{
-		if (fabs(enemyPos.x - newCheckpoint.x) < 0.1f && fabs(enemyPos.y - newCheckpoint.y) < 0.1f)
+		if (fabs(enemyPosCurrent.x - newCheckpoint.x) < 0.1f && fabs(enemyPosCurrent.y - newCheckpoint.y) < 0.1f)
 		{
-			newCheckpoint.x = playerPos.x + RandomNumber(-2.0f, 2.0f);
-			newCheckpoint.y = playerPos.y + RandomNumber(-1.0f, 2.0f);
+			newCheckpoint.x = playerPos.x + distX(rng);
+			newCheckpoint.y = playerPos.y + distY(rng);
 			newCheckpoint.z = playerPos.z;
-			std::cout << RandomNumber(-2.0f, 2.0f) << std::endl;
 			goForPlayer = true;
 		}
 	}
 
-
-	
-	//Move
-	if (findPlayer || goForPlayer)
+	if (collision)
 	{
-		if (glm::length(enemyPos - playerPos) < 10.0f || playerSeen)
+		velocityY += 5.0f*dt;
+		if (collisionClock.getElapsedTime().asSeconds() >= 5)
 		{
-			if (enemyPos.x > playerPos.x)
-			{
-				velocityX -= 1.8f*dt;
-			}
-			else if (enemyPos.x < playerPos.x)
-			{
-				velocityX += 1.8f*dt;
-			}
-			if (enemyPos.y > playerPos.y)
-			{
-				velocityY -= 1.8f*dt;
-			}
-			else if (enemyPos.y < playerPos.y)
-			{
-				velocityY += 1.8f*dt;
-			}
-			playerSeen = true;
+			returnToStart = true;
+			playerSeen = false;
+			goForPlayer = true;
+			findPlayer = true;
 		}
 	}
 	else
 	{
-		if (enemyPos.x > newCheckpoint.x)
+		collisionClock.restart();
+	}
+
+
+	//Move
+	if (!returnToStart)
+	{
+		if (findPlayer || goForPlayer)
 		{
-			velocityX -= 1.8f*dt;
+			if (glm::length(enemyPosCurrent - playerPos) < 8.0f || playerSeen)
+			{
+				if (enemyPosCurrent.x > playerPos.x)
+				{
+					velocityX -= 2.0f*dt;
+				}
+				else if (enemyPosCurrent.x < playerPos.x)
+				{
+					velocityX += 2.0f*dt;
+				}
+				if (enemyPosCurrent.y > playerPos.y)
+				{
+					velocityY -= 2.0f*dt;
+				}
+				else if (enemyPosCurrent.y < playerPos.y)
+				{
+					velocityY += 2.0f*dt;
+				}
+				playerSeen = true;
+			}
 		}
-		else if (enemyPos.x < newCheckpoint.x)
+		else
 		{
-			velocityX += 1.8f*dt;
+			if (enemyPosCurrent.x > newCheckpoint.x)
+			{
+				velocityX -= 2.2f*dt;
+			}
+			else if (enemyPosCurrent.x < newCheckpoint.x)
+			{
+				velocityX += 2.2f*dt;
+			}
+			if (enemyPosCurrent.y > newCheckpoint.y)
+			{
+				velocityY -= 2.2f*dt;
+			}
+			else if (enemyPosCurrent.y < newCheckpoint.y)
+			{
+				velocityY += 2.2f*dt;
+			}
 		}
-		if (enemyPos.y > newCheckpoint.y)
-		{
-			velocityY -= 1.8f*dt;
-		}
-		else if (enemyPos.y < newCheckpoint.y)
-		{
-			velocityY += 1.8f*dt;
-		}
+	}
+	else
+	{
+		playerSeen = false;
+
+			if (glm::length(enemyPosCurrent - startPosition) > 0.5f)
+			{
+				if (!collision)
+				{
+					if (enemyPosCurrent.x > startPosition.x)
+					{
+						velocityX -= 2.0f*dt;
+					}
+					else if (enemyPosCurrent.x < startPosition.x)
+					{
+						velocityX += 2.0f*dt;
+					}
+					if (enemyPosCurrent.y > startPosition.y)
+					{
+						velocityY -= 2.0f*dt;
+					}
+					else if (enemyPosCurrent.y < startPosition.y)
+					{
+						velocityY += 2.0f*dt;
+					}
+				}
+				else
+				{
+					velocityY += 5.0f*dt;
+				}
+			}
+			else
+			{
+				returnToStart = false;
+			}
 	}
 
 	if (isOnGround)
@@ -121,16 +172,17 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	}
 
 	//Apply velocity
-	enemyPos.x += velocityX;
+	enemyPosCurrent.x += velocityX;
 	velocityX = 0;
-	enemyPos.y += velocityY;
+	enemyPosCurrent.y += velocityY;
 	velocityY = 0;
 
 	//Handle collision detection with ground
-	if (enemyPos.y <= 0) {
-		enemyPos.y = 0;
+	if (enemyPosCurrent.y <= 0) {
+		enemyPosCurrent.y = 0;
 		isOnGround = true;
 	}
 
-	setPos(enemyPos);
+	setPos(enemyPosCurrent);
+	collision = checkCollision(allModels);
 }

@@ -1,6 +1,6 @@
 #include "EnemyToad.h"
 
-EnemyToad::EnemyToad(int HP, Model* model, int damage, glm::vec3 enemyPos) : EnemyChar(HP, model, damage, enemyPos)
+EnemyToad::EnemyToad(int HP, Model* model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
 {
 
 }
@@ -10,21 +10,21 @@ EnemyToad::~EnemyToad()
 
 }
 
-void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos)
+void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
 
 }
 
-void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos)
+void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
 {
 	groundCheck();
 
 	//Patrol check - no need to be in toad
-	if (fabs(enemyPos.x) < checkPoint.x - 2)
+	if (fabs(enemyPosCurrent.x) < checkPoint.x - 2)
 	{
 		checkPointReached = true;
 	}
-	else if (fabs(enemyPos.x) > checkPoint.x + 2)
+	else if (fabs(enemyPosCurrent.x) > checkPoint.x + 2)
 	{
 		checkPointReached = false;
 	}
@@ -34,7 +34,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 	if (isOnGround)
 	{
 		//Jump
-		if (glm::length(enemyPos - playerPos) < 5.0f || playerSeen)
+		if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
 		{
 			if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
 			{
@@ -56,14 +56,14 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 	{
 		if (movingLeft == false)
 		{
-			if (enemyPos.x >= playerPos.x)
+			if (enemyPosCurrent.x >= playerPos.x)
 			{
 				movingRight = true;
 			}
 		}
 		if (movingRight == false)
 		{
-			if (enemyPos.x <= playerPos.x)
+			if (enemyPosCurrent.x <= playerPos.x)
 			{
 				movingLeft = true;
 			}
@@ -72,7 +72,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 		{
 			velocityX -= 3.0f*dt;
 		}
-		else if (movingLeft = true)
+		else if (movingLeft == true)
 		{
 			velocityX += 3.0f*dt;
 		}
@@ -93,17 +93,18 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, gl
 	}
 
 	//Apply velocity
-	enemyPos.x += velocityX;
+	enemyPosCurrent.x += velocityX;
 	velocityX = 0;
-	enemyPos.y += velocityY*dt;
+	enemyPosCurrent.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (enemyPos.y <= 0) {
+	if (enemyPosCurrent.y <= 0) {
 		velocityY = 0;
-		enemyPos.y = 0;
+		enemyPosCurrent.y = 0;
 		isOnGround = true;
 	}
 
-	setPos(enemyPos);
+	setPos(enemyPosCurrent);
+	checkCollision(allModels);
 }
 
