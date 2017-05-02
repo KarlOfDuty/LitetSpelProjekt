@@ -7,7 +7,7 @@ uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gAmbient;
 uniform sampler2D depthMap;
-uniform sampler2D deaptMap2;
+uniform sampler2D depthMap2;
 
 struct light 
 {
@@ -17,7 +17,7 @@ struct light
     float quadratic;
 };
 
-const int NR_LIGHTS = 2;
+const int NR_LIGHTS = 3;
 uniform light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 uniform mat4 lightSpaceMatrix;

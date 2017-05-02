@@ -427,10 +427,30 @@ void loadLevel()
 	std::srand((int)time(0));
 	for (int i = 0; i < NR_LIGHTS; i++)
 	{
-		lights.push_back(new Light(
-			glm::vec3(rand() % 50 - 25, 2.0f, 4.0f),
-			glm::vec3(0.6f, 0.9f, 0.9f),
-			0.0001f, 0.02f));
+		if (i == 0)
+		{
+			lights.push_back(new Light(
+				glm::vec3(rand() % 25 - 25, 2.0f, 4.0f), 
+				glm::vec3(0.6f, 0.9f, 0.9f),
+				0.0001f, 0.02f));
+			lightPos = lights[0]->pos;
+		}
+		else if (i == 1)
+		{
+			lights.push_back(new Light(
+				glm::vec3(rand() % 25, 2.0f, 4.0f),
+				glm::vec3(0.6f, 0.9f, 0.9f),
+				0.0001f, 0.02f));
+			lightPos2 = lights[1]->pos;
+		}
+		else
+		{
+			lights.push_back(new Light(
+						glm::vec3(rand() % 50 - 25, 2.0f, 4.0f),
+						glm::vec3(0.6f, 0.9f, 0.9f),
+						0.0001f, 0.02f));
+		}
+		
 	}
 	player->setActualPos(levelManager.currentLevel->getPlayerPos());
 	player->setPos(levelManager.currentLevel->getPlayerPos());
