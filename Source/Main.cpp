@@ -430,7 +430,7 @@ void loadLevel()
 		if (i == 0)
 		{
 			lights.push_back(new Light(
-				glm::vec3(rand() % 25 - 25, 2.0f, 4.0f), 
+				glm::vec3(rand() % 15 - 20, 2.0f, 4.0f), 
 				glm::vec3(0.6f, 0.9f, 0.9f),
 				0.0001f, 0.02f));
 			lightPos = lights[0]->pos;
@@ -438,7 +438,7 @@ void loadLevel()
 		else if (i == 1)
 		{
 			lights.push_back(new Light(
-				glm::vec3(rand() % 25, 2.0f, 4.0f),
+				glm::vec3(rand() % 15 + 10, 2.0f, 4.0f),
 				glm::vec3(0.6f, 0.9f, 0.9f),
 				0.0001f, 0.02f));
 			lightPos2 = lights[1]->pos;
