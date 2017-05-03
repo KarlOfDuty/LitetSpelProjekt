@@ -25,9 +25,9 @@ Player::Player()
 	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->playerCharacters[0] = new PlayerBird(10000, birdModel);
-	this->playerCharacters[1] = new PlayerShark(10000, sharkModel);
-	this->playerCharacters[2] = new PlayerButterfly(10000, butterflyModel);
+	this->playerCharacters[0] = new PlayerBird(10000, birdModel, false);
+	this->playerCharacters[1] = new PlayerShark(10000, sharkModel, false);
+	this->playerCharacters[2] = new PlayerButterfly(10000, butterflyModel, false);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 
@@ -70,10 +70,19 @@ void Player::swap(int character)
 //Makes the player jump
 void Player::jump()
 {
-	if (player->getMaxJumps() > jumps)
+	if(player->getDiving() != true)
+	{	if (player->getMaxJumps() > jumps)
+		{
+			velocityY = player->getJumpHeight();
+			jumps++;
+		}
+	}
+	else
 	{
-		velocityY = player->getJumpHeight();
-		jumps++;
+		if (player->getMaxJumps() > jumps)
+		{
+			velocityY = player->getJumpHeight();
+		}
 	}
 }
 //Makes the player shoot
@@ -230,54 +239,129 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	}
 	int controller = CONTROLLER0;
 	//Move
-	if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
+	if(player->getDiving() != true)
 	{
-		velocityX = -movementSpeed*dt;
-	}
-	else if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) > 20)
-	{
-		velocityX = movementSpeed*dt;
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-	{
-		velocityX = -movementSpeed*dt;
-		goingLeft = true;
-		goingRight = false;
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-	{
-		velocityX = movementSpeed*dt;
-		goingRight = true;
-		goingLeft = false;
-	}
-	if (goingLeft == true)
-	{
-		if (angle != 180)
+		if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
 		{
-			this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			angle += 12;
+			velocityX = -movementSpeed*dt;
 		}
-	}
+		else if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) > 20)
+		{
+			velocityX = movementSpeed*dt;
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		{
+			velocityX = -movementSpeed*dt;
+			goingLeft = true;
+			goingRight = false;
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		{
+			velocityX = movementSpeed*dt;
+			goingRight = true;
+			goingLeft = false;
+		}
 
-	if (goingRight == true)
-	{
-		if (angle > 0)
+		if (goingLeft == true)
 		{
-			this->modelMatrix  *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			angle -= 12;
-		}
+			if (angle != 180)
+			{
+				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle += 12;
+			}
 		
+		}
+		if (goingRight == true)
+		{
+			if (angle > 0)
+			{
+				this->modelMatrix  *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle -= 12;
+			}
+		
+		}
+		//If in air
+		if (!isOnGround)
+		{
+			velocityY -= 30 * dt;
+		}
+
+		//Maximum falling speed
+		if (velocityY < -30)
+		{
+			velocityY = -30;
+		}
 	}
-	//If in air
-	if (!isOnGround)
+	else 
 	{
-		velocityY -= 30*dt;
+		if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
+		{
+			velocityX = -movementSpeed*dt/2;
+		}
+		else if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) > 20)
+		{
+			velocityX = movementSpeed*dt/2;
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		{
+			velocityX = -movementSpeed*dt/2;
+			goingLeft = true;
+			goingRight = false;
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		{
+			velocityX = movementSpeed*dt/2;
+			goingRight = true;
+			goingLeft = false;
+		}
+		if (goingLeft == true)
+		{
+			if (angle != 180)
+			{
+				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle += 12;
+			}
+
+		}
+
+		if (goingRight == true)
+		{
+			if (angle > 0)
+			{
+				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle -= 12;
+			}
+
+		}
+		//If in air
+		if (!isOnGround)
+		{
+			velocityY -= 30 * dt * 2;
+		}
+
+		//Maximum falling speed
+		if (velocityY < -5)
+		{
+			velocityY = -5;
+		}
 	}
 
-	//Maximum falling speed
-	if (velocityY < -30)
+	if (playerCharacters[2] == player)
 	{
-		velocityY = -30;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && tpCooldown.getElapsedTime().asSeconds() >= 5.0)
+		{
+			if (goingLeft == true)
+			{
+				glm::vec3 minus4 = {-4,0,0};
+				this->setPos(this->getPos() + minus4);
+			}
+			else
+			{
+				glm::vec3 plus4 = {4,0,0};
+				this->setPos(this->getPos() + plus4);
+			}
+			tpCooldown.restart();
+		}
 	}
 
 	//Apply velocity

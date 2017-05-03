@@ -1,0 +1,2 @@
+models/cube/cube.obj
+models/sphere/sphere.obj

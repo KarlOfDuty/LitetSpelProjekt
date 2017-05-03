@@ -7,10 +7,11 @@ private:
 	int maxJumps;
 	float jumpHeight;
 public:
-	PlayerButterfly(int health, Model model);
+	PlayerButterfly(int health, Model model, bool inWater);
 	virtual ~PlayerButterfly();
 	void operator=(const PlayerButterfly &originalObject);
 	int getMaxJumps();
 	float getJumpHeight();
+	void waterEffect();
 	void teleport();
 };
