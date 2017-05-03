@@ -1,6 +1,7 @@
 #ifndef PLAYERCHAR_H
 #define PLAYERCHAR_H
 #include "Model.h"
+#include "Projectile.h"
 
 class PlayerChar
 {
@@ -22,7 +23,8 @@ public:
 	int getDamage() const;
 	int getHealth()const;
 	int getDiving()const;
-	void attack();
+	virtual void lightAttack(std::vector<Projectile*> &allProjectiles, glm::vec2 position, glm::vec2 direction)const = 0;
+	virtual void heavyAttack()const = 0;
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;
 	virtual float getJumpHeight() = 0;

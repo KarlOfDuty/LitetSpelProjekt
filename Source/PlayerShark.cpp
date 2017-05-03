@@ -35,3 +35,13 @@ void PlayerShark::dive()
 	setDiving(true);
 }
 
+void PlayerShark::lightAttack(std::vector<Projectile*> &allProjectiles, glm::vec2 position, glm::vec2 direction)const
+{
+	std::cout << "shark" << std::endl;
+}
+
+void PlayerShark::heavyAttack() const
+{
+
+}
+

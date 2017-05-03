@@ -55,8 +55,10 @@ public:
 	int getDamage() const;
 	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies);
 	void jump();
+	void useLightAttack(sf::Window &window);
+	void useHeavyAttack(sf::Window &window);
 	void shoot(sf::Window &window);
-	void aiming(sf::Window &window, float dt);
+	void aiming(sf::Window &window, float dt, PlayerBird* bird);
 	void setPos(glm::vec3 playerPos);
 	void draw(Shader shader);
 	void collision(std::vector<Model*> &allModels);

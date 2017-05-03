@@ -34,3 +34,13 @@ void PlayerButterfly::teleport()
 
 }
 
+void PlayerButterfly::lightAttack(std::vector<Projectile*> &allProjectiles, glm::vec2 position, glm::vec2 direction)const
+{
+	std::cout << "butterfly" << std::endl;
+}
+
+void PlayerButterfly::heavyAttack() const
+{
+
+}
+
