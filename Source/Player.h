@@ -7,6 +7,7 @@
 #include "Collision.h"
 #include "Projectile.h"
 #include "GameObject.h"
+#include "Enemy.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
 #include <vector>
@@ -51,7 +52,7 @@ public:
 	void swap(int charType);
 	bool playerIsDead();
 	int getDamage() const;
-	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 pos, int enemyDamage);
+	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies);
 	void jump();
 	void shoot(sf::Window &window);
 	void aiming(sf::Window &window, float dt);

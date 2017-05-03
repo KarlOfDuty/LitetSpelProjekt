@@ -107,19 +107,21 @@ int EnemyManager::getDamage() const
 	return allEnemies[0]->getDamage();
 }
 
+std::vector<Enemy*> &EnemyManager::getAllEnemies()
+{
+	return allEnemies;
+}
+
 void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels)
 {
-	sortEnemies(playerPos);
+	//sortEnemies(playerPos);
 	clearDeadEnemies();
+	std::vector<std::thread> allThreads;
 	for (int i = 0; i < this->allEnemies.size(); i++)
 	{
 		if (allThreads.size() <= i)
 		{
 			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, playerPos, allSmallBats, allModels);}, allEnemies[i]));
-		}
-		else
-		{
-			allThreads[i] = std::thread([&](Enemy * enemy) {enemy->update(dt, playerPos, allSmallBats, allModels);}, allEnemies[i]);
 		}
 	}
 	for (int i = 0; i < allThreads.size(); i++)

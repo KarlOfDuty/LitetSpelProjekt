@@ -174,7 +174,7 @@ std::string Player::type() const
 	return "Player";
 }
 //Update function
-void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 pos, int enemyDamage)
+void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
 	groundPos = 0.0f;
 
@@ -182,7 +182,27 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	{
 		if (arrows[i]->isInUse())
 		{
-			arrows[i]->update(dt, allModels);
+			if (glm::distance(getPos(), arrows[i]->getPos()) < 40.0f)
+			{
+				arrows[i]->update(dt, allModels);
+				std::vector<glm::vec2> arrowPoints = arrows[i]->getPoints();
+				for (int k = 0; k < allEnemies.size(); k++)
+				{
+					if (glm::distance(arrows[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
+					{
+						if (collision::collision(arrowPoints, allEnemies[k]->getPoints()))
+						{
+							arrows[i]->disableArrow();
+							allEnemies[k]->applyDamage(100);
+							k = allEnemies.size();
+						}
+					}
+				}
+			}
+			else
+			{
+				arrows[i]->disableArrow();
+			}
 		}
 	}
 	
@@ -278,15 +298,6 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 		isOnGround = true;
 	}
-	//Player taking damage
-	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.0)
-	{
-		if (fabs(pos.x - getPos().x) < 0.2 && fabs(pos.y - getPos().y) < 1.0)
-		{
-			playerCharacters[0]->applyDamage(enemyDamage);
-			this->damageImmunity.restart();
-		}
-	}	
 }
 //Draws the models involved
 void Player::draw(Shader shader)

@@ -31,6 +31,11 @@ bool Projectile::isInUse()
 	return isUsed;
 }
 
+void Projectile::disableArrow()
+{
+	isUsed = false;
+}
+
 glm::vec2 Projectile::getPosition()
 {
 	return this->position;
@@ -124,6 +129,10 @@ void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 pro
 	if (model == nullptr)
 	{
 		model = new Model(projectileModel, modelMat);
+	}
+	else
+	{
+		model->setModelMatrix(modelMat);
 	}
 
 	//Set the velocity

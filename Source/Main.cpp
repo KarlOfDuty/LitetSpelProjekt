@@ -114,6 +114,7 @@ int main()
 	enemy->createCrab(glm::vec3(-30.0f, 5.0f, 0.0f));
 	enemy->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
 	enemy->createSkeleton(glm::vec3(30.0f, 15.0f, 0.0f), false);
+
 	// run the main loop
 	eventHandler = EventHandler();
 
@@ -263,7 +264,7 @@ void update(sf::Window &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window, dt, modelsToBeDrawn ,enemy->getPos(), enemy->getDamage());
+		player->update(window, dt, modelsToBeDrawn , enemy->getAllEnemies());
 	}
 	//Camera update, get new viewMatrix
 	if (aboveView)
