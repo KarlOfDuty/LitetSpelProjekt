@@ -109,6 +109,7 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 		{
 			pos.x += mtv.x;
 			pos.y += mtv.y;
+			collidedFrom = mtv;
 			setPos(pos);
 			return true;
 		}

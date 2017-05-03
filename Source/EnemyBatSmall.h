@@ -3,13 +3,13 @@
 class EnemyBatSmall : public Enemy
 {
 private:
-	//TODO: Make sense
 	bool goForPlayer;
-	bool findPlayer;
 	bool returnToStart;
 	bool collides;
+	int collisionCounter;
 	glm::vec3 checkpoint;
 	glm::vec3 startPosition;
+	sf::Clock timeSinceCollision;
 	sf::Clock collisionTime;
 	std::random_device rd;
 public:

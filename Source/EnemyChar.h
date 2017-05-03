@@ -28,6 +28,7 @@ public:
 	float velocityY;
 	bool isOnGround;
 	bool playerSeen;
+	glm::vec2 collidedFrom;
 
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
