@@ -20,7 +20,7 @@ bool Trigger::update(float dt)
 	for (int i = 0; i < activators.size(); i++)
 	{
 		//TODO: Do we need to use both collision methods or just the second one?
-		if (collision::testCollision(corners, activators[i]->getPoints()))
+		if (collision::collision(corners, activators[i]->getPoints()))
 		{
 			objectsFound++;
 		}
@@ -165,12 +165,12 @@ void Trigger::runCommand(int commandID, int targetID)
 	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Player")
 	{
 		Player* player = dynamic_cast<Player*>(targets[targetID]);
-		player->getCurrentCharacter()->takingDamage(1000000);
+		player->getCurrentCharacter()->applyDamage(1000000);
 	}
 	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Enemy")
 	{
-		EnemyChar* enemy = dynamic_cast<EnemyChar*>(targets[targetID]);
-		enemy->takingDamage(10000000);
+		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
+		enemy->applyDamage(10000000);
 	}
 }
 //Constructors

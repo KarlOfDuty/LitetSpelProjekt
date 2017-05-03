@@ -11,14 +11,14 @@
 #include <time.h>  
 #include <random>
 
-class EnemyChar : GameObject
+class Enemy : GameObject
 {
 private:
-	float HP;
+	float health;
 	int damage;
 	sf::Clock damageImmunity;
 	Model *model;
-	glm::vec3 enemyPos;
+	glm::vec3 pos;
 	//glm::mat4 enemyModelMatrix;
 	glm::vec3 checkPoint;
 	//Animation animation;
@@ -34,21 +34,20 @@ public:
 	glm::vec3 getPos() const;
 	virtual std::string type() const;
 	//Own functions
-	EnemyChar();
-	EnemyChar(int HP, Model* model, int damage, glm::vec3 enemyStartPos);
-	virtual ~EnemyChar();
+	Enemy();
+	Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos);
+	virtual ~Enemy();
 	void setPos(glm::vec3 position);
-	void setHP(int HP);
+	void setHealth(int health);
 	int getDamage()const;
-	int getHP() const;
+	int getHealth() const;
 	Model* getModel();
-	glm::mat4 getModelMatrix() const;
-	void takingDamage(int appliedDamage);
+	void applyDamage(int appliedDamage);
 	void groundCheck();
-	bool checkCollision(std::vector<Model*> &allModels);
-	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos) = 0;
-	void update(float dt, glm::vec3 playerPos, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels);
-	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels) = 0;
+	bool collision(std::vector<Model*> &allModels);
+	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 pos) = 0;
+	void update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels);
+	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 pos, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels) = 0;
 	void draw(Shader shader);
 };
 #endif

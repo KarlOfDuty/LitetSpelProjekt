@@ -23,7 +23,6 @@ private:
 	sf::Clock damageImmunity;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
-	glm::vec3 playerPos;
 	float velocityX;
 	float velocityY;
 	bool goingLeft;
@@ -48,18 +47,14 @@ public:
 	PlayerChar* getCurrentCharacter();
 	void swap(int charType);
 	bool playerIsDead();
-	glm::vec3 getPlayerPos() const;
 	int getDamage() const;
-	glm::vec3 getActualPlayerPos() const;
-	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 enemyPos, int enemyDamage);
+	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 pos, int enemyDamage);
 	void jump();
 	void shoot(sf::Window &window);
 	void aiming(sf::Window &window, float dt);
 	void setPos(glm::vec3 playerPos);
-	void setActualPos(glm::vec3 playerPos);
 	void draw(Shader shader);
-	void testCollision(std::vector<Model*> &allModels);
-	std::vector<glm::vec2> getPlayerPoints();
+	void collision(std::vector<Model*> &allModels);
 	void getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians);
 };
 #endif

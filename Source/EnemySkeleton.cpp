@@ -1,6 +1,6 @@
 #include "EnemySkeleton.h"
 
-EnemySkeleton::EnemySkeleton(int HP, Model* model, int damage, bool patrol, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
+EnemySkeleton::EnemySkeleton(int health, Model* model, int damage, bool patrol, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
 	this->patrol = patrol;
 	std::srand(time(0));
@@ -14,7 +14,7 @@ EnemySkeleton::~EnemySkeleton()
 void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
 	//randomize doValue, if above 3 attack, if 1/2/3 block
-	doValue = rand() % 10 + 1;
+	int doValue = rand() % 10 + 1;
 	if (doValue >= 4)
 	{
 		//attackPlayer
@@ -25,7 +25,7 @@ void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyP
 	}
 }
 
-void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*>& allModels)
+void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*>& allModels)
 {
 	groundCheck();
 
@@ -102,5 +102,5 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	}
 
 	setPos(enemyPosCurrent);
-	checkCollision(allModels);
+	collision(allModels);
 }

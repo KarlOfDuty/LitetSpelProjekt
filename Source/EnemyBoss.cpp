@@ -1,11 +1,11 @@
 #include "EnemyBoss.h"
 
 
-EnemyBoss::EnemyBoss(int HP, Model* model, int damage, glm::vec3 enemyStartPos) :EnemyChar(HP, model, damage, enemyStartPos)
+EnemyBoss::EnemyBoss(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
 	this->acceleration = 0.3f;
 	this->originPoint = enemyStartPos;
-	this->attackNow = true;
+	this->attacking = true;
 	this->phase1 = true;
 	this->phase2 = false;
 	this->phase3 = false;
@@ -22,7 +22,7 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 }
 
-void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels)
+void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
 {
 	if (glm::length(enemyPosCurrent - playerPos) < 30.0f)
 	{
@@ -30,20 +30,20 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 
 		if (phase1)
 		{
-			if (!attackNow)
+			if (!attacking)
 			{
 				if (walkTimer.getElapsedTime().asSeconds() >= 1.5)
 				{
-					attackNow = true;
+					attacking = true;
 				}
 			}
 
-			if (attackNow)
+			if (attacking)
 			{
 				if (glm::length(enemyPosCurrent - originPoint) > 8.0f)//replace with when collision happens
 				{
 					originPoint = enemyPosCurrent;
-					attackNow = false;
+					attacking = false;
 					movingRight = false;
 					movingLeft = false;
 					velocityX = 0;
@@ -63,7 +63,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 					//Charge
 					if (chargeCounter < 3)
 					{
-						if (attackNow)
+						if (attacking)
 						{
 							if (movingLeft == false)
 							{
@@ -143,6 +143,6 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 		}
 
 		setPos(enemyPosCurrent);
-		checkCollision(allModels);
+		collision(allModels);
 	}
 }

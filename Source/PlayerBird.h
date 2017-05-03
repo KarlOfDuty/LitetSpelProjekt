@@ -7,7 +7,7 @@ private:
 	int maxJumps;
 	float jumpHeight;
 public:
-	PlayerBird(int HP, Model model);
+	PlayerBird(int health, Model model);
 	virtual ~PlayerBird();
 	void operator=(const PlayerBird &originalObject);
 	float getJumpHeight();

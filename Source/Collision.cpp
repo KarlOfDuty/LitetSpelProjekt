@@ -1,6 +1,6 @@
 #include "Collision.h"
 
-bool collision::testCollision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2, glm::vec2 &mtv)
+bool collision::collision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2, glm::vec2 &mtv)
 {
 	float o = 1000000000;
 	glm::vec2 smallestAxis;
@@ -67,7 +67,7 @@ bool collision::testCollision(std::vector<glm::vec2> points1, std::vector<glm::v
 	return true;
 }
 
-bool collision::testCollision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2)
+bool collision::collision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2)
 {
 	glm::vec2 mtv = glm::vec2();
 	float o = 1000000000;

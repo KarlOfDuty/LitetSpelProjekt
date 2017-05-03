@@ -1,18 +1,18 @@
 #include "EnemyChar.h"
 
-class EnemyCrab : public EnemyChar
+class EnemyCrab : public Enemy
 {
 private:
 	glm::vec3 originPoint;
 	float acceleration;
 	bool checkPointReached;
-	bool attackNow;
+	bool attacking;
 	bool movingLeft;
 	bool movingRight;
 	sf::Clock walkTimer;
 public:
-	EnemyCrab(int HP, Model* enemyModel, int damage, glm::vec3 enemyStartPos);
+	EnemyCrab(int health, Model* enemyModel, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyCrab();
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent);
-	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<EnemyChar*> smallBatsPos, std::vector<Model*> &allModels);
+	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels);
 };

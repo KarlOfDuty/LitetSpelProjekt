@@ -25,7 +25,7 @@ EventHandler eventHandler;
 sf::Clock deltaClock;
 float dt;
 //Enemies
-Enemy *enemy;
+EnemyManager *enemy;
 int jumpPress;
 bool keyReleased;
 
@@ -104,7 +104,7 @@ int main()
 
 	//Characters
 	player = new Player();
-	enemy = new Enemy();
+	enemy = new EnemyManager();
 	enemy->createSlime(glm::vec3(30.0f, 5.0f, 0.0f));
 	enemy->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
 	enemy->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
@@ -268,7 +268,7 @@ void update(sf::Window &window)
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
-		playerCamera.update(player->getPlayerPos());
+		playerCamera.update(player->getPos());
 		viewMatrix = glm::lookAt(
 			glm::vec3(0, 100, 0),
 			glm::vec3(1, 1, 1),
@@ -276,10 +276,10 @@ void update(sf::Window &window)
 	}
 	else
 	{
-		viewMatrix = playerCamera.update(player->getPlayerPos());
+		viewMatrix = playerCamera.update(player->getPos());
 
 	}
-	enemy->update(dt, player->getPlayerPos(), player->getDamage(), modelsToBeDrawn);
+	enemy->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn);
 
 	if (endLevel())
 	{
@@ -458,7 +458,6 @@ void loadLevel()
 		}
 		
 	}
-	player->setActualPos(levelManager.currentLevel->getPlayerPos());
 	player->setPos(levelManager.currentLevel->getPlayerPos());
 }
 void unloadLevel()
@@ -478,7 +477,7 @@ bool endLevel()
 	bool end = false;
 	//for (int i = 0; i < levelManager.currentLevel->getTriggers().size(); i++)
 	//{
-	//	end = collision::testCollision(player->getPlayerPoints(),levelManager.currentLevel->getTriggers()[i]->getCorners());
+	//	end = collision::collision(player->getPlayerPoints(),levelManager.currentLevel->getTriggers()[i]->getCorners());
 	//}
 	return end;
 	//test
