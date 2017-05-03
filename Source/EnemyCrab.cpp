@@ -3,8 +3,9 @@
 EnemyCrab::EnemyCrab(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
 	this->acceleration = 0.2f;
-	this->originPoint = enemyStartPos;
-	this->attacking = true;
+	this->moving = true;
+	this->oldOriginPoint = enemyStartPos;
+	this->startPosition = enemyStartPos;
 }
 
 EnemyCrab::~EnemyCrab()
@@ -31,20 +32,20 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 		checkPointReached = false;
 	}
 
-	if (!attacking)
+	if (!moving)
 	{
 		if (walkTimer.getElapsedTime().asSeconds() >= 1.5)
 		{
-			attacking = true;
+			moving = true;
 		}
 	}
 
-	if (attacking)
+	if (moving)
 	{
-		if (glm::length(enemyPosCurrent - originPoint) > 4.0f)
+		if (glm::length(enemyPosCurrent - oldOriginPoint) > 4.0f)
 		{
-			originPoint = enemyPosCurrent;
-			attacking = false;
+			oldOriginPoint = enemyPosCurrent;
+			moving = false;
 			movingRight = false;
 			movingLeft = false;
 			velocityX = 0;
@@ -52,61 +53,116 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 		}
 	}
 
+	if (collides)
+	{
+		if (collidedFrom.x != 0)
+		{
+			movingRight = false;
+			movingLeft = false;
+			if (collisionTime.getElapsedTime().asSeconds() >= 5)
+			{
+				returnToStart = true;
+				playerSeen = false;
+			}
+		}
+	}
+
+	if (collidedFrom.x == 0)
+	{
+		collisionTime.restart();
+	}
+
 	if (isOnGround)
 	{
 		//Move
-		if (attacking)
+		if (moving)
 		{
-			if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
+			if (!returnToStart)
 			{
-				if (movingLeft == false)
+				if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
 				{
-					if (enemyPosCurrent.x >= playerPos.x)
+					if (movingLeft == false)
 					{
-						movingRight = true;
+						if (enemyPosCurrent.x >= playerPos.x)
+						{
+							movingRight = true;
+						}
+					}
+					if (movingRight == false)
+					{
+						if (enemyPosCurrent.x <= playerPos.x)
+						{
+							movingLeft = true;
+						}
+					}
+					if (movingRight == true)
+					{
+						velocityX = velocityX - acceleration * dt;
+					}
+					else if (movingLeft == true)
+					{
+						velocityX = velocityX + acceleration * dt;
+					}
+					playerSeen = true;
+				}
+				else
+				{
+					//Patrol
+					if (movingLeft == false)
+					{
+						if ((!checkPointReached))
+						{
+							movingRight = true;
+						}
+					}
+					if (movingRight == false)
+					{
+						if (checkPointReached)
+						{
+							movingLeft = true;
+						}
+					}
+					if (movingRight == true)
+					{
+						velocityX = velocityX - acceleration * dt;
+					}
+					else if (movingLeft == true)
+					{
+						velocityX = velocityX + acceleration * dt;
 					}
 				}
-				if (movingRight == false)
-				{
-					if (enemyPosCurrent.x <= playerPos.x)
-					{
-						movingLeft = true;
-					}
-				}
-				if (movingRight == true)
-				{
-					velocityX = velocityX - acceleration * dt;
-				}
-				else if (movingLeft == true)
-				{
-					velocityX = velocityX + acceleration * dt;
-				}
-				playerSeen = true;
 			}
 			else
 			{
-				//Patrol
-				if (movingLeft == false)
+				if (glm::length(enemyPosCurrent - startPosition) > 0.5f)
 				{
-					if ((!checkPointReached))
+					if (movingLeft == false)
 					{
-						movingRight = true;
+						if (enemyPosCurrent.x >= startPosition.x)
+						{
+							movingRight = true;
+						}
+					}
+					if (movingRight == false)
+					{
+						if (enemyPosCurrent.x <= startPosition.x)
+						{
+							movingLeft = true;
+						}
+					}
+					if (movingRight == true)
+					{
+						velocityX = velocityX - acceleration * dt;
+					}
+					else if (movingLeft == true)
+					{
+						velocityX = velocityX + acceleration * dt;
 					}
 				}
-				if (movingRight == false)
+				else
 				{
-					if (checkPointReached)
-					{
-						movingLeft = true;
-					}
-				}
-				if (movingRight == true)
-				{
-					velocityX = velocityX - acceleration * dt;
-				}
-				else if (movingLeft == true)
-				{
-					velocityX = velocityX + acceleration * dt;
+					returnToStart = false;
+					playerSeen = false;
 				}
 			}
 		}
@@ -143,5 +199,5 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 	}
 
 	setPos(enemyPosCurrent);
-	collision(allModels);
+	collides = collision(allModels);
 }

@@ -7,6 +7,13 @@ private:
 	sf::Clock jumpTimer;
 	bool movingLeft;
 	bool movingRight;
+
+	//workarounds for collision
+	bool collides;
+	bool collidingWithGround;
+	bool returnToStart;
+	sf::Clock collisionTime;
+	glm::vec3 startPosition;
 public:
 	EnemyToad(int health, Model* enemyModel, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyToad();

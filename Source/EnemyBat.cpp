@@ -2,7 +2,9 @@
 
 EnemyBat::EnemyBat(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
-	findPlayer = true;
+	swoopAttack = true;
+	startPosition = enemyStartPos;
+	returnToStart = false;
 }
 
 EnemyBat::~EnemyBat()
@@ -21,84 +23,139 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 
 	if (goingRight)
 	{
-		checkpoint.x = playerPos.x + 12.0f;
+		checkpoint.x = playerPos.x + 8.0f;
 		checkpoint.y = playerPos.y + 7.0f;
 		checkpoint.z = playerPos.z;
 	}
 	if (goingLeft)
 	{
-		checkpoint.x = playerPos.x - 12.0f;
+		checkpoint.x = playerPos.x - 8.0f;
 		checkpoint.y = playerPos.y + 7.0f;
 		checkpoint.z = playerPos.z;
 	}
 
-	if (findPlayer)
+	if (swoopAttack)
 	{
 		if (fabs(enemyPosCurrent.x - playerPos.x) < 2.0f && fabs(enemyPosCurrent.y - playerPos.y) < 2.0f)
 		{
-			findPlayer = false;
+			swoopAttack = false;
 			clockRestart = true;
 		}
 	}
 
-	if (!findPlayer)
+	if (!swoopAttack)
 	{
-		if (fabs(enemyPosCurrent.x - checkpoint.x) < 5.0f && fabs(enemyPosCurrent.y - checkpoint.y) < 5.0f)
+		if (fabs(enemyPosCurrent.x - checkpoint.x) < 1.5f && fabs(enemyPosCurrent.y - checkpoint.y) < 1.5f)
 		{
+			goingLeft = false;
+			goingRight = false;
 			if (clockRestart)
 			{
 				waitInAir.restart();
 				clockRestart = false;
 			}
-			if (waitInAir.getElapsedTime().asSeconds() >= 0.9)
+			if (waitInAir.getElapsedTime().asSeconds() >= 1.2)
 			{
-				findPlayer = true;
+				swoopAttack = true;
 			}
 		}
 	}
 
-	//Move
-	midX = playerPos.y;
-	float curve = glm::pow(enemyPosCurrent.y - midX, 0.3);
-	if (findPlayer == true)
+	if (collides)
 	{
-		if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
+		velocityY += 2.0f*dt;
+
+		if (collisionTime.getElapsedTime().asSeconds() >= 5)
 		{
-			if (enemyPosCurrent.x > playerPos.x)
-			{
-				velocityX -= 2.6f*dt;
-				velocityY -= curve*dt;
-				goingLeft = true;
-				goingRight = false;
-			}
-			else if (enemyPosCurrent.x < playerPos.x)
-			{
-				velocityX += 2.6f*dt;
-				velocityY -= curve*dt;
-				goingRight = true;
-				goingLeft = false;
-			}
-			playerSeen = true;
+			returnToStart = true;
+			playerSeen = false;
 		}
 	}
 	else
 	{
-		if (enemyPosCurrent.x > checkpoint.x)
+		collisionTime.restart();
+	}
+
+	//Move
+	midX = playerPos.y;
+	float curve = glm::pow(enemyPosCurrent.y - midX, 0.7);
+	if (!returnToStart)
+	{
+		if (swoopAttack == true)
 		{
-			velocityX -= 2.6f*dt;
+			if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
+			{
+				if (enemyPosCurrent.x > playerPos.x)
+				{
+					velocityX -= 4.0f*dt;
+					velocityY -= curve*dt;
+					if (!goingRight)
+					{
+						goingLeft = true;
+					}
+				}
+				else if (enemyPosCurrent.x < playerPos.x)
+				{
+					velocityX += 4.0f*dt;
+					velocityY -= curve*dt;
+					if (!goingLeft)
+					{
+						goingRight = true;
+					}
+				}
+				playerSeen = true;
+			}
 		}
-		else if (enemyPosCurrent.x < checkpoint.x)
+		else
 		{
-			velocityX += 2.6f*dt;
-			
+			if (enemyPosCurrent.x > checkpoint.x)
+			{
+				velocityX -= 4.0f*dt;
+				velocityY += curve*dt;
+			}
+			else if (enemyPosCurrent.x < checkpoint.x)
+			{
+				velocityX += 4.0f*dt;
+				velocityY += curve*dt;
+			}
+			if (enemyPosCurrent.y > checkpoint.y)
+			{
+				velocityY -= curve*dt;
+			}
 		}
-		if (enemyPosCurrent.y > checkpoint.y)
+	}
+	else
+	{
+		if (glm::length(enemyPosCurrent - startPosition) > 0.5f)
 		{
-			velocityY -= curve*dt;
+			if (!collides)
+			{
+				if (enemyPosCurrent.x > startPosition.x)
+				{
+					velocityX -= 2.5f*dt;
+				}
+				else if (enemyPosCurrent.x < startPosition.x)
+				{
+					velocityX += 2.5f*dt;
+				}
+				if (enemyPosCurrent.y > startPosition.y)
+				{
+					velocityY -= 2.5f*dt;
+				}
+				else if (enemyPosCurrent.y < startPosition.y)
+				{
+					velocityY += 2.5f*dt;
+				}
+			}
+			else
+			{
+				velocityY += 2.0f*dt;
+			}
 		}
-		else if (enemyPosCurrent.y < checkpoint.y)
+		else
 		{
-			velocityY += curve*dt;
+			returnToStart = false;
+			playerSeen = false;
 		}
 	}
 
@@ -126,6 +183,6 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 	}*/
 
 	setPos(enemyPosCurrent);
-	collision(allModels);
+	collides = collision(allModels);
 }
 

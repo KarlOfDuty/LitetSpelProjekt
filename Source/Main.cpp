@@ -105,8 +105,8 @@ int main()
 	//Characters
 	player = new Player();
 	enemy = new EnemyManager();
-	enemy->createSlime(glm::vec3(30.0f, 5.0f, 0.0f));
-	enemy->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
+	enemy->createSlime(glm::vec3(15.0f, 5.0f, 0.0f));
+	enemy->createToad(glm::vec3(-17.0f, 20.0f, 0.0f));
 	enemy->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
 	enemy->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
 	enemy->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));

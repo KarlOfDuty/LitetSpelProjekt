@@ -2,7 +2,8 @@
 
 EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
-	this->attackRange = 9;
+	this->attackRange = 8;
+	this->startPosition = enemyStartPos;
 }
 
 EnemyFireFly::~EnemyFireFly()
@@ -19,26 +20,78 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 {
 	groundCheck();
 
-	//Move
-	if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
+	if (collides)
 	{
-		if (enemyPosCurrent.x > playerPos.x+attackRange)
+		velocityY += 3.0f*dt;
+
+		if (collisionTime.getElapsedTime().asSeconds() >= 5)
 		{
-			velocityX -= 1.5f*dt;
+			returnToStart = true;
+			playerSeen = false;
 		}
-		else if (enemyPosCurrent.x < playerPos.x-attackRange)
+	}
+	else
+	{
+		collisionTime.restart();
+	}
+
+	//Move
+	if (!returnToStart)
+	{
+		if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
 		{
-			velocityX += 1.5f*dt;
+			if (enemyPosCurrent.x > playerPos.x + attackRange)
+			{
+				velocityX -= 1.5f*dt;
+			}
+			else if (enemyPosCurrent.x < playerPos.x - attackRange)
+			{
+				velocityX += 1.5f*dt;
+			}
+			if (enemyPosCurrent.y > playerPos.y)
+			{
+				velocityY -= 1.5f*dt;
+			}
+			else if (enemyPosCurrent.y < playerPos.y)
+			{
+				velocityY += 1.5f*dt;
+			}
+			playerSeen = true;
 		}
-		if (enemyPosCurrent.y > playerPos.y)
+	}
+	else
+	{
+		if (glm::length(enemyPosCurrent - startPosition) > 0.5f)
 		{
-			velocityY -= 1.5f*dt;
+			if (!collides)
+			{
+				if (enemyPosCurrent.x > startPosition.x)
+				{
+					velocityX -= 1.5f*dt;
+				}
+				else if (enemyPosCurrent.x < startPosition.x)
+				{
+					velocityX += 1.5f*dt;
+				}
+				if (enemyPosCurrent.y > startPosition.y)
+				{
+					velocityY -= 1.5f*dt;
+				}
+				else if (enemyPosCurrent.y < startPosition.y)
+				{
+					velocityY += 1.5f*dt;
+				}
+			}
+			else
+			{
+				velocityY += 3.0f*dt;
+			}
 		}
-		else if (enemyPosCurrent.y < playerPos.y)
+		else
 		{
-			velocityY += 1.5f*dt;
+			returnToStart = false;
+			playerSeen = false;
 		}
-		playerSeen = true;
 	}
 
 
@@ -65,5 +118,5 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 	}
 
 	setPos(enemyPosCurrent);
-	collision(allModels);
+	collides = collision(allModels);
 }

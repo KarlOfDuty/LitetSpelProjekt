@@ -2,7 +2,8 @@
 
 EnemyToad::EnemyToad(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
-
+	this->startPosition = enemyStartPos;
+	this->returnToStart = false;
 }
 
 EnemyToad::~EnemyToad()
@@ -19,64 +20,138 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 {
 	groundCheck();
 
-	//Patrol check - no need to be in toad
-	if (fabs(enemyPosCurrent.x) < checkPoint.x - 2)
-	{
-		checkPointReached = true;
-	}
-	else if (fabs(enemyPosCurrent.x) > checkPoint.x + 2)
-	{
-		checkPointReached = false;
-	}
 
-	
-
-	if (isOnGround)
+	if (collides)
 	{
-		//Jump
-		if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
+		std::cout << collidedFrom.y << std::endl;
+		std::cout << collidedFrom.x << std::endl;
+		if (collidedFrom.x != 0)
 		{
-			if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
+			if (collisionTime.getElapsedTime().asSeconds() >= 5)
 			{
-				if (isOnGround)
+				returnToStart = true;
+				playerSeen = false;
+			}
+		}
+
+		if (collidedFrom.y > 0)
+		{
+			collidingWithGround = true;
+		}
+		else if(collidedFrom.y ==  0)
+		{
+			collidingWithGround = false;
+		}
+
+	}
+
+	if (collidedFrom.x == 0)
+	{
+		collisionTime.restart();
+	}
+
+	if (!returnToStart)
+	{
+		if (collidingWithGround)
+		{
+			//Jump
+			if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
+			{
+				if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
 				{
-					velocityY = 15;
+					if (collidingWithGround)
+					{
+						velocityY = 15;
+					}
+					jumpTimer.restart();
 				}
-				jumpTimer.restart();
-			}
 
-			playerSeen = true;
+				playerSeen = true;
+			}
+			movingRight = false;
+			movingLeft = false;
 		}
-		movingRight = false;
-		movingLeft = false;
+
+		//Move in air only
+		if (!collidingWithGround)
+		{
+			if (movingLeft == false)
+			{
+				if (enemyPosCurrent.x >= playerPos.x)
+				{
+					movingRight = true;
+				}
+			}
+			if (movingRight == false)
+			{
+				if (enemyPosCurrent.x <= playerPos.x)
+				{
+					movingLeft = true;
+				}
+			}
+			if (movingRight == true)
+			{
+				velocityX -= 3.0f*dt;
+			}
+			else if (movingLeft == true)
+			{
+				velocityX += 3.0f*dt;
+			}
+			velocityY -= 30 * dt;
+		}
 	}
-
-	//Move in air only
-	if (!isOnGround)
+	else
 	{
-		if (movingLeft == false)
+		if (collidingWithGround)
 		{
-			if (enemyPosCurrent.x >= playerPos.x)
+			//Jump
+			if (glm::length(enemyPosCurrent - startPosition) > 0.5f)
 			{
-				movingRight = true;
+				if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
+				{
+					if (collidingWithGround)
+					{
+						velocityY = 15;
+					}
+					jumpTimer.restart();
+				}
 			}
-		}
-		if (movingRight == false)
-		{
-			if (enemyPosCurrent.x <= playerPos.x)
+			else
 			{
-				movingLeft = true;
+				returnToStart = false;
+				playerSeen = false;
 			}
+			movingRight = false;
+			movingLeft = false;
 		}
-		if (movingRight == true)
+
+		//Move in air only
+		if (!collidingWithGround)
 		{
-			velocityX -= 3.0f*dt;
+			if (movingLeft == false)
+			{
+				if (enemyPosCurrent.x >= startPosition.x)
+				{
+					movingRight = true;
+				}
+			}
+			if (movingRight == false)
+			{
+				if (enemyPosCurrent.x <= startPosition.x)
+				{
+					movingLeft = true;
+				}
+			}
+			if (movingRight == true)
+			{
+				velocityX -= 3.0f*dt;
+			}
+			else if (movingLeft == true)
+			{
+				velocityX += 3.0f*dt;
+			}
+			velocityY -= 30 * dt;
 		}
-		else if (movingLeft == true)
-		{
-			velocityX += 3.0f*dt;
-		}
-		velocityY -= 30 * dt;
 	}
 
 	if (velocityY < -30)
@@ -105,6 +180,6 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 	}
 
 	setPos(enemyPosCurrent);
-	collision(allModels);
+	collides = collision(allModels);
 }
 

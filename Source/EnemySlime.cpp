@@ -3,7 +3,8 @@
 
 EnemySlime::EnemySlime(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
-	
+	startPosition = enemyStartPos;
+	returnToStart = false;
 }
 
 EnemySlime::~EnemySlime()
@@ -32,29 +33,73 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 
 	}
 
-	//Move
-	if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
+	if (collides)
 	{
-		if (enemyPosCurrent.x > playerPos.x)
+		if (collidedFrom.x != 0 && collidedFrom.y > 0)
 		{
-			velocityX -= 1.0f*dt;
+			velocityY = 10;
+		}
+
+		if (collidedFrom.x != 0)
+		{
+			if (collisionTime.getElapsedTime().asSeconds() >= 5)
+			{
+				returnToStart = true;
+				playerSeen = false;
+			}
+		}
+	}
+	
+	if(collidedFrom.x == 0)
+	{
+		collisionTime.restart();
+	}
+
+	//Move
+	if (!returnToStart)
+	{
+		if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
+		{
+			if (enemyPosCurrent.x > playerPos.x)
+			{
+				velocityX -= 2.0f*dt;
+			}
+			else
+			{
+				velocityX += 2.0f*dt;
+			}
+			playerSeen = true;
 		}
 		else
 		{
-			velocityX += 1.0f*dt;
+			//Patrol
+			if (checkPointReached == false)
+			{
+				velocityX -= 2.0f*dt;
+			}
+			else if (checkPointReached == true)
+			{
+				velocityX += 2.0f*dt;
+			}
 		}
-		playerSeen = true;
 	}
 	else
 	{
-		//Patrol
-		if(checkPointReached == false)
+		if (glm::length(enemyPosCurrent - startPosition) > 0.5f)
 		{
-			velocityX -= 1.0f*dt;
+			if (enemyPosCurrent.x > startPosition.x)
+			{
+				velocityX -= 1.0f*dt;
+			}
+			else if (enemyPosCurrent.x < startPosition.x)
+			{
+				velocityX += 1.0f*dt;
+			}
 		}
-		else if (checkPointReached == true)
+		else
 		{
-			velocityX += 1.0f*dt;
+			returnToStart = false;
+			playerSeen = false;
 		}
 	}
 
@@ -94,6 +139,6 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 	}
 
 	setPos(enemyPosCurrent);
-	collision(allModels);
+	collides = collision(allModels);
 }
 
