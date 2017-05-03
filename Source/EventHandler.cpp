@@ -33,7 +33,11 @@ bool EventHandler::handleEvents(sf::Window & window, Player *player)
 			keyPressed[sf::Keyboard::Space] = true;
 			player->jump();
 		}
-		else if (windowEvent.type == sf::Event::MouseButtonReleased && windowEvent.key.code == sf::Mouse::Button::Left)
+		else if (windowEvent.type == sf::Event::MouseButtonReleased && windowEvent.key.code == sf::Mouse::Button::Left && !sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+		{
+			player->shoot(window);
+		}
+		else if (windowEvent.type == sf::Event::MouseButtonReleased && windowEvent.key.code == sf::Mouse::Button::Right)
 		{
 			player->shoot(window);
 		}

@@ -79,20 +79,29 @@ void Player::jump()
 //Makes the player shoot
 void Player::shoot(sf::Window &window)
 {
+	//Check how many arrows are active in the arrow vector
 	int activeArrows = 0;
 	for (int i = 0; i < arrows.size(); i++)
 	{
 		if (arrows[i]->isInUse())
 			activeArrows++;
-
 	}
+	
+	//Get direction and scale
+	glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+	glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
+	float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
+	glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
+	glm::vec3 scale(0.1f, 1.0f, 0.1f);
+
+	//Reuse old arrow if possible otherwize create a new
 	if (activeArrows < arrows.size())
 	{
 		for (int i = 0; i < arrows.size(); i++)
 		{
 			if (!arrows[i]->isInUse())
 			{
-				arrows[i]->shoot(window, glm::vec2(getPos().x, getPos().y + 2.f), arrow);
+				arrows[i]->shoot(arrow, glm::vec2(getPos().x, getPos().y + 2.0f), direction, glm::vec2(5.0f, 30.0f), arrowVelocity, scale, true);
 				i = (int)arrows.size();
 			}
 		}
@@ -100,7 +109,7 @@ void Player::shoot(sf::Window &window)
 	else
 	{
 		Projectile* temp = new Projectile();
-		temp->shoot(window, glm::vec2(getPos().x, getPos().y + 2.f), arrow);
+		temp->shoot(arrow, glm::vec2(getPos().x, getPos().y + 2.0f), direction, glm::vec2(5.0f,30.0f) , arrowVelocity, scale, true);
 		arrows.push_back(temp);
 	}
 }
@@ -113,12 +122,12 @@ void Player::aiming(sf::Window &window,float dt)
 	glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
 
 	glm::vec2 position = glm::vec2(getPos().x, getPos().y + 2.f);
-	glm::vec2 velocity = glm::vec2(glm::abs(direction.x*30.0f), direction.y*30.0f);
+	glm::vec2 velocity = glm::vec2(glm::abs(direction.x*arrowVelocity), direction.y*arrowVelocity);
 	for (int i = 0; i < 30; i++)
 	{
-		velocity.x -= 5.0f*0.02;
+		velocity.x -= 5.0f*0.01;
 		if (velocity.x < 0) velocity.x = 0;
-		velocity.y -= 40.0f*0.02;
+		velocity.y -= 40.0f*0.01;
 		position.x += direction.x*velocity.x*0.02;
 		position.y += velocity.y*0.02;
 
@@ -181,6 +190,18 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
 		aiming(window,dt);
+		if (arrowVelocity >= 60.0f)
+		{
+			arrowVelocity = 60.0f;
+		}
+		else
+		{
+			arrowVelocity += 5.0f * dt;
+		}
+	}
+	else
+	{
+		arrowVelocity = 30.0f;
 	}
 
 	if (getPos().y > groundPos && isOnGround)

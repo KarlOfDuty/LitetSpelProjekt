@@ -14,6 +14,9 @@ private:
 	glm::vec2 position;
 	glm::vec2 velocity;
 	glm::vec2 direction;
+	glm::vec2 retardation;
+	glm::vec3 scale;
+	bool isRotating;
 	bool hasCollided;
 	sf::Clock timeSinceCollision;
 	bool isUsed;
@@ -31,7 +34,8 @@ public:
 
 	void update(float dt, std::vector<Model*> &allObjects);
 	void draw(Shader shader);
-	void shoot(sf::Window &window, glm::vec2 startPos, Model* arrow);
+	void shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate);
+	void collision(std::vector<Model*> &allObjects);
 };
 
 #endif

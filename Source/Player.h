@@ -34,8 +34,11 @@ private:
 	float groundPos;
 	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3 };
 	std::vector<Model*> debugCubes;
+	
 	Model* arrow;
 	std::vector<Projectile*> arrows;
+	float arrowVelocity;
+
 public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
