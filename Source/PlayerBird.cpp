@@ -1,6 +1,6 @@
 #include "PlayerBird.h"
 
-PlayerBird::PlayerBird(int HP, Model model, bool inWater) :PlayerChar(HP, model, inWater)
+PlayerBird::PlayerBird(int health, Model model, bool inWater) :PlayerChar(health, model, inWater)
 {
 	this->maxJumps = 2;
 	this->jumpHeight = 15;
@@ -27,5 +27,5 @@ float PlayerBird::getJumpHeight()
 
 void PlayerBird::waterEffect()
 {
-	this->setHP(0);
+	this->setHealth(0);
 }

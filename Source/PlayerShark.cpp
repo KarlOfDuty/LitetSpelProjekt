@@ -1,6 +1,7 @@
 #include "PlayerShark.h"
 
-PlayerShark::PlayerShark(int HP, Model model, bool inWater) :PlayerChar(HP, model, inWater)
+
+PlayerShark::PlayerShark(int health, Model model, bool inWater) :PlayerChar(health, model, inWater)
 {
 	this->maxJumps = 1;
 	this->jumpHeight = 10;

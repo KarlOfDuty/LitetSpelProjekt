@@ -25,7 +25,7 @@ EventHandler eventHandler;
 sf::Clock deltaClock;
 float dt;
 //Enemies
-Enemy *enemy;
+EnemyManager *enemy;
 int jumpPress;
 bool keyReleased;
 
@@ -36,6 +36,7 @@ Shader deferredGeometryPass;
 Shader deferredLightingPass;
 GLuint gBuffer;
 Shader simpleShadowShader;
+Shader simpleShadowShader2;
 
 //Shadows
 GLuint depthMap;
@@ -45,8 +46,8 @@ GLuint depthMapFBO2;
 const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
 // Light source
-glm::vec3 lightPos(-5.0f, 6.0f, 0.0f);
-glm::vec3 lightPos2(4.0f, 8.0f, 0.0f);
+glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
+glm::vec3 lightPos2(2.0f, -4.0f, 1.0f);
 
 //Textures
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
@@ -63,9 +64,8 @@ glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / 
 glm::mat4 viewMatrix;
 
 //Lights
-const GLuint NR_LIGHTS = 10;
-std::vector<glm::vec3> lightPositions;
-std::vector<glm::vec3> lightColors;
+const GLuint NR_LIGHTS = 3;
+std::vector<Light*> lights;
 
 //VBO VAO
 GLuint VBO, VAO, EBO;
@@ -80,6 +80,8 @@ void update(sf::Window &window);
 void createGBuffer();
 void drawQuad();
 void loadLevel();
+void unloadLevel();
+bool endLevel();
 
 //Main function
 int main()
@@ -100,14 +102,27 @@ int main()
 	//Create the gbuffer textures and lights
 	createGBuffer();
 
+	//Characters
+	player = new Player();
+	enemy = new EnemyManager();
+	enemy->createSlime(glm::vec3(30.0f, 5.0f, 0.0f));
+	enemy->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
+	enemy->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
+	enemy->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
+	enemy->createCrab(glm::vec3(-30.0f, 5.0f, 0.0f));
+	enemy->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
+	enemy->createSkeleton(glm::vec3(30.0f, 15.0f, 0.0f), false);
+	// run the main loop
+	eventHandler = EventHandler();
+
+	//Levelmanager
+	levelManager = LevelManager();
+
 	//Models
 	loadLevel();
 
-	//Player
-	player = new Player();
-	enemy = new Enemy();
-	enemy->createSlime(glm::vec3(10.0f, 0.0f, 0.0f));
-	// run the main loop
 	eventHandler = EventHandler();
 
 	//Main loop
@@ -135,7 +150,7 @@ void render()
 	// - Get light projection/view matrix.
 	glm::mat4 lightProjection, lightView;
 	glm::mat4 lightSpaceMatrix;
-	GLfloat near_plane = 0.01f, far_plane = 15.0f;
+	GLfloat near_plane = 0.01f, far_plane = 25.0f;
 	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
 	lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 	lightSpaceMatrix = lightProjection * lightView;
@@ -157,23 +172,24 @@ void render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// 1.2 second shadow
+	glm::mat4 lightProjection2, lightView2;
 	glm::mat4 lightSpaceMatrix2;
-	lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-	lightView = glm::lookAt(lightPos2, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-	lightSpaceMatrix2 = lightProjection * lightView;
+	lightProjection2 = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	lightView2 = glm::lookAt(lightPos2, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+	lightSpaceMatrix2 = lightProjection2 * lightView2;
 	// - now render scene from light's point of view
-	simpleShadowShader.use();
-	glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix2));
+	simpleShadowShader2.use();
+	glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader2.program, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix2));
 
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO2);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	for (int i = 0; i < modelsToBeDrawn.size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
-		modelsToBeDrawn.at(i)->draw(simpleShadowShader);
+		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader2.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
+		modelsToBeDrawn.at(i)->draw(simpleShadowShader2);
 	}
-	player->draw(simpleShadowShader);
+	player->draw(simpleShadowShader2);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -182,13 +198,13 @@ void render()
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	deferredGeometryPass.use();
-	
+
 	//View and Projection Matrix
 	GLint viewID = glGetUniformLocation(deferredGeometryPass.program, "view");
 	glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
 	GLint projectionID = glGetUniformLocation(deferredGeometryPass.program, "projection");
 	glUniformMatrix4fv(projectionID, 1, GL_FALSE, &projectionMatrix[0][0]);
-	
+
 	//Draw functions
 
 	//Only potentially visible static models are drawn
@@ -197,7 +213,7 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
 	}
-	if (player->playerDead() != true)
+	if (player->playerIsDead() != true)
 	{
 		player->draw(deferredGeometryPass);
 	}
@@ -208,7 +224,7 @@ void render()
 
 	//Lighting pass
 	deferredLightingPass.use();
-	
+
 	//Bind all the textures
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
@@ -224,32 +240,35 @@ void render()
 	glBindTexture(GL_TEXTURE_2D, depthMap2);
 
 	//Send all lights to the shader
-	for (GLuint i = 0; i < lightPositions.size(); i++)
+	for (GLuint i = 0; i < lights.size(); i++)
 	{
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].position").c_str()), 1, &lightPositions[i][0]);
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].color").c_str()), 1, &lightColors[i][0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].position").c_str()), 1, &lights[i]->pos[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].color").c_str()), 1, &lights[i]->colour[0]);
 		// Linear and quadratic for calculation of the lights radius
-		const GLfloat linear = 0.7f;
-		const GLfloat quadratic = 1.8f;
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].linear").c_str()), linear);
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].quadratic").c_str()), quadratic);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].linear").c_str()), lights[i]->linear);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("lights[" + std::to_string(i) + "].quadratic").c_str()), lights[i]->quadratic);
 	}
 	glUniformMatrix4fv(glGetUniformLocation(deferredLightingPass.program, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(deferredLightingPass.program, "lightSpaceMatrix2"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix2));
 	glUniform3fv(glGetUniformLocation(deferredLightingPass.program, "viewPos"), 1, &playerCamera.getCameraPos()[0]);
-	
+
 	//Draw a fullscreen quad combining the information
 	drawQuad();
 }
 
 //Update function
 void update(sf::Window &window)
-{	
+{
 	dt = deltaClock.restart().asSeconds();
+	//Update player if not dead
+	if (!player->playerIsDead())
+	{
+		player->update(window, dt, modelsToBeDrawn ,enemy->getPos(), enemy->getDamage());
+	}
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
-		playerCamera.update(player->getPlayerPos());
+		playerCamera.update(player->getPos());
 		viewMatrix = glm::lookAt(
 			glm::vec3(0, 100, 0),
 			glm::vec3(1, 1, 1),
@@ -257,13 +276,17 @@ void update(sf::Window &window)
 	}
 	else
 	{
-		viewMatrix = playerCamera.update(player->getPlayerPos());
+		viewMatrix = playerCamera.update(player->getPos());
+
 	}
-	if (player->playerDead() != true)
+	enemy->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn);
+
+	if (endLevel())
 	{
-		player->update(dt, modelsToBeDrawn ,enemy->getEnemyPos(), enemy->getDamage());
+		unloadLevel();
+		loadLevel();
 	}
-		enemy->update(dt, player->getPlayerPos());
+	levelManager.currentLevel->updateTriggers(dt);
 	//playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
@@ -274,6 +297,7 @@ void createGBuffer()
 	deferredGeometryPass = Shader("Shaders/gBufferGeometryVertex.glsl", "Shaders/gBufferGeometryFragment.glsl");
 	deferredLightingPass = Shader("Shaders/gBufferLightingVertex.glsl", "Shaders/gBufferLightingFragment.glsl");
 	simpleShadowShader = Shader("simpleVertex.glsl", "simpleFragment.glsl");
+	simpleShadowShader2 = Shader("simpleVertex2.glsl", "simpleFragment.glsl");
 
 
 	//Shadow buffer
@@ -366,32 +390,6 @@ void createGBuffer()
 		std::cout << "Framebuffer not complete!" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	//Some lights with random values
-	std::srand(13);
-	for (int i = 0; i < NR_LIGHTS; i++)
-	{
-		if(i != 1)
-		{
-			GLfloat xPos = -5.0f;
-			GLfloat yPos = 6.0f;
-			GLfloat zPos = 0.0f;
-			lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-			GLfloat rColor = 0.9f;
-			GLfloat gColor = 0.9f;
-			GLfloat bColor = 0.9f;
-			lightColors.push_back(glm::vec3(rColor, gColor, bColor));
-		}
-		{
-			GLfloat xPos = 6.0f;
-			GLfloat yPos = 8.0f;
-			GLfloat zPos = 0.0f;
-			lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-			GLfloat rColor = 0.9f;
-			GLfloat gColor = 0.9f;
-			GLfloat bColor = 0.9f;
-			lightColors.push_back(glm::vec3(rColor, gColor, bColor));
-		}
-	}
 }
 
 //Quad used for lighting pass fullscreen quad
@@ -426,6 +424,61 @@ void loadLevel()
 {
 	levelManager.currentLevel->loadModels();
 	levelManager.currentLevel->setupModels();
+	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
-	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+
+	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
+	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+	//Some lights with random values
+	std::srand((int)time(0));
+	for (int i = 0; i < NR_LIGHTS; i++)
+	{
+		if (i == 0)
+		{
+			lights.push_back(new Light(
+				glm::vec3(rand() % 15 - 20, 2.0f, 4.0f), 
+				glm::vec3(0.6f, 0.9f, 0.9f),
+				0.0001f, 0.02f));
+			lightPos = lights[0]->pos;
+		}
+		else if (i == 1)
+		{
+			lights.push_back(new Light(
+				glm::vec3(rand() % 15 + 10, 2.0f, 4.0f),
+				glm::vec3(0.6f, 0.9f, 0.9f),
+				0.0001f, 0.02f));
+			lightPos2 = lights[1]->pos;
+		}
+		else
+		{
+			lights.push_back(new Light(
+						glm::vec3(rand() % 50 - 25, 2.0f, 4.0f),
+						glm::vec3(0.6f, 0.9f, 0.9f),
+						0.0001f, 0.02f));
+		}
+		
+	}
+	player->setPos(levelManager.currentLevel->getPlayerPos());
+}
+void unloadLevel()
+{
+	levelManager.currentLevel->unloadModels();
+	levelManager.currentLevel->deleteTriggers();
+	modelsToBeDrawn.clear();
+	//playerCamera.destroyQuadTree();
+	for (int i = 0; i < lights.size(); i++)
+	{
+		delete lights[i];
+	}
+	lights.clear();
+}
+bool endLevel()
+{
+	bool end = false;
+	//for (int i = 0; i < levelManager.currentLevel->getTriggers().size(); i++)
+	//{
+	//	end = collision::collision(player->getPlayerPoints(),levelManager.currentLevel->getTriggers()[i]->getCorners());
+	//}
+	return end;
+	//test
 }

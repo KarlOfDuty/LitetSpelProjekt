@@ -17,7 +17,7 @@ struct light
     float quadratic;
 };
 
-const int NR_LIGHTS = 10;
+const int NR_LIGHTS = 3;
 uniform light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 uniform mat4 lightSpaceMatrix;
@@ -66,17 +66,10 @@ void main()
 	//Adds the ambient
 	vec3 lighting = ambient;
 	vec3 viewDir = normalize(viewPos - fragPos);
-	vec4 lightSpaces[10];
+	vec4 lightSpaces[3];
 	lightSpaces[0] = lightSpaceMatrix * vec4(fragPos, 1.0);
 	lightSpaces[1] = lightSpaceMatrix2 * vec4(fragPos, 1.0);
 	lightSpaces[2] = lightSpaceMatrix * vec4(fragPos, 1.0);
-	lightSpaces[3] = lightSpaceMatrix * vec4(fragPos, 1.0);
-	lightSpaces[4] = lightSpaceMatrix * vec4(fragPos, 1.0);
-	lightSpaces[5] = lightSpaceMatrix * vec4(fragPos, 1.0);
-	lightSpaces[6] = lightSpaceMatrix * vec4(fragPos, 1.0);
-	lightSpaces[7] = lightSpaceMatrix * vec4(fragPos, 1.0);
-	lightSpaces[8] = lightSpaceMatrix * vec4(fragPos, 1.0);
-	lightSpaces[9] = lightSpaceMatrix * vec4(fragPos, 1.0);
 	vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
 	vec4 fragPosLightSpace2 = lightSpaceMatrix2 * vec4(fragPos, 1.0);
 	 
@@ -102,14 +95,15 @@ void main()
 		{
 			shadow = ShadowCalculation(lightSpaces[i], normal, lightDir, depthMap2);
 		}
-		thisDiffuse *= attenuation;
+        thisDiffuse *= attenuation;
         thisSpecular *= attenuation;
 		lighting += (1.0 - shadow) * (thisDiffuse + thisSpecular);
 	}
 	fragColor = vec4(lighting, 1.0f);
 	float depthValue = texture(depthMap,texCoords).r;
-	//float depthValue2 = texture(depthMap2,texCoords).r;
+	float depthValue2 = texture(depthMap2,texCoords).r;
 	// Test depthmap
 	//fragColor = vec4(vec3(depthValue),1.0);
+
 }
 

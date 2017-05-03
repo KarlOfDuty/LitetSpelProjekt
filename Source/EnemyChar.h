@@ -1,15 +1,25 @@
 #ifndef ENEMYCHAR_H
 #define ENEMYCHAR_H
 #include "Model.h"
+#include "Collision.h"
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <SFML\Window.hpp>
+#include <vector>
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>  
+#include <random>
 
-class EnemyChar
+class Enemy : GameObject
 {
 private:
-	int HP;
+	float health;
 	int damage;
-	Model enemyModel;
-	glm::vec3 enemyPos;
-	glm::mat4 enemyModelMatrix;
+	sf::Clock damageImmunity;
+	Model *model;
+	glm::vec3 pos;
+	//glm::mat4 enemyModelMatrix;
 	glm::vec3 checkPoint;
 	//Animation animation;
 public:
@@ -17,19 +27,27 @@ public:
 	float velocityX;
 	float velocityY;
 	bool isOnGround;
+	bool playerSeen;
 
-	//Functions
-	EnemyChar();
-	EnemyChar(int HP, Model model, int damage, glm::vec3 enemyPos);
-	virtual ~EnemyChar();
-	void setEnemyPos(glm::vec3 position);
-	glm::vec3 getEnemyPos() const;
+	//Parent inherited functions
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	virtual std::string type() const;
+	//Own functions
+	Enemy();
+	Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos);
+	virtual ~Enemy();
+	void setPos(glm::vec3 position);
+	void setHealth(int health);
 	int getDamage()const;
-	glm::mat4 getModelMatrix() const;
+	int getHealth() const;
+	Model* getModel();
+	void applyDamage(int appliedDamage);
 	void groundCheck();
-	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPos) = 0;
-	void update(float dt, glm::vec3 playerPos);
-	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos, glm::vec3 checkPoint) = 0;
+	bool collision(std::vector<Model*> &allModels);
+	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 pos) = 0;
+	void update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels);
+	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 pos, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels) = 0;
 	void draw(Shader shader);
 };
 #endif

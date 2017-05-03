@@ -26,29 +26,68 @@ Material Model::getMaterial(int index)
 {
 	return this->meshes.at(index)->material;
 }
-std::vector<glm::vec2> Model::getPoints(float scale)
+std::vector<glm::vec2> Model::getPoints()
 {
-	if (this->allPoints.empty())
+	if (allPoints.empty())
 	{
-		//std::vector<glm::vec2> allPoints;
 		glm::vec2 minPos;
-		glm::vec2 maxPos;
 		for (int i = 0; i < meshes.size(); i++)
 		{
 			for (int j = 0; j < meshes[i]->vertices.size(); j++)
 			{
 				if (meshes[i]->vertices[j].pos.x < minPos.x) minPos.x = meshes[i]->vertices[j].pos.x;
 				if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
-				if (meshes[i]->vertices[j].pos.x > maxPos.x) maxPos.x = meshes[i]->vertices[j].pos.x;
-				if (meshes[i]->vertices[j].pos.y > maxPos.y) maxPos.y = meshes[i]->vertices[j].pos.y;
 			}
 		}
-		allPoints.push_back(minPos*scale);
-		allPoints.push_back(glm::vec2(-minPos.x, minPos.y)*scale);
-		allPoints.push_back(maxPos*scale);
-		allPoints.push_back(glm::vec2(-maxPos.x, maxPos.y)*scale);
+		//Pushback points without rotation
+		allPoints.push_back(glm::vec2(minPos.x, minPos.y));
+		allPoints.push_back(glm::vec2(-minPos.x, minPos.y));
+		allPoints.push_back(glm::vec2(-minPos.x, -minPos.y));
+		allPoints.push_back(glm::vec2(minPos.x, -minPos.y));
 	}
-	return this->allPoints;
+
+	std::vector<glm::vec2> translatedPoint;
+	//Get rotation and scale from modelMat
+	glm::vec3 scale;
+	glm::quat rotation;
+	glm::decompose(this->modelMatrix, scale, rotation, glm::vec3(), glm::vec3(), glm::vec4());
+
+	//Convert from quat to radians
+	double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
+	double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
+	float radians = -std::atan2(t3, t4);
+
+	//Pushback points without rotation
+	translatedPoint.push_back(glm::vec2(allPoints[0].x*scale.x, allPoints[0].y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[1].x*scale.x, allPoints[1].y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[2].x*scale.x, allPoints[2].y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[3].x*scale.x, allPoints[3].y*scale.y));
+
+	//Translate to right position depending on rotation
+	for (int k = 0; k < translatedPoint.size(); k++)
+	{
+		glm::vec2 center = this->modelMatrix[3];
+		translatedPoint[k] += center;
+		float x = center.x + (translatedPoint[k].x - center.x) * cos(radians) - (translatedPoint[k].y - center.y) * sin(radians);
+		float y = center.y + (translatedPoint[k].x - center.x) * sin(radians) + (translatedPoint[k].y - center.y) * cos(radians);
+
+		translatedPoint[k].x = x;
+		translatedPoint[k].y = y;
+	}
+
+	return translatedPoint;
+}
+glm::vec3 Model::getPos() const
+{
+	return modelMatrix[3];
+}
+std::string Model::type() const
+{
+	return "Model";
+}
+float Model::getBoundingSphereRadius() const
+{
+	return boundingSphereRadius;
 }
 //Setters
 void Model::setModelMatrix(glm::mat4 modelMat)
@@ -58,6 +97,20 @@ void Model::setModelMatrix(glm::mat4 modelMat)
 void Model::setRotationMatrix(glm::mat4 rotationMat)
 {
 	this->rotationMatrix = rotationMat;
+}
+//Sets the radius of the bounding sphere around this model
+void Model::setBoundingSphereRadius()
+{
+	//Takes the distance to the furthest away vertex and sets it as the radius
+	float radius = 0.0f;
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		for (int j = 0; j < meshes[i]->vertices.size(); j++)
+		{
+			radius = glm::max(radius, (float)meshes[i]->vertices[j].pos.length());
+		}
+	}
+	this->boundingSphereRadius = radius;
 }
 //Multiplies the model matrix with the rotation matrix
 void Model::rotate()
@@ -387,7 +440,7 @@ void Model::draw(Shader shader)
 		glBindTexture(GL_TEXTURE_2D, meshes[i]->material.normalMapTexture);
 		glUniform1i(glGetUniformLocation(shader.program, "normalMap"), 3);
 		
-		glDrawArrays(GL_TRIANGLES, 0, this->meshes[i]->vertices.size()*3);
+		glDrawArrays(GL_TRIANGLES, 0, (int)this->meshes[i]->vertices.size()*3);
 	}
 	glBindVertexArray(0);
 }
@@ -537,24 +590,6 @@ void Model::loadTextures(int i)
 	}
 
 }
-//Sets the radius of the bounding sphere around this model
-void Model::setBoundingSphereRadius()
-{
-	//Takes the distance to the furthest away vertex and sets it as the radius
-	float radius = 0.0f;
-	for (int i = 0; i < meshes.size(); i++)
-	{
-		for (int j = 0; j < meshes[i]->vertices.size(); j++)
-		{
-			radius = glm::max(radius, (float)meshes[i]->vertices[j].pos.length());
-		}
-	}
-	this->boundingSphereRadius = radius;
-}
-float Model::getBoundingSphereRadius() const
-{
-	return boundingSphereRadius;
-}
 //Constructors
 Model::Model(std::string filename)
 {
@@ -592,32 +627,44 @@ Model::Model(Model &otherModel)
 	this->modelMatrix = otherModel.modelMatrix;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->meshes = otherModel.meshes;
-	setupModel();
+	this->VAO = otherModel.VAO;
+	this->VBO = otherModel.VBO;
 }
 Model::Model(Model *otherModel)
 {
 	this->modelMatrix = otherModel->modelMatrix;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->meshes = otherModel->meshes;
-	setupModel();
+	this->VAO = otherModel->VAO;
+	this->VBO = otherModel->VBO;
 }
 Model::Model(Model &otherModel, glm::mat4 modelMat)
 {
 	this->modelMatrix =  modelMat;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->meshes = otherModel.meshes;
-	setupModel();
+	this->VAO = otherModel.VAO;
+	this->VBO = otherModel.VBO;
 }
-Model::Model(Model * otherModel, glm::mat4 modelMat)
+Model::Model(Model *otherModel, glm::mat4 modelMat)
 {
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->meshes = otherModel->meshes;
-	setupModel();
+	this->VAO = otherModel->VAO;
+	this->VBO = otherModel->VBO;
 }
 //Destructor
 Model::~Model()
 {
-
+	meshes.clear();
 }
-
+//As models share pointers this can not be done in the destructor
+void Model::deleteMeshes()
+{
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		delete meshes[i];
+	}
+	meshes.clear();
+}

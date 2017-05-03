@@ -5,20 +5,22 @@
 class PlayerChar
 {
 private:
-	int HP;
+	int health;
+	int damage;
 	Model playerModel;
 	bool inWater;
 	bool diving;
 	//Animation animation;
 public:
 	PlayerChar();
-	PlayerChar(int HP, Model model, bool inWater);
+	PlayerChar(int health, Model model, bool inWater);
 	virtual ~PlayerChar();
-	void takingDamage(int appliedDamage);
-	void setHP(int HP);
+	void applyDamage(int appliedDamage);
+	void setHealth(int health);
 	void setSwim(bool swiming);
 	void setDiving(bool diving);
-	int getHP()const;
+	int getDamage() const;
+	int getHealth()const;
 	int getDiving()const;
 	void attack();
 	void draw(Shader shader);
