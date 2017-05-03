@@ -21,6 +21,7 @@ private:
 	PlayerChar* player;
 	void freeMemory();
 	sf::Clock damageImmunity;
+	sf::Clock tpCooldown;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
 	float velocityX;
