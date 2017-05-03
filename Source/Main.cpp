@@ -65,7 +65,7 @@ float farDistance = 10000;
 glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
 
-SoundSystem soundSystem;
+SoundSystem *soundSystem;
 
 //Lights
 const GLuint NR_LIGHTS = 3;
@@ -127,14 +127,16 @@ int main()
 
 	//Models
 	loadLevel();
-	soundSystem.playMusic("audio/music/forest1.flac");
 	eventHandler = EventHandler();
 
+	soundSystem = new SoundSystem();
+	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
+	soundSystem->playMusic("audio/music/forest1.flac");
 	//Main loop
 	bool running = true;
 	while (running)
 	{
-		running = eventHandler.handleEvents(window, player);
+		running = eventHandler.handleEvents(window, player, soundSystem);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
