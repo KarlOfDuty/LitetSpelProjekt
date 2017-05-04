@@ -21,6 +21,15 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 {
 	groundCheck();
 
+	if (collidedFrom.y > 0)
+	{
+		collidingWithGround = true;
+	}
+	else if (collidedFrom.y <= 0)
+	{
+		collidingWithGround = false;
+	}
+
 	if (goingRight)
 	{
 		checkpoint.x = playerPos.x + 8.0f;
@@ -76,6 +85,12 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 		collisionTime.restart();
 	}
 
+	if (glm::length(enemyPosCurrent - playerPos) < 10.0f)
+	{
+		playerSeen = true;
+		returnToStart = false;
+	}
+
 	//Move
 	midX = playerPos.y;
 	float curve = glm::pow(enemyPosCurrent.y - midX, 0.7);
@@ -83,7 +98,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 	{
 		if (swoopAttack == true)
 		{
-			if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
+			if (playerSeen)
 			{
 				if (enemyPosCurrent.x > playerPos.x)
 				{
@@ -177,10 +192,15 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 	velocityY = 0;
 
 	//Handle collision detection with ground
-	/*if (enemyPosCurrent.y <= 0) {
-		enemyPosCurrent.y = 0;
+	if (enemyPosCurrent.y <= groundPos && !isOnGround)
+	{
+		if (velocityY < 0)
+		{
+			enemyPosCurrent.y = groundPos;
+			velocityY = 0;
+		}
 		isOnGround = true;
-	}*/
+	}
 
 	setPos(enemyPosCurrent);
 	collides = collision(allModels);

@@ -11,8 +11,9 @@ private:
 	//workarounds for collision
 	bool collides;
 	bool collidingWithGround;
+	int collisionCounterToad;
 	bool returnToStart;
-	sf::Clock collisionTime;
+	sf::Clock timeSinceCollision;
 	glm::vec3 startPosition;
 public:
 	EnemyToad(int health, Model* enemyModel, int damage, glm::vec3 enemyStartPos);

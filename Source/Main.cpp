@@ -24,6 +24,7 @@ Player *player;
 EventHandler eventHandler;
 sf::Clock deltaClock;
 float dt;
+bool firstFrame = true;
 //Enemies
 EnemyManager *enemy;
 int jumpPress;
@@ -105,8 +106,8 @@ int main()
 	//Characters
 	player = new Player();
 	enemy = new EnemyManager();
-	enemy->createSlime(glm::vec3(15.0f, 5.0f, 0.0f));
-	enemy->createToad(glm::vec3(-17.0f, 20.0f, 0.0f));
+	enemy->createSlime(glm::vec3(20.0f, 8.0f, 0.0f));
+	enemy->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
 	enemy->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
 	enemy->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
 	enemy->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
@@ -132,8 +133,15 @@ int main()
 		running = eventHandler.handleEvents(window, player);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		update(window);
+		if (!firstFrame)
+		{
+			update(window);
+		}
+		else
+		{
+			deltaClock.restart();
+			firstFrame = false;
+		}
 		render();
 
 		//End the current frame (internally swaps the front and back buffers)
@@ -265,6 +273,7 @@ void update(sf::Window &window)
 	{
 		player->update(window, dt, modelsToBeDrawn ,enemy->getPos(), enemy->getDamage());
 	}
+	enemy->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn);
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
@@ -279,7 +288,6 @@ void update(sf::Window &window)
 		viewMatrix = playerCamera.update(player->getPos());
 
 	}
-	enemy->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn);
 
 	if (endLevel())
 	{

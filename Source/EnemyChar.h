@@ -30,6 +30,7 @@ public:
 	bool playerSeen;
 	glm::vec2 collidedFrom;
 	float radians;
+	float groundPos;
 
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();

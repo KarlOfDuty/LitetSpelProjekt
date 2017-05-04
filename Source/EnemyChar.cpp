@@ -81,7 +81,9 @@ void Enemy::applyDamage(int appliedDamage)
 
 void Enemy::groundCheck()
 {
-	if (this->pos.y > 0.0f)
+	groundPos = 0.0f;
+
+	if (pos.y > groundPos)
 	{
 		isOnGround = false;
 	}
@@ -124,10 +126,20 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 				pos.x += mtv.x;
 				pos.y += mtv.y;
 			}
+
+			if (mtv.y > 0)
+			{
+				if (pos.y < 0) pos.y = 0;
+				groundPos = pos.y;
+			}
 			collidedFrom = mtv;
 
 			setPos(pos);
 			return true;
+		}
+		else
+		{
+			collidedFrom = glm::vec2(0,0);
 		}
 	}
 	return false;

@@ -22,6 +22,14 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 {
 	groundCheck();
 
+	if (collidedFrom.y > 0)
+	{
+		collidingWithGround = true;
+	}
+	else if (collidedFrom.y <= 0)
+	{
+		collidingWithGround = false;
+	}
 
 	if (enemyPosCurrent.x < checkPoint.x-3)
 	{
@@ -72,100 +80,109 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 		collisionTime.restart();
 	}
 
-	if (isOnGround)
+	if (glm::length(enemyPosCurrent - playerPos) < 5.0f)
 	{
-		//Move
-		if (moving)
+		playerSeen = true;
+		returnToStart = false;
+	}
+
+	//Move
+	if (moving)
+	{
+		if (!returnToStart)
 		{
-			if (!returnToStart)
+			if (playerSeen)
 			{
-				if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
+				if (movingLeft == false)
 				{
-					if (movingLeft == false)
+					if (enemyPosCurrent.x >= playerPos.x)
 					{
-						if (enemyPosCurrent.x >= playerPos.x)
-						{
-							movingRight = true;
-						}
+						movingRight = true;
 					}
-					if (movingRight == false)
-					{
-						if (enemyPosCurrent.x <= playerPos.x)
-						{
-							movingLeft = true;
-						}
-					}
-					if (movingRight == true)
-					{
-						velocityX = velocityX - acceleration * dt;
-					}
-					else if (movingLeft == true)
-					{
-						velocityX = velocityX + acceleration * dt;
-					}
-					playerSeen = true;
 				}
-				else
+				if (movingRight == false)
 				{
-					//Patrol
-					if (movingLeft == false)
+					if (enemyPosCurrent.x <= playerPos.x)
 					{
-						if ((!checkPointReached))
-						{
-							movingRight = true;
-						}
+						movingLeft = true;
 					}
-					if (movingRight == false)
+				}
+				if (movingRight == true)
+				{
+					velocityX = velocityX - acceleration * dt;
+				}
+				else if (movingLeft == true)
+				{
+					velocityX = velocityX + acceleration * dt;
+				}
+				playerSeen = true;
+			}
+			else
+			{
+				//Patrol
+				if (movingLeft == false)
+				{
+					if ((!checkPointReached))
 					{
-						if (checkPointReached)
-						{
-							movingLeft = true;
-						}
+						movingRight = true;
 					}
-					if (movingRight == true)
+				}
+				if (movingRight == false)
+				{
+					if (checkPointReached)
 					{
-						velocityX = velocityX - acceleration * dt;
+						movingLeft = true;
 					}
-					else if (movingLeft == true)
+				}
+				if (movingRight == true)
+				{
+					velocityX = velocityX - acceleration * dt;
+				}
+				else if (movingLeft == true)
+				{
+					velocityX = velocityX + acceleration * dt;
+				}
+			}
+		}
+		else
+		{
+			if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
+			{
+				if (movingLeft == false)
+				{
+					if (enemyPosCurrent.x >= startPosition.x)
 					{
-						velocityX = velocityX + acceleration * dt;
+						movingRight = true;
 					}
+				}
+				if (movingRight == false)
+				{
+					if (enemyPosCurrent.x <= startPosition.x)
+					{
+						movingLeft = true;
+					}
+				}
+				if (movingRight == true)
+				{
+					velocityX = velocityX - acceleration * dt;
+				}
+				else if (movingLeft == true)
+				{
+					velocityX = velocityX + acceleration * dt;
 				}
 			}
 			else
 			{
-				if (glm::length(enemyPosCurrent - startPosition) > 0.5f)
-				{
-					if (movingLeft == false)
-					{
-						if (enemyPosCurrent.x >= startPosition.x)
-						{
-							movingRight = true;
-						}
-					}
-					if (movingRight == false)
-					{
-						if (enemyPosCurrent.x <= startPosition.x)
-						{
-							movingLeft = true;
-						}
-					}
-					if (movingRight == true)
-					{
-						velocityX = velocityX - acceleration * dt;
-					}
-					else if (movingLeft == true)
-					{
-						velocityX = velocityX + acceleration * dt;
-					}
-				}
-				else
-				{
-					returnToStart = false;
-					playerSeen = false;
-				}
+				returnToStart = false;
+				playerSeen = false;
 			}
 		}
+	}
+	
+
+	if (collidingWithGround)
+	{
+
 	}
 
 	if (!isOnGround)
@@ -192,9 +209,13 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 	enemyPosCurrent.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (enemyPosCurrent.y <= 0) {
-		velocityY = 0;
-		enemyPosCurrent.y = 0;
+	if (enemyPosCurrent.y <= groundPos && !isOnGround)
+	{
+		if (velocityY < 0)
+		{
+			enemyPosCurrent.y = groundPos;
+			velocityY = 0;
+		}
 		isOnGround = true;
 	}
 

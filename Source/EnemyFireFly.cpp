@@ -20,6 +20,15 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 {
 	groundCheck();
 
+	if (collidedFrom.y > 0)
+	{
+		collidingWithGround = true;
+	}
+	else if (collidedFrom.y <= 0)
+	{
+		collidingWithGround = false;
+	}
+
 	if (collides)
 	{
 		velocityY += 3.0f*dt;
@@ -35,10 +44,16 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 		collisionTime.restart();
 	}
 
+	if (glm::length(enemyPosCurrent - playerPos) < 10.0f)
+	{
+		playerSeen = true;
+		returnToStart = false;
+	}
+
 	//Move
 	if (!returnToStart)
 	{
-		if (glm::length(enemyPosCurrent - playerPos) < 10.0f || playerSeen)
+		if (playerSeen)
 		{
 			if (enemyPosCurrent.x > playerPos.x + attackRange)
 			{
@@ -112,8 +127,13 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 	velocityY = 0;
 
 	//Handle collision detection with ground
-	if (enemyPosCurrent.y <= 0) {
-		enemyPosCurrent.y = 0;
+	if (enemyPosCurrent.y <= groundPos && !isOnGround)
+	{
+		if (velocityY < 0)
+		{
+			enemyPosCurrent.y = groundPos;
+			velocityY = 0;
+		}
 		isOnGround = true;
 	}
 

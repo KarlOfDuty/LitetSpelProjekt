@@ -20,6 +20,16 @@ void EnemyBatSmall::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyP
 void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
 {
 	groundCheck();
+
+	if (collidedFrom.y > 0)
+	{
+		collidingWithGround = true;
+	}
+	else if (collidedFrom.y <= 0)
+	{
+		collidingWithGround = false;
+	}
+
 	std::mt19937 rng(rd());
 	std::uniform_int_distribution<> distX(-2, 2);
 	std::uniform_int_distribution<> distY(0, 3);
@@ -64,7 +74,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	if (collides)
 	{
 		collisionCounter++;
-		if (collisionCounter < 100)
+		if (collisionCounter < 60)
 		{
 			velocityY += 5.0f*dt;
 		}
@@ -90,13 +100,18 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		collisionCounter = 0;
 	}
 
+	if (glm::length(enemyPosCurrent - playerPos) < 8.0f)
+	{
+		playerSeen = true;
+		returnToStart = false;
+	}
 
 	//Move
 	if (!returnToStart)
 	{
 		if (goForPlayer)
 		{
-			if (glm::length(enemyPosCurrent - playerPos) < 8.0f || playerSeen)
+			if (playerSeen)
 			{
 				if (enemyPosCurrent.x > playerPos.x)
 				{
@@ -195,8 +210,13 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	velocityY = 0;
 
 	//Handle collision detection with ground
-	if (enemyPosCurrent.y <= 0) {
-		enemyPosCurrent.y = 0;
+	if (enemyPosCurrent.y <= groundPos && !isOnGround)
+	{
+		if (velocityY < 0)
+		{
+			enemyPosCurrent.y = groundPos;
+			velocityY = 0;
+		}
 		isOnGround = true;
 	}
 

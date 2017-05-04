@@ -21,6 +21,15 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 {
 	groundCheck();
 
+	if (collidedFrom.y > 0)
+	{
+		collidingWithGround = true;
+	}
+	else if (collidedFrom.y <= 0)
+	{
+		collidingWithGround = false;
+	}
+
 	//Patrol check 
 	if (enemyPosCurrent.x < checkPoint.x-2)
 	{
@@ -30,7 +39,6 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 	else if (enemyPosCurrent.x > checkPoint.x+2)
 	{
 		checkPointReached = false;
-
 	}
 
 	if (collides)
@@ -55,10 +63,16 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 		collisionTime.restart();
 	}
 
+	if (glm::length(enemyPosCurrent - playerPos) < 5.0f)
+	{
+		playerSeen = true;
+		returnToStart = false;
+	}
+
 	//Move
 	if (!returnToStart)
 	{
-		if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
+		if (playerSeen)
 		{
 			if (enemyPosCurrent.x > playerPos.x)
 			{
@@ -73,19 +87,19 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 		else
 		{
 			//Patrol
-			if (checkPointReached == false)
+			/*if (checkPointReached == false)
 			{
 				velocityX -= 2.0f*dt;
 			}
 			else if (checkPointReached == true)
 			{
 				velocityX += 2.0f*dt;
-			}
+			}*/
 		}
 	}
 	else
 	{
-		if (glm::length(enemyPosCurrent - startPosition) > 0.5f)
+		if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
 		{
 			if (enemyPosCurrent.x > startPosition.x)
 			{
@@ -103,7 +117,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 		}
 	}
 
-	if (isOnGround)
+	if (collidingWithGround)
 	{
 		if (fabs(enemyPosCurrent.x - playerPos.x) < 0.1)
 		{
@@ -111,7 +125,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 		}
 	}
 
-	if (!isOnGround)
+	if (!collidingWithGround)
 	{
 		velocityY -= 30*dt;
 	}
@@ -132,13 +146,18 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 	enemyPosCurrent.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (enemyPosCurrent.y <= 0) {
-		velocityY = 0;
-		enemyPosCurrent.y = 0;
+	if (enemyPosCurrent.y <= groundPos)
+	{
+		if (velocityY < 0)
+		{
+			enemyPosCurrent.y = groundPos;
+			velocityY = 0;
+		}
 		isOnGround = true;
 	}
 
 	setPos(enemyPosCurrent);
+
 	collides = collision(allModels);
 }
 

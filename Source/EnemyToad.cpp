@@ -18,168 +18,180 @@ void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
 {
-	groundCheck();
-
-
-	if (collides)
-	{
-		std::cout << collidedFrom.y << std::endl;
-		std::cout << collidedFrom.x << std::endl;
-		if (collidedFrom.x != 0)
-		{
-			if (collisionTime.getElapsedTime().asSeconds() >= 5)
-			{
-				returnToStart = true;
-				playerSeen = false;
-			}
-		}
+	
+		groundCheck();
 
 		if (collidedFrom.y > 0)
 		{
 			collidingWithGround = true;
 		}
-		else if(collidedFrom.y ==  0)
+		else if (collidedFrom.y <= 0)
 		{
 			collidingWithGround = false;
 		}
 
-	}
-
-	if (collidedFrom.x == 0)
-	{
-		collisionTime.restart();
-	}
-
-	if (!returnToStart)
-	{
-		if (collidingWithGround)
+		if (collides)
 		{
-			//Jump
-			if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
+			if (collidedFrom.x != 0)
 			{
-				if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
+				collisionCounterToad++;
+				if (collisionCounterToad > 200)
 				{
-					if (collidingWithGround)
+					returnToStart = true;
+					playerSeen = false;
+					std::cout << "going home" << std::endl;
+				}
+				timeSinceCollision.restart();
+			}
+		}
+
+		if (timeSinceCollision.getElapsedTime().asSeconds() >= 2)
+		{
+			collisionCounterToad = 0;
+		}
+
+		if (glm::length(enemyPosCurrent - playerPos) < 5.0f)
+		{
+			playerSeen = true;
+			returnToStart = false;
+		}
+
+		if (!returnToStart)
+		{
+			if (collidingWithGround)
+			{
+				//Jump
+				if (playerSeen)
+				{
+					if (jumpTimer.getElapsedTime().asSeconds() >= 1.6)
 					{
-						velocityY = 15;
+						if (collidingWithGround)
+						{
+							velocityY = 15;
+						}
+						jumpTimer.restart();
 					}
-					jumpTimer.restart();
-				}
 
-				playerSeen = true;
+					playerSeen = true;
+				}
+				movingRight = false;
+				movingLeft = false;
 			}
-			movingRight = false;
-			movingLeft = false;
-		}
 
-		//Move in air only
-		if (!collidingWithGround)
-		{
-			if (movingLeft == false)
+			//Move in air only
+			if (!collidingWithGround)
 			{
-				if (enemyPosCurrent.x >= playerPos.x)
+				if (movingLeft == false)
 				{
-					movingRight = true;
-				}
-			}
-			if (movingRight == false)
-			{
-				if (enemyPosCurrent.x <= playerPos.x)
-				{
-					movingLeft = true;
-				}
-			}
-			if (movingRight == true)
-			{
-				velocityX -= 3.0f*dt;
-			}
-			else if (movingLeft == true)
-			{
-				velocityX += 3.0f*dt;
-			}
-			velocityY -= 30 * dt;
-		}
-	}
-	else
-	{
-		if (collidingWithGround)
-		{
-			//Jump
-			if (glm::length(enemyPosCurrent - startPosition) > 0.5f)
-			{
-				if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
-				{
-					if (collidingWithGround)
+					if (enemyPosCurrent.x >= playerPos.x)
 					{
-						velocityY = 15;
+						movingRight = true;
 					}
-					jumpTimer.restart();
 				}
+				if (movingRight == false)
+				{
+					if (enemyPosCurrent.x <= playerPos.x)
+					{
+						movingLeft = true;
+					}
+				}
+				if (movingRight == true)
+				{
+					velocityX -= 3.0f*dt;
+				}
+				else if (movingLeft == true)
+				{
+					velocityX += 3.0f*dt;
+				}
+				velocityY -= 30 * dt;
 			}
-			else
-			{
-				returnToStart = false;
-				playerSeen = false;
-			}
-			movingRight = false;
-			movingLeft = false;
 		}
-
-		//Move in air only
-		if (!collidingWithGround)
+		else
 		{
-			if (movingLeft == false)
+			if (collidingWithGround)
 			{
-				if (enemyPosCurrent.x >= startPosition.x)
+				//Jump
+				if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
 				{
-					movingRight = true;
+					if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
+					{
+						if (collidingWithGround)
+						{
+							velocityY = 15;
+						}
+						jumpTimer.restart();
+					}
 				}
-			}
-			if (movingRight == false)
-			{
-				if (enemyPosCurrent.x <= startPosition.x)
+				else
 				{
-					movingLeft = true;
+					returnToStart = false;
+					playerSeen = false;
 				}
+				movingRight = false;
+				movingLeft = false;
 			}
-			if (movingRight == true)
+
+			//Move in air only
+			if (!collidingWithGround)
 			{
-				velocityX -= 3.0f*dt;
+				if (movingLeft == false)
+				{
+					if (enemyPosCurrent.x >= startPosition.x)
+					{
+						movingRight = true;
+					}
+				}
+				if (movingRight == false)
+				{
+					if (enemyPosCurrent.x <= startPosition.x)
+					{
+						movingLeft = true;
+					}
+				}
+				if (movingRight == true)
+				{
+					velocityX -= 3.0f*dt;
+				}
+				else if (movingLeft == true)
+				{
+					velocityX += 3.0f*dt;
+				}
+				velocityY -= 30 * dt;
 			}
-			else if (movingLeft == true)
-			{
-				velocityX += 3.0f*dt;
-			}
-			velocityY -= 30 * dt;
 		}
-	}
 
-	if (velocityY < -30)
-	{
-		velocityY = -30;
-	}
-	if (velocityX > 3)
-	{
-		velocityX = 3;
-	}
-	if (velocityX < -3)
-	{
-		velocityX = -3;
-	}
+		if (velocityY < -30)
+		{
+			velocityY = -30;
+		}
+		if (velocityX > 3)
+		{
+			velocityX = 3;
+		}
+		if (velocityX < -3)
+		{
+			velocityX = -3;
+		}
 
-	//Apply velocity
-	enemyPosCurrent.x += velocityX;
-	velocityX = 0;
-	enemyPosCurrent.y += velocityY*dt;
+		//Apply velocity
+		enemyPosCurrent.x += velocityX;
+		velocityX = 0;
+		enemyPosCurrent.y += velocityY*dt;
 
-	//Handle collision detection with ground
-	if (enemyPosCurrent.y <= 0) {
-		velocityY = 0;
-		enemyPosCurrent.y = 0;
-		isOnGround = true;
-	}
+		//Handle collision detection with ground
+		if (enemyPosCurrent.y <= groundPos)
+		{
+			if (velocityY < 0)
+			{
+				enemyPosCurrent.y = groundPos;
+				velocityY = 0;
+			}
+			isOnGround = true;
+		}
 
-	setPos(enemyPosCurrent);
-	collides = collision(allModels);
+		setPos(enemyPosCurrent);
+
+		collides = collision(allModels);
+
 }
 

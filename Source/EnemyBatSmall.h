@@ -5,14 +5,15 @@ class EnemyBatSmall : public Enemy
 private:
 	bool goForPlayer;
 	glm::vec3 checkpoint;
-	sf::Clock timeSinceCollision;
 	std::random_device rd;
 
 	//workarounds for collision
 	bool collides;
 	int collisionCounter;
+	bool collidingWithGround;
 	glm::vec3 startPosition;
 	bool returnToStart;
+	sf::Clock timeSinceCollision;
 	sf::Clock collisionTime;
 public:
 	EnemyBatSmall(int health, Model* enemyModel, int damage, glm::vec3 enemyStartPos);

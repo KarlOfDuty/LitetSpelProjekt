@@ -5,6 +5,13 @@ class EnemySkeleton : public Enemy
 private:
 	bool checkPointReached;
 	bool patrol;
+
+	//workarounds for collision
+	bool collides;
+	bool returnToStart;
+	bool collidingWithGround;
+	sf::Clock collisionTime;
+	glm::vec3 startPosition;
 public:
 	EnemySkeleton(int health, Model* enemyModel, int damage, bool patrol, glm::vec3 enemyStartPos);
 	virtual ~EnemySkeleton();

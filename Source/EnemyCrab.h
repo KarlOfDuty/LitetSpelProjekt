@@ -13,6 +13,7 @@ private:
 
 	//workarounds for collision
 	bool collides;
+	bool collidingWithGround;
 	bool returnToStart;
 	sf::Clock collisionTime;
 	glm::vec3 startPosition;
