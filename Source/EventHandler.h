@@ -2,6 +2,7 @@
 #define EVENTHANDLER_H
 #include <SFML\Window.hpp>
 #include "Player.h"
+#include "SoundSystem.h"
 class EventHandler
 {
 private:
@@ -15,6 +16,6 @@ private:
 public:
 	EventHandler();
 	~EventHandler();
-	bool handleEvents(sf::Window &window, Player *player);
+	bool handleEvents(sf::Window &window, Player *player, SoundSystem *soundSystem);
 };
 #endif

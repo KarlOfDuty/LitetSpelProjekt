@@ -26,7 +26,7 @@ struct TriggerSettings
 	//Modifies previous flags to activate once for each activator inside the trigger 
 	//Works with onEnterAll, onExitAll, whileInside and whileAllInside
 	bool perActivator = false;
-	//Delay in ms between repeated activations, 0 for each frame.
+	//Delay in seconds between repeated activations, 0 for each frame.
 	//Any changes in state will be recorded but not cause activations
 	float frequency = 0;
 	//Maximum allowed activations

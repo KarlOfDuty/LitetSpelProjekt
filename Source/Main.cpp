@@ -2,6 +2,7 @@
 #include <GL/GL.h>
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
+#include <SFML/Audio.hpp>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
@@ -14,6 +15,7 @@
 #include "FrustumCulling.h"
 #include "EventHandler.h"
 #include "LevelManager.h"
+#include "SoundSystem.h"
 
 #pragma comment(lib, "opengl32.lib")
 
@@ -63,6 +65,8 @@ float farDistance = 10000;
 glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
 
+SoundSystem *soundSystem;
+
 //Lights
 const GLuint NR_LIGHTS = 3;
 std::vector<Light*> lights;
@@ -75,6 +79,7 @@ GLuint quadVBO;
 std::vector<Model*> modelsToBeDrawn;
 
 //Functions
+
 void render();
 void update(sf::Window &window);
 void createGBuffer();
@@ -122,14 +127,16 @@ int main()
 
 	//Models
 	loadLevel();
-
 	eventHandler = EventHandler();
 
+	soundSystem = new SoundSystem();
+	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
+	soundSystem->playMusic("audio/music/forest1.flac");
 	//Main loop
 	bool running = true;
 	while (running)
 	{
-		running = eventHandler.handleEvents(window, player);
+		running = eventHandler.handleEvents(window, player, soundSystem);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
