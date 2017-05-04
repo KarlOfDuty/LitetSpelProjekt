@@ -8,12 +8,13 @@
 class Camera
 {
 private:
-	FrustumCulling frustumObject;
+	
 	glm::vec3 cameraPos;
 	glm::vec3 cameraFront;
 	glm::vec3 cameraUp;
 	glm::vec4 mapSize;
 public:
+	FrustumCulling frustumObject;
 	Camera();
 	~Camera();
 	void frustumCulling(std::vector<Model*> &visibleModels);

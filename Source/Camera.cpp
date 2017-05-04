@@ -18,10 +18,10 @@ glm::mat4 Camera::update(glm::vec3 playerPos)
 {
 	//The camera is always in front of the player and slightly above.
 	this->cameraPos.x = playerPos.x;
-	this->cameraPos.y = playerPos.y + 5;
+	this->cameraPos.y = playerPos.y;
 	this->cameraPos.z = playerPos.z + 10;
 
-	this->cameraFront = (playerPos + glm::vec3(0,2,0)) - cameraPos;
+	this->cameraFront = playerPos  - cameraPos;
 	this->cameraFront = glm::normalize(cameraFront);
 
 	//The camera also points to a point slightly above the player
@@ -37,6 +37,7 @@ void Camera::frustumCulling(std::vector<Model*> &visibleModels)
 	//If the camera has moved, update the visible models
 	frustumObject.setFrustumPlanes(cameraPos, cameraFront, cameraUp);
 	visibleModels = frustumObject.getRoot()->getModelsToDraw(frustumObject);
+
 	//Remove duplicate pointers
 	std::sort(visibleModels.begin(), visibleModels.end());
 	visibleModels.erase(std::unique(visibleModels.begin(), visibleModels.end()), visibleModels.end());
@@ -50,7 +51,7 @@ void Camera::setupQuadTree(std::vector<Model*> &staticModels)
 {
 	//Recursively sets the quadtree up starting from the root
 	frustumObject.getRoot()->buildQuadTree(staticModels, 0, mapSize);
-	frustumObject.getRoot()->cleanTree();
+	//frustumObject.getRoot()->cleanTree();
 }
 
 void Camera::destroyQuadTree()

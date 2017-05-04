@@ -63,6 +63,7 @@ public:
 	bool boxInFrustum(const glm::vec4 &quad) const;
 	Node* getRoot();
 	FrustumCulling();
+	FrustumCulling(Node* root);
 	~FrustumCulling();
 };
 #endif
