@@ -223,22 +223,10 @@ std::vector<Model*> FrustumCulling::Node::getModelsToDraw(const FrustumCulling &
 //Destructor
 FrustumCulling::Node::~Node()
 {
-	if (this->northEast != nullptr)
-	{
-		delete northEast;
-	}
-	if (this->southEast != nullptr)
-	{
-		delete southEast;
-	}
-	if (this->southWest != nullptr)
-	{
-		delete southWest;
-	}
-	if (this->northWest != nullptr)
-	{
-		delete northWest;
-	}
+	delete northEast;
+	delete southEast;
+	delete southWest;
+	delete northWest;
 }
 //Constructors
 FrustumCulling::Node::Node()
@@ -305,10 +293,11 @@ void FrustumCulling::setFrustumPlanes(glm::vec3 cameraPos, glm::vec3 cameraForwa
 	this->planes[BOTTOM_P].normal = glm::normalize(glm::cross(planeVector,cameraRight));
 	this->planes[BOTTOM_P].pointInPlane = cameraPos;
 }
+//Destroys the quadtree and creates a new root node
 void FrustumCulling::destroyQuadTree()
 {
 	delete root;
-	root = nullptr;
+	root = new Node();
 	quadTreeExists = false;
 }
 //Quads are in 2d and only hold two diagonal corners: x,z min and x,z max
@@ -365,7 +354,11 @@ FrustumCulling::Node* FrustumCulling::getRoot()
 FrustumCulling::FrustumCulling()
 {
 	//setFrustumShape(), setFrustumPlanes() and buildQuadTree() are used to set up the object
-	root = new Node();
+	this->root = new Node();
+}
+FrustumCulling::FrustumCulling(Node* root)
+{
+	this->root = root;
 }
 //Destructors
 FrustumCulling::~FrustumCulling()

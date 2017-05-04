@@ -31,6 +31,7 @@ EnemyManager *enemy;
 int jumpPress;
 bool keyReleased;
 
+bool endLevel = false;
 const bool aboveView = false;
 
 //gBuffer
@@ -55,7 +56,6 @@ glm::vec3 lightPos2(2.0f, -4.0f, 1.0f);
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
 
 //Camera
-FreeCamera freeCamera;
 Camera playerCamera;
 float verticalFOV = 45.0f;
 int windowWidth = 1280;
@@ -79,14 +79,12 @@ GLuint quadVBO;
 std::vector<Model*> modelsToBeDrawn;
 
 //Functions
-
 void render();
 void update(sf::Window &window);
 void createGBuffer();
 void drawQuad();
 void loadLevel();
 void unloadLevel();
-bool endLevel();
 
 //Main function
 int main()
@@ -119,19 +117,24 @@ int main()
 	enemy->createCrab(glm::vec3(-30.0f, 5.0f, 0.0f));
 	enemy->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
 	enemy->createSkeleton(glm::vec3(30.0f, 15.0f, 0.0f), false);
-	// run the main loop
+
+	//Event handler
 	eventHandler = EventHandler();
 
-	//Levelmanager
+	//Level manager
 	levelManager = LevelManager();
-
+	playerCamera = Camera();
+	playerCamera.setupFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance);
 	//Models
 	loadLevel();
+
 	eventHandler = EventHandler();
 
+	//Sound system
 	soundSystem = new SoundSystem();
 	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
-	soundSystem->playMusic("audio/music/forest1.flac");
+	soundSystem->playMusic("audio/music/never.flac");
+
 	//Main loop
 	bool running = true;
 	while (running)
@@ -284,17 +287,17 @@ void update(sf::Window &window)
 	else
 	{
 		viewMatrix = playerCamera.update(player->getPos());
-
 	}
 	enemy->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn);
 
-	if (endLevel())
+	if (endLevel)
 	{
 		unloadLevel();
 		loadLevel();
+		endLevel = false;
 	}
 	levelManager.currentLevel->updateTriggers(dt);
-	//playerCamera.frustumCulling(modelsToBeDrawn);
+	playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
 //Create the buffer
@@ -435,7 +438,7 @@ void loadLevel()
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
 	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
-	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 	//Some lights with random values
 	std::srand((int)time(0));
 	for (int i = 0; i < NR_LIGHTS; i++)
@@ -472,20 +475,10 @@ void unloadLevel()
 	levelManager.currentLevel->unloadModels();
 	levelManager.currentLevel->deleteTriggers();
 	modelsToBeDrawn.clear();
-	//playerCamera.destroyQuadTree();
+	playerCamera.destroyQuadTree();
 	for (int i = 0; i < lights.size(); i++)
 	{
 		delete lights[i];
 	}
 	lights.clear();
-}
-bool endLevel()
-{
-	bool end = false;
-	//for (int i = 0; i < levelManager.currentLevel->getTriggers().size(); i++)
-	//{
-	//	end = collision::collision(player->getPlayerPoints(),levelManager.currentLevel->getTriggers()[i]->getCorners());
-	//}
-	return end;
-	//test
 }

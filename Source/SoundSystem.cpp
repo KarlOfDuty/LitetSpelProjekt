@@ -9,6 +9,10 @@ bool SoundSystem::playMusic(std::string path)
 	}
 	return false;
 }
+void SoundSystem::stopMusic()
+{
+	music.stop();
+}
 //Loads a sound from file into soundbuffer, name is used as an identifier to play the sound
 bool SoundSystem::loadSound(std::string path, std::string name)
 {
@@ -16,9 +20,9 @@ bool SoundSystem::loadSound(std::string path, std::string name)
 	names.push_back(name);
 	if (soundBuffer[soundBuffer.size()-1].loadFromFile(path))
 	{
-		std::cout << "Sound loading error." << std::endl;
 		return true;
 	}
+	std::cout << "Sound loading error." << std::endl;
 	return false;
 }
 //Plays a sound from the sound buffer

@@ -12,68 +12,15 @@ void Level::loadModels()
 //meshes to avoid copying large amounts of data in memory
 void Level::setupModels()
 {
-	staticModels.push_back(new Model(modelLibrary[0],
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		-8.0, 3.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		-8.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		-3.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		2.0, -2.0, 0.0, 1.0
-	}));
-	Model* slope = new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		8.0, 0.5, 0.0, 1.0
-	});
-	slope->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-	slope->rotate();
-	staticModels.push_back(slope);
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		14.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		19.0, -2.0, 0.0, 1.0
-	}));
-
 	std::srand((int)time(0));
 	//Loads spheres in random positions
-	for (int i = 0; i < 0; i++)
+	for (int i = 0; i < 1000; i++)
 	{
-		staticModels.push_back(new Model(modelLibrary[0], {
+		staticModels.push_back(new Model(modelLibrary[1], {
 			1.0, 0.0, 0.0, 0.0,
 			0.0, 1.0, 0.0, 0.0,
 			0.0, 0.0, 1.0, 0.0,
-			(rand() % 100) - 50, (rand() % 100) - 50, (rand() % 100) - 100, 1.0 }));
+			(rand() % 100) - 50, (rand() % 100) - 50, (rand() % 100) - 50, 1.0 }));
 		//std::cout << "Loaded." << std::endl;
 	}
 }
@@ -107,7 +54,7 @@ void Level::setupTriggers(Player* player)
 	TriggerSettings settings;
 	settings.onEnter = true;
 	settings.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners, settings, player, player, "hellogais"));
+	triggerBoxes.push_back(new Trigger(corners, settings, player, player, "endLevel"));
 }
 void Level::updateTriggers(float dt)
 {
@@ -124,6 +71,14 @@ void Level::deleteTriggers()
 	}
 	triggerBoxes.clear();
 }
+//void Level::playMusic(SoundSystem *soundSystem)
+//{
+//	soundSystem->playMusic("audio/music/never.flac");
+//}
+//void Level::stopMusic(SoundSystem *soundSystem)
+//{
+//	soundSystem->stopMusic();
+//}
 //Getters
 std::vector<Model*> Level::getStaticModels()
 {
