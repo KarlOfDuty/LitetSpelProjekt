@@ -20,6 +20,7 @@ private:
 	bool hasCollided;
 	sf::Clock timeSinceCollision;
 	bool isUsed;
+	bool isAoe;
 public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
@@ -36,7 +37,8 @@ public:
 
 	void update(float dt, std::vector<Model*> &allObjects);
 	void draw(Shader shader);
-	void shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate);
+	void shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate = true);
+	void aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale);
 	void collision(std::vector<Model*> &allObjects);
 };
 

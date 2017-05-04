@@ -17,7 +17,7 @@ void Level::setupModels()
 		5.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
-		-8.0, 3.0, 0.0, 1.0
+		-13.0, -2.0, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{

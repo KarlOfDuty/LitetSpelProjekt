@@ -5,6 +5,7 @@ PlayerBird::PlayerBird(int health, Model model, bool inWater) :PlayerChar(health
 	this->maxJumps = 2;
 	this->jumpHeight = 15;
 	this->arrowModel = new Model("models/cube/cubeGreen.obj");
+	this->arrowVelocity = 30.0f;
 }
 
 PlayerBird::~PlayerBird()
@@ -31,7 +32,7 @@ void PlayerBird::waterEffect()
 	this->setHealth(0);
 }
 
-void PlayerBird::lightAttack(std::vector<Projectile*> &allProjectiles, glm::vec2 position, glm::vec2 direction)const
+void PlayerBird::shootArrow(std::vector<Projectile*>& allProjectiles, glm::vec2 position, glm::vec2 direction) const
 {
 	//Check how many arrows are active in the arrow vector
 	int activeArrows = 0;
@@ -50,7 +51,7 @@ void PlayerBird::lightAttack(std::vector<Projectile*> &allProjectiles, glm::vec2
 		{
 			if (!allProjectiles[i]->isInUse())
 			{
-				allProjectiles[i]->shoot(arrowModel, position, direction, glm::vec2(5.0f, 30.0f), 30.0f, scale, true);
+				allProjectiles[i]->shoot(arrowModel, position, direction, glm::vec2(5.0f, 30.0f), arrowVelocity, scale);
 				i = (int)allProjectiles.size();
 			}
 		}
@@ -58,12 +59,7 @@ void PlayerBird::lightAttack(std::vector<Projectile*> &allProjectiles, glm::vec2
 	else
 	{
 		Projectile* temp = new Projectile();
-		temp->shoot(arrowModel, position, direction, glm::vec2(5.0f, 30.0f), 30.0f, scale, true);
+		temp->shoot(arrowModel, position, direction, glm::vec2(5.0f, 30.0f), arrowVelocity, scale);
 		allProjectiles.push_back(temp);
 	}
-}
-
-void PlayerBird::heavyAttack() const
-{
-
 }

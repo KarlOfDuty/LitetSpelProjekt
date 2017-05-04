@@ -7,6 +7,8 @@ private:
 	int maxJumps;
 	float jumpHeight;
 	Model* arrowModel;
+	bool lightAttackBool;
+	bool heavyAttackBool;
 public:
 	float arrowVelocity;
 	PlayerBird(int health, Model model, bool inWater);
@@ -15,7 +17,5 @@ public:
 	float getJumpHeight();
 	int getMaxJumps();
 	void waterEffect();
-
-	void lightAttack(std::vector<Projectile*> &allProjectiles, glm::vec2 position, glm::vec2 direction)const;
-	void heavyAttack()const;
+	void shootArrow(std::vector<Projectile*> &allProjectiles, glm::vec2 position, glm::vec2 direction)const;
 };

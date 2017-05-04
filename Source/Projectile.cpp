@@ -49,42 +49,73 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects)
 		//Check if it should be in use else set it to not being used
 		if (timeSinceCollision.getElapsedTime().asSeconds() < 10)
 		{
-			//Retardation
-			velocity.x -= retardation.x*dt;
-			if (velocity.x < 0) velocity.x = 0;
-			velocity.y -= retardation.y*dt;
-
-			//Set new position
-			position.x += direction.x*velocity.x*dt;
-			position.y += velocity.y*dt;
-			model->setModelMatrix({
-				1.0, 0.0, 0.0, 0.0,
-				0.0, 1.0, 0.0, 0.0,
-				0.0, 0.0, 1.0, 0.0,
-				position.x, position.y , 0.0, 1.0
-			});
-			
-			//Set rotation if isRotating, else just set scale
-			glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
-			if (isRotating)
+			if (!isAoe)
 			{
-				rotation = -atan2(velocity.x*direction.x, velocity.y);
+				//Retardation
+				velocity.x -= retardation.x*dt;
+				if (velocity.x < 0) velocity.x = 0;
+				velocity.y -= retardation.y*dt;
 
-				glm::mat4 rotMat = glm::rotate(glm::mat4(), rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+				//Set new position
+				position.x += direction.x*velocity.x*dt;
+				position.y += velocity.y*dt;
+				model->setModelMatrix({
+					1.0, 0.0, 0.0, 0.0,
+					0.0, 1.0, 0.0, 0.0,
+					0.0, 0.0, 1.0, 0.0,
+					position.x, position.y , 0.0, 1.0
+				});
 
-				model->setRotationMatrix(rotMat*scaleMat);
+				//Set rotation if isRotating, else just set scale
+				glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
+				if (isRotating)
+				{
+					rotation = -atan2(velocity.x*direction.x, velocity.y);
 
-				model->rotate();
+					glm::mat4 rotMat = glm::rotate(glm::mat4(), rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+
+					model->setRotationMatrix(rotMat*scaleMat);
+
+					model->rotate();
+				}
+				else
+				{
+					model->setRotationMatrix(scaleMat);
+
+					model->rotate();
+				}
+
+				//Check the collision and fix if its colliding
+				collision(allObjects);
 			}
 			else
 			{
+				//Retardation
+				//velocity.x -= retardation.x*dt;
+				//if (velocity.x < 0) velocity.x = 0;
+				//velocity.y -= retardation.y*dt;
+
+				//Set new position
+				//position.x += direction.x*velocity.x*dt;
+				//position.y += velocity.y*dt;
+				scale.y += 5 * dt;
+				position.y += 2.5 * dt;
+				model->setModelMatrix({
+					1.0, 0.0, 0.0, 0.0,
+					0.0, 1.0, 0.0, 0.0,
+					0.0, 0.0, 1.0, 0.0,
+					position.x, position.y , 0.0, 1.0
+				});
+
+				//Set rotation if isRotating, else just set scale
+				glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
 				model->setRotationMatrix(scaleMat);
-
 				model->rotate();
+				if (scale.y >= 2)
+				{
+					isUsed = false;
+				}
 			}
-
-			//Check the collision and fix if its colliding
-			collision(allObjects);
 		}
 		else
 		{
@@ -118,7 +149,6 @@ void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 pro
 	scale = projectileScale;
 	direction = projectileDirection;
 	retardation = projectileRetardation;
-
 	//Create new modelmat for model
 	glm::mat4 modelMat({
 		1.0, 0.0, 0.0, 0.0,
@@ -160,6 +190,48 @@ void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 pro
 	//Reset booleans and clock
 	hasCollided = false;
 	isUsed = true;
+	isAoe = false;
+	timeSinceCollision.restart();
+}
+
+void Projectile::aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale)
+{
+	//Copy info supplied
+	position = startPos;
+	scale = projectileScale;
+	direction = projectileDirection;
+	retardation = projectileRetardation;
+
+	//Create new modelmat for model
+	glm::mat4 modelMat({
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		position.x, position.y, 0.0, 1.0
+	});
+	if (model == nullptr)
+	{
+		model = new Model(projectileModel, modelMat);
+	}
+	else
+	{
+		model->setModelMatrix(modelMat);
+	}
+
+	//Set the velocity
+	velocity = glm::vec2(glm::abs(direction.x*projectileVelocity), direction.y*projectileVelocity);
+
+	//If it should rotate, calculate rotation ELSE just set scale
+	scale = glm::vec3(4.0f, 0.1f, 1.0f);
+	glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
+	model->setRotationMatrix(scaleMat);
+	model->rotate();
+
+	//Reset booleans and clock
+	isRotating = false;
+	hasCollided = false;
+	isUsed = true;
+	isAoe = true;
 	timeSinceCollision.restart();
 }
 

@@ -33,17 +33,25 @@ bool EventHandler::handleEvents(sf::Window & window, Player *player)
 			keyPressed[sf::Keyboard::Space] = true;
 			player->jump();
 		}
-		else if (windowEvent.type == sf::Event::MouseButtonReleased && windowEvent.key.code == sf::Mouse::Button::Left && !sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+		else if (windowEvent.type == sf::Event::MouseButtonPressed && windowEvent.key.code == sf::Mouse::Button::Left)
 		{
-			player->useLightAttack(window);
+			player->lightAttackPressed(window);
+		}
+		else if (windowEvent.type == sf::Event::MouseButtonReleased && windowEvent.key.code == sf::Mouse::Button::Left)
+		{
+			player->lightAttackReleased(window);
+		}
+		else if (windowEvent.type == sf::Event::MouseButtonPressed && windowEvent.key.code == sf::Mouse::Button::Right)
+		{
+			player->heavyAttackPressed(window);
 		}
 		else if (windowEvent.type == sf::Event::MouseButtonReleased && windowEvent.key.code == sf::Mouse::Button::Right)
 		{
-			player->useLightAttack(window);
+			player->heavyAttackReleased(window);
 		}
 		else if (windowEvent.type == sf::Event::MouseWheelScrolled && windowEvent.key.code == sf::Mouse::VerticalWheel)
 		{
-			player->useLightAttack(window);
+			player->lightAttackPressed(window);
 		}
 		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Space)
 		{
