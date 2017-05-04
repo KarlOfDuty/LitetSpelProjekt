@@ -14,7 +14,6 @@ public:
 	bool playMusic(std::string path);
 	bool loadSound(std::string path, std::string name);
 	bool playSound(std::string name);
-	void clearSounds();
 	SoundSystem();
 	~SoundSystem();
 };

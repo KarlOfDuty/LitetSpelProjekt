@@ -37,17 +37,6 @@ bool SoundSystem::playSound(std::string name)
 	}
 	return false;
 }
-void SoundSystem::clearSounds()
-{
-	for (int i = 0; i < sounds.size(); i++)
-	{
-		if (!sounds[i]->getStatus())
-		{
-			i--;
-			sounds.erase(sounds.begin() + i);
-		}
-	}
-}
 SoundSystem::SoundSystem()
 {
 
