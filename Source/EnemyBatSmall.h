@@ -3,15 +3,18 @@
 class EnemyBatSmall : public Enemy
 {
 private:
-	//TODO: Make sense
 	bool goForPlayer;
-	bool findPlayer;
-	bool returnToStart;
-	bool collides;
 	glm::vec3 checkpoint;
-	glm::vec3 startPosition;
-	sf::Clock collisionTime;
 	std::random_device rd;
+
+	//workarounds for collision
+	bool collides;
+	int collisionCounter;
+	bool collidingWithGround;
+	glm::vec3 startPosition;
+	bool returnToStart;
+	sf::Clock timeSinceCollision;
+	sf::Clock collisionTime;
 public:
 	EnemyBatSmall(int health, Model* enemyModel, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyBatSmall();
