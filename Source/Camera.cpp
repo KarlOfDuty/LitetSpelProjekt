@@ -18,7 +18,7 @@ glm::mat4 Camera::update(glm::vec3 playerPos)
 {
 	//The camera is always in front of the player and slightly above.
 	this->cameraPos.x = playerPos.x;
-	this->cameraPos.y = playerPos.y;
+	this->cameraPos.y = playerPos.y + 5;
 	this->cameraPos.z = playerPos.z + 10;
 
 	this->cameraFront = playerPos  - cameraPos;
