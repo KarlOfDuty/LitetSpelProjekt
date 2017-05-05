@@ -81,15 +81,15 @@ void Level::setupModels()
 
 	std::srand((int)time(0));
 	//Loads spheres in random positions
-	//for (int i = 0; i < 1000; i++)
-	//{
-	//	staticModels.push_back(new Model(modelLibrary[1], {
-	//		1.0, 0.0, 0.0, 0.0,
-	//		0.0, 1.0, 0.0, 0.0,
-	//		0.0, 0.0, 1.0, 0.0,
-	//		(rand() % 100) - 50, (rand() % 100) - 50, (rand() % 100) - 50, 1.0 }));
-	//	//std::cout << "Loaded." << std::endl;
-	//}
+	for (int i = 0; i < 0; i++)
+	{
+		staticModels.push_back(new Model(modelLibrary[1], {
+			1.0, 0.0, 0.0, 0.0,
+			0.0, 1.0, 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0,
+			(rand() % 100) - 50, (rand() % 100) - 50, (rand() % 100) - 50, 1.0 }));
+		//std::cout << "Loaded." << std::endl;
+	}
 }
 //Delete all models from memory
 void Level::unloadModels()

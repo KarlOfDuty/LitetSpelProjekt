@@ -88,11 +88,7 @@ void EnemyManager::clearDeadEnemies()
 	{
 		if (allEnemies[i]->getHealth() <= 0)
 		{
-			for (int j = (i + 1); j < this->allEnemies.size(); j++)
-			{
-				std::swap(allEnemies[j - 1], allEnemies[j]);
-			}
-			allEnemies.pop_back();
+			allEnemies.erase(allEnemies.begin() + i - 1);
 		}
 	}
 }
@@ -144,4 +140,13 @@ void EnemyManager::draw(Shader shader)
 		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &allEnemies[i]->getModel()->getModelMatrix()[0][0]);
 		allEnemies[i]->draw(shader);
 	}
+}
+
+void EnemyManager::removeAll()
+{
+	for (int i = 0; i < allEnemies.size(); i++)
+	{
+		delete allEnemies[i];
+	}
+	allEnemies.clear();
 }
