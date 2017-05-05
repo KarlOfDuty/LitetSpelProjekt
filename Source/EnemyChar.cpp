@@ -145,11 +145,22 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 	return false;
 }
 
-void Enemy::update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
+bool Enemy::collisionWithPlayer(std::vector<glm::vec2> playerPoints)
+{
+
+	std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
+	if (collision::collision(enemyPoints, playerPoints))
+	{
+		return true;
+	}
+	return false;
+}
+
+void Enemy::update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
 {
 	if (glm::length(pos - playerPos) < 25.0f)
 	{
-		updateThis(dt, playerPos, pos, checkPoint, allSmallBats, allModels);
+		updateThis(dt, playerPos, pos, checkPoint, allSmallBats, allModels, playerPoints);
 		attackPlayer(dt, playerPos, pos);
 	}
 }

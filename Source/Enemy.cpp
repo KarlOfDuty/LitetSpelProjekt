@@ -103,7 +103,7 @@ int EnemyManager::getDamage() const
 	return allEnemies[0]->getDamage();
 }
 
-void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels)
+void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
 {
 	sortEnemies(playerPos);
 	clearDeadEnemies();
@@ -111,11 +111,11 @@ void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::
 	{
 		if (allThreads.size() <= i)
 		{
-			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, playerPos, allSmallBats, allModels);}, allEnemies[i]));
+			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, playerPos, allSmallBats, allModels, playerPoints);}, allEnemies[i]));
 		}
 		else
 		{
-			allThreads[i] = std::thread([&](Enemy * enemy) {enemy->update(dt, playerPos, allSmallBats, allModels);}, allEnemies[i]);
+			allThreads[i] = std::thread([&](Enemy * enemy) {enemy->update(dt, playerPos, allSmallBats, allModels, playerPoints);}, allEnemies[i]);
 		}
 	}
 	for (int i = 0; i < allThreads.size(); i++)
@@ -149,4 +149,6 @@ void EnemyManager::removeAll()
 		delete allEnemies[i];
 	}
 	allEnemies.clear();
+
+	allSmallBats.clear();
 }

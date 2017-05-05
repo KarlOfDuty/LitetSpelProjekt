@@ -26,7 +26,7 @@ void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyP
 	}
 }
 
-void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*>& allModels)
+void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*>& allModels, std::vector<glm::vec2> playerPoints)
 {
 	groundCheck();
 
@@ -74,6 +74,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		collisionTime.restart();
 	}
 
+	//Detect player
 	if (glm::length(enemyPosCurrent - playerPos) < 5.0f)
 	{
 		playerSeen = true;
