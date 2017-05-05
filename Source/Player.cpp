@@ -114,6 +114,14 @@ void Player::shoot(sf::Window &window)
 	}
 }
 
+void Player::clearProjectiles()
+{
+	for (int i = 0; i < arrows.size(); i++)
+	{
+		arrows[i]->remove();
+	}
+}
+
 void Player::aiming(sf::Window &window,float dt)
 {
 	glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);

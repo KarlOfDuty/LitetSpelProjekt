@@ -52,6 +52,7 @@ public:
 	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 pos, int enemyDamage);
 	void jump();
 	void shoot(sf::Window &window);
+	void clearProjectiles();
 	void aiming(sf::Window &window, float dt);
 	void setPos(glm::vec3 playerPos);
 	void draw(Shader shader);

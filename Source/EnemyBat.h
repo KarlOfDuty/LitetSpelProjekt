@@ -7,10 +7,17 @@ private:
 	glm::vec3 checkpoint;
 	bool goingRight;
 	bool goingLeft;
-	bool findPlayer;
+	bool swoopAttack;
+	sf::Clock waitInAir;
 	bool clockRestart;
 	bool checkPointReached;
-	sf::Clock waitInAir;
+
+	//workarounds for collision
+	bool collides;
+	bool collidingWithGround;
+	bool returnToStart;
+	sf::Clock collisionTime;
+	glm::vec3 startPosition;
 public:
 	EnemyBat(int health, Model* enemyModel, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyBat();

@@ -167,6 +167,16 @@ void Trigger::runCommand(int commandID, int targetID)
 		Player* player = dynamic_cast<Player*>(targets[targetID]);
 		player->setDiving(!player->getDiving());
 	}
+	else if (commands[commandID] == "fire" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->getCurrentCharacter()->applyDamage(1);
+	}
+	else if (commands[commandID] == "spikes" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->getCurrentCharacter()->applyDamage(10);
+	}
 	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Player")
 	{
 		Player* player = dynamic_cast<Player*>(targets[targetID]);

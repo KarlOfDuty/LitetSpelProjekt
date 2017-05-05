@@ -3,13 +3,20 @@
 class EnemyCrab : public Enemy
 {
 private:
-	glm::vec3 originPoint;
+	glm::vec3 oldOriginPoint;
 	float acceleration;
 	bool checkPointReached;
-	bool attacking;
+	bool moving;
 	bool movingLeft;
 	bool movingRight;
 	sf::Clock walkTimer;
+
+	//workarounds for collision
+	bool collides;
+	bool collidingWithGround;
+	bool returnToStart;
+	sf::Clock collisionTime;
+	glm::vec3 startPosition;
 public:
 	EnemyCrab(int health, Model* enemyModel, int damage, glm::vec3 enemyStartPos);
 	virtual ~EnemyCrab();
