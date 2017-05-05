@@ -441,7 +441,7 @@ void loadLevel()
 
 	enemyManager->createSlime(glm::vec3(18.0f, 7.0f, 0.0f));
 	enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
-	enemyManager->createGiantBat(glm::vec3(25.0f, 10.0f, 0.0f));
+	enemyManager->createGiantBat(glm::vec3(25.0f, 12.0f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
