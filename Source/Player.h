@@ -57,5 +57,7 @@ public:
 	void draw(Shader shader);
 	void collision(std::vector<Model*> &allModels);
 	void getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians);
+	bool getDiving() const;
+	void setDiving(bool diving);
 };
 #endif

@@ -162,6 +162,11 @@ void Trigger::runCommand(int commandID, int targetID)
 	{
 		std::cout << "Hello gais" << std::endl;
 	}
+	else if (commands[commandID] == "water" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->setDiving(!player->getDiving());
+	}
 	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Player")
 	{
 		Player* player = dynamic_cast<Player*>(targets[targetID]);

@@ -108,6 +108,13 @@ void Level::setupTriggers(Player* player)
 	settings.onEnter = true;
 	settings.onExit = true;
 	triggerBoxes.push_back(new Trigger(corners, settings, player, player, "hellogais"));
+
+	//water land
+	std::vector<glm::vec2> corners2 = { glm::vec2(9,5), glm::vec2(15,5), glm::vec2(9,0), glm::vec2(15,0) };
+	TriggerSettings settings2;
+	settings2.onEnter = true;
+	settings2.onExit = true;
+	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "water"));
 }
 void Level::updateTriggers(float dt)
 {
