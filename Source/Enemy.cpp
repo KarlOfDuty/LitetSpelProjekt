@@ -149,4 +149,6 @@ void EnemyManager::removeAll()
 		delete allEnemies[i];
 	}
 	allEnemies.clear();
+
+	allSmallBats.clear();
 }

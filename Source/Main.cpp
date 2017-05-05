@@ -110,16 +110,6 @@ int main()
 
 	enemyManager = new EnemyManager();
 
-	enemyManager->createSlime(glm::vec3(19.0f, 5.0f, 0.0f));
-	enemyManager->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
-	enemyManager->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
-	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
-	enemyManager->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
-	enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
-	enemyManager->createCrab(glm::vec3(-30.0f, 5.0f, 0.0f));
-	enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
-	enemyManager->createSkeleton(glm::vec3(30.0f, 15.0f, 0.0f), false);
-
 
 	//Event handler
 	eventHandler = EventHandler();
@@ -449,15 +439,15 @@ void loadLevel()
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
-	enemyManager->createSlime(glm::vec3(20.0f, 8.0f, 0.0f));
-	enemyManager->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
-	enemyManager->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
+	enemyManager->createSlime(glm::vec3(18.0f, 7.0f, 0.0f));
+	enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
+	enemyManager->createGiantBat(glm::vec3(25.0f, 10.0f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
-	enemyManager->createCrab(glm::vec3(-30.0f, 5.0f, 0.0f));
+	enemyManager->createCrab(glm::vec3(-30.0f, 7.0f, 0.0f));
 	enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
-	enemyManager->createSkeleton(glm::vec3(30.0f, 15.0f, 0.0f), false);
+	enemyManager->createSkeleton(glm::vec3(30.0f, 7.0f, 0.0f), false);
 
 	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
