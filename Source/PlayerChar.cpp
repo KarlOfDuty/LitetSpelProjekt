@@ -5,10 +5,13 @@ PlayerChar::PlayerChar()
 	this->health = 100;
 }
 
-PlayerChar::PlayerChar(int health, Model model)
+
+PlayerChar::PlayerChar(int health, Model model, bool inWater)
 {
 	this->health = health;
 	this->playerModel = model;
+	this->inWater = inWater;
+	this->diving = false;
 	this->damage = 1;
 }
 
@@ -26,6 +29,17 @@ void PlayerChar::setHealth(int health)
 	this->health = health;
 }
 
+void PlayerChar::setSwim(bool swiming)
+{
+	this->inWater = swiming;
+}
+
+void PlayerChar::setDiving(bool diving)
+{
+	this->diving = diving;
+
+}
+
 int PlayerChar::getDamage() const
 {
 	return this->damage;
@@ -34,6 +48,10 @@ int PlayerChar::getDamage() const
 int PlayerChar::getHealth() const
 {
 	return health;
+}
+int PlayerChar::getDiving() const
+{
+	return diving;
 }
 void PlayerChar::attack()
 {

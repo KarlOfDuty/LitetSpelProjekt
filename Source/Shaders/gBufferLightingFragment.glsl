@@ -64,7 +64,7 @@ void main()
 	float specular = texture(gAlbedoSpec, texCoords).a;
 	vec3 ambient = texture(gAmbient, texCoords).rgb;
 	//Adds the ambient
-	vec3 lighting = ambient;
+	vec3 lighting = diffuse*0.3f;
 	vec3 viewDir = normalize(viewPos - fragPos);
 	vec4 lightSpaces[3];
 	lightSpaces[0] = lightSpaceMatrix * vec4(fragPos, 1.0);
@@ -103,6 +103,7 @@ void main()
 	float depthValue = texture(depthMap,texCoords).r;
 	float depthValue2 = texture(depthMap2,texCoords).r;
 	// Test depthmap
-	//fragColor = vec4(vec3(depthValue2),1.0);
+	//fragColor = vec4(vec3(depthValue),1.0);
+
 }
 
