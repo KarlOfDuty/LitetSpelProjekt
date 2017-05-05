@@ -12,6 +12,7 @@ private:
 	std::vector<sf::Sound*> sounds;
 public:
 	bool playMusic(std::string path);
+	void stopMusic();
 	bool loadSound(std::string path, std::string name);
 	bool playSound(std::string name);
 	SoundSystem();

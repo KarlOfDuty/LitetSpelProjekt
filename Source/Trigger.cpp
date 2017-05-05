@@ -172,6 +172,10 @@ void Trigger::runCommand(int commandID, int targetID)
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
 		enemy->applyDamage(10000000);
 	}
+	else if (commands[commandID] == "endLevel")
+	{
+		endLevel = true;
+	}
 }
 //Constructors
 Trigger::Trigger()
