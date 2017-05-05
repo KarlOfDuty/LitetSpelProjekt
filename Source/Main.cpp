@@ -20,7 +20,6 @@
 #pragma comment(lib, "opengl32.lib")
 
 LevelManager levelManager;
-
 //Player
 Player *player;
 EventHandler eventHandler;
