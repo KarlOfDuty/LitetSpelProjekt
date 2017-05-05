@@ -31,6 +31,11 @@ bool Projectile::isInUse()
 	return isUsed;
 }
 
+void Projectile::remove()
+{
+	isUsed = false;
+}
+
 glm::vec2 Projectile::getPosition()
 {
 	return this->position;

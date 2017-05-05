@@ -27,6 +27,7 @@ public:
 	~Projectile();
 	
 	bool isInUse();
+	void remove();
 	glm::vec2 getPosition();
 
 	void update(float dt, std::vector<Model*> &allObjects);

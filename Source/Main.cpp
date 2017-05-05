@@ -27,7 +27,7 @@ sf::Clock deltaClock;
 float dt;
 bool firstFrame = true;
 //Enemies
-EnemyManager *enemy;
+EnemyManager *enemyManager;
 int jumpPress;
 bool keyReleased;
 
@@ -107,16 +107,7 @@ int main()
 
 	//Characters
 	player = new Player();
-	enemy = new EnemyManager();
-	enemy->createSlime(glm::vec3(20.0f, 8.0f, 0.0f));
-	enemy->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
-	enemy->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
-	enemy->createCrab(glm::vec3(-30.0f, 5.0f, 0.0f));
-	enemy->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
-	enemy->createSkeleton(glm::vec3(30.0f, 15.0f, 0.0f), false);
+	enemyManager = new EnemyManager();
 
 	//Event handler
 	eventHandler = EventHandler();
@@ -234,7 +225,7 @@ void render()
 	{
 		player->draw(deferredGeometryPass);
 	}
-	enemy->draw(deferredGeometryPass);
+	enemyManager->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -280,9 +271,9 @@ void update(sf::Window &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window, dt, modelsToBeDrawn ,enemy->getPos(), enemy->getDamage());
+		player->update(window, dt, modelsToBeDrawn ,enemyManager->getPos(), enemyManager->getDamage());
 	}
-	enemy->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn);
+	enemyManager->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn);
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
@@ -444,6 +435,16 @@ void loadLevel()
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
+	enemyManager->createSlime(glm::vec3(20.0f, 8.0f, 0.0f));
+	enemyManager->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
+	enemyManager->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
+	enemyManager->createCrab(glm::vec3(-30.0f, 5.0f, 0.0f));
+	enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
+	enemyManager->createSkeleton(glm::vec3(30.0f, 15.0f, 0.0f), false);
+
 	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 	//Some lights with random values
@@ -483,6 +484,8 @@ void unloadLevel()
 	levelManager.currentLevel->deleteTriggers();
 	modelsToBeDrawn.clear();
 	playerCamera.destroyQuadTree();
+	player->clearProjectiles();
+	enemyManager->removeAll();
 	for (int i = 0; i < lights.size(); i++)
 	{
 		delete lights[i];

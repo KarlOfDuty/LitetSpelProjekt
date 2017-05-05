@@ -47,5 +47,6 @@ public:
 	int getDamage()const;
 	void update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels);
 	void draw(Shader shader);
+	void removeAll();
 };
 #endif
