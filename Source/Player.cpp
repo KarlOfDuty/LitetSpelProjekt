@@ -31,7 +31,7 @@ Player::Player()
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 
-	arrows = std::vector<Projectile*>();
+	allProjectiles = std::vector<Projectile*>();
 }
 
 Player::~Player()
@@ -88,23 +88,17 @@ void Player::jump()
 void Player::lightAttackPressed(sf::Window &window)
 {
 	PlayerButterfly* butterfly = dynamic_cast<PlayerButterfly*>(player);
-	if (butterfly)
+	if (butterfly != nullptr)
 	{
 		int mouseX = sf::Mouse::getPosition(window).x;
 		int middleScreenX = window.getSize().x / 2;
-		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x+3.0f, getPos().y) : glm::vec2(getPos().x-3.0f, getPos().y);
-		glm::vec2 direction(0, 1);
-		glm::vec3 scale(3.0f,2.0f,1.0f);
-
-		Projectile* temp = new Projectile;
-		temp->aoe(arrow, position, direction, glm::vec2(0.0f, 35.0f), 12.0f, scale);
-		arrows.push_back(temp);
-
+		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 3.0f, getPos().y) : glm::vec2(getPos().x - 3.0f, getPos().y);
+		butterfly->shootAoe(allStaticModels, allProjectiles, position);
 	}
 }
 void Player::lightAttackReleased(sf::Window &window)
 {
-	PlayerBird* bird = dynamic_cast<PlayerBird*>(player);
+	PlayerShark* bird = dynamic_cast<PlayerShark*>(player);
 	if (bird != nullptr && !sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
 	{
 		//Get direction and scale
@@ -113,29 +107,23 @@ void Player::lightAttackReleased(sf::Window &window)
 		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
 		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
 		glm::vec2 startPos = glm::vec2(getPos().x, getPos().y + 2.0f);
-		bird->shootArrow(arrows, startPos, direction);
+		bird->shootArrow(allProjectiles, startPos, direction);
 	}
 }
 void Player::heavyAttackPressed(sf::Window &window)
 {
 	PlayerButterfly* butterfly = dynamic_cast<PlayerButterfly*>(player);
-	if (butterfly)
+	if (butterfly != nullptr)
 	{
 		int mouseX = sf::Mouse::getPosition(window).x;
 		int middleScreenX = window.getSize().x / 2;
 		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 10.0f, getPos().y) : glm::vec2(getPos().x - 10.0f, getPos().y);
-		glm::vec2 direction(0, 1);
-		glm::vec3 scale(3.0f, 2.0f, 1.0f);
-
-		Projectile* temp = new Projectile;
-		temp->aoe(arrow, position, direction, glm::vec2(0.0f, 35.0f), 12.0f, scale);
-		arrows.push_back(temp);
-
+		butterfly->shootAoe(allStaticModels, allProjectiles, position);
 	}
 }
 void Player::heavyAttackReleased(sf::Window &window)
 {
-	PlayerBird* bird = dynamic_cast<PlayerBird*>(player);
+	PlayerShark* bird = dynamic_cast<PlayerShark*>(player);
 	if (bird != nullptr)
 	{
 		//Get direction and scale
@@ -144,14 +132,14 @@ void Player::heavyAttackReleased(sf::Window &window)
 		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
 		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
 		glm::vec2 startPos = glm::vec2(getPos().x, getPos().y + 2.0f);
-		bird->shootArrow(arrows, startPos, direction);
+		bird->shootArrow(allProjectiles, startPos, direction);
 		bird->arrowVelocity = 30.0f;
 	}
 }
 
 void Player::aiming(sf::Window &window, float dt)
 {
-	PlayerBird* bird = dynamic_cast<PlayerBird*>(player);
+	PlayerShark* bird = dynamic_cast<PlayerShark*>(player);
 	if (bird != nullptr)
 	{
 		if (bird->arrowVelocity >= 60.0f)
@@ -226,57 +214,21 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 {
 	groundPos = 0.0f;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	for (int i = 0; i < allProjectiles.size(); i++)
 	{
-		PlayerButterfly* butterfly = dynamic_cast<PlayerButterfly*>(player);
-		if (butterfly)
+		if (allProjectiles[i]->isInUse())
 		{
-			int mouseX = sf::Mouse::getPosition(window).x;
-			int middleScreenX = window.getSize().x / 2;
-			glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 3.0f, getPos().y) : glm::vec2(getPos().x - 3.0f, getPos().y);
-			glm::vec2 direction(0, 1);
-			glm::vec3 scale(3.0f, 2.0f, 1.0f);
-
-			glm::vec3 ray_origin = glm::vec3(position,0);
-			glm::vec3 ray_direction(0, -1, 0);
-			glm::vec3 aabb_min(-10, -10, -10);
-			glm::vec3 aabb_max(10, 10, 10);
-			float intersection_distance = 10000;
-			for (int i = 0; i < allModels.size(); i++)
+			if (glm::distance(getPos(), allProjectiles[i]->getPos()) < 40.0f)
 			{
-				glm::mat4 boxMatrix = allModels[0]->getModelMatrix();
-				if (TestRayOBBIntersection(ray_origin, ray_direction, aabb_min, aabb_max, boxMatrix, intersection_distance))
-				{
-					std::cout << intersection_distance << std::endl;
-					position.y -= intersection_distance - 0.5f;
-					i = allModels.size();
-				}
-			}
-			if (intersection_distance != 10000)
-			{
-				Projectile* temp = new Projectile;
-				temp->aoe(arrow, position, direction, glm::vec2(0.0f, 35.0f), 12.0f, scale);
-				arrows.push_back(temp);
-			}
-
-		}
-	}
-
-	for (int i = 0; i < arrows.size(); i++)
-	{
-		if (arrows[i]->isInUse())
-		{
-			if (glm::distance(getPos(), arrows[i]->getPos()) < 40.0f)
-			{
-				arrows[i]->update(dt, allModels);
-				std::vector<glm::vec2> arrowPoints = arrows[i]->getPoints();
+				allProjectiles[i]->update(dt, allModels);
+				std::vector<glm::vec2> arrowPoints = allProjectiles[i]->getPoints();
 				for (int k = 0; k < allEnemies.size(); k++)
 				{
-					if (glm::distance(arrows[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
+					if (glm::distance(allProjectiles[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
 					{
 						if (collision::collision(arrowPoints, allEnemies[k]->getPoints()))
 						{
-							arrows[i]->disableArrow();
+							allProjectiles[i]->disableArrow();
 							allEnemies[k]->applyDamage(100);
 							k = allEnemies.size();
 						}
@@ -285,7 +237,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			}
 			else
 			{
-				arrows[i]->disableArrow();
+				allProjectiles[i]->disableArrow();
 			}
 		}
 	}
@@ -452,15 +404,15 @@ void Player::draw(Shader shader)
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
 
-	for (int i = 0; i < arrows.size(); i++)
+	for (int i = 0; i < allProjectiles.size(); i++)
 	{
-		if (arrows[i]->isInUse())
+		if (allProjectiles[i]->isInUse())
 		{
-			arrows[i]->draw(shader);
+			allProjectiles[i]->draw(shader);
 		}
 	}
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right) && player == playerCharacters[0])
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right) && player == playerCharacters[1])
 	{
 		for (int i = 0; i < debugCubes.size(); i++)
 		{
@@ -548,122 +500,7 @@ void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, floa
 	//Get object points
 	objectPoints = object->getPoints();
 }
-
-bool Player::TestRayOBBIntersection(
-	glm::vec3 ray_origin,        // Ray origin, in world space
-	glm::vec3 ray_direction,     // Ray direction (NOT target position!), in world space. Must be normalize()'d.
-	glm::vec3 aabb_min,          // Minimum X,Y,Z coords of the mesh when not transformed at all.
-	glm::vec3 aabb_max,          // Maximum X,Y,Z coords. Often aabb_min*-1 if your mesh is centered, but it's not always the case.
-	glm::mat4 ModelMatrix,       // Transformation applied to the mesh (which will thus be also applied to its bounding box)
-	float& intersection_distance // Output : distance between ray_origin and the intersection with the OBB
-) {
-
-	// Intersection method from Real-Time Rendering and Essential Mathematics for Games
-
-	float tMin = 0.0f;
-	float tMax = 100000.0f;
-
-	glm::vec3 OBBposition_worldspace(ModelMatrix[3].x, ModelMatrix[3].y, ModelMatrix[3].z);
-
-	glm::vec3 delta = OBBposition_worldspace - ray_origin;
-
-	// Test intersection with the 2 planes perpendicular to the OBB's X axis
-	{
-		glm::vec3 xaxis(ModelMatrix[0].x, ModelMatrix[0].y, ModelMatrix[0].z);
-		float e = glm::dot(xaxis, delta);
-		float f = glm::dot(ray_direction, xaxis);
-
-		if (fabs(f) > 0.001f) { // Standard case
-
-			float t1 = (e + aabb_min.x) / f; // Intersection with the "left" plane
-			float t2 = (e + aabb_max.x) / f; // Intersection with the "right" plane
-											 // t1 and t2 now contain distances betwen ray origin and ray-plane intersections
-
-											 // We want t1 to represent the nearest intersection, 
-											 // so if it's not the case, invert t1 and t2
-			if (t1>t2) {
-				float w = t1;t1 = t2;t2 = w; // swap t1 and t2
-			}
-
-			// tMax is the nearest "far" intersection (amongst the X,Y and Z planes pairs)
-			if (t2 < tMax)
-				tMax = t2;
-			// tMin is the farthest "near" intersection (amongst the X,Y and Z planes pairs)
-			if (t1 > tMin)
-				tMin = t1;
-
-			// And here's the trick :
-			// If "far" is closer than "near", then there is NO intersection.
-			// See the images in the tutorials for the visual explanation.
-			if (tMax < tMin)
-				return false;
-
-		}
-		else { // Rare case : the ray is almost parallel to the planes, so they don't have any "intersection"
-			if (-e + aabb_min.x > 0.0f || -e + aabb_max.x < 0.0f)
-				return false;
-		}
-	}
-
-
-	// Test intersection with the 2 planes perpendicular to the OBB's Y axis
-	// Exactly the same thing than above.
-	{
-		glm::vec3 yaxis(ModelMatrix[1].x, ModelMatrix[1].y, ModelMatrix[1].z);
-		float e = glm::dot(yaxis, delta);
-		float f = glm::dot(ray_direction, yaxis);
-
-		if (fabs(f) > 0.001f) {
-
-			float t1 = (e + aabb_min.y) / f;
-			float t2 = (e + aabb_max.y) / f;
-
-			if (t1>t2) { float w = t1;t1 = t2;t2 = w; }
-
-			if (t2 < tMax)
-				tMax = t2;
-			if (t1 > tMin)
-				tMin = t1;
-			if (tMin > tMax)
-				return false;
-
-		}
-		else {
-			if (-e + aabb_min.y > 0.0f || -e + aabb_max.y < 0.0f)
-				return false;
-		}
-	}
-
-
-	// Test intersection with the 2 planes perpendicular to the OBB's Z axis
-	// Exactly the same thing than above.
-	{
-		glm::vec3 zaxis(ModelMatrix[2].x, ModelMatrix[2].y, ModelMatrix[2].z);
-		float e = glm::dot(zaxis, delta);
-		float f = glm::dot(ray_direction, zaxis);
-
-		if (fabs(f) > 0.001f) {
-
-			float t1 = (e + aabb_min.z) / f;
-			float t2 = (e + aabb_max.z) / f;
-
-			if (t1>t2) { float w = t1;t1 = t2;t2 = w; }
-
-			if (t2 < tMax)
-				tMax = t2;
-			if (t1 > tMin)
-				tMin = t1;
-			if (tMin > tMax)
-				return false;
-
-		}
-		else {
-			if (-e + aabb_min.z > 0.0f || -e + aabb_max.z < 0.0f)
-				return false;
-		}
-	}
-
-	intersection_distance = tMin;
-	return true;
-
+void Player::setStaticModels(std::vector<Model*> theModels)
+{
+	this->allStaticModels = theModels;
 }

@@ -124,6 +124,8 @@ int main()
 	//Models
 	loadLevel();
 
+	player->setStaticModels(levelManager.currentLevel->getStaticModels());
+
 	eventHandler = EventHandler();
 
 	//Main loop
@@ -264,7 +266,7 @@ void update(sf::Window &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window, dt, modelsToBeDrawn , enemy->getAllEnemies());
+		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemy->getAllEnemies());
 	}
 	//Camera update, get new viewMatrix
 	if (aboveView)
