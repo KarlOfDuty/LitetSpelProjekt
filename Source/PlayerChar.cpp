@@ -54,10 +54,6 @@ bool PlayerChar::getDiving() const
 {
 	return diving;
 }
-void PlayerChar::attack()
-{
-
-}
 
 void PlayerChar::draw(Shader shader)
 {

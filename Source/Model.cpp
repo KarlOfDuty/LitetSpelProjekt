@@ -22,6 +22,31 @@ glm::mat4 Model::getRotationMatrix() const
 {
 	return this->rotationMatrix;
 }
+void Model::getMinMaxBouding(glm::vec3 &min, glm::vec3 &max)
+{
+	if (minBounding == glm::vec3() && maxBounding == glm::vec3())
+	{
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			for (int j = 0; j < meshes[i]->vertices.size(); j++)
+			{
+				if (meshes[i]->vertices[j].pos.x < minBounding.x) minBounding.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y < minBounding.y) minBounding.y = meshes[i]->vertices[j].pos.y;
+				if (meshes[i]->vertices[j].pos.x > maxBounding.x) maxBounding.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y > maxBounding.y) maxBounding.y = meshes[i]->vertices[j].pos.y;
+			}
+		}
+		minBounding.x *= modelMatrix[0][0];
+		minBounding.y *= modelMatrix[1][1];
+		minBounding.z *= modelMatrix[2][2];
+		
+		maxBounding.x *= modelMatrix[0][0];
+		maxBounding.y *= modelMatrix[1][1];
+		maxBounding.z *= modelMatrix[2][2];
+	}
+	min = minBounding;
+	max = maxBounding;
+}
 Material Model::getMaterial(int index)
 {
 	return this->meshes.at(index)->material;

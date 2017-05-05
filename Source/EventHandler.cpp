@@ -33,14 +33,25 @@ bool EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem
 			keyPressed[sf::Keyboard::Space] = true;
 			player->jump();
 		}
+		else if (windowEvent.type == sf::Event::MouseButtonPressed && windowEvent.key.code == sf::Mouse::Button::Left)
+		{
+			player->lightAttackPressed(window);
+		}
 		else if (windowEvent.type == sf::Event::MouseButtonReleased && windowEvent.key.code == sf::Mouse::Button::Left)
 		{
-			player->shoot(window);
-			soundSystem->playSound("bowRelease");
+			player->lightAttackReleased(window);
+		}
+		else if (windowEvent.type == sf::Event::MouseButtonPressed && windowEvent.key.code == sf::Mouse::Button::Right)
+		{
+			player->heavyAttackPressed(window);
+		}
+		else if (windowEvent.type == sf::Event::MouseButtonReleased && windowEvent.key.code == sf::Mouse::Button::Right)
+		{
+			player->heavyAttackReleased(window);
 		}
 		else if (windowEvent.type == sf::Event::MouseWheelScrolled && windowEvent.key.code == sf::Mouse::VerticalWheel)
 		{
-			player->shoot(window);
+			player->lightAttackPressed(window);
 			soundSystem->playSound("bowRelease");
 		}
 		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Space)
