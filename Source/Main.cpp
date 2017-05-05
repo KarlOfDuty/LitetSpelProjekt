@@ -2,6 +2,7 @@
 #include <GL/GL.h>
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
+#include <SFML/Audio.hpp>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
@@ -14,21 +15,23 @@
 #include "FrustumCulling.h"
 #include "EventHandler.h"
 #include "LevelManager.h"
+#include "SoundSystem.h"
 
 #pragma comment(lib, "opengl32.lib")
 
 LevelManager levelManager;
-
 //Player
 Player *player;
 EventHandler eventHandler;
 sf::Clock deltaClock;
 float dt;
+bool firstFrame = true;
 //Enemies
-EnemyManager *enemy;
+EnemyManager *enemyManager;
 int jumpPress;
 bool keyReleased;
 
+bool endLevel = false;
 const bool aboveView = false;
 
 //gBuffer
@@ -53,7 +56,6 @@ glm::vec3 lightPos2(2.0f, -4.0f, 1.0f);
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
 
 //Camera
-FreeCamera freeCamera;
 Camera playerCamera;
 float verticalFOV = 45.0f;
 int windowWidth = 1280;
@@ -62,6 +64,8 @@ float nearDistance = 0.01f;
 float farDistance = 10000;
 glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
+
+SoundSystem *soundSystem;
 
 //Lights
 const GLuint NR_LIGHTS = 3;
@@ -81,7 +85,6 @@ void createGBuffer();
 void drawQuad();
 void loadLevel();
 void unloadLevel();
-bool endLevel();
 
 //Main function
 int main()
@@ -104,23 +107,15 @@ int main()
 
 	//Characters
 	player = new Player();
-	enemy = new EnemyManager();
-	enemy->createSlime(glm::vec3(30.0f, 5.0f, 0.0f));
-	enemy->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
-	enemy->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
-	enemy->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
-	enemy->createCrab(glm::vec3(-30.0f, 5.0f, 0.0f));
-	enemy->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
-	enemy->createSkeleton(glm::vec3(30.0f, 15.0f, 0.0f), false);
+	enemyManager = new EnemyManager();
 
-	// run the main loop
+	//Event handler
 	eventHandler = EventHandler();
 
-	//Levelmanager
+	//Level manager
 	levelManager = LevelManager();
-
+	playerCamera = Camera();
+	playerCamera.setupFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance);
 	//Models
 	loadLevel();
 
@@ -128,15 +123,27 @@ int main()
 
 	eventHandler = EventHandler();
 
+	//Sound system
+	soundSystem = new SoundSystem();
+	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
+	soundSystem->playMusic("audio/music/never.flac");
+
 	//Main loop
 	bool running = true;
 	while (running)
 	{
-		running = eventHandler.handleEvents(window, player);
+		running = eventHandler.handleEvents(window, player, soundSystem);
 		//Clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		update(window);
+		if (!firstFrame)
+		{
+			update(window);
+		}
+		else
+		{
+			deltaClock.restart();
+			firstFrame = false;
+		}
 		render();
 
 		//End the current frame (internally swaps the front and back buffers)
@@ -220,7 +227,7 @@ void render()
 	{
 		player->draw(deferredGeometryPass);
 	}
-	enemy->draw(deferredGeometryPass);
+	enemyManager->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -266,8 +273,11 @@ void update(sf::Window &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemy->getAllEnemies());
+		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemyManager->getAllEnemies());
 	}
+
+	enemyManager->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn, player->getPoints());
+
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{
@@ -280,17 +290,16 @@ void update(sf::Window &window)
 	else
 	{
 		viewMatrix = playerCamera.update(player->getPos());
-
 	}
-	enemy->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn);
 
-	if (endLevel())
+	if (endLevel)
 	{
 		unloadLevel();
 		loadLevel();
+		endLevel = false;
 	}
 	levelManager.currentLevel->updateTriggers(dt);
-	//playerCamera.frustumCulling(modelsToBeDrawn);
+	playerCamera.frustumCulling(modelsToBeDrawn);
 }
 
 //Create the buffer
@@ -430,8 +439,18 @@ void loadLevel()
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
+	enemyManager->createSlime(glm::vec3(18.0f, 7.0f, 0.0f));
+	enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
+	enemyManager->createGiantBat(glm::vec3(25.0f, 10.0f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
+	enemyManager->createCrab(glm::vec3(-30.0f, 7.0f, 0.0f));
+	enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
+	enemyManager->createSkeleton(glm::vec3(30.0f, 7.0f, 0.0f), false);
+
 	//std::cout << levelManager.currentLevel->getStaticModels().size() << std::endl;
-	//playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 	//Some lights with random values
 	std::srand((int)time(0));
 	for (int i = 0; i < NR_LIGHTS; i++)
@@ -468,20 +487,12 @@ void unloadLevel()
 	levelManager.currentLevel->unloadModels();
 	levelManager.currentLevel->deleteTriggers();
 	modelsToBeDrawn.clear();
-	//playerCamera.destroyQuadTree();
+	playerCamera.destroyQuadTree();
+	player->clearProjectiles();
+	enemyManager->removeAll();
 	for (int i = 0; i < lights.size(); i++)
 	{
 		delete lights[i];
 	}
 	lights.clear();
-}
-bool endLevel()
-{
-	bool end = false;
-	//for (int i = 0; i < levelManager.currentLevel->getTriggers().size(); i++)
-	//{
-	//	end = collision::collision(player->getPlayerPoints(),levelManager.currentLevel->getTriggers()[i]->getCorners());
-	//}
-	return end;
-	//test
 }

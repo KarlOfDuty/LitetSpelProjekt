@@ -88,11 +88,7 @@ void EnemyManager::clearDeadEnemies()
 	{
 		if (allEnemies[i]->getHealth() <= 0)
 		{
-			for (int j = (i + 1); j < this->allEnemies.size(); j++)
-			{
-				std::swap(allEnemies[j - 1], allEnemies[j]);
-			}
-			allEnemies.pop_back();
+			allEnemies.erase(allEnemies.begin() + i - 1);
 		}
 	}
 }
@@ -112,7 +108,7 @@ std::vector<Enemy*> &EnemyManager::getAllEnemies()
 	return allEnemies;
 }
 
-void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels)
+void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
 {
 	//sortEnemies(playerPos);
 	clearDeadEnemies();
@@ -121,7 +117,7 @@ void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::
 	{
 		if (allThreads.size() <= i)
 		{
-			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, playerPos, allSmallBats, allModels);}, allEnemies[i]));
+			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, playerPos, allSmallBats, allModels, playerPoints);}, allEnemies[i]));
 		}
 	}
 	for (int i = 0; i < allThreads.size(); i++)
@@ -146,4 +142,15 @@ void EnemyManager::draw(Shader shader)
 		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &allEnemies[i]->getModel()->getModelMatrix()[0][0]);
 		allEnemies[i]->draw(shader);
 	}
+}
+
+void EnemyManager::removeAll()
+{
+	for (int i = 0; i < allEnemies.size(); i++)
+	{
+		delete allEnemies[i];
+	}
+	allEnemies.clear();
+
+	allSmallBats.clear();
 }

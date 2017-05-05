@@ -3,8 +3,9 @@
 EnemyCrab::EnemyCrab(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
 	this->acceleration = 0.2f;
-	this->originPoint = enemyStartPos;
-	this->attacking = true;
+	this->moving = true;
+	this->oldOriginPoint = enemyStartPos;
+	this->startPosition = enemyStartPos;
 }
 
 EnemyCrab::~EnemyCrab()
@@ -17,10 +18,18 @@ void EnemyCrab::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 }
 
-void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
+void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
 {
 	groundCheck();
 
+	if (collidedFrom.y > 0)
+	{
+		collidingWithGround = true;
+	}
+	else if (collidedFrom.y <= 0)
+	{
+		collidingWithGround = false;
+	}
 
 	if (enemyPosCurrent.x < checkPoint.x-3)
 	{
@@ -31,20 +40,20 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 		checkPointReached = false;
 	}
 
-	if (!attacking)
+	if (!moving)
 	{
 		if (walkTimer.getElapsedTime().asSeconds() >= 1.5)
 		{
-			attacking = true;
+			moving = true;
 		}
 	}
 
-	if (attacking)
+	if (moving)
 	{
-		if (glm::length(enemyPosCurrent - originPoint) > 4.0f)
+		if (glm::length(enemyPosCurrent - oldOriginPoint) > 4.0f)
 		{
-			originPoint = enemyPosCurrent;
-			attacking = false;
+			oldOriginPoint = enemyPosCurrent;
+			moving = false;
 			movingRight = false;
 			movingLeft = false;
 			velocityX = 0;
@@ -52,12 +61,38 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 		}
 	}
 
-	if (isOnGround)
+	if (collides)
 	{
-		//Move
-		if (attacking)
+		if (collidedFrom.x != 0)
 		{
-			if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
+			movingRight = false;
+			movingLeft = false;
+			if (collisionTime.getElapsedTime().asSeconds() >= 5)
+			{
+				returnToStart = true;
+				playerSeen = false;
+			}
+		}
+	}
+
+	if (collidedFrom.x == 0)
+	{
+		collisionTime.restart();
+	}
+
+	//Detect player
+	if (glm::length(enemyPosCurrent - playerPos) < 5.0f)
+	{
+		playerSeen = true;
+		returnToStart = false;
+	}
+
+	//Move
+	if (moving)
+	{
+		if (!returnToStart)
+		{
+			if (playerSeen)
 			{
 				if (movingLeft == false)
 				{
@@ -110,6 +145,45 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 				}
 			}
 		}
+		else
+		{
+			if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
+			{
+				if (movingLeft == false)
+				{
+					if (enemyPosCurrent.x >= startPosition.x)
+					{
+						movingRight = true;
+					}
+				}
+				if (movingRight == false)
+				{
+					if (enemyPosCurrent.x <= startPosition.x)
+					{
+						movingLeft = true;
+					}
+				}
+				if (movingRight == true)
+				{
+					velocityX = velocityX - acceleration * dt;
+				}
+				else if (movingLeft == true)
+				{
+					velocityX = velocityX + acceleration * dt;
+				}
+			}
+			else
+			{
+				returnToStart = false;
+				playerSeen = false;
+			}
+		}
+	}
+	
+
+	if (collidingWithGround)
+	{
+
 	}
 
 	if (!isOnGround)
@@ -136,12 +210,16 @@ void EnemyCrab::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 	enemyPosCurrent.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (enemyPosCurrent.y <= 0) {
-		velocityY = 0;
-		enemyPosCurrent.y = 0;
+	if (enemyPosCurrent.y <= groundPos && !isOnGround)
+	{
+		if (velocityY < 0)
+		{
+			enemyPosCurrent.y = groundPos;
+			velocityY = 0;
+		}
 		isOnGround = true;
 	}
 
 	setPos(enemyPosCurrent);
-	collision(allModels);
+	collides = collision(allModels);
 }

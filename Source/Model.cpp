@@ -623,6 +623,7 @@ Model::Model(std::string filename)
 	this->rotationMatrix = glm::mat4(1.0);
 	read(filename);
 	setupModel();
+	setBoundingSphereRadius();
 }
 Model::Model(std::string filename, glm::mat4 modelMat)
 {
@@ -631,6 +632,7 @@ Model::Model(std::string filename, glm::mat4 modelMat)
 	this->rotationMatrix = glm::mat4(1.0);
 	read(filename);
 	setupModel();
+	setBoundingSphereRadius();
 }
 Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 {
@@ -639,6 +641,7 @@ Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 	this->rotationMatrix = rotation;
 	read(filename);
 	setupModel();
+	setBoundingSphereRadius();
 }
 Model::Model()
 {
@@ -654,6 +657,7 @@ Model::Model(Model &otherModel)
 	this->meshes = otherModel.meshes;
 	this->VAO = otherModel.VAO;
 	this->VBO = otherModel.VBO;
+	this->boundingSphereRadius = otherModel.boundingSphereRadius;
 }
 Model::Model(Model *otherModel)
 {
@@ -662,6 +666,7 @@ Model::Model(Model *otherModel)
 	this->meshes = otherModel->meshes;
 	this->VAO = otherModel->VAO;
 	this->VBO = otherModel->VBO;
+	this->boundingSphereRadius = otherModel->boundingSphereRadius;
 }
 Model::Model(Model &otherModel, glm::mat4 modelMat)
 {
@@ -670,6 +675,7 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 	this->meshes = otherModel.meshes;
 	this->VAO = otherModel.VAO;
 	this->VBO = otherModel.VBO;
+	this->boundingSphereRadius = otherModel.boundingSphereRadius;
 }
 Model::Model(Model *otherModel, glm::mat4 modelMat)
 {
@@ -678,6 +684,7 @@ Model::Model(Model *otherModel, glm::mat4 modelMat)
 	this->meshes = otherModel->meshes;
 	this->VAO = otherModel->VAO;
 	this->VBO = otherModel->VBO;
+	this->boundingSphereRadius = otherModel->boundingSphereRadius;
 }
 //Destructor
 Model::~Model()

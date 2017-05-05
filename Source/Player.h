@@ -60,11 +60,14 @@ public:
 	void lightAttackReleased(sf::Window &window);
 	void heavyAttackPressed(sf::Window &window);
 	void heavyAttackReleased(sf::Window &window);
+	void clearProjectiles();
 	void aiming(sf::Window &window, float dt);
 	void setPos(glm::vec3 playerPos);
 	void draw(Shader shader);
 	void collision(std::vector<Model*> &allModels);
 	void getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians);
 	void setStaticModels(std::vector<Model*> allStaticModels);
+	bool getDiving() const;
+	void setDiving(bool diving);
 };
 #endif

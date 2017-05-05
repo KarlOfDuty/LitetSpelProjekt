@@ -137,7 +137,15 @@ void Player::heavyAttackReleased(sf::Window &window)
 	}
 }
 
-void Player::aiming(sf::Window &window, float dt)
+void Player::clearProjectiles()
+{
+	for (int i = 0; i < allProjectiles.size(); i++)
+	{
+		allProjectiles[i]->disableArrow();
+	}
+}
+
+void Player::aiming(sf::Window &window,float dt)
 {
 	PlayerShark* bird = dynamic_cast<PlayerShark*>(player);
 	if (bird != nullptr)
@@ -503,4 +511,14 @@ void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, floa
 void Player::setStaticModels(std::vector<Model*> theModels)
 {
 	this->allStaticModels = theModels;
+}
+
+bool Player::getDiving() const
+{
+	return this->player->getDiving();
+}
+
+void Player::setDiving(bool diving)
+{
+	this->player->setDiving(diving);
 }

@@ -23,7 +23,7 @@ public:
 	void setDiving(bool diving);
 	int getDamage() const;
 	int getHealth()const;
-	int getDiving()const;
+	bool getDiving()const;
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;
 	virtual float getJumpHeight() = 0;

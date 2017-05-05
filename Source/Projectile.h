@@ -32,7 +32,6 @@ public:
 	
 	bool isInUse();
 	void disableArrow();
-
 	glm::vec2 getPosition();
 
 	void update(float dt, std::vector<Model*> &allObjects);

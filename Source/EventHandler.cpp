@@ -9,7 +9,7 @@ EventHandler::~EventHandler()
 
 }
 //Add any events that need to be handled here
-bool EventHandler::handleEvents(sf::Window & window, Player *player)
+bool EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem * soundSystem)
 {
 	//If several controllers are plugged in, this decides which is used
 	int controller = CONTROLLER0;
@@ -52,6 +52,7 @@ bool EventHandler::handleEvents(sf::Window & window, Player *player)
 		else if (windowEvent.type == sf::Event::MouseWheelScrolled && windowEvent.key.code == sf::Mouse::VerticalWheel)
 		{
 			player->lightAttackPressed(window);
+			soundSystem->playSound("bowRelease");
 		}
 		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Space)
 		{

@@ -81,7 +81,9 @@ void Enemy::applyDamage(int appliedDamage)
 
 void Enemy::groundCheck()
 {
-	if (this->pos.y > 0.0f)
+	groundPos = 0.0f;
+
+	if (pos.y > groundPos)
 	{
 		isOnGround = false;
 	}
@@ -106,23 +108,60 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 		std::vector<glm::vec2> objectPoints = allModels[index]->getPoints();
 		glm::vec2 mtv;
 		if (collision::collision(enemyPoints, objectPoints, mtv))
-		{
-			pos.x += mtv.x;
-			pos.y += mtv.y;
+		{	
+			//Get rotation
+			glm::quat rotation;
+			glm::decompose(allModels[index]->getModelMatrix(),glm::vec3(),rotation,glm::vec3(),glm::vec3(),glm::vec4());
+			//Convert from quat to radians
+			double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
+			double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
+			radians = (float)-std::atan2(t3, t4);
+			if (radians > 0.0f && radians < 0.79f)
+			{
+				pos.y += mtv.y;
+				mtv.x = 0;
+			}
+			else
+			{
+				pos.x += mtv.x;
+				pos.y += mtv.y;
+			}
+
+			if (mtv.y > 0)
+			{
+				if (pos.y < 0) pos.y = 0;
+				groundPos = pos.y;
+			}
+			collidedFrom = mtv;
+
 			setPos(pos);
 			return true;
+		}
+		else
+		{
+			collidedFrom = glm::vec2(0,0);
 		}
 	}
 	return false;
 }
 
-void Enemy::update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
+bool Enemy::collisionWithPlayer(std::vector<glm::vec2> playerPoints)
+{
+
+	std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
+	if (collision::collision(enemyPoints, playerPoints))
+	{
+		return true;
+	}
+	return false;
+}
+
+void Enemy::update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
 {
 	if (glm::length(pos - playerPos) < 25.0f)
 	{
-		updateThis(dt, playerPos, pos, checkPoint, allSmallBats, allModels);
+		updateThis(dt, playerPos, pos, checkPoint, allSmallBats, allModels, playerPoints);
 		attackPlayer(dt, playerPos, pos);
-
 	}
 }
 

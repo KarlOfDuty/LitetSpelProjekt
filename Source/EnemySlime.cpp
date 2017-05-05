@@ -3,7 +3,8 @@
 
 EnemySlime::EnemySlime(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
-	
+	startPosition = enemyStartPos;
+	returnToStart = false;
 }
 
 EnemySlime::~EnemySlime()
@@ -16,9 +17,18 @@ void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 
 }
 
-void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
+void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
 {
 	groundCheck();
+
+	if (collidedFrom.y > 0)
+	{
+		collidingWithGround = true;
+	}
+	else if (collidedFrom.y <= 0)
+	{
+		collidingWithGround = false;
+	}
 
 	//Patrol check 
 	if (enemyPosCurrent.x < checkPoint.x-2)
@@ -29,44 +39,94 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 	else if (enemyPosCurrent.x > checkPoint.x+2)
 	{
 		checkPointReached = false;
+	}
 
+	if (collides)
+	{
+		if (collidedFrom.x != 0 && collidedFrom.y > 0)
+		{
+			velocityY = 10;
+		}
+
+		if (collidedFrom.x != 0)
+		{
+			if (collisionTime.getElapsedTime().asSeconds() >= 5)
+			{
+				returnToStart = true;
+				playerSeen = false;
+			}
+		}
+	}
+	
+	if(collidedFrom.x == 0)
+	{
+		collisionTime.restart();
+	}
+
+	//Detect player
+	if (glm::length(enemyPosCurrent - playerPos) < 5.0f)
+	{
+		playerSeen = true;
+		returnToStart = false;
 	}
 
 	//Move
-	if (glm::length(enemyPosCurrent - playerPos) < 5.0f || playerSeen)
+	if (!returnToStart)
 	{
-		if (enemyPosCurrent.x > playerPos.x)
+		if (playerSeen)
 		{
-			velocityX -= 1.0f*dt;
+			if (enemyPosCurrent.x > playerPos.x)
+			{
+				velocityX -= 2.0f*dt;
+			}
+			else
+			{
+				velocityX += 2.0f*dt;
+			}
+			playerSeen = true;
 		}
 		else
 		{
-			velocityX += 1.0f*dt;
+			//Patrol
+			/*if (checkPointReached == false)
+			{
+				velocityX -= 2.0f*dt;
+			}
+			else if (checkPointReached == true)
+			{
+				velocityX += 2.0f*dt;
+			}*/
 		}
-		playerSeen = true;
 	}
 	else
 	{
-		//Patrol
-		if(checkPointReached == false)
+		if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
 		{
-			velocityX -= 1.0f*dt;
+			if (enemyPosCurrent.x > startPosition.x)
+			{
+				velocityX -= 1.0f*dt;
+			}
+			else if (enemyPosCurrent.x < startPosition.x)
+			{
+				velocityX += 1.0f*dt;
+			}
 		}
-		else if (checkPointReached == true)
+		else
 		{
-			velocityX += 1.0f*dt;
+			returnToStart = false;
+			playerSeen = false;
 		}
 	}
 
-	if (isOnGround)
+	if (collidingWithGround)
 	{
-		if (fabs(enemyPosCurrent.x - playerPos.x) < 0.1)
+		if (collisionWithPlayer(playerPoints))
 		{
 			velocityY = 10;
 		}
 	}
 
-	if (!isOnGround)
+	if (!collidingWithGround)
 	{
 		velocityY -= 30*dt;
 	}
@@ -87,13 +147,18 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 	enemyPosCurrent.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (enemyPosCurrent.y <= 0) {
-		velocityY = 0;
-		enemyPosCurrent.y = 0;
+	if (enemyPosCurrent.y <= groundPos)
+	{
+		if (velocityY < 0)
+		{
+			enemyPosCurrent.y = groundPos;
+			velocityY = 0;
+		}
 		isOnGround = true;
 	}
 
 	setPos(enemyPosCurrent);
-	collision(allModels);
+
+	collides = collision(allModels);
 }
 
