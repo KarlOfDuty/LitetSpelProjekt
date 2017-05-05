@@ -168,9 +168,9 @@ void Player::aiming(sf::Window &window,float dt)
 		glm::vec2 velocity = glm::vec2(glm::abs(direction.x*bird->arrowVelocity), direction.y*bird->arrowVelocity);
 		for (int i = 0; i < 30; i++)
 		{
-			velocity.x -= 5.0f*0.01;
+			velocity.x -= 5.0f*0.02;
 			if (velocity.x < 0) velocity.x = 0;
-			velocity.y -= 40.0f*0.01;
+			velocity.y -= 30.0f*0.02;
 			position.x += direction.x*velocity.x*0.02;
 			position.y += velocity.y*0.02;
 

@@ -88,7 +88,7 @@ void EnemyManager::clearDeadEnemies()
 	{
 		if (allEnemies[i]->getHealth() <= 0)
 		{
-			allEnemies.erase(allEnemies.begin() + i - 1);
+			allEnemies.erase(allEnemies.begin() + i);
 		}
 	}
 }

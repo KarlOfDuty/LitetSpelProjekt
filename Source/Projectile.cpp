@@ -90,14 +90,6 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects)
 			}
 			else
 			{
-				//Retardation
-				//velocity.x -= retardation.x*dt;
-				//if (velocity.x < 0) velocity.x = 0;
-				//velocity.y -= retardation.y*dt;
-
-				//Set new position
-				//position.x += direction.x*velocity.x*dt;
-				//position.y += velocity.y*dt;
 				scale.y += 5 * dt;
 				position.y += 2.5 * dt;
 				model->setModelMatrix({
@@ -111,6 +103,7 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects)
 				glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
 				model->setRotationMatrix(scaleMat);
 				model->rotate();
+
 				if (scale.y >= 2)
 				{
 					isUsed = false;
