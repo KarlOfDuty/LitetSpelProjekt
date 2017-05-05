@@ -48,9 +48,10 @@ public:
 	void applyDamage(int appliedDamage);
 	void groundCheck();
 	bool collision(std::vector<Model*> &allModels);
+	bool collisionWithPlayer(std::vector<glm::vec2> playerPoints);
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 pos) = 0;
-	void update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels);
-	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 pos, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels) = 0;
+	void update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints);
+	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 pos, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints) = 0;
 	void draw(Shader shader);
 };
 #endif

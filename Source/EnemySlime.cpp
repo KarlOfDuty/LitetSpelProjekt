@@ -17,7 +17,7 @@ void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 
 }
 
-void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
+void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
 {
 	groundCheck();
 
@@ -63,6 +63,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 		collisionTime.restart();
 	}
 
+	//Detect player
 	if (glm::length(enemyPosCurrent - playerPos) < 5.0f)
 	{
 		playerSeen = true;
@@ -119,7 +120,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 
 	if (collidingWithGround)
 	{
-		if (fabs(enemyPosCurrent.x - playerPos.x) < 0.1)
+		if (collisionWithPlayer(playerPoints))
 		{
 			velocityY = 10;
 		}

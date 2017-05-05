@@ -109,7 +109,7 @@ int main()
 	//Characters
 	player = new Player();
 	enemy = new EnemyManager();
-	enemy->createSlime(glm::vec3(20.0f, 8.0f, 0.0f));
+	enemy->createSlime(glm::vec3(19.0f, 5.0f, 0.0f));
 	enemy->createToad(glm::vec3(-15.0f, 5.0f, 0.0f));
 	enemy->createGiantBat(glm::vec3(30.0f, 10.0f, 0.0f));
 	enemy->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
@@ -283,7 +283,7 @@ void update(sf::Window &window)
 	{
 		player->update(window, dt, modelsToBeDrawn ,enemy->getPos(), enemy->getDamage());
 	}
-	enemy->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn);
+	enemy->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn, player->getPoints());
 	//Camera update, get new viewMatrix
 	if (aboveView)
 	{

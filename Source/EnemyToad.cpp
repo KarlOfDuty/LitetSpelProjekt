@@ -16,7 +16,7 @@ void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 }
 
-void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels)
+void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
 {
 	
 		groundCheck();
@@ -50,6 +50,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 			collisionCounterToad = 0;
 		}
 
+		//Detect player
 		if (glm::length(enemyPosCurrent - playerPos) < 5.0f)
 		{
 			playerSeen = true;

@@ -328,7 +328,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	velocityX = 0;
 	modelMatrix[3].y += velocityY*dt;
 	
-	//collision(allModels);
+	collision(allModels);
 
 	//Handle collision detection with ground
 	if (getPos().y <= groundPos && !isOnGround)
