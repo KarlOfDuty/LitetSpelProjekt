@@ -461,3 +461,13 @@ void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, floa
 	//Get object points
 	objectPoints = object->getPoints();
 }
+
+bool Player::getDiving() const
+{
+	return this->player->getDiving();
+}
+
+void Player::setDiving(bool diving)
+{
+	this->player->setDiving(diving);
+}
