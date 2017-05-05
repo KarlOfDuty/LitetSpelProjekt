@@ -45,7 +45,7 @@ public:
 	void clearDeadEnemies();
 	glm::vec3 getPos()const;
 	int getDamage()const;
-	void update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels);
+	void update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints);
 	void draw(Shader shader);
 	void removeAll();
 };
