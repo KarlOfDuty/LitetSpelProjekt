@@ -10,7 +10,7 @@
 #include "FreeCamera.h"
 #include "Camera.h"
 #include "Player.h"
-#include "Enemy.h"
+#include "EnemyManager.h"
 #include "Model.h"
 #include "FrustumCulling.h"
 #include "EventHandler.h"

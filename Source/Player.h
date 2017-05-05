@@ -7,7 +7,7 @@
 #include "Collision.h"
 #include "Projectile.h"
 #include "GameObject.h"
-#include "Enemy.h"
+#include "EnemyManager.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
 #include <vector>
