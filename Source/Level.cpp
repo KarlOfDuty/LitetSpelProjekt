@@ -159,6 +159,14 @@ void Level::deleteTriggers()
 	}
 	triggerBoxes.clear();
 }
+void Level::playMusic(SoundSystem* soundSystem)
+{
+
+}
+void Level::stopMusic(SoundSystem* soundSystem)
+{
+
+}
 //void Level::playMusic(SoundSystem *soundSystem)
 //{
 //	soundSystem->playMusic("audio/music/never.flac");

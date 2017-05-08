@@ -10,7 +10,7 @@ private:
 	std::vector<std::string> names;
 	std::vector<sf::SoundBuffer> soundBuffer;
 	std::vector<sf::Sound*> sounds;
-	bool soundEnabled = false;
+	bool soundEnabled = true;
 public:
 	bool playMusic(std::string path);
 	void stopMusic();

@@ -13,8 +13,8 @@ void Player::freeMemory()
 Player::Player()
 {
 	Model* birdModel = new Model("models/Characters/Bird/BirdTest1.obj", modelMatrix);
-	Model* sharkModel = new Model("models/sphere/sphere.obj", modelMatrix);
-	Model* butterflyModel = new Model("models/cube/cubeGreen.obj", modelMatrix);
+	Model* sharkModel = new Model("models/Characters/Shark/Fish_T-Pose_Export.obj", modelMatrix);
+	Model* butterflyModel = new Model("models/Characters/Butterfly/ButterFly.obj", modelMatrix);
 
 	arrow = new Model("models/cube/cubeGreen.obj");
 
