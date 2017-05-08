@@ -124,11 +124,11 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collision.cpp" />
-    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="EnemyBat.cpp" />
     <ClCompile Include="EnemyBatSmall.cpp" />
     <ClCompile Include="EnemyBoss.cpp" />
-    <ClCompile Include="EnemyChar.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyCrab.cpp" />
     <ClCompile Include="EnemyFireFly.cpp" />
     <ClCompile Include="EnemySkeleton.cpp" />
@@ -156,11 +156,11 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collision.h" />
-    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="EnemyBat.h" />
     <ClInclude Include="EnemyBatSmall.h" />
     <ClInclude Include="EnemyBoss.h" />
-    <ClInclude Include="EnemyChar.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyCrab.h" />
     <ClInclude Include="EnemyFireFly.h" />
     <ClInclude Include="EnemySkeleton.h" />

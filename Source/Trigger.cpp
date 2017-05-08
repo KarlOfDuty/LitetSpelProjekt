@@ -162,6 +162,21 @@ void Trigger::runCommand(int commandID, int targetID)
 	{
 		std::cout << "Hello gais" << std::endl;
 	}
+	else if (commands[commandID] == "water" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->setDiving(!player->getDiving());
+	}
+	else if (commands[commandID] == "fire" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->getCurrentCharacter()->applyDamage(1);
+	}
+	else if (commands[commandID] == "spikes" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->getCurrentCharacter()->applyDamage(10);
+	}
 	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Player")
 	{
 		Player* player = dynamic_cast<Player*>(targets[targetID]);
@@ -171,10 +186,6 @@ void Trigger::runCommand(int commandID, int targetID)
 	{
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
 		enemy->applyDamage(10000000);
-	}
-	else if (commands[commandID] == "endLevel")
-	{
-		endLevel = true;
 	}
 }
 //Constructors

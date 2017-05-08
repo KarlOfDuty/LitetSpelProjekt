@@ -3,6 +3,7 @@
 PlayerChar::PlayerChar()
 {
 	this->health = 100;
+	this->diving = false;
 }
 
 
@@ -49,13 +50,9 @@ int PlayerChar::getHealth() const
 {
 	return health;
 }
-int PlayerChar::getDiving() const
+bool PlayerChar::getDiving() const
 {
 	return diving;
-}
-void PlayerChar::attack()
-{
-
 }
 
 void PlayerChar::draw(Shader shader)

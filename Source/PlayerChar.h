@@ -1,6 +1,7 @@
 #ifndef PLAYERCHAR_H
 #define PLAYERCHAR_H
 #include "Model.h"
+#include "Projectile.h"
 
 class PlayerChar
 {
@@ -10,6 +11,7 @@ private:
 	Model playerModel;
 	bool inWater;
 	bool diving;
+
 	//Animation animation;
 public:
 	PlayerChar();
@@ -21,8 +23,7 @@ public:
 	void setDiving(bool diving);
 	int getDamage() const;
 	int getHealth()const;
-	int getDiving()const;
-	void attack();
+	bool getDiving()const;
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;
 	virtual float getJumpHeight() = 0;

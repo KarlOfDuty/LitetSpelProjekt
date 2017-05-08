@@ -10,7 +10,7 @@
 #include "FreeCamera.h"
 #include "Camera.h"
 #include "Player.h"
-#include "Enemy.h"
+#include "EnemyManager.h"
 #include "Model.h"
 #include "FrustumCulling.h"
 #include "EventHandler.h"
@@ -107,9 +107,7 @@ int main()
 
 	//Characters
 	player = new Player();
-
 	enemyManager = new EnemyManager();
-
 
 	//Event handler
 	eventHandler = EventHandler();
@@ -120,6 +118,8 @@ int main()
 	playerCamera.setupFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance);
 	//Models
 	loadLevel();
+
+	player->setStaticModels(levelManager.currentLevel->getStaticModels());
 
 	eventHandler = EventHandler();
 
@@ -273,7 +273,7 @@ void update(sf::Window &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window, dt, modelsToBeDrawn ,enemyManager->getPos(), enemyManager->getDamage());
+		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemyManager->getAllEnemies());
 	}
 
 	enemyManager->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn, player->getPoints());

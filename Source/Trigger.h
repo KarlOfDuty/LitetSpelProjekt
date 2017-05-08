@@ -4,7 +4,7 @@
 #include <vector>
 #include "GameObject.h"
 #include "Model.h"
-#include "Enemy.h"
+#include "EnemyManager.h"
 #include "Player.h"
 #include "Light.h"
 #include "Projectile.h"

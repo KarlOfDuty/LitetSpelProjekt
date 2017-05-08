@@ -31,7 +31,7 @@ Player::Player()
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 
-	arrows = std::vector<Projectile*>();
+	allProjectiles = std::vector<Projectile*>();
 }
 
 Player::~Player()
@@ -85,74 +85,110 @@ void Player::jump()
 		}
 	}
 }
-//Makes the player shoot
-void Player::shoot(sf::Window &window)
+void Player::lightAttackPressed(sf::Window &window)
 {
-	int activeArrows = 0;
-	for (int i = 0; i < arrows.size(); i++)
+	PlayerButterfly* butterfly = dynamic_cast<PlayerButterfly*>(player);
+	if (butterfly != nullptr)
 	{
-		if (arrows[i]->isInUse())
-			activeArrows++;
-
+		int mouseX = sf::Mouse::getPosition(window).x;
+		int middleScreenX = window.getSize().x / 2;
+		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 3.0f, getPos().y) : glm::vec2(getPos().x - 3.0f, getPos().y);
+		butterfly->shootAoe(allStaticModels, allProjectiles, position);
 	}
-	if (activeArrows < arrows.size())
+}
+void Player::lightAttackReleased(sf::Window &window)
+{
+	PlayerShark* bird = dynamic_cast<PlayerShark*>(player);
+	if (bird != nullptr && !sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
 	{
-		for (int i = 0; i < arrows.size(); i++)
-		{
-			if (!arrows[i]->isInUse())
-			{
-				arrows[i]->shoot(window, glm::vec2(getPos().x, getPos().y + 2.f), arrow);
-				i = (int)arrows.size();
-			}
-		}
+		//Get direction and scale
+		glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+		glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
+		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
+		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
+		glm::vec2 startPos = glm::vec2(getPos().x, getPos().y + 2.0f);
+		bird->shootArrow(allProjectiles, startPos, direction);
 	}
-	else
+}
+void Player::heavyAttackPressed(sf::Window &window)
+{
+	PlayerButterfly* butterfly = dynamic_cast<PlayerButterfly*>(player);
+	if (butterfly != nullptr)
 	{
-		Projectile* temp = new Projectile();
-		temp->shoot(window, glm::vec2(getPos().x, getPos().y + 2.f), arrow);
-		arrows.push_back(temp);
+		int mouseX = sf::Mouse::getPosition(window).x;
+		int middleScreenX = window.getSize().x / 2;
+		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 10.0f, getPos().y) : glm::vec2(getPos().x - 10.0f, getPos().y);
+		butterfly->shootAoe(allStaticModels, allProjectiles, position);
+	}
+}
+void Player::heavyAttackReleased(sf::Window &window)
+{
+	PlayerShark* bird = dynamic_cast<PlayerShark*>(player);
+	if (bird != nullptr)
+	{
+		//Get direction and scale
+		glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+		glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
+		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
+		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
+		glm::vec2 startPos = glm::vec2(getPos().x, getPos().y + 2.0f);
+		bird->shootArrow(allProjectiles, startPos, direction);
+		bird->arrowVelocity = 30.0f;
 	}
 }
 
 void Player::clearProjectiles()
 {
-	for (int i = 0; i < arrows.size(); i++)
+	for (int i = 0; i < allProjectiles.size(); i++)
 	{
-		arrows[i]->remove();
+		allProjectiles[i]->disableArrow();
 	}
 }
 
 void Player::aiming(sf::Window &window,float dt)
 {
-	glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
-	glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
-	float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
-	glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
-
-	glm::vec2 position = glm::vec2(getPos().x, getPos().y + 2.f);
-	glm::vec2 velocity = glm::vec2(glm::abs(direction.x*30.0f), direction.y*30.0f);
-	for (int i = 0; i < 30; i++)
+	PlayerShark* bird = dynamic_cast<PlayerShark*>(player);
+	if (bird != nullptr)
 	{
-		velocity.x -= 5.0f*0.02;
-		if (velocity.x < 0) velocity.x = 0;
-		velocity.y -= 40.0f*0.02;
-		position.x += direction.x*velocity.x*0.02;
-		position.y += velocity.y*0.02;
-
-		glm::mat4 modelMat({
-			0.1, 0.0, 0.0, 0.0,
-			0.0, 0.1, 0.0, 0.0,
-			0.0, 0.0, 0.1, 0.0,
-			position.x, position.y , 0.0, 1.0
-		});
-
-		if (debugCubes.size() <= i)
+		if (bird->arrowVelocity >= 60.0f)
 		{
-			debugCubes.push_back(new Model(arrow, modelMat));
+			bird->arrowVelocity = 60.0f;
 		}
 		else
 		{
-			debugCubes[i]->setModelMatrix(modelMat);
+			bird->arrowVelocity += 5.0f * dt;
+		}
+
+		glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
+		glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
+		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
+		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
+
+		glm::vec2 position = glm::vec2(getPos().x, getPos().y + 2.f);
+		glm::vec2 velocity = glm::vec2(glm::abs(direction.x*bird->arrowVelocity), direction.y*bird->arrowVelocity);
+		for (int i = 0; i < 30; i++)
+		{
+			velocity.x -= 5.0f*0.02;
+			if (velocity.x < 0) velocity.x = 0;
+			velocity.y -= 30.0f*0.02;
+			position.x += direction.x*velocity.x*0.02;
+			position.y += velocity.y*0.02;
+
+			glm::mat4 modelMat({
+				0.1, 0.0, 0.0, 0.0,
+				0.0, 0.1, 0.0, 0.0,
+				0.0, 0.0, 0.1, 0.0,
+				position.x, position.y , 0.0, 1.0
+			});
+
+			if (debugCubes.size() <= i)
+			{
+				debugCubes.push_back(new Model(arrow, modelMat));
+			}
+			else
+			{
+				debugCubes[i]->setModelMatrix(modelMat);
+			}
 		}
 	}
 }
@@ -182,22 +218,42 @@ std::string Player::type() const
 	return "Player";
 }
 //Update function
-void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 pos, int enemyDamage)
+void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
 	groundPos = 0.0f;
 
-	for (int i = 0; i < arrows.size(); i++)
+	for (int i = 0; i < allProjectiles.size(); i++)
 	{
-		if (arrows[i]->isInUse())
+		if (allProjectiles[i]->isInUse())
 		{
-			arrows[i]->update(dt, allModels);
+			if (glm::distance(getPos(), allProjectiles[i]->getPos()) < 40.0f)
+			{
+				allProjectiles[i]->update(dt, allModels);
+				std::vector<glm::vec2> arrowPoints = allProjectiles[i]->getPoints();
+				for (int k = 0; k < allEnemies.size(); k++)
+				{
+					if (glm::distance(allProjectiles[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
+					{
+						if (collision::collision(arrowPoints, allEnemies[k]->getPoints()))
+						{
+							allProjectiles[i]->disableArrow();
+							allEnemies[k]->applyDamage(100);
+							k = allEnemies.size();
+						}
+					}
+				}
+			}
+			else
+			{
+				allProjectiles[i]->disableArrow();
+			}
 		}
 	}
 	
 	//Check if aiming
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
-		aiming(window,dt);
+		aiming(window, dt);
 	}
 
 	if (getPos().y > groundPos && isOnGround)
@@ -349,15 +405,6 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 		isOnGround = true;
 	}
-	//Player taking damage
-	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.0)
-	{
-		if (fabs(pos.x - getPos().x) < 0.2 && fabs(pos.y - getPos().y) < 1.0)
-		{
-			playerCharacters[0]->applyDamage(enemyDamage);
-			this->damageImmunity.restart();
-		}
-	}	
 }
 //Draws the models involved
 void Player::draw(Shader shader)
@@ -365,15 +412,15 @@ void Player::draw(Shader shader)
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
 
-	for (int i = 0; i < arrows.size(); i++)
+	for (int i = 0; i < allProjectiles.size(); i++)
 	{
-		if (arrows[i]->isInUse())
+		if (allProjectiles[i]->isInUse())
 		{
-			arrows[i]->draw(shader);
+			allProjectiles[i]->draw(shader);
 		}
 	}
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right) && player == playerCharacters[1])
 	{
 		for (int i = 0; i < debugCubes.size(); i++)
 		{
@@ -460,4 +507,18 @@ void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, floa
 
 	//Get object points
 	objectPoints = object->getPoints();
+}
+void Player::setStaticModels(std::vector<Model*> theModels)
+{
+	this->allStaticModels = theModels;
+}
+
+bool Player::getDiving() const
+{
+	return this->player->getDiving();
+}
+
+void Player::setDiving(bool diving)
+{
+	this->player->setDiving(diving);
 }

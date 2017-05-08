@@ -7,6 +7,7 @@
 #include "Collision.h"
 #include "Projectile.h"
 #include "GameObject.h"
+#include "EnemyManager.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
 #include <vector>
@@ -35,8 +36,12 @@ private:
 	float groundPos;
 	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3 };
 	std::vector<Model*> debugCubes;
+	
 	Model* arrow;
-	std::vector<Projectile*> arrows;
+	std::vector<Projectile*> allProjectiles;
+
+	std::vector<Model*> allStaticModels;
+
 public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
@@ -49,14 +54,20 @@ public:
 	void swap(int charType);
 	bool playerIsDead();
 	int getDamage() const;
-	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, glm::vec3 pos, int enemyDamage);
+	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies);
 	void jump();
-	void shoot(sf::Window &window);
+	void lightAttackPressed(sf::Window &window);
+	void lightAttackReleased(sf::Window &window);
+	void heavyAttackPressed(sf::Window &window);
+	void heavyAttackReleased(sf::Window &window);
 	void clearProjectiles();
 	void aiming(sf::Window &window, float dt);
 	void setPos(glm::vec3 playerPos);
 	void draw(Shader shader);
 	void collision(std::vector<Model*> &allModels);
 	void getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians);
+	void setStaticModels(std::vector<Model*> allStaticModels);
+	bool getDiving() const;
+	void setDiving(bool diving);
 };
 #endif
