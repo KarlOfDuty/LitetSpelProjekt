@@ -28,14 +28,14 @@ float PlayerShark::getJumpHeight()
 {
 	return jumpHeight;
 }
+
 void PlayerShark::waterEffect()
 {
-	this->setDiving(true);
 }
 void PlayerShark::dive()
 {
-	setDiving(true);
 }
+
 void PlayerShark::shootArrow(std::vector<Projectile*>& allProjectiles, glm::vec2 position, glm::vec2 direction) const
 {
 	//Check how many arrows are active in the arrow vector

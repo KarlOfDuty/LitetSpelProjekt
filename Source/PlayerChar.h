@@ -20,9 +20,9 @@ public:
 	void applyDamage(int appliedDamage);
 	void setHealth(int health);
 	void setSwim(bool swiming);
-	void setDiving(bool diving);
 	int getDamage() const;
 	int getHealth()const;
+	void attack();
 	bool getDiving()const;
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;

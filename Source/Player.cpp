@@ -70,7 +70,7 @@ void Player::swap(int character)
 //Makes the player jump
 void Player::jump()
 {
-	if(player->getDiving() != true)
+	if(this->diving == false)
 	{	if (player->getMaxJumps() > jumps)
 		{
 			velocityY = player->getJumpHeight();
@@ -261,8 +261,9 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		isOnGround = false;
 	}
 	int controller = CONTROLLER0;
+
 	//Move
-	if(player->getDiving() != true)
+	if(this->diving == false)
 	{
 		if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
 		{
@@ -515,10 +516,10 @@ void Player::setStaticModels(std::vector<Model*> theModels)
 
 bool Player::getDiving() const
 {
-	return this->player->getDiving();
+	return this->diving;
 }
 
 void Player::setDiving(bool diving)
 {
-	this->player->setDiving(diving);
+	this->diving = diving;
 }
