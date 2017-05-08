@@ -9,7 +9,7 @@ private:
 	int damage;
 	Model playerModel;
 	bool inWater;
-	bool diving;
+	
 	//Animation animation;
 public:
 	PlayerChar();
@@ -18,10 +18,8 @@ public:
 	void applyDamage(int appliedDamage);
 	void setHealth(int health);
 	void setSwim(bool swiming);
-	void setDiving(bool diving);
 	int getDamage() const;
 	int getHealth()const;
-	bool getDiving()const;
 	void attack();
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;

@@ -26,12 +26,5 @@ float PlayerShark::getJumpHeight()
 {
 	return jumpHeight;
 }
-void PlayerShark::waterEffect()
-{
-	this->setDiving(true);
-}
-void PlayerShark::dive()
-{
-	setDiving(true);
-}
+
 

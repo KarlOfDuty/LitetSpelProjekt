@@ -11,6 +11,4 @@ public:
 	void operator=(const PlayerShark &originalObject);
 	int getMaxJumps();
 	float getJumpHeight();
-	void waterEffect();
-	void dive();
 };
