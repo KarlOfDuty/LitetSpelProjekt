@@ -1,4 +1,4 @@
-#include "EnemyChar.h"
+#include "Enemy.h"
 
 class EnemySlime : public Enemy
 {

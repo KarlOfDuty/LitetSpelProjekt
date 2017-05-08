@@ -42,9 +42,15 @@ int PlayerChar::getHealth() const
 {
 	return health;
 }
+
 void PlayerChar::attack()
 {
 
+}
+
+bool PlayerChar::getDiving() const
+{
+	return diving;
 }
 
 void PlayerChar::draw(Shader shader)
