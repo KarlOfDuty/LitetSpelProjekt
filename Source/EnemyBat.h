@@ -4,14 +4,13 @@ class EnemyBat : public Enemy
 {
 private:
 	float midX;
-	glm::vec3 checkpoint;
+	glm::vec3 newCheckPoint;
 	bool goingRight;
 	bool goingLeft;
+	bool goUp;
 	bool swoopAttack;
 	sf::Clock waitInAir;
-	bool clockRestart;
 	bool checkPointReached;
-	glm::vec3 oldPlayerPos;
 
 	//workarounds for collision
 	bool collides;
