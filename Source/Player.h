@@ -36,6 +36,7 @@ private:
 	int jumps;
 	float movementSpeed;
 	float groundPos;
+	bool diving;
 	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3 };
 	std::vector<Model*> debugCubes;
 	

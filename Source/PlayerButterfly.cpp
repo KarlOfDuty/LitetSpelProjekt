@@ -34,7 +34,7 @@ void PlayerButterfly::teleport()
 void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector<Projectile*> &allProjectiles, glm::vec2 position)
 {
 	glm::vec2 direction(0, 1);
-	glm::vec3 scale(3.0f, 2.0f, 1.0f);
+	glm::vec3 scale(4.0f, 0.1f, 1.0f);
 
 	glm::vec3 ray_origin = glm::vec3(position, 0);
 	glm::vec3 ray_direction(0, -1, 0);
@@ -66,7 +66,7 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 	if (intersection_distance < 4)
 	{
 		Projectile* temp = new Projectile;
-		temp->aoe(box, position, direction, glm::vec2(0.0f, 35.0f), 12.0f, scale);
+		temp->aoe(box, position, direction, 5.0f, scale);
 		allProjectiles.push_back(temp);
 	}
 }

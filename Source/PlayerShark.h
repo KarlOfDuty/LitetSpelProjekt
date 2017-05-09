@@ -14,6 +14,6 @@ public:
 	void operator=(const PlayerShark &originalObject);
 	int getMaxJumps();
 	float getJumpHeight();
-	void dive();
 	void shootArrow(std::vector<Projectile*> &allProjectiles, glm::vec2 position, glm::vec2 direction)const;
+
 };
