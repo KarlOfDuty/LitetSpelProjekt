@@ -96,11 +96,7 @@ void Player::jump()
 
 void Player::waterEffect()
 {
-	if (this->player == playerCharacters[1])
-	{
-		this->setDiving(true);
-	}
-	else if (this->player == playerCharacters[2])
+	if (this->player == playerCharacters[2])
 	{
 		setHealth(0);
 	}
