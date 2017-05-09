@@ -9,12 +9,11 @@ private:
 public:
 	float arrowVelocity;
 
-	PlayerShark(int health, Model model, bool inWater);
+	PlayerShark(Model model, bool inWater);
 	virtual ~PlayerShark();
 	void operator=(const PlayerShark &originalObject);
 	int getMaxJumps();
 	float getJumpHeight();
-	void waterEffect();
 	void dive();
 	void shootArrow(std::vector<Projectile*> &allProjectiles, glm::vec2 position, glm::vec2 direction)const;
 };

@@ -45,7 +45,7 @@ public:
 	glm::vec3 getPos()const;
 	int getDamage()const;
 	std::vector<Enemy*> &getAllEnemies();
-	void update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints);
+	void update(float dt, int playerDamage, std::vector<Model*> &allModels, Player* player);
 	void draw(Shader shader);
 	void removeAll();
 };

@@ -1,4 +1,5 @@
 #include "EnemyBatSmall.h"
+#include "Player.h"
 
 EnemyBatSmall::EnemyBatSmall(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
@@ -17,7 +18,7 @@ void EnemyBatSmall::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyP
 
 }
 
-void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
+void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
 	groundCheck();
 
@@ -45,17 +46,17 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		}
 	}
 
-	if (collisionWithPlayer(playerPoints))
+	if (collisionWithPlayer(player))
 	{
 		if (goForPlayer)
 		{
-			checkpoint.x = playerPos.x + distX(rng);
-			checkpoint.y = playerPos.y + distY(rng);
-			checkpoint.z = playerPos.z;
+			checkpoint.x = player->getPos().x + distX(rng);
+			checkpoint.y = player->getPos().y + distY(rng);
+			checkpoint.z = player->getPos().z;
 			goForPlayer = false;
 		}
 	}
-	if (glm::length(enemyPosCurrent - playerPos) > 3.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) > 3.0f)
 	{
 		goForPlayer = true;
 	}
@@ -64,9 +65,9 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	{
 		if (fabs(enemyPosCurrent.x - checkpoint.x) < 0.2f && fabs(enemyPosCurrent.y - checkpoint.y) < 0.2f)
 		{
-			checkpoint.x = playerPos.x + distX(rng);
-			checkpoint.y = playerPos.y + distY(rng);
-			checkpoint.z = playerPos.z;
+			checkpoint.x = player->getPos().x + distX(rng);
+			checkpoint.y = player->getPos().y + distY(rng);
+			checkpoint.z = player->getPos().z;
 			goForPlayer = true;
 		}
 	}
@@ -79,9 +80,9 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 			velocityY += 5.0f*dt;
 		}
 
-		checkpoint.x = playerPos.x + distX(rng);
-		checkpoint.y = playerPos.y + distY(rng);
-		checkpoint.z = playerPos.z;
+		checkpoint.x = player->getPos().x + distX(rng);
+		checkpoint.y = player->getPos().y + distY(rng);
+		checkpoint.z = player->getPos().z;
 		if (collisionTime.getElapsedTime().asSeconds() >= 5)
 		{
 			returnToStart = true;
@@ -101,7 +102,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - playerPos) < 8.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 8.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -114,19 +115,19 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		{
 			if (playerSeen)
 			{
-				if (enemyPosCurrent.x > playerPos.x)
+				if (enemyPosCurrent.x > player->getPos().x)
 				{
 					velocityX -= 2.5f*dt;
 				}
-				else if (enemyPosCurrent.x < playerPos.x)
+				else if (enemyPosCurrent.x < player->getPos().x)
 				{
 					velocityX += 2.5f*dt;
 				}
-				if (enemyPosCurrent.y > playerPos.y)
+				if (enemyPosCurrent.y > player->getPos().y)
 				{
 					velocityY -= 2.5f*dt;
 				}
-				else if (enemyPosCurrent.y < playerPos.y)
+				else if (enemyPosCurrent.y < player->getPos().y)
 				{
 					velocityY += 2.5f*dt;
 				}

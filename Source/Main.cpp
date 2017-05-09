@@ -276,7 +276,7 @@ void update(sf::Window &window)
 		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemyManager->getAllEnemies());
 	}
 
-	enemyManager->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn, player->getPoints());
+	enemyManager->update(dt, player->getDamage(), modelsToBeDrawn, player);
 
 	//Camera update, get new viewMatrix
 	if (aboveView)

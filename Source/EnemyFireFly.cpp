@@ -1,4 +1,5 @@
 #include "EnemyFireFly.h"
+#include "Player.h"
 
 EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
@@ -16,7 +17,7 @@ void EnemyFireFly::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPo
 
 }
 
-void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
+void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
 	groundCheck();
 
@@ -45,7 +46,7 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - playerPos) < 10.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -56,19 +57,19 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 	{
 		if (playerSeen)
 		{
-			if (enemyPosCurrent.x > playerPos.x + attackRange)
+			if (enemyPosCurrent.x > player->getPos().x + attackRange)
 			{
 				velocityX -= 1.5f*dt;
 			}
-			else if (enemyPosCurrent.x < playerPos.x - attackRange)
+			else if (enemyPosCurrent.x < player->getPos().x - attackRange)
 			{
 				velocityX += 1.5f*dt;
 			}
-			if (enemyPosCurrent.y > playerPos.y)
+			if (enemyPosCurrent.y > player->getPos().y)
 			{
 				velocityY -= 1.5f*dt;
 			}
-			else if (enemyPosCurrent.y < playerPos.y)
+			else if (enemyPosCurrent.y < player->getPos().y)
 			{
 				velocityY += 1.5f*dt;
 			}

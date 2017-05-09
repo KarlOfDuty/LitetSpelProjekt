@@ -1,4 +1,5 @@
 #include "EnemyBat.h"
+#include "Player.h"
 
 EnemyBat::EnemyBat(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
 {
@@ -18,7 +19,7 @@ void EnemyBat::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 
 }
 
-void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
+void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
 	groundCheck();
 
@@ -54,11 +55,11 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 	{
 		if (checkPointReached)
 		{
-			if (enemyPosCurrent.x > playerPos.x)
+			if (enemyPosCurrent.x > player->getPos().x)
 			{
 				goingLeft = true;
 			}
-			else if (enemyPosCurrent.x < playerPos.x)
+			else if (enemyPosCurrent.x < player->getPos().x)
 			{
 				goingRight = true;
 			}
@@ -110,7 +111,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurre
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - playerPos) < 15.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 15.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;

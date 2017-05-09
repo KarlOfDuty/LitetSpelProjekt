@@ -1,4 +1,5 @@
 #include "EnemySlime.h"
+#include "Player.h"
 
 
 EnemySlime::EnemySlime(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
@@ -17,7 +18,7 @@ void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosC
 
 }
 
-void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
+void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
 	groundCheck();
 
@@ -64,7 +65,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - playerPos) < 5.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 5.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -75,7 +76,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 	{
 		if (playerSeen)
 		{
-			if (enemyPosCurrent.x > playerPos.x)
+			if (enemyPosCurrent.x > player->getPos().x)
 			{
 				velocityX -= 2.0f*dt;
 			}
@@ -120,7 +121,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCur
 
 	if (collidingWithGround)
 	{
-		if (collisionWithPlayer(playerPoints))
+		if (collisionWithPlayer(player))
 		{
 			velocityY = 10;
 		}

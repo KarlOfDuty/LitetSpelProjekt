@@ -1,7 +1,7 @@
 #include "PlayerShark.h"
 
 
-PlayerShark::PlayerShark(int health, Model model, bool inWater) :PlayerChar(health, model, inWater)
+PlayerShark::PlayerShark(Model model, bool inWater) :PlayerChar(model, inWater)
 {
 	this->maxJumps = 1;
 	this->jumpHeight = 10;
@@ -28,10 +28,7 @@ float PlayerShark::getJumpHeight()
 {
 	return jumpHeight;
 }
-void PlayerShark::waterEffect()
-{
-	this->setDiving(true);
-}
+
 void PlayerShark::dive()
 {
 	setDiving(true);
