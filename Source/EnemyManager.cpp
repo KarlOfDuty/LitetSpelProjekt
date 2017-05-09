@@ -108,7 +108,7 @@ std::vector<Enemy*> &EnemyManager::getAllEnemies()
 	return allEnemies;
 }
 
-void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
+void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allModels, Player* player)
 {
 	//sortEnemies(playerPos);
 	clearDeadEnemies();
@@ -117,7 +117,7 @@ void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::
 	{
 		if (allThreads.size() <= i)
 		{
-			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, playerPos, allSmallBats, allModels, playerPoints);}, allEnemies[i]));
+			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, allSmallBats, allModels, player);}, allEnemies[i]));
 		}
 	}
 	for (int i = 0; i < allThreads.size(); i++)
@@ -128,7 +128,7 @@ void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::
 	//EnemyManager taking damage
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
 	{
-			if (fabs(getPos().x - playerPos.x) < 1.0 && fabs(getPos().y - playerPos.y) < 1.0)
+			if (fabs(getPos().x - player->getPos().x) < 1.0 && fabs(getPos().y - player->getPos().y) < 1.0)
 			{
 				allEnemies[0]->applyDamage(playerDamage);
 			}

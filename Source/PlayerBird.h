@@ -8,11 +8,10 @@ private:
 	float jumpHeight;
 	Model* box;
 public:
-	PlayerBird(int health, Model model, bool inWater);
+	PlayerBird(Model model, bool inWater);
 	virtual ~PlayerBird();
 	void operator=(const PlayerBird &originalObject);
 	float getJumpHeight();
 	int getMaxJumps();
-	void waterEffect();
 	void meleeAttack(std::vector<Projectile*> &allAttackBoxes, glm::vec2 position, glm::vec2 direction, float velocity);
 };

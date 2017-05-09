@@ -11,6 +11,8 @@
 #include <time.h>  
 #include <random>
 
+class Player;
+
 class Enemy : GameObject
 {
 private:
@@ -48,10 +50,10 @@ public:
 	void applyDamage(int appliedDamage);
 	void groundCheck();
 	bool collision(std::vector<Model*> &allModels);
-	bool collisionWithPlayer(std::vector<glm::vec2> playerPoints);
+	bool collisionWithPlayer(Player* player);
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 pos) = 0;
-	void update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints);
-	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 pos, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints) = 0;
+	void update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player);
+	virtual void updateThis(float dt, glm::vec3 pos, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player) = 0;
 	void draw(Shader shader);
 };
 #endif

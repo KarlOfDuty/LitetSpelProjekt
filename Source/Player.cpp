@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Enemy.h"
 #include <glm\gtx\matrix_decompose.hpp>
 const double PI = 3.14159265358979323846;
 
@@ -25,9 +26,11 @@ Player::Player()
 	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->playerCharacters[0] = new PlayerBird(10000, birdModel, false);
-	this->playerCharacters[1] = new PlayerShark(10000, sharkModel, false);
-	this->playerCharacters[2] = new PlayerButterfly(10000, butterflyModel, false);
+	this->health = 20;
+
+	this->playerCharacters[0] = new PlayerBird(birdModel, false);
+	this->playerCharacters[1] = new PlayerShark(sharkModel, false);
+	this->playerCharacters[2] = new PlayerButterfly(butterflyModel, false);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 
@@ -47,6 +50,11 @@ PlayerChar* Player::getCurrentCharacter()
 int Player::getDamage() const
 {
 	return playerCharacters[0]->getDamage();
+}
+
+int Player::getHealth() const
+{
+	return health;
 }
 
 std::vector<glm::vec2> Player::getPoints()
@@ -85,6 +93,32 @@ void Player::jump()
 		}
 	}
 }
+
+void Player::waterEffect()
+{
+	if (this->player == playerCharacters[1])
+	{
+		this->setDiving(true);
+	}
+	else if (this->player == playerCharacters[2])
+	{
+		setHealth(0);
+	}
+	else if (this->player == playerCharacters[0])
+	{
+		setHealth(0);
+	}
+}
+
+void Player::applyDamage(int appliedDamage)
+{
+	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.2)
+	{
+		this->health -= appliedDamage;
+		this->damageImmunity.restart();
+	}
+}
+
 void Player::lightAttackPressed(sf::Window &window)
 {
 	PlayerButterfly* butterfly = dynamic_cast<PlayerButterfly*>(player);
@@ -244,9 +278,9 @@ void Player::setPos(glm::vec3 playerPos)
 //True if player is dead
 bool Player::playerIsDead()
 {
-	if (playerCharacters[0]->getHealth() <= 0)
+	if (getHealth() <= 0)
 	{
-		playerCharacters[0]->setHealth(0);
+		setHealth(0);
 
 		return true;
 	}
@@ -566,4 +600,9 @@ bool Player::getDiving() const
 void Player::setDiving(bool diving)
 {
 	this->diving = diving;
+}
+
+void Player::setHealth(int health)
+{
+	this->health = health;
 }

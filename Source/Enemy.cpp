@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Player.h"
 
 
 Enemy::Enemy()
@@ -145,23 +146,24 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 	return false;
 }
 
-bool Enemy::collisionWithPlayer(std::vector<glm::vec2> playerPoints)
+bool Enemy::collisionWithPlayer(Player* player)
 {
 
 	std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
-	if (collision::collision(enemyPoints, playerPoints))
+	if (collision::collision(enemyPoints, player->getPoints()))
 	{
+		player->applyDamage(this->getDamage());
 		return true;
 	}
 	return false;
 }
 
-void Enemy::update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
+void Enemy::update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
-	if (glm::length(pos - playerPos) < 25.0f)
+	if (glm::length(pos - player->getPos()) < 25.0f)
 	{
-		updateThis(dt, playerPos, pos, checkPoint, allSmallBats, allModels, playerPoints);
-		attackPlayer(dt, playerPos, pos);
+		updateThis(dt, pos, checkPoint, allSmallBats, allModels, player);
+		attackPlayer(dt, player->getPos(), pos);
 	}
 }
 
