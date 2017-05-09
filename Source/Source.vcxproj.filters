@@ -212,9 +212,6 @@
       <Filter>Source Files\Shader</Filter>
     </None>
     <None Include="ClassDiagram.cd" />
-    <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleFragment.glsl">
-      <Filter>Source Files\Shader</Filter>
-    </None>
     <None Include="simpleVertex.glsl">
       <Filter>Source Files\Shader</Filter>
     </None>
