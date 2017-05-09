@@ -7,6 +7,7 @@ uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gAmbient;
 uniform sampler2D depthMap;
+uniform sampler2D depthMap2;
 
 struct light 
 {
@@ -20,6 +21,7 @@ const int NR_LIGHTS = 3;
 uniform light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 uniform mat4 lightSpaceMatrix;
+uniform mat4 lightSpaceMatrix2;
 
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection, sampler2D depthM)
 {
@@ -61,12 +63,15 @@ void main()
     vec3 diffuse = texture(gAlbedoSpec, texCoords).rgb;
 	float specular = texture(gAlbedoSpec, texCoords).a;
 	vec3 ambient = texture(gAmbient, texCoords).rgb;
-	//Adds the ambient light
+	//Adds the ambient
 	vec3 lighting = diffuse*0.3f;
 	vec3 viewDir = normalize(viewPos - fragPos);
 	vec4 lightSpaces[3];
 	lightSpaces[0] = lightSpaceMatrix * vec4(fragPos, 1.0);
+	lightSpaces[1] = lightSpaceMatrix2 * vec4(fragPos, 1.0);
+	lightSpaces[2] = lightSpaceMatrix * vec4(fragPos, 1.0);
 	vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
+	vec4 fragPosLightSpace2 = lightSpaceMatrix2 * vec4(fragPos, 1.0);
 	 
 
 	for(int i = 0; i < NR_LIGHTS; ++i)
@@ -82,13 +87,21 @@ void main()
 		vec3 thisSpecular = lights[i].color * spec * specular;
 		// Calculate shadows
 		float shadow;
-		shadow = ShadowCalculation(lightSpaces[0], normal, lightDir, depthMap);
+		if(i != 1)
+		{
+			shadow = ShadowCalculation(lightSpaces[i], normal, lightDir, depthMap);
+		}
+		else
+		{
+			shadow = ShadowCalculation(lightSpaces[i], normal, lightDir, depthMap2);
+		}
         thisDiffuse *= attenuation;
         thisSpecular *= attenuation;
 		lighting += (1.0 - shadow) * (thisDiffuse + thisSpecular);
 	}
 	fragColor = vec4(lighting, 1.0f);
 	float depthValue = texture(depthMap,texCoords).r;
+	float depthValue2 = texture(depthMap2,texCoords).r;
 	// Test depthmap
 	//fragColor = vec4(vec3(depthValue),1.0);
 
