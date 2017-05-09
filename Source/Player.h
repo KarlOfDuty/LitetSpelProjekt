@@ -7,7 +7,7 @@
 #include "Collision.h"
 #include "Projectile.h"
 #include "GameObject.h"
-#include "Enemy.h"
+#include "EnemyManager.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
 #include <vector>
@@ -34,6 +34,7 @@ private:
 	int jumps;
 	float movementSpeed;
 	float groundPos;
+	bool diving;
 	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3 };
 	std::vector<Model*> debugCubes;
 	

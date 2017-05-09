@@ -1,156 +1,171 @@
 #include "Enemy.h"
 
 
-EnemyManager::EnemyManager()
+Enemy::Enemy()
 {
-	slimeModel = new Model("models/Enemies/Slime/Slime.obj");
-	toadModel = new Model("models/Enemies/Toad/Toad.obj");
-	batModel = new Model("models/Enemies/Bat/BigBat.obj");
-	batSmallModel = new Model("models/Enemies/BatSmall/SmallBat.obj");
-	bossModel = new Model("models/cube/cube.obj");
-	skeletonModel = new Model("models/Enemies/Skeleton/Skeleton.obj");
-	crabModel = new Model("models/Enemies/Crab/Crab.obj");
-	fireflyModel = new Model("models/cube/cube.obj");
+	this->health = 10;
+	this->damage = 1;
 }
 
-EnemyManager::~EnemyManager()
+
+Enemy::Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos)
+{
+	this->health = health;
+	this->model = model;
+	this->damage = damage;
+	this->pos = enemyStartPos;
+	setPos(pos);
+	isOnGround = true;
+	playerSeen = false;
+	this->checkPoint.x = enemyStartPos.x;
+}
+
+Enemy::~Enemy()
 {
 
 }
 
-void EnemyManager::createSlime(glm::vec3 enemyStartPos)
+void Enemy::setPos(glm::vec3 position)
 {
-	this->allEnemies.push_back(new EnemySlime(3, new Model(slimeModel), 1, enemyStartPos));
+	pos = position;
+	this->model->setModelMatrix(glm::mat4(
+		0.075, 0.0, 0.0, 0.0,
+		0.0, 0.075, 0.0, 0.0,
+		0.0, 0.0, 0.075, 0.0,
+		pos.x, pos.y, pos.z, 1.0
+	));
 }
 
-void EnemyManager::createToad(glm::vec3 enemyStartPos)
+void Enemy::setHealth(int health)
 {
-	this->allEnemies.push_back(new EnemyToad(5, new Model(toadModel), 2, enemyStartPos));
+	this->health = health;
 }
 
-void EnemyManager::createGiantBat(glm::vec3 enemyStartPos)
+glm::vec3 Enemy::getPos() const
 {
-	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, enemyStartPos));
+	return pos;
 }
 
-void EnemyManager::createBatSwarm(glm::vec3 enemyStartPos)
+std::string Enemy::type() const
 {
-	this->allEnemies.push_back(new EnemyBatSmall(1, new Model(batSmallModel), 1, enemyStartPos));
-	allSmallBats.push_back(allEnemies.back());
+	return "Enemy";
 }
 
-void EnemyManager::createSkeleton(glm::vec3 enemyStartPos, bool patrol)
+std::vector<glm::vec2> Enemy::getPoints()
 {
-	this->allEnemies.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, patrol, enemyStartPos));
+	return model->getPoints();
 }
 
-void EnemyManager::createCrab(glm::vec3 enemyStartPos)
+int Enemy::getDamage() const
 {
-	this->allEnemies.push_back(new EnemyCrab(6, new Model(crabModel), 3, enemyStartPos));
+	return damage;
 }
 
-void EnemyManager::createBoss(glm::vec3 enemyStartPos)
+int Enemy::getHealth() const
 {
-	this->allEnemies.push_back(new EnemyBoss(100, new Model(bossModel), 2, enemyStartPos));
+	return this->health;
+}
+Model* Enemy::getModel()
+{
+	return this->model;
 }
 
-void EnemyManager::createFirefly(glm::vec3 enemyStartPos)
+void Enemy::applyDamage(int appliedDamage)
 {
-	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, enemyStartPos));
-}
-
-void EnemyManager::sortEnemies(glm::vec3 playerPos)
-{
-	//Bubble sort
-	glm::vec3 enemyPos1;
-	glm::vec3 enemyPos2;
-	bool sorted = false;
-	while (!sorted)
+	if (this->damageImmunity.getElapsedTime().asSeconds() >= 0.5)
 	{
-		sorted = true;
-		for (int i = 0; i < this->allEnemies.size()-1; i++)
+		this->health -= appliedDamage;
+		this->damageImmunity.restart();
+	}
+}
+
+void Enemy::groundCheck()
+{
+	groundPos = 0.0f;
+
+	if (pos.y > groundPos)
+	{
+		isOnGround = false;
+	}
+}
+
+bool Enemy::collision(std::vector<Model*> &allModels)
+{
+	int index = -1;
+	float minDist = 1000;
+	for (int i = 0; i < allModels.size(); i++)
+	{
+		float distance = glm::length(pos - glm::vec3(allModels[i]->getModelMatrix()[3]));
+		if (minDist > distance)
 		{
-			enemyPos1 = this->allEnemies[i]->getPos();
-			enemyPos2 = this->allEnemies[i + 1]->getPos();
-			//Compare distance to enemy1 and distance to enemy2 and swap if out of order
-			if (glm::distance(enemyPos1, playerPos) > glm::distance(enemyPos2, playerPos))
+			minDist = distance;
+			index = i;
+		}
+	}
+	if (index != -1)
+	{
+		std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
+		std::vector<glm::vec2> objectPoints = allModels[index]->getPoints();
+		glm::vec2 mtv;
+		if (collision::collision(enemyPoints, objectPoints, mtv))
+		{	
+			//Get rotation
+			glm::quat rotation;
+			glm::decompose(allModels[index]->getModelMatrix(),glm::vec3(),rotation,glm::vec3(),glm::vec3(),glm::vec4());
+			//Convert from quat to radians
+			double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
+			double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
+			radians = (float)-std::atan2(t3, t4);
+			if (radians > 0.0f && radians < 0.79f)
 			{
-				std::swap(allEnemies[i], allEnemies[i + 1]);
-				sorted = false;
+				pos.y += mtv.y;
+				mtv.x = 0;
 			}
-		}
-	}
-}
-
-void EnemyManager::clearDeadEnemies()
-{
-	for (int i = 0; i < this->allEnemies.size(); i++)
-	{
-		if (allEnemies[i]->getHealth() <= 0)
-		{
-			allEnemies.erase(allEnemies.begin() + i);
-		}
-	}
-}
-
-glm::vec3 EnemyManager::getPos() const
-{
-	return allEnemies[0]->getPos();
-}
-
-int EnemyManager::getDamage() const
-{
-	return allEnemies[0]->getDamage();
-}
-
-std::vector<Enemy*> &EnemyManager::getAllEnemies()
-{
-	return allEnemies;
-}
-
-void EnemyManager::update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
-{
-	//sortEnemies(playerPos);
-	clearDeadEnemies();
-	std::vector<std::thread> allThreads;
-	for (int i = 0; i < this->allEnemies.size(); i++)
-	{
-		if (allThreads.size() <= i)
-		{
-			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, playerPos, allSmallBats, allModels, playerPoints);}, allEnemies[i]));
-		}
-	}
-	for (int i = 0; i < allThreads.size(); i++)
-	{
-		allThreads[i].join();
-	}
-
-	//EnemyManager taking damage
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
-	{
-			if (fabs(getPos().x - playerPos.x) < 1.0 && fabs(getPos().y - playerPos.y) < 1.0)
+			else
 			{
-				allEnemies[0]->applyDamage(playerDamage);
+				pos.x += mtv.x;
+				pos.y += mtv.y;
 			}
+
+			if (mtv.y > 0)
+			{
+				if (pos.y < 0) pos.y = 0;
+				groundPos = pos.y;
+			}
+			collidedFrom = mtv;
+
+			setPos(pos);
+			return true;
+		}
+		else
+		{
+			collidedFrom = glm::vec2(0,0);
+		}
+	}
+	return false;
+}
+
+bool Enemy::collisionWithPlayer(std::vector<glm::vec2> playerPoints)
+{
+
+	std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
+	if (collision::collision(enemyPoints, playerPoints))
+	{
+		return true;
+	}
+	return false;
+}
+
+void Enemy::update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
+{
+	if (glm::length(pos - playerPos) < 25.0f)
+	{
+		updateThis(dt, playerPos, pos, checkPoint, allSmallBats, allModels, playerPoints);
+		attackPlayer(dt, playerPos, pos);
 	}
 }
 
-void EnemyManager::draw(Shader shader)
+void Enemy::draw(Shader shader)
 {
-	for (int i = 0; i < this->allEnemies.size(); i++)
-	{
-		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &allEnemies[i]->getModel()->getModelMatrix()[0][0]);
-		allEnemies[i]->draw(shader);
-	}
-}
-
-void EnemyManager::removeAll()
-{
-	for (int i = 0; i < allEnemies.size(); i++)
-	{
-		delete allEnemies[i];
-	}
-	allEnemies.clear();
-
-	allSmallBats.clear();
+	model->draw(shader);
 }

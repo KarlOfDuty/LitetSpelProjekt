@@ -1,52 +1,57 @@
 #ifndef ENEMY_H
 #define ENEMY_H
-#include "EnemySlime.h"
-#include "EnemyToad.h"
-#include "EnemyBat.h"
-#include "EnemyBatSmall.h"
-#include "EnemyBoss.h"
-#include "EnemySkeleton.h"
-#include "EnemyCrab.h"
-#include "EnemyFireFly.h"
-#include "Player.h"
-#include "Shader.h"
+#include "Model.h"
+#include "Collision.h"
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <SFML\Window.hpp>
-#include <glm\glm.hpp>
 #include <vector>
 #include <iostream>
-#include <thread>
+#include <stdlib.h>
+#include <time.h>  
+#include <random>
 
-class EnemyManager
+class Enemy : GameObject
 {
 private:
-	std::vector<Enemy*> allEnemies;
-	std::vector<Enemy*> allSmallBats;
-	Model* slimeModel;
-	Model* toadModel;
-	Model* batModel;
-	Model* bossModel;
-	Model* batSmallModel;
-	Model* skeletonModel;
-	Model* crabModel;
-	Model* fireflyModel;
+	float health;
+	int damage;
+	sf::Clock damageImmunity;
+	Model *model;
+	glm::vec3 pos;
+	//glm::mat4 enemyModelMatrix;
+	glm::vec3 checkPoint;
+	//Animation animation;
 public:
-	EnemyManager();
-	~EnemyManager();
-	void createSlime(glm::vec3 enemyStartPos);
-	void createToad(glm::vec3 enemyStartPos);
-	void createGiantBat(glm::vec3 enemyStartPos);
-	void createBatSwarm(glm::vec3 enemyStartPos);
-	void createSkeleton(glm::vec3 enemyStartPos, bool patrol);
-	void createCrab(glm::vec3 enemyStartPos);
-	void createBoss(glm::vec3 enemyStartPos);
-	void createFirefly(glm::vec3 enemyStartPos);
-	void sortEnemies(glm::vec3 playerPos);
-	void clearDeadEnemies();
-	glm::vec3 getPos()const;
+	//Variables
+	float velocityX;
+	float velocityY;
+	bool isOnGround;
+	bool playerSeen;
+	glm::vec2 collidedFrom;
+	float radians;
+	float groundPos;
+
+	//Parent inherited functions
+	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	virtual std::string type() const;
+	//Own functions
+	Enemy();
+	Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos);
+	virtual ~Enemy();
+	void setPos(glm::vec3 position);
+	void setHealth(int health);
 	int getDamage()const;
-	std::vector<Enemy*> &getAllEnemies();
-	void update(float dt, glm::vec3 playerPos, int playerDamage, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints);
+	int getHealth() const;
+	Model* getModel();
+	void applyDamage(int appliedDamage);
+	void groundCheck();
+	bool collision(std::vector<Model*> &allModels);
+	bool collisionWithPlayer(std::vector<glm::vec2> playerPoints);
+	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 pos) = 0;
+	void update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints);
+	virtual void updateThis(float dt, glm::vec3 playerPos, glm::vec3 pos, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints) = 0;
 	void draw(Shader shader);
-	void removeAll();
 };
 #endif

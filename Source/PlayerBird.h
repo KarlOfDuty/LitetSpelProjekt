@@ -6,6 +6,7 @@ class PlayerBird : public PlayerChar
 private:
 	int maxJumps;
 	float jumpHeight;
+	Model* box;
 public:
 	PlayerBird(int health, Model model, bool inWater);
 	virtual ~PlayerBird();
@@ -13,4 +14,5 @@ public:
 	float getJumpHeight();
 	int getMaxJumps();
 	void waterEffect();
+	void meleeAttack(std::vector<Projectile*> &allAttackBoxes, glm::vec2 position, glm::vec2 direction, float velocity);
 };

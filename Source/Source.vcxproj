@@ -75,9 +75,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>libraries\GLEW\include;libraries\GLM\;libraries\SFML\include;libraries\SOIL\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>sfml-audio-d.lib;sfml-system-d.lib;sfml-window-d.lib;glew32.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>libraries\GLEW\lib;libraries\SFML\lib;libraries\SOIL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -102,10 +104,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>libraries\GLEW\include;libraries\GLM\;libraries\SFML\include;libraries\SOIL\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>libraries\GLEW\lib;libraries\SFML\lib;libraries\SOIL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -115,20 +119,23 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>libraries\GLEW\include;libraries\GLM\;libraries\SFML\include;libraries\SOIL\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>libraries\GLEW\lib;libraries\SFML\lib;libraries\SOIL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-audio.lib;sfml-system.lib;sfml-window.lib;glew32.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collision.cpp" />
-    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="EnemyBat.cpp" />
     <ClCompile Include="EnemyBatSmall.cpp" />
     <ClCompile Include="EnemyBoss.cpp" />
-    <ClCompile Include="EnemyChar.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyCrab.cpp" />
     <ClCompile Include="EnemyFireFly.cpp" />
     <ClCompile Include="EnemySkeleton.cpp" />
@@ -156,11 +163,11 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collision.h" />
-    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="EnemyBat.h" />
     <ClInclude Include="EnemyBatSmall.h" />
     <ClInclude Include="EnemyBoss.h" />
-    <ClInclude Include="EnemyChar.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyCrab.h" />
     <ClInclude Include="EnemyFireFly.h" />
     <ClInclude Include="EnemySkeleton.h" />

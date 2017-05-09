@@ -50,7 +50,7 @@ struct Mesh
 //Turns on console feedback for reading of model files
 static bool modelDebug = false;
 //Turns on console feedback for reading of material files
-static bool matDebug = false;
+static bool matDebug = true;
 class Model : public GameObject
 {
 private:

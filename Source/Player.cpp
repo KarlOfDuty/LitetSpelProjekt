@@ -13,8 +13,8 @@ void Player::freeMemory()
 Player::Player()
 {
 	Model* birdModel = new Model("models/Characters/Bird/BirdTest1.obj", modelMatrix);
-	Model* sharkModel = new Model("models/sphere/sphere.obj", modelMatrix);
-	Model* butterflyModel = new Model("models/cube/cubeGreen.obj", modelMatrix);
+	Model* sharkModel = new Model("models/Characters/Shark/Fish_T-Pose_Export.obj", modelMatrix);
+	Model* butterflyModel = new Model("models/Characters/Butterfly/ButterFly.obj", modelMatrix);
 
 	arrow = new Model("models/cube/cubeGreen.obj");
 
@@ -70,7 +70,7 @@ void Player::swap(int character)
 //Makes the player jump
 void Player::jump()
 {
-	if(player->getDiving() != true)
+	if(this->diving == false)
 	{	if (player->getMaxJumps() > jumps)
 		{
 			velocityY = player->getJumpHeight();
@@ -94,6 +94,25 @@ void Player::lightAttackPressed(sf::Window &window)
 		int middleScreenX = window.getSize().x / 2;
 		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 3.0f, getPos().y) : glm::vec2(getPos().x - 3.0f, getPos().y);
 		butterfly->shootAoe(allStaticModels, allProjectiles, position);
+	}
+	PlayerBird* bird = dynamic_cast<PlayerBird*>(player);
+	if (bird != nullptr)
+	{
+		int mouseX = sf::Mouse::getPosition(window).x;
+		int middleScreenX = window.getSize().x / 2;
+		glm::vec2 position;
+		glm::vec2 direction;
+		if (mouseX >= middleScreenX)
+		{
+			position = glm::vec2(getPos().x + 1.0f, getPos().y);
+			direction = glm::vec2(1, 0);
+		}
+		else
+		{
+			position = glm::vec2(getPos().x - 1.0f, getPos().y);
+			direction = glm::vec2(-1, 0);
+		}
+		bird->meleeAttack(allProjectiles, position, direction, 20.f);
 	}
 }
 void Player::lightAttackReleased(sf::Window &window)
@@ -119,6 +138,30 @@ void Player::heavyAttackPressed(sf::Window &window)
 		int middleScreenX = window.getSize().x / 2;
 		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 10.0f, getPos().y) : glm::vec2(getPos().x - 10.0f, getPos().y);
 		butterfly->shootAoe(allStaticModels, allProjectiles, position);
+	}
+	PlayerBird* bird = dynamic_cast<PlayerBird*>(player);
+	if (bird != nullptr)
+	{
+		int mouseX = sf::Mouse::getPosition(window).x;
+		int middleScreenX = window.getSize().x / 2;
+		glm::vec2 position;
+		glm::vec2 direction;
+		if (mouseX >= middleScreenX)
+		{
+			position = glm::vec2(getPos().x + 1.0f, getPos().y);
+			direction = glm::vec2(1, 0);
+		}
+		else
+		{
+			position = glm::vec2(getPos().x - 1.0f, getPos().y);
+			direction = glm::vec2(-1, 0);
+		}
+		bird->meleeAttack(allProjectiles, position, direction, 1.f);
+	}
+	PlayerShark* shark = dynamic_cast<PlayerShark*>(player);
+	if (shark != nullptr)
+	{
+		shark->arrowVelocity = 5.f;
 	}
 }
 void Player::heavyAttackReleased(sf::Window &window)
@@ -156,7 +199,7 @@ void Player::aiming(sf::Window &window,float dt)
 		}
 		else
 		{
-			bird->arrowVelocity += 5.0f * dt;
+			bird->arrowVelocity += 20.0f * dt;
 		}
 
 		glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
@@ -168,11 +211,11 @@ void Player::aiming(sf::Window &window,float dt)
 		glm::vec2 velocity = glm::vec2(glm::abs(direction.x*bird->arrowVelocity), direction.y*bird->arrowVelocity);
 		for (int i = 0; i < 30; i++)
 		{
-			velocity.x -= 5.0f*0.02;
+			velocity.x -= 5.0f*0.02f;
 			if (velocity.x < 0) velocity.x = 0;
-			velocity.y -= 30.0f*0.02;
-			position.x += direction.x*velocity.x*0.02;
-			position.y += velocity.y*0.02;
+			velocity.y -= 30.0f*0.02f;
+			position.x += direction.x*velocity.x*0.02f;
+			position.y += velocity.y*0.02f;
 
 			glm::mat4 modelMat({
 				0.1, 0.0, 0.0, 0.0,
@@ -221,48 +264,14 @@ std::string Player::type() const
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
 	groundPos = 0.0f;
-
-	for (int i = 0; i < allProjectiles.size(); i++)
-	{
-		if (allProjectiles[i]->isInUse())
-		{
-			if (glm::distance(getPos(), allProjectiles[i]->getPos()) < 40.0f)
-			{
-				allProjectiles[i]->update(dt, allModels);
-				std::vector<glm::vec2> arrowPoints = allProjectiles[i]->getPoints();
-				for (int k = 0; k < allEnemies.size(); k++)
-				{
-					if (glm::distance(allProjectiles[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
-					{
-						if (collision::collision(arrowPoints, allEnemies[k]->getPoints()))
-						{
-							allProjectiles[i]->disableArrow();
-							allEnemies[k]->applyDamage(100);
-							k = allEnemies.size();
-						}
-					}
-				}
-			}
-			else
-			{
-				allProjectiles[i]->disableArrow();
-			}
-		}
-	}
-	
-	//Check if aiming
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
-	{
-		aiming(window, dt);
-	}
-
 	if (getPos().y > groundPos && isOnGround)
 	{
 		isOnGround = false;
 	}
 	int controller = CONTROLLER0;
+
 	//Move
-	if(player->getDiving() != true)
+	if(this->diving == false)
 	{
 		if (sf::Joystick::getAxisPosition(controller, sf::Joystick::X) < -20)
 		{
@@ -405,6 +414,42 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 		isOnGround = true;
 	}
+
+	for (int i = 0; i < allProjectiles.size(); i++)
+	{
+		if (allProjectiles[i]->isInUse())
+		{
+			if (glm::distance(getPos(), allProjectiles[i]->getPos()) < 40.0f)
+			{
+				allProjectiles[i]->update(dt, allModels, getPos());
+				std::vector<glm::vec2> arrowPoints = allProjectiles[i]->getPoints();
+				for (int k = 0; k < allEnemies.size(); k++)
+				{
+					if (glm::distance(allProjectiles[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
+					{
+						if (collision::collision(arrowPoints, allEnemies[k]->getPoints()))
+						{
+							if (allProjectiles[i]->isProjectileAttack())
+							{
+								allProjectiles[i]->disableArrow();
+							}
+							allEnemies[k]->applyDamage(100);
+							k = (int)allEnemies.size();
+						}
+					}
+				}
+			}
+			else
+			{
+				allProjectiles[i]->disableArrow();
+			}
+		}
+	}
+	//Check if aiming
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+	{
+		aiming(window, dt);
+	}
 }
 //Draws the models involved
 void Player::draw(Shader shader)
@@ -515,10 +560,10 @@ void Player::setStaticModels(std::vector<Model*> theModels)
 
 bool Player::getDiving() const
 {
-	return this->player->getDiving();
+	return this->diving;
 }
 
 void Player::setDiving(bool diving)
 {
-	this->player->setDiving(diving);
+	this->diving = diving;
 }

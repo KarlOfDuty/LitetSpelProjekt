@@ -24,14 +24,14 @@ void Level::setupModels()
 		5.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
-		10.0, 15.0, 0.0, 1.0
+		20.0, 11.0, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		5.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
-		15.0, 15.0, 0.0, 1.0
+		25.0, 13.0, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
@@ -158,6 +158,14 @@ void Level::deleteTriggers()
 		delete triggerBoxes[i];
 	}
 	triggerBoxes.clear();
+}
+void Level::playMusic(SoundSystem* soundSystem)
+{
+
+}
+void Level::stopMusic(SoundSystem* soundSystem)
+{
+
 }
 //void Level::playMusic(SoundSystem *soundSystem)
 //{
