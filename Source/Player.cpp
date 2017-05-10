@@ -293,9 +293,10 @@ std::string Player::type() const
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
-	//kill player in water
+	//Kill player and reset jumps in water
 	if (getDiving())
 	{
+		jumps = 0;
 		waterEffect();
 	}
 
