@@ -1,7 +1,7 @@
 #include "EnemyToad.h"
 #include "Player.h"
 
-EnemyToad::EnemyToad(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
+EnemyToad::EnemyToad(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {
 	this->startPosition = enemyStartPos;
 	this->returnToStart = false;
@@ -61,6 +61,14 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			if (collidingWithGround)
 			{
+				if (enemyPosCurrent.x >= player->getPos().x)
+				{
+					rotateLeft = false;
+				}
+				if (enemyPosCurrent.x <= player->getPos().x)
+				{
+					rotateLeft = true;
+				}
 				//Jump
 				if (playerSeen)
 				{
@@ -111,8 +119,16 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			if (collidingWithGround)
 			{
+				if (enemyPosCurrent.x >= startPosition.x)
+				{
+					rotateLeft = false;
+				}
+				if (enemyPosCurrent.x <= startPosition.x)
+				{
+					rotateLeft = true;
+				}
 				//Jump
-				if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
+				if (glm::length(enemyPosCurrent.x - startPosition.x) > 1.5f)
 				{
 					if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
 					{
@@ -193,6 +209,16 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		setPos(enemyPosCurrent);
 
 		collides = collision(allModels);
+
+		if (rotateLeft == false)
+		{
+			rotateModel(-90.0f);
+		}
+
+		if (rotateLeft == true)
+		{
+			rotateModel(90.0f);
+		}
 
 }
 

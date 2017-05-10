@@ -1,7 +1,7 @@
 #include "EnemyBat.h"
 #include "Player.h"
 
-EnemyBat::EnemyBat(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
+EnemyBat::EnemyBat(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {
 	swoopAttack = true;
 	startPosition = enemyStartPos;

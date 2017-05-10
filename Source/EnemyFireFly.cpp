@@ -1,7 +1,7 @@
 #include "EnemyFireFly.h"
 #include "Player.h"
 
-EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
+EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {
 	this->attackRange = 8;
 	this->startPosition = enemyStartPos;
