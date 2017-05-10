@@ -2,12 +2,13 @@
 out vec4 fragColor;
 in vec2 texCoords;
 
+const int MAX_NR_LIGHTS = 2;
+
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D gAmbient;
-uniform sampler2D depthMap;
-uniform sampler2D depthMap2;
+uniform sampler2D depthMap[MAX_NR_LIGHTS];
 
 struct light 
 {
@@ -16,12 +17,9 @@ struct light
     float linear;
     float quadratic;
 };
-
-const int NR_LIGHTS = 3;
-uniform light lights[NR_LIGHTS];
+uniform light lights[MAX_NR_LIGHTS];
 uniform vec3 viewPos;
-uniform mat4 lightSpaceMatrix;
-uniform mat4 lightSpaceMatrix2;
+uniform mat4 lightSpaceMatrix[MAX_NR_LIGHTS];
 
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection, sampler2D depthM)
 {
@@ -67,14 +65,14 @@ void main()
 	vec3 lighting = diffuse*0.3f;
 	vec3 viewDir = normalize(viewPos - fragPos);
 	vec4 lightSpaces[3];
-	lightSpaces[0] = lightSpaceMatrix * vec4(fragPos, 1.0);
-	lightSpaces[1] = lightSpaceMatrix2 * vec4(fragPos, 1.0);
-	lightSpaces[2] = lightSpaceMatrix * vec4(fragPos, 1.0);
-	vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
-	vec4 fragPosLightSpace2 = lightSpaceMatrix2 * vec4(fragPos, 1.0);
+	lightSpaces[0] = lightSpaceMatrix[0] * vec4(fragPos, 1.0);
+	lightSpaces[1] = lightSpaceMatrix[1] * vec4(fragPos, 1.0);
+	vec4 fragPosLightSpace[2];
+	fragPosLightSpace[0] = lightSpaceMatrix[0] * vec4(fragPos, 1.0);
+	fragPosLightSpace[1] = lightSpaceMatrix[1] * vec4(fragPos, 1.0);
 	 
-
-	for(int i = 0; i < NR_LIGHTS; ++i)
+	//TODO: Get actual number of lights for this loop
+	for(int i = 0; i < MAX_NR_LIGHTS; ++i)
 	{
 		//Attenuation
 		float lightDistance = length(lights[i].position - fragPos);
@@ -86,22 +84,14 @@ void main()
 		float spec = pow(max(dot(normal, halfwayDir), 0.0), 16.0);
 		vec3 thisSpecular = lights[i].color * spec * specular;
 		// Calculate shadows
-		float shadow;
-		if(i != 1)
-		{
-			shadow = ShadowCalculation(lightSpaces[i], normal, lightDir, depthMap);
-		}
-		else
-		{
-			shadow = ShadowCalculation(lightSpaces[i], normal, lightDir, depthMap2);
-		}
+		float shadow = ShadowCalculation(lightSpaces[i], normal, lightDir, depthMap[i]);
         thisDiffuse *= attenuation;
         thisSpecular *= attenuation;
 		lighting += (1.0 - shadow) * (thisDiffuse + thisSpecular);
 	}
 	fragColor = vec4(lighting, 1.0f);
-	float depthValue = texture(depthMap,texCoords).r;
-	float depthValue2 = texture(depthMap2,texCoords).r;
+	float depthValue = texture(depthMap[0],texCoords).r;
+	float depthValue2 = texture(depthMap[1],texCoords).r;
 	// Test depthmap
 	//fragColor = vec4(vec3(depthValue),1.0);
 
