@@ -166,7 +166,6 @@ void Trigger::runCommand(int commandID, int targetID)
 	{
 		Player* player = dynamic_cast<Player*>(targets[targetID]);
 		player->setDiving(!player->getDiving());
-		player->waterEffect();
 	}
 	else if (commands[commandID] == "fire" && targets[targetID]->type() == "Player")
 	{

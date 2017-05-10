@@ -76,13 +76,11 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 
 	if (fabs(enemyPosCurrent.x - newCheckPoint.x) < 0.5f)
 	{
-		std::cout << "x true" << std::endl;
 		xPointReached = true;
 	}
 
 	if (fabs(enemyPosCurrent.y - newCheckPoint.y) < 0.5f)
 	{
-		std::cout << "y true" << std::endl;
 		yPointReached = true;
 	}
 
