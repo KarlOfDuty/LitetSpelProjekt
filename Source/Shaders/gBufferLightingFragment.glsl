@@ -2,7 +2,7 @@
 out vec4 fragColor;
 in vec2 texCoords;
 
-const int MAX_NR_LIGHTS = 2;
+const int MAX_NR_LIGHTS = 5;
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
@@ -18,6 +18,7 @@ struct light
     float quadratic;
 };
 uniform light lights[MAX_NR_LIGHTS];
+uniform int numberOfLights;
 uniform vec3 viewPos;
 uniform mat4 lightSpaceMatrix[MAX_NR_LIGHTS];
 
@@ -61,18 +62,18 @@ void main()
     vec3 diffuse = texture(gAlbedoSpec, texCoords).rgb;
 	float specular = texture(gAlbedoSpec, texCoords).a;
 	vec3 ambient = texture(gAmbient, texCoords).rgb;
-	//Adds the ambient
+	//Ambient is not used because of reasons
 	vec3 lighting = diffuse*0.3f;
 	vec3 viewDir = normalize(viewPos - fragPos);
-	vec4 lightSpaces[3];
-	lightSpaces[0] = lightSpaceMatrix[0] * vec4(fragPos, 1.0);
-	lightSpaces[1] = lightSpaceMatrix[1] * vec4(fragPos, 1.0);
-	vec4 fragPosLightSpace[2];
-	fragPosLightSpace[0] = lightSpaceMatrix[0] * vec4(fragPos, 1.0);
-	fragPosLightSpace[1] = lightSpaceMatrix[1] * vec4(fragPos, 1.0);
-	 
-	//TODO: Get actual number of lights for this loop
-	for(int i = 0; i < MAX_NR_LIGHTS; ++i)
+	vec4 lightSpaces[MAX_NR_LIGHTS];
+	vec4 fragPosLightSpace[MAX_NR_LIGHTS];
+	for(int i = 0; i < numberOfLights; i++)
+	{
+		lightSpaces[i] = lightSpaceMatrix[i] * vec4(fragPos, 1.0);
+		fragPosLightSpace[i] = lightSpaceMatrix[i] * vec4(fragPos, 1.0);
+	}
+
+	for(int i = 0; i < numberOfLights; i++)
 	{
 		//Attenuation
 		float lightDistance = length(lights[i].position - fragPos);
