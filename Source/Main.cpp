@@ -176,7 +176,12 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(simpleShadowShader);
 	}
-	player->draw(simpleShadowShader);
+	enemyManager->draw(simpleShadowShader);
+	if (player->playerIsDead() != true)
+	{
+		player->draw(simpleShadowShader);
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -199,7 +204,13 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader2.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(simpleShadowShader2);
 	}
-	player->draw(simpleShadowShader2);
+	enemyManager->draw(simpleShadowShader2);
+	if (player->playerIsDead() != true)
+	{
+		player->draw(simpleShadowShader2);
+	}
+	
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -96,11 +96,7 @@ void Player::jump()
 
 void Player::waterEffect()
 {
-	if (this->player == playerCharacters[1])
-	{
-		this->setDiving(true);
-	}
-	else if (this->player == playerCharacters[2])
+	if (this->player == playerCharacters[2])
 	{
 		setHealth(0);
 	}
@@ -297,6 +293,12 @@ std::string Player::type() const
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
+	//kill player in water
+	if (getDiving())
+	{
+		waterEffect();
+	}
+
 	groundPos = 0.0f;
 	if (getPos().y > groundPos && isOnGround)
 	{
