@@ -34,24 +34,31 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 
 	if (collides)
 	{
-		if (collidedFrom.y == 0 && collidedFrom.x != 0 || collidedFrom.y > 0 && collidedFrom.x == 0)
+		if (collidedFrom.y == 0 && collidedFrom.x != 0)
 		{
-			velocityY += 2.0f*dt;
+			velocityY += 7.0f*dt;
 		}
-		else if (collidedFrom.y < 0)
+		if (collidedFrom.y > 0)
 		{
-			if (collisionTime.getElapsedTime().asSeconds() < 0.1)
+			if (enemyPosCurrent.x > player->getPos().x)
 			{
-				std::cout << "new point" << std::endl;
-				newCheckPoint.y = enemyPosCurrent.y;
-				newCheckPoint.x = enemyPosCurrent.x;
-				checkPointReached = true;
-				goingLeft = false;
-				goingRight = false;
+				velocityY += 7.0f*dt;
+				velocityX -= 7.0f*dt;
+			}
+			else if (enemyPosCurrent.x < player->getPos().x)
+			{
+				velocityY += 7.0f*dt;
+				velocityX += 7.0f*dt;
 			}
 		}
 
-		if (collisionTime.getElapsedTime().asSeconds() >= 5)
+		if (collidedFrom.y < 0)
+		{
+			newCheckPoint.y = enemyPosCurrent.y;
+			newCheckPoint.x = enemyPosCurrent.x;
+		}
+
+		if (collisionTime.getElapsedTime().asSeconds() >= 6)
 		{
 			returnToStart = true;
 			playerSeen = false;
@@ -67,57 +74,74 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 		goUp = true;
 	}
 
-	if (fabs(enemyPosCurrent.x - newCheckPoint.x) < 1.0f)
+	if (fabs(enemyPosCurrent.x - newCheckPoint.x) < 0.5f)
 	{
-		std::cout << "reached" << std::endl;
+		std::cout << "x true" << std::endl;
+		xPointReached = true;
+	}
+
+	if (fabs(enemyPosCurrent.y - newCheckPoint.y) < 0.5f)
+	{
+		std::cout << "y true" << std::endl;
+		yPointReached = true;
+	}
+
+	if (yPointReached && !xPointReached)
+	{
+		xPointReached = true;
+	}
+
+	if (xPointReached && yPointReached)
+	{
 		checkPointReached = true;
 		goingLeft = false;
 		goingRight = false;
 		goUp = false;
 		swoopAttack = false;
 	}
-	else
+	
+	if (!xPointReached && !yPointReached)
 	{
-		std::cout << "not reached" << std::endl;
-		waitInAir.restart();
 		checkPointReached = false;
+		waitInAir.restart();
 	}
-	std::cout << newCheckPoint.x << std::endl;
 
 	if (playerSeen)
 	{
-		if (checkPointReached)
+		if (waitInAir.getElapsedTime().asSeconds() >= 1.2)
 		{
-			if (enemyPosCurrent.x > player->getPos().x)
+			if (checkPointReached)
 			{
-				goingLeft = true;
-			}
-			else if (enemyPosCurrent.x < player->getPos().x)
-			{
-				goingRight = true;
-			}
+				if (enemyPosCurrent.x > player->getPos().x)
+				{
+					goingLeft = true;
+				}
+				else if (enemyPosCurrent.x < player->getPos().x)
+				{
+					goingRight = true;
+				}
 
-			if (goingLeft)
-			{
-				newCheckPoint.x = newCheckPoint.x - 25.0f;
-				newCheckPoint.y = startPosition.y;
-				newCheckPoint.z = startPosition.z;
-			}
+				if (goingLeft)
+				{
+					newCheckPoint.x = newCheckPoint.x - 20.0f;
+					newCheckPoint.y = startPosition.y;
+					newCheckPoint.z = startPosition.z;
+				}
 
-			if (goingRight)
-			{
-				newCheckPoint.x = newCheckPoint.x + 25.0f;
-				newCheckPoint.y = startPosition.y;
-				newCheckPoint.z = startPosition.z;
+				if (goingRight)
+				{
+					newCheckPoint.x = newCheckPoint.x + 20.0f;
+					newCheckPoint.y = startPosition.y;
+					newCheckPoint.z = startPosition.z;
+				}
+				swoopAttack = true;
+				xPointReached = false;
+				yPointReached = false;
 			}
-
 		}
 	}
 
-	if (waitInAir.getElapsedTime().asSeconds() >= 1.2)
-	{
-		swoopAttack = true;
-	}
+	
 
 	//Detect player
 	if (glm::length(enemyPosCurrent - player->getPos()) < 15.0f)
@@ -128,7 +152,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 
 	//Move
 	midX = startPosition.y-13;
-	float curve = glm::pow(enemyPosCurrent.y - midX, 0.5);
+	float curve = glm::pow(enemyPosCurrent.y - midX, 0.7);
 	if (!returnToStart)
 	{
 		if (swoopAttack)
@@ -137,24 +161,25 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 			{
 				if (fabs(enemyPosCurrent.x - newCheckPoint.x) > 0.1f && goingLeft && !goUp)
 				{
-					velocityX -= 4.0f*dt;
+					velocityX -= 5.0f*dt;
 					velocityY -= curve*dt;
 				}
 				else if (fabs(enemyPosCurrent.x - newCheckPoint.x) > 0.1f && goingRight && !goUp)
 				{
-					velocityX += 4.0f*dt;
+					velocityX += 5.0f*dt;
 					velocityY -= curve*dt;
 				}
-				if (fabs(enemyPosCurrent.x - newCheckPoint.x) > 0.1f && goingLeft && goUp)
+				if (fabs(enemyPosCurrent.y - newCheckPoint.y) > 0.1f && goingLeft && goUp)
 				{
-					velocityX -= 4.0f*dt;
+					velocityX -= 5.0f*dt;
 					velocityY += curve*dt;
 				}
-				else if (fabs(enemyPosCurrent.x - newCheckPoint.x) > 0.1f && goingRight && goUp)
+				else if (fabs(enemyPosCurrent.y - newCheckPoint.y) > 0.1f && goingRight && goUp)
 				{
-					velocityX += 4.0f*dt;
+					velocityX += 5.0f*dt;
 					velocityY += curve*dt;
 				}
+
 				if (enemyPosCurrent.y > newCheckPoint.y)
 				{
 					velocityY -= curve*dt;

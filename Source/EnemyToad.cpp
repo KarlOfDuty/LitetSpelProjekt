@@ -40,7 +40,6 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				{
 					returnToStart = true;
 					playerSeen = false;
-					std::cout << "going home" << std::endl;
 				}
 				timeSinceCollision.restart();
 			}
