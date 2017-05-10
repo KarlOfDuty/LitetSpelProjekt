@@ -21,7 +21,7 @@ private:
 	sf::Clock damageImmunity;
 	Model *model;
 	glm::vec3 pos;
-	//glm::mat4 enemyModelMatrix;
+	glm::vec3 scaleFactor;
 	glm::vec3 checkPoint;
 	//Animation animation;
 public:
@@ -33,6 +33,8 @@ public:
 	glm::vec2 collidedFrom;
 	float radians;
 	float groundPos;
+	float angle;
+	bool rotation;
 
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
@@ -40,13 +42,14 @@ public:
 	virtual std::string type() const;
 	//Own functions
 	Enemy();
-	Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos);
+	Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor);
 	virtual ~Enemy();
 	void setPos(glm::vec3 position);
 	void setHealth(int health);
 	int getDamage()const;
 	int getHealth() const;
 	Model* getModel();
+	void rotateModel(float direction);
 	void applyDamage(int appliedDamage);
 	void groundCheck();
 	bool collision(std::vector<Model*> &allModels);

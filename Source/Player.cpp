@@ -399,7 +399,6 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 				angle -= 12;
 			}
-
 		}
 		//If in air
 		if (!isOnGround)

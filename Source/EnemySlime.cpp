@@ -2,7 +2,7 @@
 #include "Player.h"
 
 
-EnemySlime::EnemySlime(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
+EnemySlime::EnemySlime(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {
 	startPosition = enemyStartPos;
 	returnToStart = false;
@@ -76,6 +76,14 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	{
 		if (playerSeen)
 		{
+			if (enemyPosCurrent.x >= player->getPos().x)
+			{
+				rotateLeft = false;
+			}
+			if (enemyPosCurrent.x <= player->getPos().x)
+			{
+				rotateLeft = true;
+			}
 			if (enemyPosCurrent.x > player->getPos().x)
 			{
 				velocityX -= 2.0f*dt;
@@ -89,18 +97,34 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 		else
 		{
 			//Patrol
-			/*if (checkPointReached == false)
-			{
-				velocityX -= 2.0f*dt;
-			}
-			else if (checkPointReached == true)
-			{
-				velocityX += 2.0f*dt;
-			}*/
+			//if (enemyPosCurrent.x >= checkPoint.x)
+			//{
+			//	rotateLeft = false;
+			//}
+			//if (enemyPosCurrent.x <= checkPoint.x)
+			//{
+			//	rotateLeft = true;
+			//}
+			//if (checkPointReached == false)
+			//{
+			//	velocityX -= 2.0f*dt;
+			//}
+			//else if (checkPointReached == true)
+			//{
+			//	velocityX += 2.0f*dt;
+			//}
 		}
 	}
 	else
 	{
+		if (enemyPosCurrent.x >= startPosition.x)
+		{
+			rotateLeft = false;
+		}
+		if (enemyPosCurrent.x <= startPosition.x)
+		{
+			rotateLeft = true;
+		}
 		if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
 		{
 			if (enemyPosCurrent.x > startPosition.x)
@@ -161,5 +185,15 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	setPos(enemyPosCurrent);
 
 	collides = collision(allModels);
+
+	if (rotateLeft == false)
+	{
+		rotateModel(-90.0f);
+	}
+
+	if (rotateLeft == true)
+	{
+		rotateModel(90.0f);
+	}
 }
 

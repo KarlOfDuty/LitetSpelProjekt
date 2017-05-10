@@ -40,10 +40,7 @@ public:
 	void createCrab(glm::vec3 enemyStartPos);
 	void createBoss(glm::vec3 enemyStartPos);
 	void createFirefly(glm::vec3 enemyStartPos);
-	void sortEnemies(glm::vec3 playerPos);
 	void clearDeadEnemies();
-	glm::vec3 getPos()const;
-	int getDamage()const;
 	std::vector<Enemy*> &getAllEnemies();
 	void update(float dt, int playerDamage, std::vector<Model*> &allModels, Player* player);
 	void draw(Shader shader);

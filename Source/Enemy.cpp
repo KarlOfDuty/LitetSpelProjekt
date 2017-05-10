@@ -9,16 +9,19 @@ Enemy::Enemy()
 }
 
 
-Enemy::Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos)
+Enemy::Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor)
 {
 	this->health = health;
 	this->model = model;
 	this->damage = damage;
 	this->pos = enemyStartPos;
+	this->scaleFactor = scaleFactor;
 	setPos(pos);
 	isOnGround = true;
 	playerSeen = false;
+	angle = 0;
 	this->checkPoint.x = enemyStartPos.x;
+	
 }
 
 Enemy::~Enemy()
@@ -30,9 +33,9 @@ void Enemy::setPos(glm::vec3 position)
 {
 	pos = position;
 	this->model->setModelMatrix(glm::mat4(
-		0.075, 0.0, 0.0, 0.0,
-		0.0, 0.075, 0.0, 0.0,
-		0.0, 0.0, 0.075, 0.0,
+		scaleFactor.x, 0.0, 0.0, 0.0,
+		0.0, scaleFactor.y, 0.0, 0.0,
+		0.0, 0.0, scaleFactor.z, 0.0,
 		pos.x, pos.y, pos.z, 1.0
 	));
 }
@@ -69,6 +72,12 @@ int Enemy::getHealth() const
 Model* Enemy::getModel()
 {
 	return this->model;
+}
+
+void Enemy::rotateModel(float direction)
+{
+	model->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(direction), glm::vec3(0.0f, 1.0f, 0.0f)));
+	model->rotate();
 }
 
 void Enemy::applyDamage(int appliedDamage)

@@ -1,7 +1,7 @@
 #include "EnemyBatSmall.h"
 #include "Player.h"
 
-EnemyBatSmall::EnemyBatSmall(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
+EnemyBatSmall::EnemyBatSmall(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {
 	goForPlayer = true;
 	startPosition = enemyStartPos;

@@ -450,7 +450,7 @@ void loadLevel()
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
-	enemyManager->createSlime(glm::vec3(18.0f, 7.0f, 0.0f));
+	enemyManager->createSlime(glm::vec3(19.0f, 7.0f, 0.0f));
 	enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
 	enemyManager->createGiantBat(glm::vec3(25.0f, 12.0f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));

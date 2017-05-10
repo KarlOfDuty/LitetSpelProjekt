@@ -5,6 +5,7 @@ class EnemySkeleton : public Enemy
 private:
 	bool checkPointReached;
 	bool patrol;
+	bool rotateLeft;
 
 	//workarounds for collision
 	bool collides;
@@ -13,7 +14,7 @@ private:
 	sf::Clock collisionTime;
 	glm::vec3 startPosition;
 public:
-	EnemySkeleton(int health, Model* enemyModel, int damage, bool patrol, glm::vec3 enemyStartPos);
+	EnemySkeleton(int health, Model* enemyModel, int damage, bool patrol, glm::vec3 enemyStartPos, glm::vec3 scaleFactor);
 	virtual ~EnemySkeleton();
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent);
 	virtual void updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player);
