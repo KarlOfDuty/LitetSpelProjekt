@@ -255,4 +255,5 @@ paket-files/
 *.exe
 
 Source/LitetSpel/x64/Debug/*.obj
+Source/LitetSpel/x64/Release/*.obj
 *.exe
