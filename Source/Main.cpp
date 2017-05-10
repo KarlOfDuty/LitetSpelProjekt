@@ -61,8 +61,7 @@ glm::mat4 viewMatrix;
 SoundSystem *soundSystem;
 
 //Lights
-const GLuint NR_LIGHTS = 2;
-std::vector<Light*> lights;
+std::vector<PointLight*> lights;
 
 //VBO VAO
 GLuint VBO, VAO, EBO;
@@ -286,7 +285,7 @@ void createGBuffer()
 	deferredLightingPass = Shader("Shaders/gBufferLightingVertex.glsl", "Shaders/gBufferLightingFragment.glsl");
 	shadowShader = Shader("shadowVertex.glsl", "shadowFragment.glsl");
 
-	for (int i = 0; i < NR_LIGHTS; i++)
+	for (int i = 0; i < lights.size(); i++)
 	{
 		//Shadow buffer
 		depthMap.push_back(0);
@@ -419,11 +418,7 @@ void loadLevel()
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 	//Some lights with random values
 	std::srand((int)time(0));
-	for (int i = 0; i < NR_LIGHTS; i++)
-	{
-
-	}
-	lights.push_back(new Light(
+	lights.push_back(new PointLight(
 		glm::vec3(-3.0f, 10.0f, 0),
 		glm::vec3(0.6f, 0.9f, 0.9f),
 		0.0000f, 0.00f));

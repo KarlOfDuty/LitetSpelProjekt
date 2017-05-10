@@ -6,7 +6,7 @@
 #include "Model.h"
 #include "EnemyManager.h"
 #include "Player.h"
-#include "Light.h"
+#include "PointLight.h"
 #include "Projectile.h"
 #include "Collision.h"
 extern bool endLevel;
