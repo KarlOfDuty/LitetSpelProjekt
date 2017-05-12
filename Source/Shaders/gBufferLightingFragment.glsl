@@ -14,17 +14,17 @@ uniform sampler2D depthMap[MAX_NR_DIR_LIGHTS];
 struct PointLight 
 {
     vec3 position;
-    vec3 color;
+    vec3 colour;
     float linear;
     float quadratic;
 };
 struct DirLight 
 {
-    vec3 direction;
-    vec3 color;
+    vec3 dir;
+    vec3 colour;
 };
 uniform PointLight pointLights[MAX_NR_POINT_LIGHTS];
-uniform PointLight directionalLights[MAX_NR_DIR_LIGHTS];
+uniform DirLight directionalLights[MAX_NR_DIR_LIGHTS];
 uniform int numberOfPointLights;
 uniform int numberOfDirLights;
 uniform vec3 viewPos;
@@ -73,30 +73,29 @@ void main()
 	//Ambient is not used because of reasons
 	vec3 lighting = diffuse*0.3f;
 	vec3 viewDir = normalize(viewPos - fragPos);
-	vec4 lightSpaces[MAX_NR_DIR_LIGHTS];
-	vec4 fragPosLightSpace[MAX_NR_DIR_LIGHTS];
-	for(int i = 0; i < numberOfPointLights; i++)
-	{
-		lightSpaces[i] = lightSpaceMatrix[i] * vec4(fragPos, 1.0);
-		fragPosLightSpace[i] = lightSpaceMatrix[i] * vec4(fragPos, 1.0);
-	}
 
+	for(int i = 0; i < numberOfDirLights; i++)
+	{	
+		vec4 lightSpace;
+		lightSpace = lightSpaceMatrix[i] * vec4(fragPos, 1.0);
+		// Calculate shadows
+		float shadow = ShadowCalculation(lightSpace, normal, directionalLights[i].dir, depthMap[i]);
+		lighting += (1.0 - shadow) * (diffuse*directionalLights[i].colour);
+	}
 	for(int i = 0; i < numberOfPointLights; i++)
 	{
 		//Attenuation
 		float lightDistance = length(pointLights[i].position - fragPos);
         float attenuation = 1.0 / (1.0 + pointLights[i].linear * lightDistance + pointLights[i].quadratic * lightDistance * lightDistance);
 		vec3 lightDir = normalize(pointLights[i].position - fragPos);
-		vec3 thisDiffuse = max(dot(normal, lightDir), 0.0) * diffuse * pointLights[i].color;
+		vec3 thisDiffuse = max(dot(normal, lightDir), 0.0) * diffuse * pointLights[i].colour;
 		//Specular
 		vec3 halfwayDir = normalize(lightDir + viewDir);
 		float spec = pow(max(dot(normal, halfwayDir), 0.0), 16.0);
-		vec3 thisSpecular = pointLights[i].color * spec * specular;
-		// Calculate shadows
-		float shadow = ShadowCalculation(lightSpaces[i], normal, lightDir, depthMap[i]);
+		vec3 thisSpecular = pointLights[i].colour * spec * specular;
         thisDiffuse *= attenuation;
         thisSpecular *= attenuation;
-		lighting += (1.0 - shadow) * (thisDiffuse + thisSpecular);
+		lighting += (thisDiffuse + thisSpecular);
 	}
 	fragColor = vec4(lighting, 1.0f);
 	float depthValue = texture(depthMap[0],texCoords).r;

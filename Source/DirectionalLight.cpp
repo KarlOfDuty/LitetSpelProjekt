@@ -8,7 +8,7 @@ DirectionalLight::DirectionalLight()
 
 DirectionalLight::DirectionalLight(glm::vec3 dir, glm::vec3 colour)
 {
-	this->direction = dir;
+	this->direction = glm::normalize(dir);
 	this->colour = colour;
 }
 
@@ -19,7 +19,7 @@ DirectionalLight::~DirectionalLight()
 
 void DirectionalLight::setDirection(glm::vec3 dir)
 {
-	this->direction = dir;
+	this->direction = glm::normalize(dir);
 }
 
 void DirectionalLight::setColour(glm::vec3 colour)
