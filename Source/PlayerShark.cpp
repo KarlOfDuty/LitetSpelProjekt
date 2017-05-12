@@ -1,10 +1,10 @@
 #include "PlayerShark.h"
 
 
-PlayerShark::PlayerShark(int health, Model model, bool inWater) :PlayerChar(health, model, inWater)
+PlayerShark::PlayerShark(Model model, bool inWater) :PlayerChar(model, inWater)
 {
 	this->maxJumps = 1;
-	this->jumpHeight = 10;
+	this->jumpHeight = 15;
 	this->arrowModel = new Model("models/cube/cubeGreen.obj");
 	this->arrowVelocity = 30.0f;
 }
@@ -27,13 +27,6 @@ int PlayerShark::getMaxJumps()
 float PlayerShark::getJumpHeight()
 {
 	return jumpHeight;
-}
-
-void PlayerShark::waterEffect()
-{
-}
-void PlayerShark::dive()
-{
 }
 
 void PlayerShark::shootArrow(std::vector<Projectile*>& allProjectiles, glm::vec2 position, glm::vec2 direction) const

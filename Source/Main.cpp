@@ -176,7 +176,12 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(simpleShadowShader);
 	}
-	player->draw(simpleShadowShader);
+	enemyManager->draw(simpleShadowShader);
+	if (player->playerIsDead() != true)
+	{
+		player->draw(simpleShadowShader);
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -199,7 +204,13 @@ void render()
 		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader2.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(simpleShadowShader2);
 	}
-	player->draw(simpleShadowShader2);
+	enemyManager->draw(simpleShadowShader2);
+	if (player->playerIsDead() != true)
+	{
+		player->draw(simpleShadowShader2);
+	}
+	
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, windowWidth, windowHeight);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -276,7 +287,7 @@ void update(sf::Window &window)
 		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemyManager->getAllEnemies());
 	}
 
-	enemyManager->update(dt, player->getPos(), player->getDamage(), modelsToBeDrawn, player->getPoints());
+	enemyManager->update(dt, player->getDamage(), modelsToBeDrawn, player);
 
 	//Camera update, get new viewMatrix
 	if (aboveView)
@@ -439,7 +450,7 @@ void loadLevel()
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
-	enemyManager->createSlime(glm::vec3(18.0f, 7.0f, 0.0f));
+	enemyManager->createSlime(glm::vec3(19.0f, 7.0f, 0.0f));
 	enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
 	enemyManager->createGiantBat(glm::vec3(25.0f, 12.0f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));

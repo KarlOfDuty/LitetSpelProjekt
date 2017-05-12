@@ -170,22 +170,22 @@ void Trigger::runCommand(int commandID, int targetID)
 	else if (commands[commandID] == "fire" && targets[targetID]->type() == "Player")
 	{
 		Player* player = dynamic_cast<Player*>(targets[targetID]);
-		player->getCurrentCharacter()->applyDamage(1);
+		player->applyDamage(1);
 	}
 	else if (commands[commandID] == "spikes" && targets[targetID]->type() == "Player")
 	{
 		Player* player = dynamic_cast<Player*>(targets[targetID]);
-		player->getCurrentCharacter()->applyDamage(10);
+		player->applyDamage(10);
 	}
 	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Player")
 	{
 		Player* player = dynamic_cast<Player*>(targets[targetID]);
-		player->getCurrentCharacter()->applyDamage(1000000);
+		player->setHealth(0);
 	}
 	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Enemy")
 	{
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
-		enemy->applyDamage(10000000);
+		enemy->setHealth(0);
 	}
 }
 //Constructors
