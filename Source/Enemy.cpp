@@ -172,7 +172,6 @@ void Enemy::update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model
 	if (glm::length(pos - player->getPos()) < 25.0f)
 	{
 		updateThis(dt, pos, checkPoint, allSmallBats, allModels, player);
-		attackPlayer(dt, player->getPos(), pos);
 	}
 }
 

@@ -165,5 +165,6 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			rotateModel(90.0f);
 		}
+		collisionWithPlayer(player);
 	}
 }

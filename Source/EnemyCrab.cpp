@@ -223,4 +223,5 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	setPos(enemyPosCurrent);
 	collides = collision(allModels);
+	collisionWithPlayer(player);
 }

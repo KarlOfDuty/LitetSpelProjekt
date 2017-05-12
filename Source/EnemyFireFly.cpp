@@ -1,10 +1,11 @@
 #include "EnemyFireFly.h"
 #include "Player.h"
 
-EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
+EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {
-	this->attackRange = 8;
+	this->attackRange = 10;
 	this->startPosition = enemyStartPos;
+	this->allProjectiles = allProjectiles;
 }
 
 EnemyFireFly::~EnemyFireFly()
@@ -14,7 +15,38 @@ EnemyFireFly::~EnemyFireFly()
 
 void EnemyFireFly::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
+	if (attackCooldown.getElapsedTime().asSeconds() >= 2)
+	{
+		int activeArrows = 0;
+		for (int i = 0; i < allProjectiles->size(); i++)
+		{
+			if (allProjectiles->at(i)->isInUse())
+				activeArrows++;
+		}
 
+		glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-1, 0) : glm::vec2(1, 0);
+		if (activeArrows < allProjectiles->size())
+		{
+			if (activeArrows < allProjectiles->size())
+			{
+				for (int i = 0; i < allProjectiles->size(); i++)
+				{
+					if (!allProjectiles->at(i)->isInUse())
+					{
+						allProjectiles->at(i)->shoot(getModel(), getPos(), direction, glm::vec2(), 10.f, glm::vec3(0.2, 0.2, 0.2),false,true);
+						i = (int)allProjectiles->size();
+					}
+				}
+			}
+		}
+		else
+		{
+			Projectile* temp = new Projectile;
+			temp->shoot(getModel(), getPos(), direction, glm::vec2(), 10.f, glm::vec3(0.2, 0.2, 0.2),false,true);
+			allProjectiles->push_back(temp);
+		}
+		attackCooldown.restart();
+	}
 }
 
 void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
@@ -46,7 +78,7 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 che
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 15.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -65,11 +97,11 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 che
 			{
 				velocityX += 1.5f*dt;
 			}
-			if (enemyPosCurrent.y > player->getPos().y)
+			if (enemyPosCurrent.y > player->getPos().y + 2)
 			{
 				velocityY -= 1.5f*dt;
 			}
-			else if (enemyPosCurrent.y < player->getPos().y)
+			else if (enemyPosCurrent.y < player->getPos().y + 2)
 			{
 				velocityY += 1.5f*dt;
 			}
@@ -111,6 +143,11 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 che
 		}
 	}
 
+	if (glm::length(enemyPosCurrent - player->getPos()) < 11.0f && fabs(enemyPosCurrent.y - player->getPos().y) < 3.0f)
+	{
+		this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+	}
+
 
 	if (isOnGround)
 	{
@@ -141,4 +178,5 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 che
 
 	setPos(enemyPosCurrent);
 	collides = collision(allModels);
+	collisionWithPlayer(player);
 }

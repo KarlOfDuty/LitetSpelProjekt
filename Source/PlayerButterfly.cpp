@@ -41,6 +41,7 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 	glm::vec3 aabb_min(-13, -13, -13);
 	glm::vec3 aabb_max(13, 13, 13);
 	float intersection_distance = 10000;
+	//Check how many arrows are active in the arrow vector
 	for (int i = 0; i < allStaticModels.size(); i++)
 	{
 		glm::mat4 boxMatrix = allStaticModels[i]->getModelMatrix();
@@ -63,10 +64,33 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 			}
 		}
 	}
+	int activeArrows = 0;
+	for (int i = 0; i < allProjectiles.size(); i++)
+	{
+		if (allProjectiles[i]->isInUse())
+			activeArrows++;
+	}
 	if (intersection_distance < 4)
 	{
-		Projectile* temp = new Projectile;
-		temp->aoe(box, position, direction, 5.0f, scale);
-		allProjectiles.push_back(temp);
+		if (activeArrows < allProjectiles.size())
+		{
+			if (activeArrows < allProjectiles.size())
+			{
+				for (int i = 0; i < allProjectiles.size(); i++)
+				{
+					if (!allProjectiles[i]->isInUse())
+					{
+						allProjectiles[i]->aoe(box, position, direction, 5.0f, scale);
+						i = (int)allProjectiles.size();
+					}
+				}
+			}
+		}
+		else
+		{
+			Projectile* temp = new Projectile;
+			temp->aoe(box, position, direction, 5.0f, scale);
+			allProjectiles.push_back(temp);
+		}
 	}
 }

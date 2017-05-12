@@ -1,6 +1,5 @@
 #include "EnemyManager.h"
 
-
 EnemyManager::EnemyManager()
 {
 	slimeModel = new Model("models/Enemies/Slime/Slime.obj");
@@ -11,6 +10,7 @@ EnemyManager::EnemyManager()
 	skeletonModel = new Model("models/Enemies/Skeleton/Skeleton.obj");
 	crabModel = new Model("models/Enemies/Crab/Crab.obj");
 	fireflyModel = new Model("models/cube/cube.obj");
+	allProjectiles = new std::vector<Projectile*>();
 }
 
 EnemyManager::~EnemyManager()
@@ -25,12 +25,12 @@ void EnemyManager::createSlime(glm::vec3 enemyStartPos)
 
 void EnemyManager::createToad(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyToad(5, new Model(toadModel), 2, enemyStartPos, glm::vec3(0.18f, 0.18f, 0.18f)));
+	this->allEnemies.push_back(new EnemyToad(5, new Model(toadModel), 2, enemyStartPos, glm::vec3(0.18f, 0.18f, 0.18f), allProjectiles));
 }
 
 void EnemyManager::createGiantBat(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, enemyStartPos, glm::vec3(0.14f, 0.14f, 0.14f)));
+	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, enemyStartPos, glm::vec3(0.12f, 0.12f, 0.12f)));
 }
 
 void EnemyManager::createBatSwarm(glm::vec3 enemyStartPos)
@@ -41,7 +41,7 @@ void EnemyManager::createBatSwarm(glm::vec3 enemyStartPos)
 
 void EnemyManager::createSkeleton(glm::vec3 enemyStartPos, bool patrol)
 {
-	this->allEnemies.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, patrol, enemyStartPos, glm::vec3(0.12f, 0.12f, 0.12f)));
+	this->allEnemies.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, patrol, enemyStartPos, glm::vec3(0.12f, 0.12f, 0.12f), allProjectiles));
 }
 
 void EnemyManager::createCrab(glm::vec3 enemyStartPos)
@@ -56,7 +56,7 @@ void EnemyManager::createBoss(glm::vec3 enemyStartPos)
 
 void EnemyManager::createFirefly(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, enemyStartPos, glm::vec3(0.16f, 0.16f, 0.16f)));
+	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, enemyStartPos, glm::vec3(0.16f, 0.16f, 0.16f), allProjectiles));
 }
 
 void EnemyManager::clearDeadEnemies()
@@ -83,12 +83,31 @@ void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allMo
 	{
 		if (allThreads.size() <= i)
 		{
-			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, allSmallBats, allModels, player);}, allEnemies[i]));
+			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, allSmallBats, allModels, player); }, allEnemies[i]));
 		}
 	}
 	for (int i = 0; i < allThreads.size(); i++)
 	{
 		allThreads[i].join();
+	}
+	for (int i = 0; i < allProjectiles->size(); i++)
+	{
+		allProjectiles->at(i)->update(dt, allModels, player->getPos());
+	}
+	for (int i = 0; i < allProjectiles->size(); i++)
+	{
+		if (allProjectiles->at(i)->isInUse())
+		{
+			std::vector<glm::vec2> arrowPoints = allProjectiles->at(i)->getPoints();
+			if (glm::distance(allProjectiles->at(i)->getPos(), player->getPos()) < 2.0f)
+			{
+				if (collision::collision(arrowPoints, player->getPoints()))
+				{
+					player->applyDamage(1);
+					allProjectiles->at(i)->disableArrow();
+				}
+			}
+		}
 	}
 }
 
@@ -98,6 +117,13 @@ void EnemyManager::draw(Shader shader)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &allEnemies[i]->getModel()->getModelMatrix()[0][0]);
 		allEnemies[i]->draw(shader);
+	}
+	for (int i = 0; i < allProjectiles->size(); i++)
+	{
+		if (allProjectiles->at(i)->isInUse())
+		{
+			allProjectiles->at(i)->draw(shader);
+		}
 	}
 }
 

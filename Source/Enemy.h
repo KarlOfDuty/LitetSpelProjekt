@@ -2,6 +2,7 @@
 #define ENEMY_H
 #include "Model.h"
 #include "Collision.h"
+#include "Projectile.h"
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <SFML\Window.hpp>
