@@ -7,6 +7,7 @@ private:
 	int maxJumps;
 	float jumpHeight;
 	Model* box;
+	sf::Clock attackCooldown;
 public:
 	PlayerBird(Model model, bool inWater);
 	virtual ~PlayerBird();

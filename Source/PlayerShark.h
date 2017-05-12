@@ -6,6 +6,7 @@ private:
 	int maxJumps;
 	float jumpHeight;
 	Model* arrowModel;
+	sf::Clock attackCooldown;
 public:
 	float arrowVelocity;
 
@@ -14,6 +15,5 @@ public:
 	void operator=(const PlayerShark &originalObject);
 	int getMaxJumps();
 	float getJumpHeight();
-	void shootArrow(std::vector<Projectile*> &allProjectiles, glm::vec2 position, glm::vec2 direction)const;
-
+	void shootArrow(std::vector<Projectile*> &allProjectiles, glm::vec2 position, glm::vec2 direction);
 };
