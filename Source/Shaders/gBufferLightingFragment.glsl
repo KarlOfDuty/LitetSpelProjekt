@@ -38,9 +38,13 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection
 	projCoords = projCoords * 0.5 + 0.5;
 	//Get depth of current fragment from light's perspective
 	float currentDepth = projCoords.z;
+	if(projCoords.z > 1.0)
+	{
+        return 0;
+	}
 	float shadow = 0.0;
 	// Calculate bias
-	float bias = max(0.05 * (1.0 - dot(normal, lightDirection)), 0.005);   
+	float bias = max(0.005 * (1.0 - dot(normal, lightDirection)), 0.001);
 	//PCF - Percentage-Closer Filtering - used to offset the texture coordinates
 	vec2 texelSize = 1.0 / textureSize(depthM, 0);
 
@@ -57,7 +61,7 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDirection
 		}
 	}
 	//Sample size - increase to improve shadow quality
-	shadow /= 64.0;
+	shadow /= 9.0f;
 
 	return shadow;
 }
@@ -75,12 +79,14 @@ void main()
 	vec3 viewDir = normalize(viewPos - fragPos);
 
 	for(int i = 0; i < numberOfDirLights; i++)
-	{	
+	{
+		//Attenuation
+		vec3 thisDiffuse = max(dot(normal, -directionalLights[i].dir), 0.0) * diffuse * directionalLights[i].colour;
 		vec4 lightSpace;
 		lightSpace = lightSpaceMatrix[i] * vec4(fragPos, 1.0);
 		// Calculate shadows
 		float shadow = ShadowCalculation(lightSpace, normal, directionalLights[i].dir, depthMap[i]);
-		lighting += (1.0 - shadow) * (diffuse*directionalLights[i].colour);
+		lighting += (1.0 - shadow) * (thisDiffuse);
 	}
 	for(int i = 0; i < numberOfPointLights; i++)
 	{
@@ -98,7 +104,7 @@ void main()
 		lighting += (thisDiffuse + thisSpecular);
 	}
 	fragColor = vec4(lighting, 1.0f);
-	float depthValue = texture(depthMap[0],texCoords).r;
+	//float depthValue = texture(depthMap[0],texCoords).r;
 	//Test depthmap
 	//fragColor = vec4(vec3(depthValue),1.0);
 

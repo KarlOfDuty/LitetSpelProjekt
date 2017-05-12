@@ -44,8 +44,8 @@ Shader shadowShader;
 //Shadows
 std::vector<GLuint> depthMap;
 std::vector<GLuint> depthMapFBO;
-const GLuint SHADOW_WIDTH = 2048;
-const GLuint SHADOW_HEIGHT = 2048;
+const GLuint SHADOW_WIDTH = 4096;
+const GLuint SHADOW_HEIGHT = 4096;
 
 //Textures
 GLuint gPosition, gNormal, gAlbedoSpec, gAmbient;
@@ -96,7 +96,7 @@ int main()
 	//Load resources, initialize the OpenGL states, ...
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
-
+	glEnable(GL_CULL_FACE);
 
 	//Characters
 	player = new Player();
@@ -155,13 +155,14 @@ void render()
 	glm::mat4 lightProjection;
 	glm::mat4 lightView;
 	std::vector<glm::mat4> lightSpaceMatrix;
-	GLfloat nearPlane = 0.001f;
-	GLfloat farPlane = 50.0f;
-	lightProjection = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, nearPlane, farPlane);
+	GLfloat nearPlane = 0.01f;
+	GLfloat farPlane = 30.0f;
+	lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, nearPlane, farPlane);
+	glCullFace(GL_FRONT);
 	for (int i = 0; i < directionalLights.size(); i++)
 	{
 		lightSpaceMatrix.push_back(glm::mat4());
-		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*20.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
+		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*10.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
 		lightSpaceMatrix[i] = lightProjection * lightView;
 		//Render scene from light's point of view
 		shadowShader.use();
@@ -181,7 +182,7 @@ void render()
 		glViewport(0, 0, windowWidth, windowHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
-
+	glCullFace(GL_BACK);
 	//Geometry pass
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -306,8 +307,10 @@ void createGBuffer()
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO[0]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap[0], 0);
@@ -432,8 +435,8 @@ void loadLevel()
 	//	glm::vec3(0.6f, 0.9f, 0.9f),
 	//	0.0000f, 0.00f));
 	directionalLights.push_back(new DirectionalLight(
-		glm::vec3(1.0f, -1.0f, 0.0f),
-		glm::vec3(0.5f, 0.5f, 0.5f)));
+		glm::vec3(1.0f, -2.0f, 0.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f)));
 	player->setPos(levelManager.currentLevel->getPlayerPos());
 }
 void unloadLevel()
