@@ -299,12 +299,32 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		jumps = 0;
 		waterEffect();
 	}
+	for (int i = 0; i < allStaticModels.size(); i++)
+	{
+		glm::vec3 rayOrigin = getPos();
+		glm::vec3 rayDir(0, -1, 0);
+		glm::vec3 aabbMin, aabbMax;
+		allStaticModels[i]->getMinMaxBouding(aabbMin, aabbMax);
+		aabbMin *= 5;
+		aabbMax *= 5;
+		glm::mat4 boxMat = allStaticModels[i]->getModelMatrix();
+		float distance;
+		if (collision::TestRayOBBIntersection(rayOrigin, rayDir, aabbMin, aabbMax, boxMat, distance))
+		{
+			if (distance < groundPos)
+			{
+				//groundPos = getPos().y - distance;
+			}
+		}
+	}
 
 	groundPos = 0.0f;
+	
 	if (getPos().y > groundPos && isOnGround)
 	{
 		isOnGround = false;
 	}
+
 	int controller = CONTROLLER0;
 
 	//Move
@@ -438,6 +458,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	modelMatrix[3].y += velocityY*dt;
 	
 	collision(allModels);
+	std::cout << groundPos << std::endl;
 
 	//Handle collision detection with ground
 	if (getPos().y <= groundPos && !isOnGround)
@@ -461,7 +482,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 				std::vector<glm::vec2> arrowPoints = allProjectiles[i]->getPoints();
 				for (int k = 0; k < allEnemies.size(); k++)
 				{
-					if (glm::distance(allProjectiles[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
+					if (!allProjectiles[i]->isCollidingWithWorld() && glm::distance(allProjectiles[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
 					{
 						if (collision::collision(arrowPoints, allEnemies[k]->getPoints()))
 						{
