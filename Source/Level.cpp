@@ -135,7 +135,7 @@ void Level::setupTriggers(Player* player)
 	TriggerSettings settings2;
 	settings2.onEnter = true;
 	settings2.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "water"));
+	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "hellogais"));
 }
 void Level::updateTriggers(float dt)
 {
