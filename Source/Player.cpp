@@ -302,7 +302,6 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	
 	groundCheck();
 
-	std::cout << groundPos << std::endl;
 	if (getPos().y > groundPos && isOnGround)
 	{
 		isOnGround = false;
