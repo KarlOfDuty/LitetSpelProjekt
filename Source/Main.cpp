@@ -169,7 +169,12 @@ int main()
 			deltaClock.restart();
 			firstFrame = false;
 		}
+		window.setActive(true);
 		render();
+		window.setActive(false);
+		window.pushGLStates();
+		window.draw(sf::CircleShape(200, 4));
+		window.popGLStates();
 
 		//End the current frame (internally swaps the front and back buffers)
 		window.display();
@@ -440,6 +445,7 @@ void drawQuad()
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void loadLevel()

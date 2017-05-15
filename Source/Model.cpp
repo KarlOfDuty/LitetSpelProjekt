@@ -508,7 +508,7 @@ void Model::setupModel()
 	glVertexAttribPointer(3, 4, GL_INT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 8));
 	//Unbind the vertex array buffer
 	glBindVertexArray(0);
-	//glBind
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 //Loads textures from memory, not from disk
 void Model::loadTextures(int i)
