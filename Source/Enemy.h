@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "Collision.h"
 #include "Projectile.h"
+#include "Trigger.h"
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <SFML\Window.hpp>
@@ -12,9 +13,11 @@
 #include <time.h>  
 #include <random>
 
+class Trigger;
+
 class Player;
 
-class Enemy : GameObject
+class Enemy : public GameObject
 {
 private:
 	float health;
@@ -31,6 +34,7 @@ public:
 	float velocityY;
 	bool isOnGround;
 	bool playerSeen;
+	bool bossImmunity;
 	glm::vec2 collidedFrom;
 	float radians;
 	float groundPos;

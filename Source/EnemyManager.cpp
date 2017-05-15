@@ -6,7 +6,7 @@ EnemyManager::EnemyManager()
 	toadModel = new Model("models/Enemies/Toad/Toad.obj");
 	batModel = new Model("models/Enemies/Bat/BigBat.obj");
 	batSmallModel = new Model("models/Enemies/BatSmall/SmallBat.obj");
-	bossModel = new Model("models/cube/cube.obj");
+	bossModel = new Model("models/Enemies/Boss/FullBoss.obj");
 	skeletonModel = new Model("models/Enemies/Skeleton/Skeleton.obj");
 	crabModel = new Model("models/Enemies/Crab/Crab.obj");
 	fireflyModel = new Model("models/cube/cube.obj");
@@ -51,7 +51,7 @@ void EnemyManager::createCrab(glm::vec3 enemyStartPos)
 
 void EnemyManager::createBoss(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBoss(100, new Model(bossModel), 2, enemyStartPos, glm::vec3(0.10f, 0.10f, 0.10f)));
+	this->allEnemies.push_back(new EnemyBoss(100, new Model(bossModel), 2, enemyStartPos, glm::vec3(0.25f, 0.25f, 0.25f)));
 }
 
 void EnemyManager::createFirefly(glm::vec3 enemyStartPos)
@@ -117,6 +117,17 @@ void EnemyManager::draw(Shader shader)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &allEnemies[i]->getModel()->getModelMatrix()[0][0]);
 		allEnemies[i]->draw(shader);
+		EnemyBoss* bird = dynamic_cast<EnemyBoss*>(allEnemies[i]);
+		if (bird != nullptr)
+		{
+			std::vector<Model*> temp = bird->getDebugModels();
+			for (int i = 0; i < temp.size(); i++)
+			{
+				glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &temp[i]->getModelMatrix()[0][0]);
+				temp[i]->draw(shader);
+			}
+
+		}
 	}
 	for (int i = 0; i < allProjectiles->size(); i++)
 	{

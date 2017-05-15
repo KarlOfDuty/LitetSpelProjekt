@@ -1,5 +1,6 @@
 #include "EnemyBat.h"
 #include "Player.h"
+#include "Trigger.h"
 
 EnemyBat::EnemyBat(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {

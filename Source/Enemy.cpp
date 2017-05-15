@@ -1,6 +1,6 @@
 #include "Enemy.h"
 #include "Player.h"
-
+#include "Trigger.h"
 
 Enemy::Enemy()
 {
@@ -21,7 +21,7 @@ Enemy::Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm:
 	playerSeen = false;
 	angle = 0;
 	this->checkPoint.x = enemyStartPos.x;
-	
+	bossImmunity = false;
 }
 
 Enemy::~Enemy()
@@ -82,10 +82,13 @@ void Enemy::rotateModel(float direction)
 
 void Enemy::applyDamage(int appliedDamage)
 {
-	if (this->damageImmunity.getElapsedTime().asSeconds() >= 0.5)
+	if (!bossImmunity)
 	{
-		this->health -= appliedDamage;
-		this->damageImmunity.restart();
+		if (this->damageImmunity.getElapsedTime().asSeconds() >= 0.5)
+		{
+			this->health -= appliedDamage;
+			this->damageImmunity.restart();
+		}
 	}
 }
 

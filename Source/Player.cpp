@@ -47,6 +47,16 @@ PlayerChar* Player::getCurrentCharacter()
 	return player;
 }
 
+std::vector<Projectile*> Player::getProjectiles()
+{
+	return allProjectiles;
+}
+
+Projectile* Player::getProjectileAt(int nr)
+{
+	return allProjectiles[nr];
+}
+
 int Player::getDamage() const
 {
 	return playerCharacters[0]->getDamage();

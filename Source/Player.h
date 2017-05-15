@@ -54,6 +54,8 @@ public:
 	Player();
 	~Player();
 	PlayerChar* getCurrentCharacter();
+	std::vector<Projectile*> getProjectiles();
+	Projectile* getProjectileAt(int nr);
 	void swap(int charType);
 	bool playerIsDead();
 	int getDamage() const;

@@ -1,5 +1,6 @@
 #include "EnemyCrab.h"
 #include "Player.h"
+#include "Trigger.h"
 
 EnemyCrab::EnemyCrab(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {
@@ -43,7 +44,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	if (!moving)
 	{
-		if (walkTimer.getElapsedTime().asSeconds() >= 1.5)
+		if (walkTimer.getElapsedTime().asSeconds() >= 1.4)
 		{
 			moving = true;
 		}
@@ -68,6 +69,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			movingRight = false;
 			movingLeft = false;
+			moving = false;
 			if (collisionTime.getElapsedTime().asSeconds() >= 5)
 			{
 				returnToStart = true;

@@ -1,6 +1,6 @@
 #include "EnemySlime.h"
 #include "Player.h"
-
+#include "Trigger.h"
 
 EnemySlime::EnemySlime(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {

@@ -1,7 +1,17 @@
 #include "Trigger.h"
+#include "EnemyManager.h"
+
 std::vector<glm::vec2> Trigger::getPoints()
 {
 	return corners;
+}
+void Trigger::move(glm::vec2 distance)
+{
+	for (int i = 0; i < corners.size(); i++)
+	{
+		corners[i].x += distance.x;
+		corners[i].y += distance.y;
+	}
 }
 glm::vec3 Trigger::getPos() const
 {
@@ -186,6 +196,10 @@ void Trigger::runCommand(int commandID, int targetID)
 	{
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
 		enemy->setHealth(0);
+	}
+	else if (commands[commandID] == "applyDamage" && targets[targetID]->type() == "Enemy")
+	{
+		std::cout << "beep" << std::endl;
 	}
 }
 //Constructors

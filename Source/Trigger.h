@@ -4,7 +4,6 @@
 #include <vector>
 #include "GameObject.h"
 #include "Model.h"
-#include "EnemyManager.h"
 #include "Player.h"
 #include "Light.h"
 #include "Projectile.h"
@@ -38,6 +37,8 @@ struct TriggerSettings
 	//If true, each command will execute on their counterpart in the targets vector
 	bool accociativeActions = false;
 };
+class EnemyManager;
+
 class Trigger : public GameObject
 {
 private:
@@ -56,6 +57,7 @@ private:
 public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
+	void move(glm::vec2 distance);
 	glm::vec3 getPos() const;
 	std::string type() const;
 	//Own functions

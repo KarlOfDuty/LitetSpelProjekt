@@ -1,5 +1,6 @@
 #include "EnemyToad.h"
 #include "Player.h"
+#include "Trigger.h"
 
 EnemyToad::EnemyToad(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {
