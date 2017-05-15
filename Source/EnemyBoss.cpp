@@ -1,7 +1,7 @@
 #include "EnemyBoss.h"
+#include "Player.h"
 
-
-EnemyBoss::EnemyBoss(int health, Model* model, int damage, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
+EnemyBoss::EnemyBoss(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {
 	this->acceleration = 0.3f;
 	this->originPoint = enemyStartPos;
@@ -22,10 +22,10 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 }
 
-void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
+void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
 	//Detect player
-	if (glm::length(enemyPosCurrent - playerPos) < 30.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 30.0f)
 	{
 		groundCheck();
 
@@ -61,6 +61,14 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 			{
 				if (isOnGround)
 				{
+					if (enemyPosCurrent.x >= player->getPos().x)
+					{
+						rotateLeft = false;
+					}
+					if (enemyPosCurrent.x <= player->getPos().x)
+					{
+						rotateLeft = true;
+					}
 					//Charge
 					if (chargeCounter < 3)
 					{
@@ -68,14 +76,14 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 						{
 							if (movingLeft == false)
 							{
-								if (enemyPosCurrent.x >= playerPos.x)
+								if (enemyPosCurrent.x >= player->getPos().x)
 								{
 									movingRight = true;
 								}
 							}
 							if (movingRight == false)
 							{
-								if (enemyPosCurrent.x <= playerPos.x)
+								if (enemyPosCurrent.x <= player->getPos().x)
 								{
 									movingLeft = true;
 								}
@@ -120,7 +128,6 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 		}
 
 
-
 		if (!isOnGround)
 		{
 			velocityY -= 30 * dt;
@@ -149,5 +156,14 @@ void EnemyBoss::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurr
 
 		setPos(enemyPosCurrent);
 		collision(allModels);
+		if (rotateLeft == false)
+		{
+			rotateModel(-90.0f);
+		}
+
+		if (rotateLeft == true)
+		{
+			rotateModel(90.0f);
+		}
 	}
 }
