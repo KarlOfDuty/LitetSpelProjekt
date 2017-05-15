@@ -255,4 +255,7 @@ paket-files/
 *.exe
 
 Source/LitetSpel/x64/Debug/*.obj
+Source/LitetSpel/x64/Release/*.obj
 *.exe
+x64/Release/Source.iobj
+x64/Release/Source.ipdb

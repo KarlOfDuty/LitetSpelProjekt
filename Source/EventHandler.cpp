@@ -58,32 +58,32 @@ bool EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem
 		{
 			keyPressed[sf::Keyboard::Space] = false;
 		}
-		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Z && !keyPressed[sf::Keyboard::Z])
+		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Num1 && !keyPressed[sf::Keyboard::Num1])
 		{
-			keyPressed[sf::Keyboard::Z] = true;
+			keyPressed[sf::Keyboard::Num1] = true;
 			player->swap(0);
 		}
-		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::X && !keyPressed[sf::Keyboard::X])
+		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Num2 && !keyPressed[sf::Keyboard::Num2])
 		{
-			keyPressed[sf::Keyboard::X] = true;
+			keyPressed[sf::Keyboard::Num2] = true;
 			player->swap(1);
 		}
-		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::C && !keyPressed[sf::Keyboard::C])
+		else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Num3 && !keyPressed[sf::Keyboard::Num3])
 		{
-			keyPressed[sf::Keyboard::C] = true;
+			keyPressed[sf::Keyboard::Num3] = true;
 			player->swap(2);
 		}
-		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::X)
+		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Num1)
 		{
-			keyPressed[sf::Keyboard::X] = false;
+			keyPressed[sf::Keyboard::Num1] = false;
 		}
-		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Z)
+		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Num2)
 		{
-			keyPressed[sf::Keyboard::Z] = false;
+			keyPressed[sf::Keyboard::Num2] = false;
 		}
-		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::C)
+		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Num3)
 		{
-			keyPressed[sf::Keyboard::C] = false;
+			keyPressed[sf::Keyboard::Num3] = false;
 		}
 		else if (windowEvent.type == sf::Event::Closed)
 		{
