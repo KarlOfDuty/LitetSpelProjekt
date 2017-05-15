@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GL/GL.h>
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Audio.hpp>
 #include <glm\glm.hpp>
@@ -74,7 +75,7 @@ std::vector<Model*> modelsToBeDrawn;
 
 //Functions
 void render();
-void update(sf::Window &window);
+void update(sf::RenderWindow &window);
 void createGBuffer();
 void drawQuad();
 void loadLevel();
@@ -83,12 +84,18 @@ void unloadLevel();
 //Main function
 int main()
 {
+	//sfml
+	bool sRgb = false;
+
 	//Create the window
 	sf::ContextSettings settings;
 	settings.depthBits = 24;
 	settings.stencilBits = 8;
+	//sfml setup stuff
+	settings.sRgbCapable = sRgb;
+
 	settings.antialiasingLevel = 2;
-	sf::Window window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
+	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
 	//Activate the window
 	window.setActive(true);
@@ -98,9 +105,9 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	//Characters
+	////Characters
 	player = new Player();
-	enemyManager = new EnemyManager();
+	//enemyManager = new EnemyManager();
 
 	//Event handler
 	eventHandler = EventHandler();
@@ -110,10 +117,10 @@ int main()
 	playerCamera = Camera();
 	playerCamera.setupFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance);
 	//Load level
-	loadLevel();
+	//loadLevel();
 	//Create the gbuffer textures and lights
 	createGBuffer();
-	player->setStaticModels(levelManager.currentLevel->getStaticModels());
+	//player->setStaticModels(levelManager.currentLevel->getStaticModels());
 
 	eventHandler = EventHandler();
 
@@ -122,8 +129,32 @@ int main()
 	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
 	soundSystem->playMusic("audio/music/never.flac");
 
+	bool running = false;
+	//sfml test
+	sf::CircleShape shape(100.f);
+	shape.setFillColor(sf::Color::Green);
+
+	while (!running)
+	{
+		window.setActive(false);
+
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+		}
+
+		
+
+		window.pushGLStates();
+		window.draw(shape);
+		window.popGLStates();
+
+		window.display();
+	}
+
 	//Main loop
-	bool running = true;
 	while (running)
 	{
 		running = eventHandler.handleEvents(window, player, soundSystem);
@@ -252,7 +283,7 @@ void render()
 }
 
 //Update function
-void update(sf::Window &window)
+void update(sf::RenderWindow &window)
 {
 	dt = deltaClock.restart().asSeconds();
 	//Update player if not dead
