@@ -88,7 +88,7 @@ int main()
 	settings.depthBits = 24;
 	settings.stencilBits = 8;
 	settings.antialiasingLevel = 2;
-	sf::Window window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
+	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
 	//Activate the window
 	window.setActive(true);
@@ -138,7 +138,12 @@ int main()
 			deltaClock.restart();
 			firstFrame = false;
 		}
+		window.setActive(true);
 		render();
+		window.setActive(false);
+		window.pushGLStates();
+		window.draw(sf::CircleShape(200, 4));
+		window.popGLStates();
 
 		//End the current frame (internally swaps the front and back buffers)
 		window.display();
@@ -409,6 +414,7 @@ void drawQuad()
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void loadLevel()
