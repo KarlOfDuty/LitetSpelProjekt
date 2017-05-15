@@ -161,9 +161,10 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 		velocityY = 10;
 	}
 
-	if (velocityY < -10)
+	//Maximum falling speed
+	if (velocityY < -30)
 	{
-		velocityY = -10;
+		velocityY = -30;
 	}
 
 	//Apply velocity

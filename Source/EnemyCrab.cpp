@@ -95,25 +95,25 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			if (playerSeen)
 			{
-				if (movingLeft == false)
+				if (!movingLeft)
 				{
 					if (enemyPosCurrent.x >= player->getPos().x)
 					{
 						movingRight = true;
 					}
 				}
-				if (movingRight == false)
+				if (!movingRight)
 				{
 					if (enemyPosCurrent.x <= player->getPos().x)
 					{
 						movingLeft = true;
 					}
 				}
-				if (movingRight == true)
+				if (movingRight)
 				{
 					velocityX = velocityX - acceleration * dt;
 				}
-				else if (movingLeft == true)
+				else if (movingLeft)
 				{
 					velocityX = velocityX + acceleration * dt;
 				}
@@ -122,25 +122,25 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			else
 			{
 				//Patrol
-				if (movingLeft == false)
+				if (!movingLeft)
 				{
 					if ((!checkPointReached))
 					{
 						movingRight = true;
 					}
 				}
-				if (movingRight == false)
+				if (!movingRight)
 				{
 					if (checkPointReached)
 					{
 						movingLeft = true;
 					}
 				}
-				if (movingRight == true)
+				if (movingRight)
 				{
 					velocityX = velocityX - acceleration * dt;
 				}
-				else if (movingLeft == true)
+				else if (movingLeft)
 				{
 					velocityX = velocityX + acceleration * dt;
 				}
@@ -197,9 +197,10 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		velocityY = 10;
 	}
 
-	if (velocityY < -10)
+	//Maximum falling speed
+	if (velocityY < -30)
 	{
-		velocityY = -10;
+		velocityY = -30;
 	}
 
 	if (velocityX < -0.3) velocityX = -0.3f;

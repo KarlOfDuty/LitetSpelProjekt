@@ -5,6 +5,8 @@ class EnemySkeleton : public Enemy
 private:
 	bool checkPointReached;
 	sf::Clock attackCooldown;
+	sf::Clock waitTimer;
+	sf::Clock waitBeforeAttack;
 	float acceleration;
 	bool patrol;
 	bool rotateLeft;
@@ -14,6 +16,8 @@ private:
 	bool attack;
 	bool dodgeLeft;
 	glm::vec3 Dodgecheckpoint;
+	bool checkPointGiven;
+	bool jumped;
 
 	//workarounds for collision
 	bool collides;

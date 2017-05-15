@@ -107,12 +107,9 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					//Jump
 					if (playerSeen)
 					{
-						if (jumpTimer.getElapsedTime().asSeconds() >= 1.6)
+						if (jumpTimer.getElapsedTime().asSeconds() >= 1.7)
 						{
-							if (collidingWithGround)
-							{
-								velocityY = 15;
-							}
+							velocityY = 15;
 							jumpTimer.restart();
 						}
 
@@ -170,12 +167,9 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				//Jump
 				if (glm::length(enemyPosCurrent.x - startPosition.x) > 1.5f)
 				{
-					if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
+					if (jumpTimer.getElapsedTime().asSeconds() >= 1.7)
 					{
-						if (collidingWithGround)
-						{
-							velocityY = 15;
-						}
+						velocityY = 15;
 						jumpTimer.restart();
 					}
 				}
