@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GL/GL.h>
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Audio.hpp>
 #include <glm\glm.hpp>
@@ -17,6 +18,7 @@
 #include "LevelManager.h"
 #include "SoundSystem.h"
 #include "DirectionalLight.h"
+#include "Menu.h"
 
 #pragma comment(lib, "opengl32.lib")
 
@@ -61,6 +63,7 @@ glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / 
 glm::mat4 viewMatrix;
 
 SoundSystem *soundSystem;
+Menu * menu;
 
 //Lights
 std::vector<PointLight*> pointLights;
@@ -74,7 +77,7 @@ std::vector<Model*> modelsToBeDrawn;
 
 //Functions
 void render();
-void update(sf::Window &window);
+void update(sf::RenderWindow &window);
 void createGBuffer();
 void drawQuad();
 void loadLevel();
@@ -83,22 +86,32 @@ void unloadLevel();
 //Main function
 int main()
 {
+	//sfml
+	bool sRgb = false;
+
 	//Create the window
 	sf::ContextSettings settings;
 	settings.depthBits = 24;
 	settings.stencilBits = 8;
+	//sfml setup stuff
+	settings.sRgbCapable = sRgb;
+
 	settings.antialiasingLevel = 2;
-	sf::Window window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
+	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
+
+	menu = new Menu(window.getSize().x, window.getSize().y);
+
 	//Activate the window
 	window.setActive(true);
+
 
 	//Load resources, initialize the OpenGL states, ...
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	//Characters
+	////Characters
 	player = new Player();
 	enemyManager = new EnemyManager();
 
@@ -122,26 +135,70 @@ int main()
 	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
 	soundSystem->playMusic("audio/music/never.flac");
 
-	//Main loop
-	bool running = true;
-	while (running)
-	{
-		running = eventHandler.handleEvents(window, player, soundSystem);
-		//Clear the buffers
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		if (!firstFrame)
-		{
-			update(window);
-		}
-		else
-		{
-			deltaClock.restart();
-			firstFrame = false;
-		}
-		render();
+	//quit = 0, menu 1 and game 2
+	int running = 1;
 
-		//End the current frame (internally swaps the front and back buffers)
-		window.display();
+	//sfml test
+
+	//Main loop
+	while (!running == 0)
+	{
+		//1 = menu
+		if (running == 1)
+		{
+			window.setActive(true);
+
+			running = eventHandler.handleEvents(window, player, soundSystem, menu);
+			if (running == true)
+			{
+				running = true;
+				//testing
+			}
+			//Clear the buffers
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			if (!firstFrame)
+			{
+				update(window);
+			}
+			else
+			{
+				deltaClock.restart();
+				firstFrame = false;
+			}
+
+			window.setActive(false);
+
+			window.pushGLStates();
+			menu->draw(window);
+			window.popGLStates();
+
+			window.display();
+		}
+		else if(running == 2)
+		{
+			running = eventHandler.handleEvents(window, player, soundSystem, menu);
+			//Clear the buffers
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			if (!firstFrame)
+			{
+				update(window);
+			}
+			else
+			{
+				deltaClock.restart();
+				firstFrame = false;
+			}
+			window.setActive(true);
+			render();
+			window.setActive(false);
+			window.pushGLStates();
+			window.draw(sf::CircleShape(200, 4));
+			window.popGLStates();
+
+			//End the current frame (internally swaps the front and back buffers)
+			window.display();
+		}
+
 	}
 	//Release resources...
 	return 0;
@@ -252,7 +309,7 @@ void render()
 }
 
 //Update function
-void update(sf::Window &window)
+void update(sf::RenderWindow &window)
 {
 	dt = deltaClock.restart().asSeconds();
 	//Update player if not dead
@@ -409,6 +466,7 @@ void drawQuad()
 	glBindVertexArray(quadVAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void loadLevel()
