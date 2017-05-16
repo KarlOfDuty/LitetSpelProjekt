@@ -17,10 +17,11 @@
 #include "LevelManager.h"
 #include "SoundSystem.h"
 #include "DirectionalLight.h"
-
+#include "GUI.h"
 #pragma comment(lib, "opengl32.lib")
 
 LevelManager levelManager;
+GUI gui;
 //Player
 Player *player;
 EventHandler eventHandler;
@@ -120,7 +121,8 @@ int main()
 	//Sound system
 	soundSystem = new SoundSystem();
 	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
-	soundSystem->playMusic("audio/music/never.flac");
+	soundSystem->loadSound("audio/youdied.flac", "youDied");
+	//soundSystem->playMusic("audio/music/never.flac");
 
 	//Main loop
 	bool running = true;
@@ -142,7 +144,7 @@ int main()
 		render();
 		window.setActive(false);
 		window.pushGLStates();
-		window.draw(sf::CircleShape(200, 4));
+		window.draw(gui);
 		window.popGLStates();
 
 		//End the current frame (internally swaps the front and back buffers)
@@ -206,6 +208,12 @@ void render()
 	{
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
 		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
+	}
+	std::vector<Model*> dynamicModels = levelManager.currentLevel->getDynamicModels();
+	for (int i = 0; i < dynamicModels.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
+		dynamicModels.at(i)->draw(deferredGeometryPass);
 	}
 	if (player->playerIsDead() != true)
 	{
@@ -290,6 +298,7 @@ void update(sf::Window &window)
 	}
 	levelManager.currentLevel->updateTriggers(dt);
 	playerCamera.frustumCulling(modelsToBeDrawn);
+	gui.update(player);
 }
 
 //Create the buffer

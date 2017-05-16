@@ -58,20 +58,14 @@ std::vector<glm::vec2> Model::getPoints()
 {
 	if (allPoints.empty())
 	{
-		glm::vec2 minPos;
-		for (int i = 0; i < meshes.size(); i++)
-		{
-			for (int j = 0; j < meshes[i]->vertices.size(); j++)
-			{
-				if (meshes[i]->vertices[j].pos.x < minPos.x) minPos.x = meshes[i]->vertices[j].pos.x;
-				if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
-			}
-		}
+		glm::vec3 min, max;
+		getMinMaxBouding(min, max);
 		//Pushback points without rotation
-		allPoints.push_back(glm::vec2(minPos.x, minPos.y));
-		allPoints.push_back(glm::vec2(-minPos.x, minPos.y));
-		allPoints.push_back(glm::vec2(-minPos.x, -minPos.y));
-		allPoints.push_back(glm::vec2(minPos.x, -minPos.y));
+		allPoints.push_back(glm::vec2(min));
+		allPoints.push_back(glm::vec2(min.x, max.y));
+		allPoints.push_back(glm::vec2(max));
+		allPoints.push_back(glm::vec2(max.x, min.y));
+
 	}
 
 	std::vector<glm::vec2> translatedPoint;
@@ -86,10 +80,10 @@ std::vector<glm::vec2> Model::getPoints()
 	float radians = -std::atan2(t3, t4);
 
 	//Pushback points without rotation
-	translatedPoint.push_back(glm::vec2(allPoints[0].x*scale.x, allPoints[0].y*scale.y));
-	translatedPoint.push_back(glm::vec2(allPoints[1].x*scale.x, allPoints[1].y*scale.y));
-	translatedPoint.push_back(glm::vec2(allPoints[2].x*scale.x, allPoints[2].y*scale.y));
-	translatedPoint.push_back(glm::vec2(allPoints[3].x*scale.x, allPoints[3].y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[0]));
+	translatedPoint.push_back(glm::vec2(allPoints[1]));
+	translatedPoint.push_back(glm::vec2(allPoints[2]));
+	translatedPoint.push_back(glm::vec2(allPoints[3]));
 
 	//Translate to right position depending on rotation
 	for (int k = 0; k < translatedPoint.size(); k++)

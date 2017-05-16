@@ -146,6 +146,7 @@
     <ClCompile Include="FrustumCulling.cpp" />
     <ClCompile Include="EventHandler.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelManager.cpp" />
     <ClCompile Include="PointLight.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="FrustumCulling.h" />
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GUI.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelManager.h" />
     <ClInclude Include="PointLight.h" />

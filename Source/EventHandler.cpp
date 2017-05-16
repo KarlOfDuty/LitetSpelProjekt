@@ -1,7 +1,7 @@
 #include"EventHandler.h"
 EventHandler::EventHandler()
 {
-
+	youDied = false;
 }
 
 EventHandler::~EventHandler()
@@ -104,6 +104,11 @@ bool EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem
 		{
 			running = false;
 		}
+	}
+	if (player->getHealth() <= 0 && !youDied)
+	{
+		soundSystem->playSound("youDied");
+		youDied = true;
 	}
 	return running;
 }
