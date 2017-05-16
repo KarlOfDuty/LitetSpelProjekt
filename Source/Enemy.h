@@ -25,7 +25,6 @@ private:
 	sf::Clock damageImmunity;
 	Model *model;
 	glm::vec3 pos;
-	glm::vec3 scaleFactor;
 	glm::vec3 checkPoint;
 	//Animation animation;
 public:
@@ -40,6 +39,7 @@ public:
 	float groundPos;
 	float angle;
 	bool rotation;
+	glm::vec3 scaleFactor;
 
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();

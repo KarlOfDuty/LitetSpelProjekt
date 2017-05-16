@@ -58,6 +58,7 @@ public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
 	void move(glm::vec2 distance);
+	void setPos(std::vector<glm::vec2> cornerArr);
 	glm::vec3 getPos() const;
 	std::string type() const;
 	//Own functions

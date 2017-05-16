@@ -13,6 +13,13 @@ void Trigger::move(glm::vec2 distance)
 		corners[i].y += distance.y;
 	}
 }
+void Trigger::setPos(std::vector<glm::vec2> cornerArr)
+{
+	for (int i = 0; i < corners.size(); i++)
+	{
+		corners[i] = cornerArr[i];
+	}
+}
 glm::vec3 Trigger::getPos() const
 {
 	return pos;

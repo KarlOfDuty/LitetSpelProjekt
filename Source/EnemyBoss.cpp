@@ -24,7 +24,11 @@ EnemyBoss::~EnemyBoss()
 
 void EnemyBoss::weakPoints(std::vector<GameObject*> allProjectiles)
 {
-	std::vector<glm::vec2> weakPoint1 = { glm::vec2(getPos().x + 2,getPos().y + -1), glm::vec2(getPos().x + 2,getPos().y + 0), glm::vec2(getPos().x + 3,getPos().y + -1), glm::vec2(getPos().x + 3,getPos().y + 0) };
+	weakPoint1 = { glm::vec2(corner1.x, corner1.y),
+		glm::vec2(corner2.x, corner2.y),
+		glm::vec2(corner3.x, corner3.y),
+		glm::vec2(corner4.x, corner4.y) };
+
 	TriggerSettings bossSettings;
 	bossSettings.onEnter = true;
 	weakPointsArr.push_back(new Trigger(weakPoint1, bossSettings, allProjectiles, this, "applyDamage"));
@@ -37,6 +41,16 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
+	corner1 = this->getModel()->getModelMatrix() * glm::vec4(5.0f, 20.0f, 0.0f, 1.0f);
+	corner2 = this->getModel()->getModelMatrix() * glm::vec4(5.0f, 5.0f, 0.0f, 1.0f);
+	corner3 = this->getModel()->getModelMatrix() * glm::vec4(10.0f, 20.0f, 0.0f, 1.0f);
+	corner4 = this->getModel()->getModelMatrix() * glm::vec4(10.0f, 5.0f, 0.0f, 1.0f);
+
+	weakPoint1 = { glm::vec2(corner1.x, corner1.y),
+		glm::vec2(corner2.x, corner2.y),
+		glm::vec2(corner3.x, corner3.y),
+		glm::vec2(corner4.x, corner4.y) };
+
 	if (collidedFrom.y > 0)
 	{
 		collidingWithGround = true;
@@ -58,7 +72,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 1.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
 	{
 		playerSeen = true;
 	}
@@ -110,7 +124,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 			if (playerSeen)
 			{
-				if (collidingWithGround)
+				if (isOnGround)
 				{
 					//Charge
 					if (chargeCounter < 3)
@@ -191,7 +205,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 
 
-		if (!collidingWithGround)
+		if (!isOnGround)
 		{
 			velocityY -= 30 * dt;
 		}
@@ -227,7 +241,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 		for (int i = 0; i < weakPointsArr.size(); i++)
 		{
-			weakPointsArr[i]->move(glm::vec2(velocityX, velocityY*dt));
+			weakPointsArr[i]->setPos(weakPoint1);
 		}
 
 		for (int i = 0; i < weakPointsArr.size(); i++)
@@ -275,6 +289,8 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			rotateModel(90.0f);
 		}
+
+
 		collisionWithPlayer(player);
 }
 

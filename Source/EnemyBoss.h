@@ -17,9 +17,14 @@ private:
 	bool movingLeft;
 	bool movingRight;
 	bool checkPointReached;
+	std::vector<glm::vec2> weakPoint1;
 	std::vector<Trigger*> weakPointsArr;
 	Model* boxModel;
 	std::vector<Model*> debugWeakPointsBox;
+	glm::vec4 corner1;
+	glm::vec4 corner2;
+	glm::vec4 corner3;
+	glm::vec4 corner4;
 
 	//workarounds for collision
 	bool collides;
