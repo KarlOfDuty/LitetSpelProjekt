@@ -3,6 +3,7 @@
 #include <SFML\Window.hpp>
 #include "Player.h"
 #include "SoundSystem.h"
+#include "Menu.h"
 class EventHandler
 {
 private:
@@ -13,9 +14,10 @@ private:
 	bool joystickPressed[8][30] = { false };
 	//[Key]
 	bool keyPressed[120] = { false };
+	int running;
 public:
 	EventHandler();
 	~EventHandler();
-	bool handleEvents(sf::Window &window, Player *player, SoundSystem *soundSystem);
+	int handleEvents(sf::Window &window, Player *player, SoundSystem *soundSystem, Menu * menu);
 };
 #endif

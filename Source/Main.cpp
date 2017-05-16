@@ -18,6 +18,7 @@
 #include "LevelManager.h"
 #include "SoundSystem.h"
 #include "DirectionalLight.h"
+#include "Menu.h"
 
 #pragma comment(lib, "opengl32.lib")
 
@@ -62,6 +63,7 @@ glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / 
 glm::mat4 viewMatrix;
 
 SoundSystem *soundSystem;
+Menu * menu;
 
 //Lights
 std::vector<PointLight*> pointLights;
@@ -97,8 +99,12 @@ int main()
 	settings.antialiasingLevel = 2;
 	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
+
+	menu = new Menu(window.getSize().x, window.getSize().y);
+
 	//Activate the window
 	window.setActive(true);
+
 
 	//Load resources, initialize the OpenGL states, ...
 	glewInit();
@@ -107,7 +113,7 @@ int main()
 
 	////Characters
 	player = new Player();
-	//enemyManager = new EnemyManager();
+	enemyManager = new EnemyManager();
 
 	//Event handler
 	eventHandler = EventHandler();
@@ -117,10 +123,10 @@ int main()
 	playerCamera = Camera();
 	playerCamera.setupFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance);
 	//Load level
-	//loadLevel();
+	loadLevel();
 	//Create the gbuffer textures and lights
 	createGBuffer();
-	//player->setStaticModels(levelManager.currentLevel->getStaticModels());
+	player->setStaticModels(levelManager.currentLevel->getStaticModels());
 
 	eventHandler = EventHandler();
 
@@ -129,55 +135,70 @@ int main()
 	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
 	soundSystem->playMusic("audio/music/never.flac");
 
-	bool running = false;
+	//quit = 0, menu 1 and game 2
+	int running = 1;
+
 	//sfml test
-	sf::CircleShape shape(100.f);
-	shape.setFillColor(sf::Color::Green);
-
-	while (!running)
-	{
-		window.setActive(false);
-
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-		}
-
-		
-
-		window.pushGLStates();
-		window.draw(shape);
-		window.popGLStates();
-
-		window.display();
-	}
 
 	//Main loop
-	while (running)
+	while (!running == 0)
 	{
-		running = eventHandler.handleEvents(window, player, soundSystem);
-		//Clear the buffers
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		if (!firstFrame)
+		//1 = menu
+		if (running == 1)
 		{
-			update(window);
-		}
-		else
-		{
-			deltaClock.restart();
-			firstFrame = false;
-		}
-		window.setActive(true);
-		render();
-		window.setActive(false);
-		window.pushGLStates();
-		window.draw(sf::CircleShape(200, 4));
-		window.popGLStates();
+			window.setActive(true);
 
-		//End the current frame (internally swaps the front and back buffers)
-		window.display();
+			running = eventHandler.handleEvents(window, player, soundSystem, menu);
+			if (running == true)
+			{
+				running = true;
+				//testing
+			}
+			//Clear the buffers
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			if (!firstFrame)
+			{
+				update(window);
+			}
+			else
+			{
+				deltaClock.restart();
+				firstFrame = false;
+			}
+
+			window.setActive(false);
+
+			window.pushGLStates();
+			menu->draw(window);
+			window.popGLStates();
+
+			window.display();
+		}
+		else if(running == 2)
+		{
+			running = eventHandler.handleEvents(window, player, soundSystem, menu);
+			//Clear the buffers
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			if (!firstFrame)
+			{
+				update(window);
+			}
+			else
+			{
+				deltaClock.restart();
+				firstFrame = false;
+			}
+			window.setActive(true);
+			render();
+			window.setActive(false);
+			window.pushGLStates();
+			window.draw(sf::CircleShape(200, 4));
+			window.popGLStates();
+
+			//End the current frame (internally swaps the front and back buffers)
+			window.display();
+		}
+
 	}
 	//Release resources...
 	return 0;
