@@ -55,7 +55,7 @@ bool SoundSystem::playSound(std::string name)
 }
 SoundSystem::SoundSystem()
 {
-
+	soundEnabled = true;
 }
 
 SoundSystem::~SoundSystem()
