@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 
 #define MAX_NUMBER_OF_ITEMS 3
+#define MAX_NUMBER_OF_OPTIONS 1
 
 class Menu
 {
@@ -15,8 +16,11 @@ public:
 	int Select();
 
 private:
+	int activeMenu;
 	int selectedItemIndex;
+	int selectedOptionIndex;
 	sf::Font font;
 	sf::Text menu[MAX_NUMBER_OF_ITEMS];
+	sf::Text options[MAX_NUMBER_OF_OPTIONS];
 
 };

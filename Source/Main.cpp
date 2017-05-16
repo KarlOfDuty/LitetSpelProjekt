@@ -166,6 +166,9 @@ int main()
 				firstFrame = false;
 			}
 
+			//window.setActive(true);
+			//render();
+
 			window.setActive(false);
 
 			window.pushGLStates();

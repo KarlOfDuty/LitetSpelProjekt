@@ -38,7 +38,7 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 					running = 2;
 					break;
 				case(1):
-					//options menu 
+					//options stuff
 					break;
 				case(2):
 					running = 0;
