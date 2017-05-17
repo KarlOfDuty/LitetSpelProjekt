@@ -31,7 +31,7 @@ float PlayerShark::getJumpHeight()
 
 void PlayerShark::shootArrow(std::vector<Projectile*>& allProjectiles, glm::vec2 position, glm::vec2 direction)
 {
-	if (attackCooldown.getElapsedTime().asSeconds() > 0.5f)
+	if (attackCooldown.getElapsedTime().asSeconds() > 0.0f)
 	{
 		//Check how many arrows are active in the arrow vector
 		int activeArrows = 0;

@@ -51,7 +51,7 @@ bool EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem
 		}
 		else if (windowEvent.type == sf::Event::MouseWheelScrolled && windowEvent.key.code == sf::Mouse::VerticalWheel)
 		{
-			player->lightAttackPressed(window);
+			player->lightAttackReleased(window);
 			soundSystem->playSound("bowRelease");
 		}
 		else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Space)
