@@ -3,7 +3,7 @@
 #include <glm\glm.hpp>
 #include <GL/glew.h>
 #include "GameObject.h"
-class Light : public GameObject
+class PointLight : public GameObject
 {
 public:
 	//Parent inherited functions
@@ -17,11 +17,11 @@ public:
 	GLfloat quadratic;
 	glm::vec3 pos;
 	glm::vec3 colour;
-	Light(glm::vec3 pos, glm::vec3 colour, float linear, float quadratic);
-	Light(float x, float y, float z, glm::vec3 colour, float linear, float quadratic);
-	Light(glm::vec3 pos, float r, float g, float b, float linear, float quadratic);
-	Light(float x, float y, float z, float r, float g, float b, float linear, float quadratic);
-	Light();
-	~Light();
+	PointLight(glm::vec3 pos, glm::vec3 colour, float linear, float quadratic);
+	PointLight(float x, float y, float z, glm::vec3 colour, float linear, float quadratic);
+	PointLight(glm::vec3 pos, float r, float g, float b, float linear, float quadratic);
+	PointLight(float x, float y, float z, float r, float g, float b, float linear, float quadratic);
+	PointLight();
+	~PointLight();
 };
 #endif
