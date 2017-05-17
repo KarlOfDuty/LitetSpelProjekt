@@ -203,7 +203,6 @@ int main()
 		}
 	}
 	//Release resources...
-	system("pause");
 	return 0;
 }
 
