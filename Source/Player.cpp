@@ -26,7 +26,7 @@ Player::Player()
 	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->health = 20;
+	this->health = 2;
 
 	this->playerCharacters[0] = new PlayerBird(birdModel, false);
 	this->playerCharacters[1] = new PlayerShark(sharkModel, false);
@@ -34,7 +34,10 @@ Player::Player()
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
 
-	allProjectiles = std::vector<Projectile*>();
+	allAttackBoxes = std::vector<Projectile*>();
+	allArrowAttackBoxes = std::vector<Projectile*>();
+	allAOEAttackBoxes = std::vector<Projectile*>();
+	allMeleeAttackBoxes = std::vector<Projectile*>();
 }
 
 Player::~Player()
@@ -123,7 +126,7 @@ void Player::lightAttackPressed(sf::Window &window)
 		int mouseX = sf::Mouse::getPosition(window).x;
 		int middleScreenX = window.getSize().x / 2;
 		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 3.0f, getPos().y) : glm::vec2(getPos().x - 3.0f, getPos().y);
-		butterfly->shootAoe(allStaticModels, allProjectiles, position);
+		butterfly->shootAoe(allStaticModels, allAOEAttackBoxes, position);
 	}
 	PlayerBird* bird = dynamic_cast<PlayerBird*>(player);
 	if (bird != nullptr)
@@ -142,7 +145,7 @@ void Player::lightAttackPressed(sf::Window &window)
 			position = glm::vec2(getPos().x - 1.0f, getPos().y);
 			direction = glm::vec2(-1, 0);
 		}
-		bird->meleeAttack(allProjectiles, position, direction, 20.f);
+		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 20.f);
 	}
 }
 void Player::lightAttackReleased(sf::Window &window)
@@ -156,7 +159,7 @@ void Player::lightAttackReleased(sf::Window &window)
 		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
 		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
 		glm::vec2 startPos = glm::vec2(getPos().x, getPos().y + 2.0f);
-		bird->shootArrow(allProjectiles, startPos, direction);
+		bird->shootArrow(allArrowAttackBoxes, startPos, direction);
 	}
 }
 void Player::heavyAttackPressed(sf::Window &window)
@@ -167,7 +170,7 @@ void Player::heavyAttackPressed(sf::Window &window)
 		int mouseX = sf::Mouse::getPosition(window).x;
 		int middleScreenX = window.getSize().x / 2;
 		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 10.0f, getPos().y) : glm::vec2(getPos().x - 10.0f, getPos().y);
-		butterfly->shootAoe(allStaticModels, allProjectiles, position);
+		butterfly->shootAoe(allStaticModels, allAOEAttackBoxes, position);
 	}
 	PlayerBird* bird = dynamic_cast<PlayerBird*>(player);
 	if (bird != nullptr)
@@ -186,7 +189,7 @@ void Player::heavyAttackPressed(sf::Window &window)
 			position = glm::vec2(getPos().x - 1.0f, getPos().y);
 			direction = glm::vec2(-1, 0);
 		}
-		bird->meleeAttack(allProjectiles, position, direction, 1.f);
+		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 1.f);
 	}
 	PlayerShark* shark = dynamic_cast<PlayerShark*>(player);
 	if (shark != nullptr)
@@ -205,16 +208,16 @@ void Player::heavyAttackReleased(sf::Window &window)
 		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
 		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
 		glm::vec2 startPos = glm::vec2(getPos().x, getPos().y + 2.0f);
-		bird->shootArrow(allProjectiles, startPos, direction);
+		bird->shootArrow(allArrowAttackBoxes, startPos, direction);
 		bird->arrowVelocity = 30.0f;
 	}
 }
 
 void Player::clearProjectiles()
 {
-	for (int i = 0; i < allProjectiles.size(); i++)
+	for (int i = 0; i < allAttackBoxes.size(); i++)
 	{
-		allProjectiles[i]->disableArrow();
+		allAttackBoxes[i]->disableArrow();
 	}
 }
 
@@ -293,18 +296,34 @@ std::string Player::type() const
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
+	allAttackBoxes.clear();
+	for (int i = 0; i < allArrowAttackBoxes.size(); i++)
+	{
+		allAttackBoxes.push_back(allArrowAttackBoxes[i]);
+	}
+	for (int i = 0; i < allAOEAttackBoxes.size(); i++)
+	{
+		allAttackBoxes.push_back(allAOEAttackBoxes[i]);
+	}
+	for (int i = 0; i < allMeleeAttackBoxes.size(); i++)
+	{
+		allAttackBoxes.push_back(allMeleeAttackBoxes[i]);
+	}
+
 	//Kill player and reset jumps in water
 	if (getDiving())
 	{
 		jumps = 0;
 		waterEffect();
 	}
+	
+	groundCheck();
 
-	groundPos = 0.0f;
 	if (getPos().y > groundPos && isOnGround)
 	{
 		isOnGround = false;
 	}
+
 	int controller = CONTROLLER0;
 
 	//Move
@@ -451,23 +470,23 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		isOnGround = true;
 	}
 
-	for (int i = 0; i < allProjectiles.size(); i++)
+	for (int i = 0; i < allAttackBoxes.size(); i++)
 	{
-		if (allProjectiles[i]->isInUse())
+		if (allAttackBoxes[i]->isInUse())
 		{
-			if (glm::distance(getPos(), allProjectiles[i]->getPos()) < 40.0f)
+			if (glm::distance(getPos(), allAttackBoxes[i]->getPos()) < 40.0f)
 			{
-				allProjectiles[i]->update(dt, allModels, getPos());
-				std::vector<glm::vec2> arrowPoints = allProjectiles[i]->getPoints();
+				allAttackBoxes[i]->update(dt, allModels, getPos());
+				std::vector<glm::vec2> arrowPoints = allAttackBoxes[i]->getPoints();
 				for (int k = 0; k < allEnemies.size(); k++)
 				{
-					if (glm::distance(allProjectiles[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
+					if (!allAttackBoxes[i]->isCollidingWithWorld() && glm::distance(allAttackBoxes[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
 					{
 						if (collision::collision(arrowPoints, allEnemies[k]->getPoints()))
 						{
-							if (allProjectiles[i]->isProjectileAttack())
+							if (allAttackBoxes[i]->isProjectileAttack())
 							{
-								allProjectiles[i]->disableArrow();
+								allAttackBoxes[i]->disableArrow();
 							}
 							allEnemies[k]->applyDamage(100);
 							k = (int)allEnemies.size();
@@ -477,7 +496,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			}
 			else
 			{
-				allProjectiles[i]->disableArrow();
+				allAttackBoxes[i]->disableArrow();
 			}
 		}
 	}
@@ -493,11 +512,11 @@ void Player::draw(Shader shader)
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
 
-	for (int i = 0; i < allProjectiles.size(); i++)
+	for (int i = 0; i < allAttackBoxes.size(); i++)
 	{
-		if (allProjectiles[i]->isInUse())
+		if (allAttackBoxes[i]->isInUse())
 		{
-			allProjectiles[i]->draw(shader);
+			allAttackBoxes[i]->draw(shader);
 		}
 	}
 
@@ -607,4 +626,55 @@ void Player::setDiving(bool diving)
 void Player::setHealth(int health)
 {
 	this->health = health;
+}
+
+void Player::groundCheck()
+{
+	//Sort models by x axis
+	std::vector<Model*> sortedModels;
+	for (int i = 0; i < allStaticModels.size(); i++)
+	{
+		glm::vec3 min, max;
+		allStaticModels[i]->getMinMaxBouding(min, max);
+		min += allStaticModels[i]->getPos();
+		max += allStaticModels[i]->getPos();
+		if (getPos().x >= min.x && getPos().x <= max.x)
+		{
+			sortedModels.push_back(allStaticModels[i]);
+		}
+	}
+	//Now find the ground based on the sorted models
+	bool foundGround = false;
+	float closestDistance = 100;
+	glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y + 2.0f, getPos().z);
+	glm::vec3 rayDir(0, -1, 0);
+	for (int i = 0; i < sortedModels.size(); i++)
+	{
+		glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y + 2.0f, getPos().z);
+		glm::vec3 rayDir(0, -1, 0);
+		glm::vec3 aabbMin, aabbMax;
+		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
+		aabbMin *= 5;
+		aabbMax *= 5;
+		glm::mat4 boxMat = sortedModels[i]->getModelMatrix();
+		float distance = 10000;
+		
+		//Raycast downwards to find the distance to ground
+		if (collision::TestRayOBBIntersection(rayOrigin, rayDir, aabbMin, aabbMax, boxMat, distance))
+		{
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				foundGround = true;
+			}
+		}
+	}
+	if (foundGround)
+	{
+		groundPos = rayOrigin.y - closestDistance;
+	}
+	else
+	{
+		groundPos = 0;
+	}
 }

@@ -38,14 +38,6 @@ void Model::getMinMaxBouding(glm::vec3 &min, glm::vec3 &max)
 		}
 		glm::vec3 scale;
 		glm::decompose(modelMatrix, scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
-
-		minBounding.x *= scale.x;
-		minBounding.y *= scale.y;
-		minBounding.z *= scale.z;
-		
-		maxBounding.x *= scale.x;
-		maxBounding.y *= scale.y;
-		maxBounding.z *= scale.z;
 	}
 	min = minBounding;
 	max = maxBounding;
@@ -80,10 +72,10 @@ std::vector<glm::vec2> Model::getPoints()
 	float radians = -std::atan2(t3, t4);
 
 	//Pushback points without rotation
-	translatedPoint.push_back(glm::vec2(allPoints[0]));
-	translatedPoint.push_back(glm::vec2(allPoints[1]));
-	translatedPoint.push_back(glm::vec2(allPoints[2]));
-	translatedPoint.push_back(glm::vec2(allPoints[3]));
+	translatedPoint.push_back(glm::vec2(allPoints[0].x*scale.x, allPoints[0].y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[1].x*scale.x, allPoints[1].y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[2].x*scale.x, allPoints[2].y*scale.y));
+	translatedPoint.push_back(glm::vec2(allPoints[3].x*scale.x, allPoints[3].y*scale.y));
 
 	//Translate to right position depending on rotation
 	for (int k = 0; k < translatedPoint.size(); k++)

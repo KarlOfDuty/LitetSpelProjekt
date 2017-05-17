@@ -149,6 +149,7 @@ void Level::setupTriggers(Player* player)
 	heart->getMinMaxBouding(min, max);
 	min += glm::vec3(mat[3]);
 	max += glm::vec3(mat[3]);
+	heart->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-6.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	dynamicModels.push_back(heart);
 
 	std::vector<glm::vec2> corners3 = { glm::vec2(min), glm::vec2(min.x,max.y), glm::vec2(max), glm::vec2(max.x,min.y) };
@@ -161,6 +162,10 @@ void Level::updateTriggers(float dt)
 	for (int i = 0; i < triggerBoxes.size(); i++)
 	{
 		triggerBoxes[i]->update(dt);
+	}
+	for (int i = 0; i < dynamicModels.size(); i++)
+	{
+		dynamicModels[i]->rotate();
 	}
 }
 void Level::deleteTriggers()

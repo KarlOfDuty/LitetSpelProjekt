@@ -3,6 +3,7 @@
 #include <SFML\Window.hpp>
 #include "Player.h"
 #include "SoundSystem.h"
+#include "Menu.h"
 class EventHandler
 {
 private:
@@ -14,9 +15,10 @@ private:
 	//[Key]
 	bool keyPressed[120] = { false };
 	bool youDied;
+	int running;
 public:
 	EventHandler();
 	~EventHandler();
-	bool handleEvents(sf::Window &window, Player *player, SoundSystem *soundSystem);
+	int handleEvents(sf::Window &window, Player *player, SoundSystem *soundSystem, Menu * menu);
 };
 #endif

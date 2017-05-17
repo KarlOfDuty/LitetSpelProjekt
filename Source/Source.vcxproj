@@ -125,7 +125,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>libraries\GLEW\lib;libraries\SFML\lib;libraries\SOIL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-audio.lib;sfml-system.lib;sfml-window.lib;glew32.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-audio.lib;sfml-system.lib;sfml-window.lib;sfml-graphics.lib;glew32.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -149,6 +149,7 @@
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelManager.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="GUI.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LevelManager.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Player.h" />
