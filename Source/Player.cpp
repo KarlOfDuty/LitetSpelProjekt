@@ -299,12 +299,14 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		jumps = 0;
 		waterEffect();
 	}
+	
+	groundCheck();
 
-	groundPos = 0.0f;
 	if (getPos().y > groundPos && isOnGround)
 	{
 		isOnGround = false;
 	}
+
 	int controller = CONTROLLER0;
 
 	//Move
@@ -461,7 +463,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 				std::vector<glm::vec2> arrowPoints = allProjectiles[i]->getPoints();
 				for (int k = 0; k < allEnemies.size(); k++)
 				{
-					if (glm::distance(allProjectiles[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
+					if (!allProjectiles[i]->isCollidingWithWorld() && glm::distance(allProjectiles[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
 					{
 						if (collision::collision(arrowPoints, allEnemies[k]->getPoints()))
 						{
@@ -607,4 +609,55 @@ void Player::setDiving(bool diving)
 void Player::setHealth(int health)
 {
 	this->health = health;
+}
+
+void Player::groundCheck()
+{
+	//Sort models by x axis
+	std::vector<Model*> sortedModels;
+	for (int i = 0; i < allStaticModels.size(); i++)
+	{
+		glm::vec3 min, max;
+		allStaticModels[i]->getMinMaxBouding(min, max);
+		min += allStaticModels[i]->getPos();
+		max += allStaticModels[i]->getPos();
+		if (getPos().x >= min.x && getPos().x <= max.x)
+		{
+			sortedModels.push_back(allStaticModels[i]);
+		}
+	}
+	//Now find the ground based on the sorted models
+	bool foundGround = false;
+	float closestDistance = 100;
+	glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y + 2.0f, getPos().z);
+	glm::vec3 rayDir(0, -1, 0);
+	for (int i = 0; i < sortedModels.size(); i++)
+	{
+		glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y + 2.0f, getPos().z);
+		glm::vec3 rayDir(0, -1, 0);
+		glm::vec3 aabbMin, aabbMax;
+		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
+		aabbMin *= 5;
+		aabbMax *= 5;
+		glm::mat4 boxMat = sortedModels[i]->getModelMatrix();
+		float distance = 10000;
+		
+		//Raycast downwards to find the distance to ground
+		if (collision::TestRayOBBIntersection(rayOrigin, rayDir, aabbMin, aabbMax, boxMat, distance))
+		{
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				foundGround = true;
+			}
+		}
+	}
+	if (foundGround)
+	{
+		groundPos = rayOrigin.y - closestDistance;
+	}
+	else
+	{
+		groundPos = 0;
+	}
 }
