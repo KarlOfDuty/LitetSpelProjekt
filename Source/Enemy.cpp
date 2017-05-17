@@ -102,6 +102,11 @@ void Enemy::groundCheck()
 	}
 }
 
+void Enemy::setBossImmunity(bool isImmune)
+{
+	this->bossImmunity = isImmune;
+}
+
 bool Enemy::collision(std::vector<Model*> &allModels)
 {
 	int index = -1;

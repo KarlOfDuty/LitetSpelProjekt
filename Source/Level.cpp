@@ -61,6 +61,69 @@ void Level::setupModels()
 		0.0, 0.0, 5.0, 0.0,
 		2.0, -2.0, 0.0, 1.0
 	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		40.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		45.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		35.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		50.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		55.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		60.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		60.0, 2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		30.0, 2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		30.0, -2.0, 0.0, 1.0
+	}));
 	Model* slope = new Model(*(modelLibrary.at(2)),
 	{
 		5.0, 0.0, 0.0, 0.0,

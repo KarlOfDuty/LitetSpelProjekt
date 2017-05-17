@@ -57,6 +57,7 @@ public:
 	void rotateModel(float direction);
 	void applyDamage(int appliedDamage);
 	void groundCheck();
+	void setBossImmunity(bool isImmune);
 	bool collision(std::vector<Model*> &allModels);
 	bool collisionWithPlayer(Player* player);
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 pos) = 0;

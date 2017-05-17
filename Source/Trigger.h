@@ -59,6 +59,8 @@ public:
 	std::vector<glm::vec2> getPoints();
 	void move(glm::vec2 distance);
 	void setPos(std::vector<glm::vec2> cornerArr);
+	void setActivators(std::vector<GameObject*> activators);
+	void setTargets(std::vector<GameObject*> targets);
 	glm::vec3 getPos() const;
 	std::string type() const;
 	//Own functions
