@@ -14,9 +14,36 @@ bool SoundSystem::playMusic(std::string path)
 }
 void SoundSystem::stopMusic()
 {
+
+	music.stop();
+
+}
+void SoundSystem::stopSound()
+{
+	stopMusic();
+	stopSfx();
+}
+void SoundSystem::stopSfx()
+{
+	//sfx.stop();
+}
+void SoundSystem::startMusic()
+{
 	if (soundEnabled)
 	{
-		music.stop();
+		music.play();
+	}
+}
+void SoundSystem::startSound()
+{
+	startMusic();
+	startSfx();
+}
+void SoundSystem::startSfx()
+{
+	if (/*sfxEnabled*/true)
+	{
+		//sfx.start();
 	}
 }
 //Loads a sound from file into soundbuffer, name is used as an identifier to play the sound
@@ -53,9 +80,35 @@ bool SoundSystem::playSound(std::string name)
 	}
 	return false;
 }
+bool SoundSystem::getMusicEnabled()
+{
+	return this->musicEnabled;
+}
+void SoundSystem::setMusicEnabled(bool state)
+{
+	this->musicEnabled = state;
+}
+bool SoundSystem::getSoundEnabled()
+{
+	return this->soundEnabled;
+}
+void SoundSystem::setSoundEnabled(bool state)
+{
+	this->soundEnabled = state;
+}
+bool SoundSystem::getSfxEnabled()
+{
+	return this->sfxEnabled;
+}
+void SoundSystem::setSfxEnabled(bool state)
+{
+	this->sfxEnabled = state;
+}
 SoundSystem::SoundSystem()
 {
+	musicEnabled = true;
 	soundEnabled = true;
+	sfxEnabled = true;
 }
 
 SoundSystem::~SoundSystem()

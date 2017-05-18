@@ -152,16 +152,51 @@ int Menu::Select()
 	{
 		if (selectedOptionIndex == 0)
 		{
-			soundS->stopMusic();
+			if (soundS->getSoundEnabled() == true)
+			{
+				soundS->stopSound();
+				soundS->setSoundEnabled(false);
+				options[selectedOptionIndex].setString("Master Volume: Off");
+			}
+			else
+			{
+				soundS->setSoundEnabled(true);
+				soundS->startSound();
+				options[selectedOptionIndex].setString("Master Volume: On");
+			}
+
 		}
 		else if (selectedOptionIndex == 1)
 		{
 
+			if (soundS->getMusicEnabled() == true)
+			{
+				soundS->stopMusic();
+				soundS->setMusicEnabled(false);
+				options[selectedOptionIndex].setString("Music: Off");
+			}
+			else
+			{
+				soundS->setMusicEnabled(true);
+				soundS->startMusic();
+				options[selectedOptionIndex].setString("Music: On");
+			}
 		}
 
 		else if (selectedOptionIndex == 2)
 		{
-
+			if (soundS->getSfxEnabled() == true)
+			{
+				soundS->stopSfx();
+				soundS->setSfxEnabled(false);
+				options[selectedOptionIndex].setString("Sound Effects: Off");
+			}
+			else
+			{
+				soundS->setSfxEnabled(true);
+				soundS->startSfx();
+				options[selectedOptionIndex].setString("Sound Effects: On");
+			}
 		}
 
 		else if (selectedOptionIndex == 3)
