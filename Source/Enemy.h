@@ -22,6 +22,7 @@ class Enemy : public GameObject
 private:
 	float health;
 	int damage;
+	int immunityTime;
 	sf::Clock damageImmunity;
 	Model *model;
 	glm::vec3 pos;
@@ -47,7 +48,7 @@ public:
 	virtual std::string type() const;
 	//Own functions
 	Enemy();
-	Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor);
+	Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor);
 	virtual ~Enemy();
 	void setPos(glm::vec3 position);
 	void setHealth(int health);

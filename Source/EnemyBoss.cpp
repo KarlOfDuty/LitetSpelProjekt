@@ -2,16 +2,21 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyBoss::EnemyBoss(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
+EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
 {
+	this->allProjectiles = allProjectiles;
 	this->acceleration = 0.4f;
 	this->originPoint = enemyStartPos;
 	this->attacking = true;
 	this->phase = 1;
 	this->chargeCounter = 0;
 	this->createTrigger = true;
+	this->rotateNow = false;
 	bossImmunity = true;
+	this->centerOfRoom = enemyStartPos;
+	this->wallDestroyed = false;
 	
+	projectileModel = new Model("models/sphere/sphere.obj");
 	boxModel = new Model("models/cube/cube.obj");
 
 	corners.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -23,6 +28,20 @@ EnemyBoss::EnemyBoss(int health, Model* model, int damage, glm::vec3 enemyStartP
 EnemyBoss::~EnemyBoss()
 {
 
+}
+
+void EnemyBoss::setWaterArea(Player * player, std::vector<Model*> &allModels)
+{
+	allModels.erase(allModels.begin() + 0);
+
+	playerAndBoss.push_back(this);
+	playerAndBoss.push_back(player);
+
+	std::vector<glm::vec2> corners1 = { glm::vec2(32.5f, 2.0f), glm::vec2(32.5f, 10.5f), glm::vec2(62.5f,2.0f), glm::vec2(62.5f, 10.5f) };
+	TriggerSettings settings3;
+	settings3.onEnter = true;
+	settings3.onExit = true;
+	waterArea.push_back(new Trigger(corners1, settings3, player, playerAndBoss, "playerUnderBoss"));
 }
 
 void EnemyBoss::weakPoints(std::vector<GameObject*> allProjectiles, std::string command, int amountOfTimes)
@@ -104,9 +123,51 @@ void EnemyBoss::setRotate(Player* player)
 	}
 }
 
+void EnemyBoss::setRotateNow()
+{
+	rotateNow = true;
+}
+
+void EnemyBoss::loseTrackOfPlayer(bool playerIsFound)
+{
+	playerTracked = playerIsFound;
+}
+
 void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
+	if (attackCooldown.getElapsedTime().asSeconds() >= 1)
+	{
+		float rotation = -atan2(getPos().x - playerPos.x, getPos().y - playerPos.y-2);
+		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
 
+		int activeArrows = 0;
+		for (int i = 0; i < allProjectiles->size(); i++)
+		{
+			if (allProjectiles->at(i)->isInUse())
+				activeArrows++;
+		}
+		if (activeArrows < allProjectiles->size())
+		{
+			if (activeArrows < allProjectiles->size())
+			{
+				for (int i = 0; i < allProjectiles->size(); i++)
+				{
+					if (!allProjectiles->at(i)->isInUse())
+					{
+						allProjectiles->at(i)->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.2, 0.2, 0.2), false, true);
+						i = (int)allProjectiles->size();
+					}
+				}
+			}
+		}
+		else
+		{
+			Projectile* temp = new Projectile;
+			temp->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.2, 0.2, 0.2), false, true);
+			allProjectiles->push_back(temp);
+		}
+		attackCooldown.restart();
+	}
 }
 
 void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
@@ -235,9 +296,15 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 						if (dazeTimer.getElapsedTime().asSeconds() >= 5)
 						{
-							setRotate(player);
+							setRotateNow();
 							this->setChargeCounter(0);
 						}
+						if (rotateNow)
+						{
+							setRotate(player);
+							rotateNow = false;
+						}
+						
 					}
 				}
 			}
@@ -256,6 +323,75 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				{
 					weakPoints(playerProjectiles, "phase2", 4);
 					createTrigger = false;
+				}
+			}
+
+			if (!wallDestroyed)
+			{
+				if (collidedFrom.x == 0)
+				{
+					velocityX = velocityX + acceleration * dt;
+				}
+				if (collidedFrom.x < 0)
+				{
+					velocityX = 0;
+					wallDestroyed = true;
+					setWaterArea(player, allModels);
+					removeGroundTimer.restart();
+					removeGround = true;
+				}
+			}
+
+			if (wallDestroyed)
+			{
+				if (removeGroundTimer.getElapsedTime().asSeconds() >= 1.5 && removeGround)
+				{
+					allModels.erase(allModels.begin() + 0, allModels.begin() + 8);
+					removeGround = false;
+				}
+
+				//If boss is outside center go to center
+				if (glm::length(enemyPosCurrent.x - centerOfRoom.x) > 0.5f)
+				{
+					if (getPos().x >= centerOfRoom.x)
+					{
+						rotateLeft = false;
+					}
+					else if (getPos().x <= centerOfRoom.x)
+					{
+						rotateLeft = true;
+					}
+					if (enemyPosCurrent.x > centerOfRoom.x)
+					{
+						velocityX -= 3.5f*dt;
+					}
+					else if (enemyPosCurrent.x < centerOfRoom.x)
+					{
+						velocityX += 3.5f*dt;
+					}
+				}
+
+				//If boss is in center
+				if (glm::length(enemyPosCurrent.x - centerOfRoom.x) < 0.5f)
+				{
+					if (!weakPointsArr.empty())
+					{
+						for (int i = 0; i < weakPointsArr.size(); i++)
+						{
+							weakPointsArr[i]->update(dt);
+						}
+					}
+
+					if (playerTracked)
+					{
+						setRotate(player);
+						this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+						oldPlayerPos = player->getPos();
+					}
+					else if (!playerTracked)
+					{
+						this->attackPlayer(dt, oldPlayerPos, enemyPosCurrent);
+					}
 				}
 			}
 		}
@@ -287,6 +423,24 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			enemyPosCurrent.x += velocityX;
 			enemyPosCurrent.y += velocityY*dt;
 		}
+		else if (phase == 2)
+		{
+			if (!wallDestroyed)
+			{
+				enemyPosCurrent.x += velocityX;
+				enemyPosCurrent.y += velocityY*dt;
+			}
+			if (wallDestroyed)
+			{
+				enemyPosCurrent.x += velocityX;
+				velocityX = 0;
+				enemyPosCurrent.y += velocityY*dt;
+			}
+		}
+		else if (phase == 3)
+		{
+
+		}
 
 		//Handle collision detection with ground
 		if (enemyPosCurrent.y <= groundPos)
@@ -316,6 +470,14 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 
 		//Trigger box
+		if (!waterArea.empty())
+		{
+			for (int i = 0; i < weakPointsArr.size(); i++)
+			{
+				waterArea[i]->update(dt);
+			}
+		}
+
 		if (!weakPointsArr.empty())
 		{
 			for (int i = 0; i < weakPointsArr.size(); i++)

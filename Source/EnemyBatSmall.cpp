@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyBatSmall::EnemyBatSmall(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
+EnemyBatSmall::EnemyBatSmall(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
 {
 	goForPlayer = true;
 	startPosition = enemyStartPos;

@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyCrab::EnemyCrab(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
+EnemyCrab::EnemyCrab(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
 {
 	this->acceleration = 0.2f;
 	this->moving = true;

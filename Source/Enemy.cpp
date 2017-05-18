@@ -9,11 +9,12 @@ Enemy::Enemy()
 }
 
 
-Enemy::Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor)
+Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor)
 {
 	this->health = health;
 	this->model = model;
 	this->damage = damage;
+	this->immunityTime = immunityTime;
 	this->pos = enemyStartPos;
 	this->scaleFactor = scaleFactor;
 	setPos(pos);
@@ -84,7 +85,7 @@ void Enemy::applyDamage(int appliedDamage)
 {
 	if (!bossImmunity)
 	{
-		if (this->damageImmunity.getElapsedTime().asSeconds() >= 0.5)
+		if (this->damageImmunity.getElapsedTime().asSeconds() >= immunityTime)
 		{
 			this->health -= appliedDamage;
 			this->damageImmunity.restart();

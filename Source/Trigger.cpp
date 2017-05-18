@@ -237,21 +237,49 @@ void Trigger::runCommand(int commandID, int targetID)
 	{
 		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
+
 		enemy->setBossImmunity(false);
 		enemy->applyDamage(10);
 		enemy->setBossImmunity(true);
-		std::cout << enemy->getHealth() << std::endl;
-		if (enemy->getHealth() == 60)
+		if (enemy->getHealth() == 70)
 		{
 			enemyBoss->setPhase(2);
+			enemyBoss->loseTrackOfPlayer(true);
 			enemyBoss->setCreateTrigger(true);
 		}
-		enemyBoss->setRotate()
+		enemyBoss->setRotateNow();
 		enemyBoss->setChargeCounter(0);
 	}
 	else if (commands[commandID] == "phase2" && targets[targetID]->type() == "Enemy")
 	{
+		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
+		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
+
+		enemy->setBossImmunity(false);
+		enemy->applyDamage(10);
+		enemy->setBossImmunity(true);
+		std::cout << enemyBoss->getHealth() << std::endl;
+		if (enemy->getHealth() == 40)
+		{
+			enemyBoss->setPhase(3);
+			enemyBoss->setCreateTrigger(true);
+		}
+
+		enemyBoss->loseTrackOfPlayer(true);
+	}
+	else if (commands[commandID] == "phase3" && targets[targetID]->type() == "Enemy")
+	{
 		std::cout << "meeeep" << std::endl;
+	}
+	else if (commands[commandID] == "playerUnderBoss" && targets[targetID]->type() == "Enemy")
+	{
+		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
+		enemyBoss->loseTrackOfPlayer(false);
+	}
+	else if (commands[commandID] == "playerUnderBoss" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->setDiving(!player->getDiving());
 	}
 }
 //Constructors

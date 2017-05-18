@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
+EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
 {
 	this->attackRange = 10;
 	this->startPosition = enemyStartPos;

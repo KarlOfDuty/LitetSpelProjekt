@@ -171,10 +171,10 @@ void render()
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	for (int i = 0; i < modelsToBeDrawn.size(); i++)
+	for (int i = 0; i < levelManager.currentLevel->getStaticModels().size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
-		modelsToBeDrawn.at(i)->draw(simpleShadowShader);
+		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[i]->getModelMatrix()[0][0]);
+		levelManager.currentLevel->getStaticModels().at(i)->draw(simpleShadowShader);
 	}
 	enemyManager->draw(simpleShadowShader);
 	if (player->playerIsDead() != true)
@@ -199,10 +199,10 @@ void render()
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO2);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	for (int i = 0; i < modelsToBeDrawn.size(); i++)
+	for (int i = 0; i < levelManager.currentLevel->getStaticModels().size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader2.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
-		modelsToBeDrawn.at(i)->draw(simpleShadowShader2);
+		glUniformMatrix4fv(glGetUniformLocation(simpleShadowShader2.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[i]->getModelMatrix()[0][0]);
+		levelManager.currentLevel->getStaticModels().at(i)->draw(simpleShadowShader2);
 	}
 	enemyManager->draw(simpleShadowShader2);
 	if (player->playerIsDead() != true)
@@ -229,10 +229,10 @@ void render()
 	//Draw functions
 
 	//Only potentially visible static models are drawn
-	for (int i = 0; i < modelsToBeDrawn.size(); i++)
+	for (int i = 0; i < levelManager.currentLevel->getStaticModels().size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
-		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[i]->getModelMatrix()[0][0]);
+		levelManager.currentLevel->getStaticModels().at(i)->draw(deferredGeometryPass);
 	}
 	if (player->playerIsDead() != true)
 	{
@@ -287,7 +287,7 @@ void update(sf::Window &window)
 		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemyManager->getAllEnemies());
 	}
 
-	enemyManager->update(dt, player->getDamage(), modelsToBeDrawn, player);
+	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
 
 	//Camera update, get new viewMatrix
 	if (aboveView)
@@ -450,7 +450,7 @@ void loadLevel()
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
-	enemyManager->createBoss(glm::vec3(42.0f, 10.0f, 0.0f));
+	enemyManager->createBoss(glm::vec3(50.0f, 22.0f, 0.0f));
 	/*enemyManager->createSlime(glm::vec3(19.0f, 7.0f, 0.0f));
 	enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
 	enemyManager->createGiantBat(glm::vec3(25.0f, 12.0f, 0.0f));
