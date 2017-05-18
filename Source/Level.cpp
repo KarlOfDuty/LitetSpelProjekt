@@ -24,14 +24,7 @@ void Level::setupModels()
 		5.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
-		10.0, 15.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		15.0, 15.0, 0.0, 1.0
+		25.0, 15.0, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
@@ -142,7 +135,7 @@ void Level::setupTriggers(Player* player)
 	TriggerSettings settings2;
 	settings2.onEnter = true;
 	settings2.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "water"));
+	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "hellogais"));
 }
 void Level::updateTriggers(float dt)
 {
@@ -158,6 +151,14 @@ void Level::deleteTriggers()
 		delete triggerBoxes[i];
 	}
 	triggerBoxes.clear();
+}
+void Level::playMusic(SoundSystem* soundSystem)
+{
+
+}
+void Level::stopMusic(SoundSystem* soundSystem)
+{
+
 }
 //void Level::playMusic(SoundSystem *soundSystem)
 //{

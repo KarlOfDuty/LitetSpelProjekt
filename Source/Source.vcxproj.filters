@@ -81,9 +81,6 @@
     <ClCompile Include="EnemyFireFly.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -106,6 +103,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -170,9 +176,6 @@
     <ClInclude Include="EnemyFireFly.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -197,6 +200,15 @@
     <ClInclude Include="Enemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\gBufferGeometryVertex.glsl">
@@ -212,13 +224,10 @@
       <Filter>Source Files\Shader</Filter>
     </None>
     <None Include="ClassDiagram.cd" />
-    <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleFragment.glsl">
+    <None Include="shadowVertex.glsl">
       <Filter>Source Files\Shader</Filter>
     </None>
-    <None Include="simpleVertex.glsl">
-      <Filter>Source Files\Shader</Filter>
-    </None>
-    <None Include="..\..\..\..\..\Walter%27s\Documents\GitHub\LitetSpelProjekt\Source\simpleVertex2.glsl">
+    <None Include="shadowFragment.glsl">
       <Filter>Source Files\Shader</Filter>
     </None>
   </ItemGroup>

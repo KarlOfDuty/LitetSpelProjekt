@@ -7,13 +7,14 @@
 #include "Collision.h"
 #include "Projectile.h"
 #include "GameObject.h"
-#include "EnemyManager.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
 #include <vector>
 #include <iostream>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+class Enemy;
 
 class Player : public GameObject
 {
@@ -25,6 +26,7 @@ private:
 	sf::Clock tpCooldown;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
+	int health;
 	float velocityX;
 	float velocityY;
 	bool goingLeft;
@@ -55,8 +57,11 @@ public:
 	void swap(int charType);
 	bool playerIsDead();
 	int getDamage() const;
+	int getHealth()const;
 	void update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies);
 	void jump();
+	void waterEffect();
+	void applyDamage(int appliedDamage);
 	void lightAttackPressed(sf::Window &window);
 	void lightAttackReleased(sf::Window &window);
 	void heavyAttackPressed(sf::Window &window);
@@ -70,5 +75,7 @@ public:
 	void setStaticModels(std::vector<Model*> allStaticModels);
 	bool getDiving() const;
 	void setDiving(bool diving);
+	void setHealth(int health);
+	void groundCheck();
 };
 #endif

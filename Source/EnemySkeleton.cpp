@@ -1,6 +1,7 @@
 #include "EnemySkeleton.h"
+#include "Player.h"
 
-EnemySkeleton::EnemySkeleton(int health, Model* model, int damage, bool patrol, glm::vec3 enemyStartPos) :Enemy(health, model, damage, enemyStartPos)
+EnemySkeleton::EnemySkeleton(int health, Model* model, int damage, bool patrol, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
 {
 	this->patrol = patrol;
 	std::srand(time(0));
@@ -26,7 +27,7 @@ void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyP
 	}
 }
 
-void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*>& allModels, std::vector<glm::vec2> playerPoints)
+void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*>& allModels, Player* player)
 {
 	groundCheck();
 
@@ -75,7 +76,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - playerPos) < 5.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 5.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -86,7 +87,15 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 		//Move
 		if (playerSeen)
 		{
-			if (enemyPosCurrent.x > playerPos.x)
+			if (enemyPosCurrent.x >= player->getPos().x)
+			{
+				rotateLeft = false;
+			}
+			if (enemyPosCurrent.x <= player->getPos().x)
+			{
+				rotateLeft = true;
+			}
+			if (enemyPosCurrent.x > player->getPos().x)
 			{
 				velocityX -= 3.8f*dt;
 			}
@@ -100,6 +109,14 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 			//Patrol
 			if (patrol)
 			{
+				if (enemyPosCurrent.x >= checkPoint.x)
+				{
+					rotateLeft = false;
+				}
+				if (enemyPosCurrent.x <= checkPoint.x)
+				{
+					rotateLeft = true;
+				}
 				if (checkPointReached == false)
 				{
 					velocityX -= 1.8f*dt;
@@ -113,6 +130,14 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 	}
 	else
 	{
+		if (enemyPosCurrent.x >= startPosition.x)
+		{
+			rotateLeft = false;
+		}
+		if (enemyPosCurrent.x <= startPosition.x)
+		{
+			rotateLeft = true;
+		}
 		if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
 		{
 			if (enemyPosCurrent.x > startPosition.x)
@@ -169,4 +194,14 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 playerPos, glm::vec3 enemyPos
 
 	setPos(enemyPosCurrent);
 	collides = collision(allModels);
+
+	if (rotateLeft == false)
+	{
+		rotateModel(-90.0f);
+	}
+
+	if (rotateLeft == true)
+	{
+		rotateModel(90.0f);
+	}
 }

@@ -31,6 +31,26 @@ bool Projectile::isInUse()
 	return isUsed;
 }
 
+bool Projectile::isProjectileAttack()
+{
+	return isProjectile;
+}
+
+bool Projectile::isAoeAttack()
+{
+	return isAoe;
+}
+
+bool Projectile::isMeleeAttack()
+{
+	return isMelee;
+}
+
+bool Projectile::isCollidingWithWorld()
+{
+	return hasCollided;
+}
+
 void Projectile::disableArrow()
 {
 	isUsed = false;
@@ -41,7 +61,7 @@ glm::vec2 Projectile::getPosition()
 	return this->position;
 }
 
-void Projectile::update(float dt, std::vector<Model*> &allObjects)
+void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 playerPos)
 {
 	//Update only if there is has been no collision
 	if (!hasCollided)
@@ -49,7 +69,7 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects)
 		//Check if it should be in use else set it to not being used
 		if (timeSinceCollision.getElapsedTime().asSeconds() < 10)
 		{
-			if (!isAoe)
+			if (!isAoe && !isMelee)
 			{
 				//Retardation
 				velocity.x -= retardation.x*dt;
@@ -88,10 +108,13 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects)
 				//Check the collision and fix if its colliding
 				collision(allObjects);
 			}
-			else
+			else if (isAoe)
 			{
-				scale.y += 5 * dt;
-				position.y += 2.5 * dt;
+				scale.x += direction.x * velocity.x * dt;
+				scale.y += direction.y * velocity.y * dt;
+				position.x += direction.x * velocity.x/2 * dt;
+				position.y += direction.y * velocity.y/2 * dt;
+
 				model->setModelMatrix({
 					1.0, 0.0, 0.0, 0.0,
 					0.0, 1.0, 0.0, 0.0,
@@ -104,9 +127,59 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects)
 				model->setRotationMatrix(scaleMat);
 				model->rotate();
 
-				if (scale.y >= 2)
+				if (abs(scale.x*direction.x) >= 2)
 				{
 					isUsed = false;
+				}
+				if (scale.y*direction.y >= 2)
+				{
+					isUsed = false;
+				}
+			}
+			else
+			{
+				{
+					if (position.x < (playerPos.x + scale.x / 2 + 1.0f*direction.x))
+					{
+						if (direction.x == -1)
+						{
+							direction.x = 1;
+							scale.x = -scale.x;
+						}
+					}
+					else if (position.x > (playerPos.x + scale.x / 2 + 1.0f*direction.x))
+					{
+						if (direction.x == 1)
+						{
+							direction.x = -1;
+							scale.x = -scale.x;
+						}
+					}
+
+					scale.x += direction.x * velocity.x * dt;
+					scale.y += direction.y * velocity.y * dt;
+					position.x = playerPos.x + scale.x / 2 + 1.0f*direction.x;
+					position.y = playerPos.y + 1.5f;
+					model->setModelMatrix({
+						1.0, 0.0, 0.0, 0.0,
+						0.0, 1.0, 0.0, 0.0,
+						0.0, 0.0, 1.0, 0.0,
+						position.x, position.y , 0.0, 1.0
+					});
+
+					//Set rotation if isRotating, else just set scale
+					glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
+					model->setRotationMatrix(scaleMat);
+					model->rotate();
+
+					if (abs(scale.x*direction.x) >= 2)
+					{
+						isUsed = false;
+					}
+					if (scale.y*direction.y >= 2)
+					{
+						isUsed = false;
+					}
 				}
 			}
 		}
@@ -183,17 +256,18 @@ void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 pro
 	//Reset booleans and clock
 	hasCollided = false;
 	isUsed = true;
+	isProjectile = true;
 	isAoe = false;
+	isMelee = false;
 	timeSinceCollision.restart();
 }
 
-void Projectile::aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale)
+void Projectile::aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
 {
 	//Copy info supplied
 	position = startPos;
 	scale = projectileScale;
 	direction = projectileDirection;
-	retardation = projectileRetardation;
 
 	//Create new modelmat for model
 	glm::mat4 modelMat({
@@ -214,8 +288,6 @@ void Projectile::aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 proje
 	//Set the velocity
 	velocity = glm::vec2(glm::abs(direction.x*projectileVelocity), direction.y*projectileVelocity);
 
-	//If it should rotate, calculate rotation ELSE just set scale
-	scale = glm::vec3(4.0f, 0.1f, 1.0f);
 	glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
 	model->setRotationMatrix(scaleMat);
 	model->rotate();
@@ -224,7 +296,49 @@ void Projectile::aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 proje
 	isRotating = false;
 	hasCollided = false;
 	isUsed = true;
+	isProjectile = false;
 	isAoe = true;
+	isMelee = false;
+	timeSinceCollision.restart();
+}
+
+void Projectile::melee(Model * projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
+{
+	//Copy info supplied
+	position = startPos;
+	scale = projectileScale;
+	direction = projectileDirection;
+
+	//Create new modelmat for model
+	glm::mat4 modelMat({
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		position.x, position.y, 0.0, 1.0
+	});
+	if (model == nullptr)
+	{
+		model = new Model(projectileModel, modelMat);
+	}
+	else
+	{
+		model->setModelMatrix(modelMat);
+	}
+
+	//Set the velocity
+	velocity = glm::vec2(glm::abs(direction.x*projectileVelocity), direction.y*projectileVelocity);
+
+	glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
+	model->setRotationMatrix(scaleMat);
+	model->rotate();
+
+	//Reset booleans and clock
+	isRotating = false;
+	hasCollided = false;
+	isUsed = true;
+	isProjectile = false;
+	isAoe = false;
+	isMelee = true;
 	timeSinceCollision.restart();
 }
 

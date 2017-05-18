@@ -1,9 +1,10 @@
 #include "PlayerBird.h"
 
-PlayerBird::PlayerBird(int health, Model model, bool inWater) :PlayerChar(health, model, inWater)
+PlayerBird::PlayerBird(Model model, bool inWater) :PlayerChar(model, inWater)
 {
 	this->maxJumps = 2;
 	this->jumpHeight = 15;
+	box = new Model("models/cube/cubeGreen.obj");
 }
 
 PlayerBird::~PlayerBird()
@@ -25,7 +26,15 @@ float PlayerBird::getJumpHeight()
 	return jumpHeight;
 }
 
-void PlayerBird::waterEffect()
+void PlayerBird::meleeAttack(std::vector<Projectile*> &allAttackBoxes, glm::vec2 position, glm::vec2 direction, float velocity)
 {
-	this->setHealth(0);
+	if (attackCooldown.getElapsedTime().asSeconds() > 0.5f)
+	{
+		glm::vec3 scale(0, 3.0f, 1.0f);
+		position.y += 1.5f;
+		Projectile* temp = new Projectile;
+		temp->melee(box, position, direction, velocity, scale);
+		allAttackBoxes.push_back(temp);
+		attackCooldown.restart();
+	}
 }

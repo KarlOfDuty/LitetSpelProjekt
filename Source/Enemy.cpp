@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "Player.h"
 
 
 Enemy::Enemy()
@@ -8,16 +9,19 @@ Enemy::Enemy()
 }
 
 
-Enemy::Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos)
+Enemy::Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor)
 {
 	this->health = health;
 	this->model = model;
 	this->damage = damage;
 	this->pos = enemyStartPos;
+	this->scaleFactor = scaleFactor;
 	setPos(pos);
 	isOnGround = true;
 	playerSeen = false;
+	angle = 0;
 	this->checkPoint.x = enemyStartPos.x;
+	
 }
 
 Enemy::~Enemy()
@@ -29,9 +33,9 @@ void Enemy::setPos(glm::vec3 position)
 {
 	pos = position;
 	this->model->setModelMatrix(glm::mat4(
-		0.075, 0.0, 0.0, 0.0,
-		0.0, 0.075, 0.0, 0.0,
-		0.0, 0.0, 0.075, 0.0,
+		scaleFactor.x, 0.0, 0.0, 0.0,
+		0.0, scaleFactor.y, 0.0, 0.0,
+		0.0, 0.0, scaleFactor.z, 0.0,
 		pos.x, pos.y, pos.z, 1.0
 	));
 }
@@ -68,6 +72,12 @@ int Enemy::getHealth() const
 Model* Enemy::getModel()
 {
 	return this->model;
+}
+
+void Enemy::rotateModel(float direction)
+{
+	model->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(direction), glm::vec3(0.0f, 1.0f, 0.0f)));
+	model->rotate();
 }
 
 void Enemy::applyDamage(int appliedDamage)
@@ -145,23 +155,24 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 	return false;
 }
 
-bool Enemy::collisionWithPlayer(std::vector<glm::vec2> playerPoints)
+bool Enemy::collisionWithPlayer(Player* player)
 {
 
 	std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
-	if (collision::collision(enemyPoints, playerPoints))
+	if (collision::collision(enemyPoints, player->getPoints()))
 	{
+		player->applyDamage(this->getDamage());
 		return true;
 	}
 	return false;
 }
 
-void Enemy::update(float dt, glm::vec3 playerPos, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, std::vector<glm::vec2> playerPoints)
+void Enemy::update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
-	if (glm::length(pos - playerPos) < 25.0f)
+	if (glm::length(pos - player->getPos()) < 25.0f)
 	{
-		updateThis(dt, playerPos, pos, checkPoint, allSmallBats, allModels, playerPoints);
-		attackPlayer(dt, playerPos, pos);
+		updateThis(dt, pos, checkPoint, allSmallBats, allModels, player);
+		attackPlayer(dt, player->getPos(), pos);
 	}
 }
 
