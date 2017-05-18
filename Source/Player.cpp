@@ -26,7 +26,7 @@ Player::Player()
 	angle = 0;
 	this->movementSpeed = 4.0f;
 	//Add characters
-	this->health = 2;
+	this->health = 20;
 
 	this->playerCharacters[0] = new PlayerBird(birdModel, false);
 	this->playerCharacters[1] = new PlayerShark(sharkModel, false);
@@ -78,6 +78,7 @@ void Player::swap(int character)
 {
 	player = playerCharacters[character];
 }
+
 //Makes the player jump
 void Player::jump()
 {
@@ -96,6 +97,7 @@ void Player::jump()
 		}
 	}
 }
+
 
 void Player::waterEffect()
 {
@@ -274,6 +276,7 @@ void Player::setPos(glm::vec3 playerPos)
 {
 	this->modelMatrix[3] = glm::vec4(playerPos,1.0);
 }
+
 //True if player is dead
 bool Player::playerIsDead()
 {
@@ -293,6 +296,7 @@ std::string Player::type() const
 {
 	return "Player";
 }
+
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
@@ -506,6 +510,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		aiming(window, dt);
 	}
 }
+
 //Draws the models involved
 void Player::draw(Shader shader)
 {
@@ -529,6 +534,7 @@ void Player::draw(Shader shader)
 		}
 	}
 }
+
 //Tests collision with other objects
 void Player::collision(std::vector<Model*> &allModels)
 {
@@ -536,6 +542,71 @@ void Player::collision(std::vector<Model*> &allModels)
 	int collisionChecks = 0;
 	while (collides && collisionChecks < 5)
 	{
+		std::vector<Model*> closeObjects;
+		for (int i = 0; i < allModels.size(); i++)
+		{
+			glm::vec3 objectMin, objectMax;
+			allModels[i]->getScaledMinMaxBouding(objectMin, objectMax);
+			glm::vec2 distance = allModels[i]->getPos() - getPos();
+			if (abs(distance.x) < 2.0f+objectMax.x)
+			{
+				if (abs(distance.y) < 2.0f + objectMax.y)
+				{
+					closeObjects.push_back(allModels[i]);
+				}
+			}
+		}
+
+		if (closeObjects.size())
+		{
+			std::vector<glm::vec2> playerPoints = getPoints();
+
+			for (int i = 0; i < closeObjects.size(); i++)
+			{
+				std::vector<glm::vec2> objectPoints;
+				float radians = 0.0f;
+				getPoints(objectPoints, closeObjects[i], radians);
+				glm::vec2 mtv;
+				if (collision::collision(playerPoints, objectPoints, mtv))
+				{
+					if (radians > 0.0f && radians < 0.79f)
+					{
+						if (mtv.y > 0)
+						{
+							modelMatrix[3].y -= 0.10f;
+						}
+						else
+						{
+							velocityY -= 0.5f;
+						}
+					}
+					else
+					{
+						modelMatrix[3].x += mtv.x;
+						if (mtv.y < 0)
+						{
+							velocityY = 0;
+						}
+					}
+					modelMatrix[3].y += mtv.y;
+					if (mtv.y > 0)
+					{
+						if (modelMatrix[3].y < 0) modelMatrix[3].y = 0;
+						groundPos = modelMatrix[3].y;
+					}
+				}
+				else
+				{
+					collides = false;
+				}
+			}
+		}
+		else
+		{
+			collides = false;
+		}
+		collisionChecks++;
+		/*
 		int index = -1;
 		float minDistance = 1000;
 		glm::vec2 player2dPos = glm::vec2(getPos().x, getPos().y + 0.5f);
@@ -590,6 +661,7 @@ void Player::collision(std::vector<Model*> &allModels)
 			}
 		}
 		collisionChecks++;
+		*/
 	}
 }
 void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians)
@@ -636,6 +708,8 @@ void Player::groundCheck()
 	{
 		glm::vec3 min, max;
 		allStaticModels[i]->getMinMaxBouding(min, max);
+		min = min * pow(5.f,2);
+		max = max * pow(5.f,2);
 		min += allStaticModels[i]->getPos();
 		max += allStaticModels[i]->getPos();
 		if (getPos().x >= min.x && getPos().x <= max.x)
@@ -654,8 +728,8 @@ void Player::groundCheck()
 		glm::vec3 rayDir(0, -1, 0);
 		glm::vec3 aabbMin, aabbMax;
 		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
-		aabbMin *= 5;
-		aabbMax *= 5;
+		aabbMin = aabbMin * pow(5.f, 2);
+		aabbMax = aabbMax * pow(5.f, 2);
 		glm::mat4 boxMat = sortedModels[i]->getModelMatrix();
 		float distance = 10000;
 		

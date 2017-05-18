@@ -36,11 +36,49 @@ void Model::getMinMaxBouding(glm::vec3 &min, glm::vec3 &max)
 				if (meshes[i]->vertices[j].pos.y > maxBounding.y) maxBounding.y = meshes[i]->vertices[j].pos.y;
 			}
 		}
-		glm::vec3 scale;
-		glm::decompose(modelMatrix, scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
 	}
 	min = minBounding;
 	max = maxBounding;
+}
+void Model::getScaledMinMaxBouding(glm::vec3 &min, glm::vec3 &max)
+{
+	if (minBounding == glm::vec3() && maxBounding == glm::vec3())
+	{
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			for (int j = 0; j < meshes[i]->vertices.size(); j++)
+			{
+				if (meshes[i]->vertices[j].pos.x < minBounding.x) minBounding.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y < minBounding.y) minBounding.y = meshes[i]->vertices[j].pos.y;
+				if (meshes[i]->vertices[j].pos.x > maxBounding.x) maxBounding.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y > maxBounding.y) maxBounding.y = meshes[i]->vertices[j].pos.y;
+			}
+		}
+	}
+	glm::vec3 scale;
+	glm::decompose(modelMatrix, scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+	min = minBounding * scale;
+	max = maxBounding * scale;
+}
+void Model::getScaledMinMaxBouding(glm::vec3 &min, glm::vec3 &max, glm::mat4 modelMat)
+{
+	if (minBounding == glm::vec3() && maxBounding == glm::vec3())
+	{
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			for (int j = 0; j < meshes[i]->vertices.size(); j++)
+			{
+				if (meshes[i]->vertices[j].pos.x < minBounding.x) minBounding.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y < minBounding.y) minBounding.y = meshes[i]->vertices[j].pos.y;
+				if (meshes[i]->vertices[j].pos.x > maxBounding.x) maxBounding.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y > maxBounding.y) maxBounding.y = meshes[i]->vertices[j].pos.y;
+			}
+		}
+	}
+	glm::vec3 scale;
+	glm::decompose(modelMat, scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+	min = minBounding * scale;
+	max = maxBounding * scale;
 }
 Material Model::getMaterial(int index)
 {
