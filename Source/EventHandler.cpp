@@ -46,6 +46,25 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 					break;
 				}
 			}
+			//Menu/End program
+			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Escape)
+			{
+				running = 0;
+			}
+			else if (windowEvent.type == sf::Event::JoystickButtonPressed && windowEvent.joystickButton.joystickId == controller && windowEvent.joystickButton.button == XBOXSTART)
+			{
+				running = 0;
+			}
+			else if (windowEvent.type == sf::Event::Closed)
+			{
+				//End the program
+				running = 0;
+			}
+			else if (windowEvent.type == sf::Event::Resized)
+			{
+				//Adjust the viewport when the window is resized
+				glViewport(0, 0, windowEvent.size.width, windowEvent.size.height);
+			}
 		}
 		else if(running == 2)
 		{

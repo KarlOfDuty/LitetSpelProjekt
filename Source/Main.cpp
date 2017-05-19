@@ -102,7 +102,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
 
-	menu = new Menu(window.getSize().x, window.getSize().y);
+	
 
 	//Activate the window
 	window.setActive(true);
@@ -138,6 +138,9 @@ int main()
 	soundSystem->loadSound("audio/youdied.flac", "youDied");
 	//soundSystem->playMusic("audio/music/never.flac");
 
+	//menu system
+	menu = new Menu(window.getSize().x, window.getSize().y, soundSystem);
+
 	//quit = 0, menu 1 and game 2
 	int running = 1;
 
@@ -168,6 +171,9 @@ int main()
 				deltaClock.restart();
 				firstFrame = false;
 			}
+
+			//window.setActive(true);
+			//render();
 
 			window.setActive(false);
 
