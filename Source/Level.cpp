@@ -12,6 +12,210 @@ void Level::loadModels()
 //meshes to avoid copying large amounts of data in memory
 void Level::setupModels()
 {
+	//Boss stuff
+	//remove these
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		60.0, 13.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		35.0, 3.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		35.0, 8.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		40.0, 3.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		45.0, 3.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		50.0, 3.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		55.0, 3.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		55.0, 8.0, 0.0, 1.0
+	}));
+	//
+
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		25.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		25.0, 3.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		25.0, 7.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		30.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		30.0, 3.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		30.0, 8.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		30.0, 11.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		35.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		40.0, -2.0, 0.0, 1.0
+	}));
+	
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		40.0, 8.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		45.0, -2.0, 0.0, 1.0
+	}));
+
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		45.0, 8.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		50.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		50.0, 8.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		55.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		60.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		60.0, 3.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		60.0, 8.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		60.0, 10.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		60.0, 18.0, 0.0, 1.0
+	}));
+	//--------------------
+
 	staticModels.push_back(new Model(modelLibrary[0],
 	{
 		5.0, 0.0, 0.0, 0.0,
@@ -19,13 +223,13 @@ void Level::setupModels()
 		0.0, 0.0, 5.0, 0.0,
 		-13.0, -2.0, 0.0, 1.0
 	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		25.0, 15.0, 0.0, 1.0
-	}));
+	//staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	//{
+	//	5.0, 0.0, 0.0, 0.0,
+	//	0.0, 5.0, 0.0, 0.0,
+	//	0.0, 0.0, 5.0, 0.0,
+	//	25.0, 15.0, 0.0, 1.0
+	//}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		5.0, 0.0, 0.0, 0.0,
@@ -61,6 +265,9 @@ void Level::setupModels()
 		0.0, 0.0, 5.0, 0.0,
 		2.0, -2.0, 0.0, 1.0
 	}));
+
+	
+	
 	Model* slope = new Model(*(modelLibrary.at(2)),
 	{
 		5.0, 0.0, 0.0, 0.0,
@@ -84,6 +291,13 @@ void Level::setupModels()
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
 		19.0, -2.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		19.0, 3.0, 0.0, 1.0
 	}));
 
 	std::srand((int)time(0));
@@ -135,7 +349,7 @@ void Level::setupTriggers(Player* player)
 	TriggerSettings settings2;
 	settings2.onEnter = true;
 	settings2.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "hellogais"));
+	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "fuckyou"));
 }
 void Level::updateTriggers(float dt)
 {
@@ -169,7 +383,7 @@ void Level::stopMusic(SoundSystem* soundSystem)
 //	soundSystem->stopMusic();
 //}
 //Getters
-std::vector<Model*> Level::getStaticModels()
+std::vector<Model*>& Level::getStaticModels()
 {
 	return staticModels;
 }

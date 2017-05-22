@@ -1,10 +1,14 @@
 #include "EnemyToad.h"
 #include "Player.h"
+#include "Trigger.h"
 
-EnemyToad::EnemyToad(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
+EnemyToad::EnemyToad(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
 {
+	this->attackRange = 10;
 	this->startPosition = enemyStartPos;
 	this->returnToStart = false;
+	this->allProjectiles = allProjectiles;
+	projectileModel = new Model("models/sphere/sphere.obj");
 }
 
 EnemyToad::~EnemyToad()
@@ -14,7 +18,37 @@ EnemyToad::~EnemyToad()
 
 void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
-
+	if (attackCooldown.getElapsedTime().asSeconds() >= 2)
+	{
+		glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-0.6, 0.4) : glm::vec2(0.6, 0.4);
+		int activeArrows = 0;
+		for (int i = 0; i < allProjectiles->size(); i++)
+		{
+			if (allProjectiles->at(i)->isInUse())
+				activeArrows++;
+		}
+		if (activeArrows < allProjectiles->size())
+		{
+			if (activeArrows < allProjectiles->size())
+			{
+				for (int i = 0; i < allProjectiles->size(); i++)
+				{
+					if (!allProjectiles->at(i)->isInUse())
+					{
+						allProjectiles->at(i)->shoot(projectileModel, getPos(), direction, glm::vec2(0, 10.f), 15.f, glm::vec3(0.2, 0.2, 0.2),false,true);
+						i = (int)allProjectiles->size();
+					}
+				}
+			}
+		}
+		else
+		{
+			Projectile* temp = new Projectile;
+			temp->shoot(projectileModel, getPos(), direction, glm::vec2(0, 10.f), 15.f, glm::vec3(0.2, 0.2, 0.2),false,true);
+			allProjectiles->push_back(temp);
+		}
+		attackCooldown.restart();
+	}
 }
 
 void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
@@ -51,7 +85,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 
 		//Detect player
-		if (glm::length(enemyPosCurrent - player->getPos()) < 5.0f)
+		if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
 		{
 			playerSeen = true;
 			returnToStart = false;
@@ -61,30 +95,34 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			if (collidingWithGround)
 			{
-				if (enemyPosCurrent.x >= player->getPos().x)
+				if (glm::length(enemyPosCurrent - player->getPos()) > 8.0f)
 				{
-					rotateLeft = false;
-				}
-				if (enemyPosCurrent.x <= player->getPos().x)
-				{
-					rotateLeft = true;
-				}
-				//Jump
-				if (playerSeen)
-				{
-					if (jumpTimer.getElapsedTime().asSeconds() >= 1.6)
+					if (enemyPosCurrent.x >= player->getPos().x)
 					{
-						if (collidingWithGround)
+						rotateLeft = false;
+					}
+					if (enemyPosCurrent.x <= player->getPos().x)
+					{
+						rotateLeft = true;
+					}
+					//Jump
+					if (playerSeen)
+					{
+						if (jumpTimer.getElapsedTime().asSeconds() >= 1.7)
 						{
 							velocityY = 15;
+							jumpTimer.restart();
 						}
-						jumpTimer.restart();
-					}
 
-					playerSeen = true;
+						playerSeen = true;
+					}
+					movingRight = false;
+					movingLeft = false;
 				}
-				movingRight = false;
-				movingLeft = false;
+				else
+				{
+					this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+				}
 			}
 
 			//Move in air only
@@ -130,12 +168,9 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				//Jump
 				if (glm::length(enemyPosCurrent.x - startPosition.x) > 1.5f)
 				{
-					if (jumpTimer.getElapsedTime().asSeconds() >= 1.4)
+					if (jumpTimer.getElapsedTime().asSeconds() >= 1.7)
 					{
-						if (collidingWithGround)
-						{
-							velocityY = 15;
-						}
+						velocityY = 15;
 						jumpTimer.restart();
 					}
 				}
@@ -219,6 +254,6 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			rotateModel(90.0f);
 		}
-
+		collisionWithPlayer(player);
 }
 

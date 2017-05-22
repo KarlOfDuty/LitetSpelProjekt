@@ -47,6 +47,16 @@ PlayerChar* Player::getCurrentCharacter()
 	return player;
 }
 
+std::vector<Projectile*> Player::getProjectiles()
+{
+	return allProjectiles;
+}
+
+Projectile* Player::getProjectileAt(int nr)
+{
+	return allProjectiles[nr];
+}
+
 int Player::getDamage() const
 {
 	return playerCharacters[0]->getDamage();
@@ -293,6 +303,7 @@ std::string Player::type() const
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
+	allStaticModels = allModels;
 	//Kill player and reset jumps in water
 	if (getDiving())
 	{

@@ -33,7 +33,11 @@ void PlayerButterfly::teleport()
 }
 void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector<Projectile*> &allProjectiles, glm::vec2 position)
 {
+	/*
+	//Check how many arrows are active in the arrow vector
+	for (int i = 0; i < allStaticModels.size(); i++)
 	if (attackCooldown.getElapsedTime().asSeconds() > 0.5f)
+>>>>>>> refs/remotes/origin/master
 	{
 		glm::vec2 direction(0, 1);
 		glm::vec3 scale(4.0f, 0.1f, 1.0f);
@@ -70,12 +74,43 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 				}
 			}
 		}
+<<<<<<< HEAD
+	}
+	int activeArrows = 0;
+	for (int i = 0; i < allProjectiles.size(); i++)
+	{
+		if (allProjectiles[i]->isInUse())
+			activeArrows++;
+	}
+	if (intersection_distance < 4)
+	{
+		if (activeArrows < allProjectiles.size())
+		{
+			if (activeArrows < allProjectiles.size())
+			{
+				for (int i = 0; i < allProjectiles.size(); i++)
+				{
+					if (!allProjectiles[i]->isInUse())
+					{
+						allProjectiles[i]->aoe(box, position, direction, 5.0f, scale);
+						i = (int)allProjectiles.size();
+					}
+				}
+			}
+		}
+		else
+=======
 		if (intersection_distance < 4)
+>>>>>>> refs/remotes/origin/master
 		{
 			Projectile* temp = new Projectile;
 			temp->aoe(box, position, direction, 5.0f, scale);
 			allProjectiles.push_back(temp);
 		}
+<<<<<<< HEAD
+=======
 		attackCooldown.restart();
+>>>>>>> refs/remotes/origin/master
 	}
+	*/
 }
