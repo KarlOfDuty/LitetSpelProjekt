@@ -79,6 +79,7 @@ std::vector<Model*> modelsToBeDrawn;
 
 //Functions
 void render();
+void render2();
 void update(sf::RenderWindow &window);
 void createGBuffer();
 void drawQuad();
@@ -175,6 +176,8 @@ int main()
 			//window.setActive(true);
 			//render();
 
+			window.setActive(true);
+			render2();
 			window.setActive(false);
 
 			window.pushGLStates();
@@ -214,6 +217,119 @@ int main()
 
 //Render function for all drawings
 void render()
+{
+	//Render depth of scene to texture (from light's perspective)
+	//Get light projection/view matrix.
+	glm::mat4 lightProjection;
+	glm::mat4 lightView;
+	std::vector<glm::mat4> lightSpaceMatrix;
+	GLfloat nearPlane = 0.01f;
+	GLfloat farPlane = 30.0f;
+	lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, nearPlane, farPlane);
+	glCullFace(GL_FRONT);
+	for (int i = 0; i < directionalLights.size(); i++)
+	{
+		lightSpaceMatrix.push_back(glm::mat4());
+		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*10.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
+		lightSpaceMatrix[i] = lightProjection * lightView;
+		//Render scene from light's point of view
+		shadowShader.use();
+		glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, ("lightSpaceMatrix[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix[i]));
+		glUniform1i(glGetUniformLocation(shadowShader.program, "index"), i);
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO[i]);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		for (int j = 0; j < levelManager.currentLevel->getStaticModels().size(); j++)
+		{
+			glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[j]->getModelMatrix()[0][0]);
+			levelManager.currentLevel->getStaticModels()[j]->draw(shadowShader);
+		}
+		glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel().getModelMatrix()[0][0]);
+		enemyManager->draw(shadowShader);
+		if (player->playerIsDead() != true)
+		{
+			player->draw(shadowShader);
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, windowWidth, windowHeight);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+	glCullFace(GL_BACK);
+	//Geometry pass
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	deferredGeometryPass.use();
+
+	//View and Projection Matrix
+	GLint viewID = glGetUniformLocation(deferredGeometryPass.program, "view");
+	glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
+	GLint projectionID = glGetUniformLocation(deferredGeometryPass.program, "projection");
+	glUniformMatrix4fv(projectionID, 1, GL_FALSE, &projectionMatrix[0][0]);
+
+	//Draw functions
+
+	//Only potentially visible static models are drawn
+	for (int i = 0; i < levelManager.currentLevel->getStaticModels().size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[i]->getModelMatrix()[0][0]);
+		levelManager.currentLevel->getStaticModels().at(i)->draw(deferredGeometryPass);
+	}
+	std::vector<Model*> dynamicModels = levelManager.currentLevel->getDynamicModels();
+	for (int i = 0; i < dynamicModels.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
+		dynamicModels.at(i)->draw(deferredGeometryPass);
+	}
+	if (player->playerIsDead() != true)
+	{
+		player->draw(deferredGeometryPass);
+	}
+	enemyManager->draw(deferredGeometryPass);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//Lighting pass
+	deferredLightingPass.use();
+
+	//Bind all the textures
+	int textureID = 0;
+	glActiveTexture(GL_TEXTURE0 + textureID++);
+	glBindTexture(GL_TEXTURE_2D, gPosition);
+	glActiveTexture(GL_TEXTURE0 + textureID++);
+	glBindTexture(GL_TEXTURE_2D, gNormal);
+	glActiveTexture(GL_TEXTURE0 + textureID++);
+	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+	glActiveTexture(GL_TEXTURE0 + textureID++);
+	glBindTexture(GL_TEXTURE_2D, gAmbient);
+	for (int i = 0; i < directionalLights.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + textureID++);
+		glBindTexture(GL_TEXTURE_2D, depthMap[i]);
+	}
+	//Send all lights to the shader
+	for (GLuint i = 0; i < pointLights.size(); i++)
+	{
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].position").c_str()), 1, &pointLights[i]->pos[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].colour").c_str()), 1, &pointLights[i]->colour[0]);
+		// Linear and quadratic for calculation of the lights radius
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].linear").c_str()), pointLights[i]->linear);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].quadratic").c_str()), pointLights[i]->quadratic);
+	}
+	for (GLuint i = 0; i < directionalLights.size(); i++)
+	{
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].dir").c_str()), 1, &directionalLights[i]->getDirection()[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].colour").c_str()), 1, &directionalLights[i]->getColour()[0]);
+		glUniformMatrix4fv(glGetUniformLocation(deferredLightingPass.program, ("lightSpaceMatrix[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix[i]));
+	}
+	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfPointLights"), pointLights.size());
+	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfDirLights"), directionalLights.size());
+	glUniform3fv(glGetUniformLocation(deferredLightingPass.program, "viewPos"), 1, &playerCamera.getCameraPos()[0]);
+	//Draw a fullscreen quad combining the information
+	drawQuad();
+}
+
+void render2()
 {
 	//Render depth of scene to texture (from light's perspective)
 	//Get light projection/view matrix.
