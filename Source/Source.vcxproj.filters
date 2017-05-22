@@ -114,6 +114,9 @@
     <ClCompile Include="Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -228,6 +231,12 @@
       <Filter>Source Files\Shader</Filter>
     </None>
     <None Include="shadowFragment.glsl">
+      <Filter>Source Files\Shader</Filter>
+    </None>
+    <None Include="Shaders\gBufferAnimationVertex.glsl">
+      <Filter>Source Files\Shader</Filter>
+    </None>
+    <None Include="Shaders\gBufferAnimationFragment.glsl">
       <Filter>Source Files\Shader</Filter>
     </None>
   </ItemGroup>
