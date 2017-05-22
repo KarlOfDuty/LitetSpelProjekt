@@ -719,9 +719,7 @@ void Player::groundCheck()
 	for (int i = 0; i < allStaticModels.size(); i++)
 	{
 		glm::vec3 min, max;
-		allStaticModels[i]->getMinMaxBouding(min, max);
-		min = min * pow(5.f,2);
-		max = max * pow(5.f,2);
+		allStaticModels[i]->getScaledMinMaxBouding(min, max);
 		min += allStaticModels[i]->getPos();
 		max += allStaticModels[i]->getPos();
 		if (getPos().x >= min.x && getPos().x <= max.x)
