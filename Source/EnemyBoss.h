@@ -23,6 +23,7 @@ private:
 	Model* projectileModel;
 	bool removeGround;
 	sf::Clock removeGroundTimer;
+	bool inRightCorner;
 
 	//phase 3
 

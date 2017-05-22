@@ -13,8 +13,8 @@ EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm
 	this->createTrigger = true;
 	this->rotateNow = false;
 	bossImmunity = true;
-	this->centerOfRoom = enemyStartPos;
 	this->wallDestroyed = false;
+	this->inRightCorner = true;
 	
 	projectileModel = new Model("models/sphere/sphere.obj");
 	boxModel = new Model("models/cube/cube.obj");
@@ -231,16 +231,12 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			{
 				if (collidedFrom.x != 0)
 				{
-					//if (glm::length(enemyPosCurrent - originPoint) > 15.0f)//replace with when collision happens
-					//{
-						originPoint = enemyPosCurrent;
-						attacking = false;
-						movingRight = false;
-						movingLeft = false;
-						velocityX = 0;
-						walkTimer.restart();
-						chargeCounter = chargeCounter + 1;
-					/*}*/
+					attacking = false;
+					movingRight = false;
+					movingLeft = false;
+					velocityX = 0;
+					walkTimer.restart();
+					chargeCounter = chargeCounter + 1;
 				}
 			}
 
@@ -258,25 +254,25 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 						if (attacking)
 						{
-							if (!movingLeft)
-							{
-								if (enemyPosCurrent.x >= player->getPos().x)
-								{
-									movingRight = true;
-								}
-							}
 							if (!movingRight)
 							{
-								if (enemyPosCurrent.x <= player->getPos().x)
+								if (enemyPosCurrent.x >= originPoint.x)
 								{
 									movingLeft = true;
 								}
 							}
-							if (movingRight)
+							if (!movingLeft)
+							{
+								if (enemyPosCurrent.x < originPoint.x)
+								{
+									movingRight = true;
+								}
+							}
+							if (movingLeft)
 							{
 								velocityX = velocityX - acceleration * dt;
 							}
-							else if (movingLeft)
+							else if (movingRight)
 							{
 								velocityX = velocityX + acceleration * dt;
 							}
@@ -317,6 +313,27 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			editWeakPoint(2.0f, -1.0f, player);
 
+			if (!attacking)
+			{
+				if (walkTimer.getElapsedTime().asSeconds() >= 1.0)
+				{
+					attacking = true;
+				}
+			}
+
+			if (attacking)
+			{
+				if (collidedFrom.x != 0)
+				{
+					attacking = false;
+					movingRight = false;
+					movingLeft = false;
+					velocityX = 0;
+					walkTimer.restart();
+					chargeCounter = chargeCounter + 1;
+				}
+			}
+
 			if (!playerProjectiles.empty())
 			{
 				if (createTrigger)
@@ -328,11 +345,44 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 			if (!wallDestroyed)
 			{
-				if (collidedFrom.x == 0)
+				if (!attacking)
 				{
-					velocityX = velocityX + acceleration * dt;
+					setRotate(player);
 				}
-				if (collidedFrom.x < 0)
+
+				if (attacking)
+				{
+					if (inRightCorner)
+					{
+						if (!movingRight)
+						{
+							if (enemyPosCurrent.x >= originPoint.x)
+							{
+								movingLeft = true;
+								inRightCorner = true;
+							}
+						}
+					}
+
+					if (!movingLeft)
+					{
+						if (enemyPosCurrent.x < originPoint.x)
+						{
+							movingRight = true;
+							inRightCorner = false;
+						}
+					}
+					if (movingLeft)
+					{
+						velocityX = velocityX - acceleration * dt;
+					}
+					else if (movingRight)
+					{
+						velocityX = velocityX + acceleration * dt;
+					}
+				}
+
+				if (collidedFrom.x < 0 && !inRightCorner)
 				{
 					velocityX = 0;
 					wallDestroyed = true;
@@ -351,28 +401,28 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				}
 
 				//If boss is outside center go to center
-				if (glm::length(enemyPosCurrent.x - centerOfRoom.x) > 0.5f)
+				if (glm::length(enemyPosCurrent.x - originPoint.x) > 0.5f)
 				{
-					if (getPos().x >= centerOfRoom.x)
+					if (getPos().x > originPoint.x)
 					{
 						rotateLeft = false;
 					}
-					else if (getPos().x <= centerOfRoom.x)
+					else if (getPos().x <= originPoint.x)
 					{
 						rotateLeft = true;
 					}
-					if (enemyPosCurrent.x > centerOfRoom.x)
+					if (enemyPosCurrent.x >= originPoint.x)
 					{
 						velocityX -= 3.5f*dt;
 					}
-					else if (enemyPosCurrent.x < centerOfRoom.x)
+					else if (enemyPosCurrent.x < originPoint.x)
 					{
 						velocityX += 3.5f*dt;
 					}
 				}
 
 				//If boss is in center
-				if (glm::length(enemyPosCurrent.x - centerOfRoom.x) < 0.5f)
+				if (glm::length(enemyPosCurrent.x - originPoint.x) < 0.5f)
 				{
 					if (!weakPointsArr.empty())
 					{
