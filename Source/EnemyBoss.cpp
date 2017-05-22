@@ -37,7 +37,7 @@ void EnemyBoss::setWaterArea(Player * player, std::vector<Model*> &allModels)
 	playerAndBoss.push_back(this);
 	playerAndBoss.push_back(player);
 
-	std::vector<glm::vec2> corners1 = { glm::vec2(32.5f, 2.0f), glm::vec2(32.5f, 10.5f), glm::vec2(62.5f,2.0f), glm::vec2(62.5f, 10.5f) };
+	std::vector<glm::vec2> corners1 = { glm::vec2(31.5f, 1.0f), glm::vec2(31.5f, 10.0f), glm::vec2(60.0f,1.0f), glm::vec2(60.0f, 10.0f) };
 	TriggerSettings settings3;
 	settings3.onEnter = true;
 	settings3.onExit = true;
@@ -315,7 +315,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 		else if (phase == 2)
 		{
-			editWeakPoint(3.5f, 1.5f, player);
+			editWeakPoint(2.0f, -1.0f, player);
 
 			if (!playerProjectiles.empty())
 			{
@@ -346,7 +346,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			{
 				if (removeGroundTimer.getElapsedTime().asSeconds() >= 1.5 && removeGround)
 				{
-					allModels.erase(allModels.begin() + 0, allModels.begin() + 8);
+					allModels.erase(allModels.begin() + 0, allModels.begin() + 7);
 					removeGround = false;
 				}
 

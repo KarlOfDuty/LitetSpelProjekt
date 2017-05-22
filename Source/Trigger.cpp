@@ -245,6 +245,7 @@ void Trigger::runCommand(int commandID, int targetID)
 		{
 			enemyBoss->setPhase(2);
 			enemyBoss->loseTrackOfPlayer(true);
+
 			enemyBoss->setCreateTrigger(true);
 		}
 		enemyBoss->setRotateNow();
