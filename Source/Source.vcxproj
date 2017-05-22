@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
@@ -198,6 +199,8 @@
     <ClInclude Include="Trigger.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\animationFragment.glsl" />
+    <None Include="Shaders\animationVertex.glsl" />
     <None Include="shadowFragment.glsl" />
     <None Include="shadowVertex.glsl" />
     <None Include="ClassDiagram.cd" />
