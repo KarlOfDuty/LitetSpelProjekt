@@ -18,11 +18,13 @@
 #include "LevelManager.h"
 #include "SoundSystem.h"
 #include "DirectionalLight.h"
+#include "GUI.h"
 #include "Menu.h"
 
 #pragma comment(lib, "opengl32.lib")
 
 LevelManager levelManager;
+GUI gui;
 //Player
 Player *player;
 EventHandler eventHandler;
@@ -133,7 +135,8 @@ int main()
 	//Sound system
 	soundSystem = new SoundSystem();
 	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
-	soundSystem->playMusic("audio/music/never.flac");
+	soundSystem->loadSound("audio/youdied.flac", "youDied");
+	//soundSystem->playMusic("audio/music/never.flac");
 
 	//menu system
 	menu = new Menu(window.getSize().x, window.getSize().y, soundSystem);
@@ -198,13 +201,12 @@ int main()
 			render();
 			window.setActive(false);
 			window.pushGLStates();
-			window.draw(sf::CircleShape(200, 4));
+			window.draw(gui);
 			window.popGLStates();
 
 			//End the current frame (internally swaps the front and back buffers)
 			window.display();
 		}
-
 	}
 	//Release resources...
 	return 0;
@@ -234,13 +236,17 @@ void render()
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO[i]);
 		glClear(GL_DEPTH_BUFFER_BIT);
-		for (int j = 0; j < modelsToBeDrawn.size(); j++)
+		for (int j = 0; j < levelManager.currentLevel->getStaticModels().size(); j++)
 		{
-			glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[j]->getModelMatrix()[0][0]);
-			modelsToBeDrawn[j]->draw(shadowShader);
+			glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[j]->getModelMatrix()[0][0]);
+			levelManager.currentLevel->getStaticModels()[j]->draw(shadowShader);
 		}
 		glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel().getModelMatrix()[0][0]);
-		player->draw(shadowShader);
+		enemyManager->draw(shadowShader);
+		if (player->playerIsDead() != true)
+		{
+			player->draw(shadowShader);
+		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, windowWidth, windowHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -260,10 +266,16 @@ void render()
 	//Draw functions
 
 	//Only potentially visible static models are drawn
-	for (int i = 0; i < modelsToBeDrawn.size(); i++)
+	for (int i = 0; i < levelManager.currentLevel->getStaticModels().size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &modelsToBeDrawn[i]->getModelMatrix()[0][0]);
-		modelsToBeDrawn.at(i)->draw(deferredGeometryPass);
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[i]->getModelMatrix()[0][0]);
+		levelManager.currentLevel->getStaticModels().at(i)->draw(deferredGeometryPass);
+	}
+	std::vector<Model*> dynamicModels = levelManager.currentLevel->getDynamicModels();
+	for (int i = 0; i < dynamicModels.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
+		dynamicModels.at(i)->draw(deferredGeometryPass);
 	}
 	if (player->playerIsDead() != true)
 	{
@@ -324,7 +336,7 @@ void update(sf::RenderWindow &window)
 		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemyManager->getAllEnemies());
 	}
 
-	enemyManager->update(dt, player->getDamage(), modelsToBeDrawn, player);
+	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
 
 	//Camera update, get new viewMatrix
 	if (aboveView)
@@ -348,6 +360,7 @@ void update(sf::RenderWindow &window)
 	}
 	levelManager.currentLevel->updateTriggers(dt);
 	playerCamera.frustumCulling(modelsToBeDrawn);
+	gui.update(player);
 }
 
 //Create the buffer
@@ -482,7 +495,8 @@ void loadLevel()
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
-	enemyManager->createSlime(glm::vec3(19.0f, 7.0f, 0.0f));
+	enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
+	/*enemyManager->createSlime(glm::vec3(19.0f, 7.0f, 0.0f));
 	enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
 	enemyManager->createGiantBat(glm::vec3(25.0f, 12.0f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
@@ -490,7 +504,8 @@ void loadLevel()
 	enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
 	enemyManager->createCrab(glm::vec3(-30.0f, 7.0f, 0.0f));
 	enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
-	enemyManager->createSkeleton(glm::vec3(30.0f, 7.0f, 0.0f), false);
+	enemyManager->createSkeleton(glm::vec3(30.0f, 7.0f, 0.0f), false);*/
+
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 	//Some lights with random values
 	std::srand((int)time(0));

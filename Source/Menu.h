@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MENU_H
+#define MENU_H
+
 #include "SFML/Graphics.hpp"
 #include "SoundSystem.h"
 
@@ -26,3 +28,5 @@ private:
 	sf::Text options[MAX_NUMBER_OF_OPTIONS];
 
 };
+
+#endif // !MENU_H
