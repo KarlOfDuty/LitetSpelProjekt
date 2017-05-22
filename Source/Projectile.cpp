@@ -46,6 +46,11 @@ bool Projectile::isMeleeAttack()
 	return isMelee;
 }
 
+bool Projectile::isCollidingWithWorld()
+{
+	return hasCollided;
+}
+
 void Projectile::disableArrow()
 {
 	isUsed = false;

@@ -78,5 +78,6 @@ public:
 	bool getDiving() const;
 	void setDiving(bool diving);
 	void setHealth(int health);
+	void groundCheck();
 };
 #endif

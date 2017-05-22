@@ -37,6 +37,7 @@ public:
 	bool isProjectileAttack();
 	bool isAoeAttack();
 	bool isMeleeAttack();
+	bool isCollidingWithWorld();
 	void disableArrow();
 	glm::vec2 getPosition();
 	void update(float dt, std::vector<Model*> &allObjects, glm::vec2 playerPos);

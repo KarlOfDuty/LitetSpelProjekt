@@ -36,13 +36,16 @@ void Model::getMinMaxBouding(glm::vec3 &min, glm::vec3 &max)
 				if (meshes[i]->vertices[j].pos.y > maxBounding.y) maxBounding.y = meshes[i]->vertices[j].pos.y;
 			}
 		}
-		minBounding.x *= modelMatrix[0][0];
-		minBounding.y *= modelMatrix[1][1];
-		minBounding.z *= modelMatrix[2][2];
+		glm::vec3 scale;
+		glm::decompose(modelMatrix, scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+
+		minBounding.x *= scale.x;
+		minBounding.y *= scale.y;
+		minBounding.z *= scale.z;
 		
-		maxBounding.x *= modelMatrix[0][0];
-		maxBounding.y *= modelMatrix[1][1];
-		maxBounding.z *= modelMatrix[2][2];
+		maxBounding.x *= scale.x;
+		maxBounding.y *= scale.y;
+		maxBounding.z *= scale.z;
 	}
 	min = minBounding;
 	max = maxBounding;
@@ -505,6 +508,7 @@ void Model::setupModel()
 	glVertexAttribPointer(3, 4, GL_INT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 8));
 	//Unbind the vertex array buffer
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 //Loads textures from memory, not from disk
 void Model::loadTextures(int i)
