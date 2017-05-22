@@ -41,8 +41,12 @@ private:
 	std::vector<Model*> debugCubes;
 	
 	Model* arrow;
-	std::vector<Projectile*> allProjectiles;
 
+	std::vector<Projectile*> allAttackBoxes;
+	std::vector<Projectile*> allArrowAttackBoxes;
+	std::vector<Projectile*> allAOEAttackBoxes;
+	std::vector<Projectile*> allMeleeAttackBoxes;
+	
 	std::vector<Model*> allStaticModels;
 
 public:

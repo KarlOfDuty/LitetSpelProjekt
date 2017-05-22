@@ -36,19 +36,49 @@ void Model::getMinMaxBouding(glm::vec3 &min, glm::vec3 &max)
 				if (meshes[i]->vertices[j].pos.y > maxBounding.y) maxBounding.y = meshes[i]->vertices[j].pos.y;
 			}
 		}
-		glm::vec3 scale;
-		glm::decompose(modelMatrix, scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
-
-		minBounding.x *= scale.x;
-		minBounding.y *= scale.y;
-		minBounding.z *= scale.z;
-		
-		maxBounding.x *= scale.x;
-		maxBounding.y *= scale.y;
-		maxBounding.z *= scale.z;
 	}
 	min = minBounding;
 	max = maxBounding;
+}
+void Model::getScaledMinMaxBouding(glm::vec3 &min, glm::vec3 &max)
+{
+	if (minBounding == glm::vec3() && maxBounding == glm::vec3())
+	{
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			for (int j = 0; j < meshes[i]->vertices.size(); j++)
+			{
+				if (meshes[i]->vertices[j].pos.x < minBounding.x) minBounding.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y < minBounding.y) minBounding.y = meshes[i]->vertices[j].pos.y;
+				if (meshes[i]->vertices[j].pos.x > maxBounding.x) maxBounding.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y > maxBounding.y) maxBounding.y = meshes[i]->vertices[j].pos.y;
+			}
+		}
+	}
+	glm::vec3 scale;
+	glm::decompose(modelMatrix, scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+	min = minBounding * scale;
+	max = maxBounding * scale;
+}
+void Model::getScaledMinMaxBouding(glm::vec3 &min, glm::vec3 &max, glm::mat4 modelMat)
+{
+	if (minBounding == glm::vec3() && maxBounding == glm::vec3())
+	{
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			for (int j = 0; j < meshes[i]->vertices.size(); j++)
+			{
+				if (meshes[i]->vertices[j].pos.x < minBounding.x) minBounding.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y < minBounding.y) minBounding.y = meshes[i]->vertices[j].pos.y;
+				if (meshes[i]->vertices[j].pos.x > maxBounding.x) maxBounding.x = meshes[i]->vertices[j].pos.x;
+				if (meshes[i]->vertices[j].pos.y > maxBounding.y) maxBounding.y = meshes[i]->vertices[j].pos.y;
+			}
+		}
+	}
+	glm::vec3 scale;
+	glm::decompose(modelMat, scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+	min = minBounding * scale;
+	max = maxBounding * scale;
 }
 Material Model::getMaterial(int index)
 {
@@ -58,20 +88,14 @@ std::vector<glm::vec2> Model::getPoints()
 {
 	if (allPoints.empty())
 	{
-		glm::vec2 minPos;
-		for (int i = 0; i < meshes.size(); i++)
-		{
-			for (int j = 0; j < meshes[i]->vertices.size(); j++)
-			{
-				if (meshes[i]->vertices[j].pos.x < minPos.x) minPos.x = meshes[i]->vertices[j].pos.x;
-				if (meshes[i]->vertices[j].pos.y < minPos.y) minPos.y = meshes[i]->vertices[j].pos.y;
-			}
-		}
+		glm::vec3 min, max;
+		getMinMaxBouding(min, max);
 		//Pushback points without rotation
-		allPoints.push_back(glm::vec2(minPos.x, minPos.y));
-		allPoints.push_back(glm::vec2(-minPos.x, minPos.y));
-		allPoints.push_back(glm::vec2(-minPos.x, -minPos.y));
-		allPoints.push_back(glm::vec2(minPos.x, -minPos.y));
+		allPoints.push_back(glm::vec2(min));
+		allPoints.push_back(glm::vec2(min.x, max.y));
+		allPoints.push_back(glm::vec2(max));
+		allPoints.push_back(glm::vec2(max.x, min.y));
+
 	}
 
 	std::vector<glm::vec2> translatedPoint;
