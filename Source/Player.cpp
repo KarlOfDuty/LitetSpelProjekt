@@ -420,6 +420,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && tpCooldown.getElapsedTime().asSeconds() >= 5.0)
 		{
+			glm::vec3 prevPos = getPos();
 			if (goingLeft == true)
 			{
 				glm::vec3 minus4 = {-4,0,0};
@@ -430,6 +431,28 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 				glm::vec3 plus4 = {4,0,0};
 				this->setPos(this->getPos() + plus4);
 			}
+
+			//colisions
+			bool colided = false;
+			for(int index = 0; index < allModels.size() && colided == false; index++)
+			{
+				std::vector<glm::vec2> playerPoints = getPoints();
+				std::vector<glm::vec2> objectPoints;
+				float radians = 0.0f;
+				getPoints(objectPoints, allModels[index], radians);
+				glm::vec2 mtv;
+				colided = collision::collision(playerPoints, objectPoints, mtv);
+				if (colided == false)
+				{
+					colided = collision::isInside(playerPoints, objectPoints);
+				}
+				
+			}
+			if (colided == true)
+			{
+				this->setPos(prevPos);
+			}
+
 			tpCooldown.restart();
 		}
 	}

@@ -12,6 +12,16 @@ void Level::loadModels()
 //meshes to avoid copying large amounts of data in memory
 void Level::setupModels()
 {
+	//test block
+	staticModels.push_back(new Model(modelLibrary[0],
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		-13.0, 2.0, 0.0, 1.0
+	}));
+	//test block
+
 	staticModels.push_back(new Model(modelLibrary[0],
 	{
 		5.0, 0.0, 0.0, 0.0,
