@@ -10,6 +10,7 @@
 #include "EnemyFireFly.h"
 #include "Player.h"
 #include "Shader.h"
+#include "Projectile.h"
 #include <SFML\Window.hpp>
 #include <glm\glm.hpp>
 #include <vector>
@@ -21,6 +22,7 @@ class EnemyManager
 private:
 	std::vector<Enemy*> allEnemies;
 	std::vector<Enemy*> allSmallBats;
+	std::vector<Projectile*> *allProjectiles;
 	Model* slimeModel;
 	Model* toadModel;
 	Model* batModel;

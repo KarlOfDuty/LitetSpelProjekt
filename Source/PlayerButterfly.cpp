@@ -33,6 +33,8 @@ void PlayerButterfly::teleport()
 }
 void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector<Projectile*> &allProjectiles, glm::vec2 position)
 {
+	//Check how many arrows are active in the arrow vector
+	for (int i = 0; i < allStaticModels.size(); i++)
 	if (attackCooldown.getElapsedTime().asSeconds() > 0.5f)
 	{
 		glm::vec2 direction(0, 1);

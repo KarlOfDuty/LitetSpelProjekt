@@ -1,7 +1,8 @@
 #include "EnemyCrab.h"
 #include "Player.h"
+#include "Trigger.h"
 
-EnemyCrab::EnemyCrab(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, enemyStartPos, scaleFactor)
+EnemyCrab::EnemyCrab(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
 {
 	this->acceleration = 0.2f;
 	this->moving = true;
@@ -43,7 +44,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	if (!moving)
 	{
-		if (walkTimer.getElapsedTime().asSeconds() >= 1.5)
+		if (walkTimer.getElapsedTime().asSeconds() >= 1.4)
 		{
 			moving = true;
 		}
@@ -68,6 +69,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			movingRight = false;
 			movingLeft = false;
+			moving = false;
 			if (collisionTime.getElapsedTime().asSeconds() >= 5)
 			{
 				returnToStart = true;
@@ -95,25 +97,25 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			if (playerSeen)
 			{
-				if (movingLeft == false)
+				if (!movingLeft)
 				{
 					if (enemyPosCurrent.x >= player->getPos().x)
 					{
 						movingRight = true;
 					}
 				}
-				if (movingRight == false)
+				if (!movingRight)
 				{
 					if (enemyPosCurrent.x <= player->getPos().x)
 					{
 						movingLeft = true;
 					}
 				}
-				if (movingRight == true)
+				if (movingRight)
 				{
 					velocityX = velocityX - acceleration * dt;
 				}
-				else if (movingLeft == true)
+				else if (movingLeft)
 				{
 					velocityX = velocityX + acceleration * dt;
 				}
@@ -122,25 +124,25 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			else
 			{
 				//Patrol
-				if (movingLeft == false)
+				if (!movingLeft)
 				{
 					if ((!checkPointReached))
 					{
 						movingRight = true;
 					}
 				}
-				if (movingRight == false)
+				if (!movingRight)
 				{
 					if (checkPointReached)
 					{
 						movingLeft = true;
 					}
 				}
-				if (movingRight == true)
+				if (movingRight)
 				{
 					velocityX = velocityX - acceleration * dt;
 				}
-				else if (movingLeft == true)
+				else if (movingLeft)
 				{
 					velocityX = velocityX + acceleration * dt;
 				}
@@ -197,9 +199,10 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		velocityY = 10;
 	}
 
-	if (velocityY < -10)
+	//Maximum falling speed
+	if (velocityY < -30)
 	{
-		velocityY = -10;
+		velocityY = -30;
 	}
 
 	if (velocityX < -0.3) velocityX = -0.3f;
@@ -223,4 +226,5 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	setPos(enemyPosCurrent);
 	collides = collision(allModels);
+	collisionWithPlayer(player);
 }

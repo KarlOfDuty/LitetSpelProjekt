@@ -50,6 +50,16 @@ PlayerChar* Player::getCurrentCharacter()
 	return player;
 }
 
+std::vector<Projectile*> Player::getProjectiles()
+{
+	return allAttackBoxes;
+}
+
+Projectile* Player::getProjectileAt(int nr)
+{
+	return allAttackBoxes[nr];
+}
+
 int Player::getDamage() const
 {
 	return playerCharacters[0]->getDamage();
@@ -313,6 +323,8 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	{
 		allAttackBoxes.push_back(allMeleeAttackBoxes[i]);
 	}
+
+	allStaticModels = allModels;
 
 	//Kill player and reset jumps in water
 	if (getDiving())

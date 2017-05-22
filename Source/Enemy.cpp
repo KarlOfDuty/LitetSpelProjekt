@@ -1,6 +1,6 @@
 #include "Enemy.h"
 #include "Player.h"
-
+#include "Trigger.h"
 
 Enemy::Enemy()
 {
@@ -9,11 +9,12 @@ Enemy::Enemy()
 }
 
 
-Enemy::Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm::vec3 scaleFactor)
+Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor)
 {
 	this->health = health;
 	this->model = model;
 	this->damage = damage;
+	this->immunityTime = immunityTime;
 	this->pos = enemyStartPos;
 	this->scaleFactor = scaleFactor;
 	setPos(pos);
@@ -21,7 +22,7 @@ Enemy::Enemy(int health, Model* model, int damage, glm::vec3 enemyStartPos, glm:
 	playerSeen = false;
 	angle = 0;
 	this->checkPoint.x = enemyStartPos.x;
-	
+	bossImmunity = false;
 }
 
 Enemy::~Enemy()
@@ -82,10 +83,13 @@ void Enemy::rotateModel(float direction)
 
 void Enemy::applyDamage(int appliedDamage)
 {
-	if (this->damageImmunity.getElapsedTime().asSeconds() >= 0.5)
+	if (!bossImmunity)
 	{
-		this->health -= appliedDamage;
-		this->damageImmunity.restart();
+		if (this->damageImmunity.getElapsedTime().asSeconds() >= immunityTime)
+		{
+			this->health -= appliedDamage;
+			this->damageImmunity.restart();
+		}
 	}
 }
 
@@ -97,6 +101,11 @@ void Enemy::groundCheck()
 	{
 		isOnGround = false;
 	}
+}
+
+void Enemy::setBossImmunity(bool isImmune)
+{
+	this->bossImmunity = isImmune;
 }
 
 bool Enemy::collision(std::vector<Model*> &allModels)
@@ -172,7 +181,6 @@ void Enemy::update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model
 	if (glm::length(pos - player->getPos()) < 25.0f)
 	{
 		updateThis(dt, pos, checkPoint, allSmallBats, allModels, player);
-		attackPlayer(dt, player->getPos(), pos);
 	}
 }
 
