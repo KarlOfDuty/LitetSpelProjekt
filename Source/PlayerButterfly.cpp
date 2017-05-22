@@ -49,8 +49,8 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 			glm::mat4 boxMatrix = allStaticModels[i]->getModelMatrix();
 			allStaticModels[i]->getMinMaxBouding(aabb_min, aabb_max);
 			glm::decompose(boxMatrix, boxScale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
-			aabb_max *= boxScale;
-			aabb_min *= boxScale;
+			aabb_max *= boxScale*boxScale;
+			aabb_min *= boxScale*boxScale;
 			if (collision::TestRayOBBIntersection(ray_origin, ray_direction, aabb_min, aabb_max, boxMatrix, intersection_distance))
 			{
 				if (intersection_distance == 0)
