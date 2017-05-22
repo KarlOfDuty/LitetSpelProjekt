@@ -139,46 +139,74 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 pla
 			else
 			{
 				{
-					if (position.x < (playerPos.x + scale.x / 2 + 1.0f*direction.x))
+					if (!enemyMeleeAttack)
 					{
-						if (direction.x == -1)
+						if (position.x < (playerPos.x + scale.x / 2 + 1.0f*direction.x))
 						{
-							direction.x = 1;
-							scale.x = -scale.x;
+							if (direction.x == -1)
+							{
+								direction.x = 1;
+								scale.x = -scale.x;
+							}
+						}
+						else if (position.x >(playerPos.x + scale.x / 2 + 1.0f*direction.x))
+						{
+							if (direction.x == 1)
+							{
+								direction.x = -1;
+								scale.x = -scale.x;
+							}
+						}
+
+						scale.x += direction.x * velocity.x * dt;
+						scale.y += direction.y * velocity.y * dt;
+						position.x = playerPos.x + scale.x / 2 + 1.0f*direction.x;
+						position.y = playerPos.y + 1.5f;
+						model->setModelMatrix({
+							1.0, 0.0, 0.0, 0.0,
+							0.0, 1.0, 0.0, 0.0,
+							0.0, 0.0, 1.0, 0.0,
+							position.x, position.y , 0.0, 1.0
+						});
+
+						//Set rotation if isRotating, else just set scale
+						glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
+						model->setRotationMatrix(scaleMat);
+						model->rotate();
+
+						if (abs(scale.x*direction.x) >= 2)
+						{
+							isUsed = false;
+						}
+						if (scale.y*direction.y >= 2)
+						{
+							isUsed = false;
 						}
 					}
-					else if (position.x > (playerPos.x + scale.x / 2 + 1.0f*direction.x))
+					else
 					{
-						if (direction.x == 1)
+						position.x += (velocity.x/2) * direction.x * dt;
+						model->setModelMatrix({
+							1.0, 0.0, 0.0, 0.0,
+							0.0, 1.0, 0.0, 0.0,
+							0.0, 0.0, 1.0, 0.0,
+							position.x, position.y , 0.0, 1.0
+						});
+						scale.x += velocity.x * dt;
+						//scale.y += direction.y * velocity.y * dt;
+						glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
+						
+						model->setRotationMatrix(scaleMat);
+						model->rotate();
+
+						if (abs(scale.x*direction.x) >= 2)
 						{
-							direction.x = -1;
-							scale.x = -scale.x;
+							isUsed = false;
 						}
-					}
-
-					scale.x += direction.x * velocity.x * dt;
-					scale.y += direction.y * velocity.y * dt;
-					position.x = playerPos.x + scale.x / 2 + 1.0f*direction.x;
-					position.y = playerPos.y + 1.5f;
-					model->setModelMatrix({
-						1.0, 0.0, 0.0, 0.0,
-						0.0, 1.0, 0.0, 0.0,
-						0.0, 0.0, 1.0, 0.0,
-						position.x, position.y , 0.0, 1.0
-					});
-
-					//Set rotation if isRotating, else just set scale
-					glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
-					model->setRotationMatrix(scaleMat);
-					model->rotate();
-
-					if (abs(scale.x*direction.x) >= 2)
-					{
-						isUsed = false;
-					}
-					if (scale.y*direction.y >= 2)
-					{
-						isUsed = false;
+						if (scale.y*direction.y >= 2)
+						{
+							isUsed = false;
+						}
 					}
 				}
 			}
@@ -197,6 +225,7 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 pla
 			isUsed = false;
 		}
 	}
+	std::vector<glm::vec2> allPoints = model->getPoints();
 }
 
 void Projectile::draw(Shader shader)
@@ -208,13 +237,15 @@ void Projectile::draw(Shader shader)
 	}
 }
 
-void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate)
+void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate, bool shouldDelete)
 {
 	//Copy info supplied
 	position = startPos;
 	scale = projectileScale;
 	direction = projectileDirection;
 	retardation = projectileRetardation;
+	deleteOnImpact = shouldDelete;
+	enemyMeleeAttack = false;
 	//Create new modelmat for model
 	glm::mat4 modelMat({
 		1.0, 0.0, 0.0, 0.0,
@@ -222,14 +253,7 @@ void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 pro
 		0.0, 0.0, 1.0, 0.0,
 		position.x, position.y, 0.0, 1.0
 	});
-	if (model == nullptr)
-	{
-		model = new Model(projectileModel, modelMat);
-	}
-	else
-	{
-		model->setModelMatrix(modelMat);
-	}
+	model = new Model(projectileModel, modelMat);
 
 	//Set the velocity
 	velocity = glm::vec2(glm::abs(direction.x*projectileVelocity), direction.y*projectileVelocity);
@@ -268,6 +292,8 @@ void Projectile::aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 proje
 	position = startPos;
 	scale = projectileScale;
 	direction = projectileDirection;
+	deleteOnImpact = false;
+	enemyMeleeAttack = false;
 
 	//Create new modelmat for model
 	glm::mat4 modelMat({
@@ -308,7 +334,50 @@ void Projectile::melee(Model * projectileModel, glm::vec2 startPos, glm::vec2 pr
 	position = startPos;
 	scale = projectileScale;
 	direction = projectileDirection;
+	deleteOnImpact = false;
+	enemyMeleeAttack = false;
 
+	//Create new modelmat for model
+	glm::mat4 modelMat({
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		position.x, position.y, 0.0, 1.0
+	});
+	if (model == nullptr)
+	{
+		model = new Model(projectileModel, modelMat);
+	}
+	else
+	{
+		model->setModelMatrix(modelMat);
+	}
+
+	//Set the velocity
+	velocity = glm::vec2(glm::abs(direction.x*projectileVelocity), direction.y*projectileVelocity);
+
+	glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
+	model->setRotationMatrix(scaleMat);
+	model->rotate();
+
+	//Reset booleans and clock
+	isRotating = false;
+	hasCollided = false;
+	isUsed = true;
+	isProjectile = false;
+	isAoe = false;
+	isMelee = true;
+	timeSinceCollision.restart();
+}
+
+void Projectile::enemyMelee(Model * projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
+{
+	//Copy info supplied
+	position = startPos;
+	scale = projectileScale;
+	direction = projectileDirection;
+	deleteOnImpact = false;
+	enemyMeleeAttack = true;
 	//Create new modelmat for model
 	glm::mat4 modelMat({
 		1.0, 0.0, 0.0, 0.0,
@@ -365,17 +434,24 @@ void Projectile::collision(std::vector<Model*> &allObjects)
 		glm::vec2 mtv;
 		if (collision::collision(arrowPoints, objectPoints, mtv))
 		{
-			position += mtv;
-			model->setModelMatrix({
-				1.0, 0.0, 0.0, 0.0,
-				0.0, 1.0, 0.0, 0.0,
-				0.0, 0.0, 1.0, 0.0,
-				position.x, position.y , 0.0, 1.0
-			});
-			model->rotate();
-			velocity = glm::vec2(0);
-			hasCollided = true;
-			timeSinceCollision.restart();
+			if (!deleteOnImpact)
+			{
+				position += mtv;
+				model->setModelMatrix({
+					1.0, 0.0, 0.0, 0.0,
+					0.0, 1.0, 0.0, 0.0,
+					0.0, 0.0, 1.0, 0.0,
+					position.x, position.y , 0.0, 1.0
+				});
+				model->rotate();
+				velocity = glm::vec2(0);
+				hasCollided = true;
+				timeSinceCollision.restart();
+			}
+			else
+			{
+				isUsed = false;
+			}
 		}
 	}
 }

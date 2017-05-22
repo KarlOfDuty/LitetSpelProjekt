@@ -23,7 +23,8 @@ public:
 	void deleteTriggers();
 	void playMusic(SoundSystem *soundSystem);
 	void stopMusic(SoundSystem *soundSystem);
-	std::vector<Model*> getStaticModels();
+	std::vector<Model*> getDynamicModels();
+	std::vector<Model*>& getStaticModels();
 	std::vector<Trigger*> getTriggers();
 	glm::vec3 getPlayerPos();
 	Level();

@@ -14,6 +14,7 @@ private:
 	bool joystickPressed[8][30] = { false };
 	//[Key]
 	bool keyPressed[120] = { false };
+	bool youDied;
 	int running;
 public:
 	EventHandler();

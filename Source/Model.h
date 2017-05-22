@@ -75,6 +75,8 @@ public:
 	glm::mat4 getModelMatrix() const;
 	glm::mat4 getRotationMatrix() const;
 	void getMinMaxBouding(glm::vec3 &min, glm::vec3 &max);
+	void getScaledMinMaxBouding(glm::vec3 & min, glm::vec3 & max);
+	void getScaledMinMaxBouding(glm::vec3 & min, glm::vec3 & max, glm::mat4 modelMat);
 	void setModelMatrix(glm::mat4 modelMat);
 	void setRotationMatrix(glm::mat4 rotationMat);
 	void rotate();

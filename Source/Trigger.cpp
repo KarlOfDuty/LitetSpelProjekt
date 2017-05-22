@@ -1,8 +1,35 @@
 #include "Trigger.h"
+#include "EnemyManager.h"
+
 std::vector<glm::vec2> Trigger::getPoints()
 {
 	return corners;
 }
+void Trigger::move(glm::vec2 distance)
+{
+	for (int i = 0; i < corners.size(); i++)
+	{
+		corners[i].x += distance.x;
+		corners[i].y += distance.y;
+	}
+}
+void Trigger::setPos(std::vector<glm::vec2> cornerArr)
+{
+	for (int i = 0; i < corners.size(); i++)
+	{
+		corners[i] = cornerArr[i];
+	}
+}
+
+void Trigger::setActivators(std::vector<GameObject*> activators)
+{
+	this->activators = activators;
+}
+void Trigger::setTargets(std::vector<GameObject*> targets)
+{
+	this->targets = targets;
+}
+
 glm::vec3 Trigger::getPos() const
 {
 	return pos;
@@ -14,122 +41,131 @@ std::string Trigger::type() const
 //Update function, checks for activators and runs activate(), also returns true if any activations were made
 bool Trigger::update(float dt)
 {
-	bool triggered = false;
-	//Find how many activators intersect the trigger
-	int objectsFound = 0;
-	for (int i = 0; i < activators.size(); i++)
-	{
-		//TODO: Do we need to use both collision methods or just the second one?
-		if (collision::collision(corners, activators[i]->getPoints()))
-		{
-			objectsFound++;
-		}
-		else if (collision::isInside(corners, activators[i]->getPoints()))
-		{
-			objectsFound++;
-		}
-	}
-	timer += dt;
-	//If there is no cooldown active, activate commands according to the settings
-	if (timer > settings.frequency)
-	{
 
-		//onEnter
-		if (settings.onEnter && objectsFound > objectsInside)
-		{
-			for (int i = 0; i < objectsFound - objectsInside; i++)
-			{
-				activate();
-			}
-			timer = 0;
-			triggered = true;
-		}
-		//onEnterAll
-		if (settings.onEnterAll && activators.size() == objectsFound && objectsFound > 0 && objectsFound > objectsInside)
-		{
-			if (settings.perActivator)
-			{
-				for (int i = 0; i < objectsFound; i++)
-				{
-					activate();
-				}
-			}
-			else
-			{
-				activate();
-			}
-			timer = 0;
-			triggered = true;
-		}
-		//onExit
-		if (settings.onExit && objectsFound < objectsInside)
-		{
-			for (int i = 0; i < objectsInside - objectsFound; i++)
-			{
-				activate();
-			}
-			timer = 0;
-			triggered = true;
-		}
-		//onExitAll
-		if (settings.onEnterAll &&  objectsFound == 0 && objectsFound < objectsInside)
-		{
-			if (settings.perActivator)
-			{
-				for (int i = 0; i < objectsFound; i++)
-				{
-					activate();
-				}
-			}
-			else
-			{
-				activate();
-			}
-			timer = 0;
-			triggered = true;
-		}
-		//whileInside
-		if (settings.whileInside && objectsFound > 0)
-		{
-			if (settings.perActivator)
-			{
-				for (int i = 0; i < objectsFound; i++)
-				{
-					activate();
-				}
-			}
-			else
-			{
-				activate();
-			}
-			timer = 0;
-			triggered = true;
-		}
-		//whileInsideAll
-		if (settings.whileAllInside && objectsFound > 0 && objectsFound == activators.size())
-		{
-			if (settings.perActivator)
-			{
-				for (int i = 0; i < objectsFound; i++)
-				{
-					activate();
-				}
-			}
-			else
-			{
-				activate();
-			}
-			timer = 0;
-			triggered = true;
-		}
-		//Update the number of activators inside the trigger
-		objectsInside = objectsFound;
-	}
-	else
+	bool triggered = false;
+	if (settings.numberOfActivationsAllowed == -1 || settings.numberOfActivationsAllowed > 0)
 	{
-		//If the trigger is still on cooldown, keep updating the trigger without causing any activations
-		objectsInside = objectsFound;
+		//Find how many activators intersect the trigger
+		int objectsFound = 0;
+		for (int i = 0; i < activators.size(); i++)
+		{
+			//TODO: Do we need to use both collision methods or just the second one?
+			if (collision::collision(corners, activators[i]->getPoints()))
+			{
+				objectsFound++;
+			}
+			else if (collision::isInside(corners, activators[i]->getPoints()))
+			{
+				objectsFound++;
+			}
+		}
+		timer += dt;
+
+
+		//If there is no cooldown active, activate commands according to the settings
+		if (timer > settings.frequency)
+		{
+
+			//onEnter
+			if (settings.onEnter && objectsFound > objectsInside)
+			{
+				for (int i = 0; i < objectsFound - objectsInside; i++)
+				{
+					activate();
+				}
+				timer = 0;
+				triggered = true;
+			}
+			//onEnterAll
+			if (settings.onEnterAll && activators.size() == objectsFound && objectsFound > 0 && objectsFound > objectsInside)
+			{
+				if (settings.perActivator)
+				{
+					for (int i = 0; i < objectsFound; i++)
+					{
+						activate();
+					}
+				}
+				else
+				{
+					activate();
+				}
+				timer = 0;
+				triggered = true;
+			}
+			//onExit
+			if (settings.onExit && objectsFound < objectsInside)
+			{
+				for (int i = 0; i < objectsInside - objectsFound; i++)
+				{
+					activate();
+				}
+				timer = 0;
+				triggered = true;
+			}
+			//onExitAll
+			if (settings.onEnterAll &&  objectsFound == 0 && objectsFound < objectsInside)
+			{
+				if (settings.perActivator)
+				{
+					for (int i = 0; i < objectsFound; i++)
+					{
+						activate();
+					}
+				}
+				else
+				{
+					activate();
+				}
+				timer = 0;
+				triggered = true;
+			}
+			//whileInside
+			if (settings.whileInside && objectsFound > 0)
+			{
+				if (settings.perActivator)
+				{
+					for (int i = 0; i < objectsFound; i++)
+					{
+						activate();
+					}
+				}
+				else
+				{
+					activate();
+				}
+				timer = 0;
+				triggered = true;
+			}
+			//whileInsideAll
+			if (settings.whileAllInside && objectsFound > 0 && objectsFound == activators.size())
+			{
+				if (settings.perActivator)
+				{
+					for (int i = 0; i < objectsFound; i++)
+					{
+						activate();
+					}
+				}
+				else
+				{
+					activate();
+				}
+				timer = 0;
+				triggered = true;
+			}
+
+
+			//Update the number of activators inside the trigger
+			objectsInside = objectsFound;
+		}
+		else
+		{
+			//If the trigger is still on cooldown, keep updating the trigger without causing any activations
+			objectsInside = objectsFound;
+		}
 	}
+
 	return triggered;
 }
 //Activates the trigger
@@ -141,6 +177,11 @@ void Trigger::activate()
 		for (int i = 0; i < commands.size() && i < targets.size(); i++)
 		{
 			runCommand(i,i);
+			//numberOfActivationsAllowed
+			if (settings.numberOfActivationsAllowed != -1)
+			{
+				settings.numberOfActivationsAllowed--;
+			}
 		}
 	}
 	else
@@ -151,6 +192,11 @@ void Trigger::activate()
 			for (int j = 0; j < targets.size(); j++)
 			{
 				runCommand(i,j);
+				//numberOfActivationsAllowed
+				if (settings.numberOfActivationsAllowed != -1)
+				{
+					settings.numberOfActivationsAllowed--;
+				}
 			}
 		}
 	}
@@ -186,6 +232,60 @@ void Trigger::runCommand(int commandID, int targetID)
 	{
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
 		enemy->setHealth(0);
+	}
+	else if (commands[commandID] == "healthPickup" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->setHealth(player->getHealth() + 5);
+	}
+	else if (commands[commandID] == "phase1" && targets[targetID]->type() == "Enemy")
+	{
+		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
+		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
+
+		enemy->setBossImmunity(false);
+		enemy->applyDamage(10);
+		enemy->setBossImmunity(true);
+		if (enemy->getHealth() == 70)
+		{
+			enemyBoss->setPhase(2);
+			enemyBoss->loseTrackOfPlayer(true);
+
+			enemyBoss->setCreateTrigger(true);
+		}
+		enemyBoss->setRotateNow();
+		enemyBoss->setChargeCounter(0);
+	}
+	else if (commands[commandID] == "phase2" && targets[targetID]->type() == "Enemy")
+	{
+		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
+		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
+
+		enemy->setBossImmunity(false);
+		enemy->applyDamage(10);
+		enemy->setBossImmunity(true);
+		std::cout << enemyBoss->getHealth() << std::endl;
+		if (enemy->getHealth() == 40)
+		{
+			enemyBoss->setPhase(3);
+			enemyBoss->setCreateTrigger(true);
+		}
+
+		enemyBoss->loseTrackOfPlayer(true);
+	}
+	else if (commands[commandID] == "phase3" && targets[targetID]->type() == "Enemy")
+	{
+		std::cout << "meeeep" << std::endl;
+	}
+	else if (commands[commandID] == "playerUnderBoss" && targets[targetID]->type() == "Enemy")
+	{
+		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
+		enemyBoss->loseTrackOfPlayer(false);
+	}
+	else if (commands[commandID] == "playerUnderBoss" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->setDiving(!player->getDiving());
 	}
 }
 //Constructors

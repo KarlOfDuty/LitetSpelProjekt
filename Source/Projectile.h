@@ -18,10 +18,12 @@ private:
 	glm::vec3 scale;
 	bool isRotating;
 	bool hasCollided;
+	bool deleteOnImpact;
 	bool isUsed;
 	bool isProjectile;
 	bool isAoe;
 	bool isMelee;
+	bool enemyMeleeAttack;
 	sf::Clock timeSinceCollision;
 public:
 	//Parent inherited functions
@@ -40,9 +42,10 @@ public:
 	glm::vec2 getPosition();
 	void update(float dt, std::vector<Model*> &allObjects, glm::vec2 playerPos);
 	void draw(Shader shader);
-	void shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate = true);
+	void shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate = true, bool deleteOnImpact = false);
 	void aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale);
 	void melee(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale);
+	void enemyMelee(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale);
 	void collision(std::vector<Model*> &allObjects);
 };
 

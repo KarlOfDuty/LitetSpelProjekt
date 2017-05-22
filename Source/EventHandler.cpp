@@ -1,6 +1,7 @@
 #include"EventHandler.h"
 EventHandler::EventHandler()
 {
+	youDied = false;
 	running = 1;
 }
 
@@ -38,7 +39,7 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 					running = 2;
 					break;
 				case(1):
-					//options stuff
+					//options menu
 					break;
 				case(2):
 					running = 0;
@@ -66,7 +67,7 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 			}
 		}
 		else if(running == 2)
-		{		
+		{
 			//Jump
 			if (windowEvent.type == sf::Event::JoystickButtonPressed && joystickPressed[controller][XBOXA] == false && windowEvent.joystickButton.joystickId == controller && windowEvent.joystickButton.button == XBOXA)
 			{
@@ -154,6 +155,11 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 				running = 1;
 			}
 		}
+	}
+	if (player->getHealth() <= 0 && !youDied)
+	{
+		soundSystem->playSound("youDied");
+		youDied = true;
 	}
 	return running;
 }
