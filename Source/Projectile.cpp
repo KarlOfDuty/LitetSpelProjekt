@@ -225,6 +225,7 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 pla
 			isUsed = false;
 		}
 	}
+	std::vector<glm::vec2> allPoints = model->getPoints();
 }
 
 void Projectile::draw(Shader shader)

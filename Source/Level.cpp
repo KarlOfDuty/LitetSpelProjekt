@@ -290,13 +290,6 @@ void Level::setupModels()
 		5.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
-		19.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
 		19.0, 3.0, 0.0, 1.0
 	}));
 
@@ -349,13 +342,37 @@ void Level::setupTriggers(Player* player)
 	TriggerSettings settings2;
 	settings2.onEnter = true;
 	settings2.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "fuckyou"));
+	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "hellogais"));
+
+	//health pickup
+	glm::mat4 mat({
+		0.02, 0, 0, 0,
+		0, 0.02, 0, 0,
+		0, 0, 0.02, 0,
+		-2, 5, 0, 1
+	});
+	Model* heart = new Model("models/heart/HeartContainer.obj", mat);
+	glm::vec3 min, max;
+	heart->getMinMaxBouding(min, max);
+	min += glm::vec3(mat[3]);
+	max += glm::vec3(mat[3]);
+	heart->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-6.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	dynamicModels.push_back(heart);
+
+	std::vector<glm::vec2> corners3 = { glm::vec2(min), glm::vec2(min.x,max.y), glm::vec2(max), glm::vec2(max.x,min.y) };
+	TriggerSettings settings3;
+	settings3.onEnter = true;
+	triggerBoxes.push_back(new Trigger(heart->getPoints(), settings3, player, player, "healthPickup"));
 }
 void Level::updateTriggers(float dt)
 {
 	for (int i = 0; i < triggerBoxes.size(); i++)
 	{
 		triggerBoxes[i]->update(dt);
+	}
+	for (int i = 0; i < dynamicModels.size(); i++)
+	{
+		dynamicModels[i]->rotate();
 	}
 }
 void Level::deleteTriggers()
@@ -386,6 +403,10 @@ void Level::stopMusic(SoundSystem* soundSystem)
 std::vector<Model*>& Level::getStaticModels()
 {
 	return staticModels;
+}
+std::vector<Model*> Level::getDynamicModels()
+{
+	return dynamicModels;
 }
 std::vector<Trigger*> Level::getTriggers()
 {

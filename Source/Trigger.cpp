@@ -233,6 +233,11 @@ void Trigger::runCommand(int commandID, int targetID)
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
 		enemy->setHealth(0);
 	}
+	else if (commands[commandID] == "healthPickup" && targets[targetID]->type() == "Player")
+	{
+		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		player->setHealth(player->getHealth() + 5);
+	}
 	else if (commands[commandID] == "phase1" && targets[targetID]->type() == "Enemy")
 	{
 		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
