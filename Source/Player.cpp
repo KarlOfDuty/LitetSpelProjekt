@@ -742,9 +742,7 @@ void Player::groundCheck()
 	for (int i = 0; i < allStaticModels.size(); i++)
 	{
 		glm::vec3 min, max;
-		allStaticModels[i]->getMinMaxBouding(min, max);
-		min = min * pow(5.f,2);
-		max = max * pow(5.f,2);
+		allStaticModels[i]->getScaledMinMaxBouding(min, max);
 		min += allStaticModels[i]->getPos();
 		max += allStaticModels[i]->getPos();
 		if (getPos().x >= min.x && getPos().x <= max.x)
@@ -755,16 +753,16 @@ void Player::groundCheck()
 	//Now find the ground based on the sorted models
 	bool foundGround = false;
 	float closestDistance = 100;
-	glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y + 2.0f, getPos().z);
+	glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y, getPos().z);
 	glm::vec3 rayDir(0, -1, 0);
 	for (int i = 0; i < sortedModels.size(); i++)
 	{
-		glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y + 2.0f, getPos().z);
-		glm::vec3 rayDir(0, -1, 0);
 		glm::vec3 aabbMin, aabbMax;
 		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
-		aabbMin = aabbMin * pow(5.f, 2);
-		aabbMax = aabbMax * pow(5.f, 2);
+		glm::vec3 scale;
+		glm::decompose(sortedModels[i]->getModelMatrix(), scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+		aabbMin = aabbMin * scale * scale;
+		aabbMax = aabbMax * scale * scale;
 		glm::mat4 boxMat = sortedModels[i]->getModelMatrix();
 		float distance = 10000;
 		
