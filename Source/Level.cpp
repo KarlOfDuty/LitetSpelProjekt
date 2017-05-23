@@ -33,13 +33,6 @@ void Level::setupModels()
 		5.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
-		35.0, 8.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
 		40.0, 3.0, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
@@ -65,12 +58,12 @@ void Level::setupModels()
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
-		5.0, 0.0, 0.0, 0.0,
+		25.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
-		55.0, 8.0, 0.0, 1.0
+		45.0, 8.0, 0.0, 1.0
 	}));
-	//
+
 
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
@@ -135,14 +128,7 @@ void Level::setupModels()
 		0.0, 0.0, 5.0, 0.0,
 		40.0, -2.0, 0.0, 1.0
 	}));
-	
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		40.0, 8.0, 0.0, 1.0
-	}));
+
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		5.0, 0.0, 0.0, 0.0,
@@ -150,27 +136,12 @@ void Level::setupModels()
 		0.0, 0.0, 5.0, 0.0,
 		45.0, -2.0, 0.0, 1.0
 	}));
-
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		45.0, 8.0, 0.0, 1.0
-	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		5.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
 		50.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		50.0, 8.0, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
@@ -223,13 +194,6 @@ void Level::setupModels()
 		0.0, 0.0, 5.0, 0.0,
 		-13.0, -2.0, 0.0, 1.0
 	}));
-	//staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	//{
-	//	5.0, 0.0, 0.0, 0.0,
-	//	0.0, 5.0, 0.0, 0.0,
-	//	0.0, 0.0, 5.0, 0.0,
-	//	25.0, 15.0, 0.0, 1.0
-	//}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		5.0, 0.0, 0.0, 0.0,
