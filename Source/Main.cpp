@@ -63,6 +63,7 @@ float nearDistance = 0.01f;
 float farDistance = 10000;
 glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
+glm::mat4 viewMatrixM;
 
 SoundSystem *soundSystem;
 Menu * menu;
@@ -142,6 +143,7 @@ int main()
 
 	//menu system
 	menu = new Menu(window.getSize().x, window.getSize().y, soundSystem);
+	viewMatrixM = playerCamera.update(player->getPos());
 
 	//quit = 0, menu 1 and game 2
 	int running = 1;
@@ -189,6 +191,10 @@ int main()
 		else if(running == 2)
 		{
 			running = eventHandler.handleEvents(window, player, soundSystem, menu);
+			if (running == 1)
+			{
+				menu->pause();
+			}
 			//Clear the buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			if (!firstFrame)
@@ -493,7 +499,7 @@ void updateM(sf::RenderWindow &window)
 	//Camera update, get new viewMatrix
 	//if (aboveView)
 	//{
-		viewMatrix = playerCamera.update(player->getPos());
+		viewMatrix = viewMatrixM;
 		//viewMatrix = glm::lookAt(
 		//	glm::vec3(1, 20, 0),
 		//	glm::vec3(1, 1, 0.01),

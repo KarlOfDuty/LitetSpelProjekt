@@ -14,17 +14,22 @@ Menu::Menu(float width, float height, SoundSystem * sound)
 	menu[0].setFont(font);
 	menu[0].setFillColor(sf::Color::Red);
 	menu[0].setString("Play");
-	menu[0].setPosition(sf::Vector2f(width / 2, height / (MAX_NUMBER_OF_ITEMS + 1) * 1));
+	menu[0].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_ITEMS + 1) * 1, height / 2));
 
 	menu[1].setFont(font);
 	menu[1].setFillColor(sf::Color::White);
-	menu[1].setString("Options");
-	menu[1].setPosition(sf::Vector2f(width / 2, height / (MAX_NUMBER_OF_ITEMS + 1) * 2));
+	menu[1].setString("Sound Options");
+	menu[1].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_ITEMS + 1) * 2, height / 2));
 
 	menu[2].setFont(font);
 	menu[2].setFillColor(sf::Color::White);
-	menu[2].setString("Exit");
-	menu[2].setPosition(sf::Vector2f(width / 2, height / (MAX_NUMBER_OF_ITEMS + 1) * 3));
+	menu[2].setString("P H graphics");
+	menu[2].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_ITEMS + 1) * 3, height / 2));
+
+	menu[3].setFont(font);
+	menu[3].setFillColor(sf::Color::White);
+	menu[3].setString("Exit");
+	menu[3].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_ITEMS + 1) * 4, height / 2));
 
 	selectedItemIndex = 0;
 
@@ -32,27 +37,22 @@ Menu::Menu(float width, float height, SoundSystem * sound)
 	options[0].setFont(font);
 	options[0].setFillColor(sf::Color::Red);
 	options[0].setString("Master Volume: On");
-	options[0].setPosition(sf::Vector2f(width / 2, height / (MAX_NUMBER_OF_OPTIONS + 1) * 1));
+	options[0].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_OPTIONS + 1) * 1, height / 2));
 
 	options[1].setFont(font);
 	options[1].setFillColor(sf::Color::White);
 	options[1].setString("Music: On");
-	options[1].setPosition(sf::Vector2f(width / 2, height / (MAX_NUMBER_OF_OPTIONS + 1) * 2));
+	options[1].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_OPTIONS + 1) * 2, height / 2));
 
 	options[2].setFont(font);
 	options[2].setFillColor(sf::Color::White);
 	options[2].setString("Sound Effects: On");
-	options[2].setPosition(sf::Vector2f(width / 2, height / (MAX_NUMBER_OF_OPTIONS + 1) * 3));
+	options[2].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_OPTIONS + 1) * 3, height / 2));
 
 	options[3].setFont(font);
 	options[3].setFillColor(sf::Color::White);
-	options[3].setString("Place holder for graphics");
-	options[3].setPosition(sf::Vector2f(width / 2, height / (MAX_NUMBER_OF_OPTIONS + 1) * 4));
-
-	options[4].setFont(font);
-	options[4].setFillColor(sf::Color::White);
-	options[4].setString("Back");
-	options[4].setPosition(sf::Vector2f(width / 2, height / (MAX_NUMBER_OF_OPTIONS + 1) * 5));
+	options[3].setString("Back");
+	options[3].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_OPTIONS + 1) * 4, height / 2));
 
 
 	selectedOptionIndex = 0;
@@ -82,7 +82,7 @@ void Menu::draw(sf::RenderWindow & window)
 	
 }
 
-void Menu::MoveUp()
+void Menu::MoveLeft()
 {
 	if (activeMenu == 0)
 	{
@@ -105,7 +105,7 @@ void Menu::MoveUp()
 	
 }
 
-void Menu::MoveDown()
+void Menu::MoveRight()
 {
 	if (activeMenu == 0)
 	{
@@ -143,6 +143,11 @@ int Menu::Select()
 			result = 1;
 		}
 		else if (selectedItemIndex == 2)
+		{
+			//activeMenu = 2;
+			result = 1;
+		}
+		else if (selectedItemIndex == 3)
 		{
 			//exit
 			result = 2;
@@ -201,15 +206,15 @@ int Menu::Select()
 
 		else if (selectedOptionIndex == 3)
 		{
-
-		}
-
-		else if (selectedOptionIndex == 4)
-		{
 			activeMenu = 0;
 		}
 	}
 	
 	
 	return result;
+}
+
+void Menu::pause()
+{
+	menu[selectedItemIndex].setString("Resume");
 }
