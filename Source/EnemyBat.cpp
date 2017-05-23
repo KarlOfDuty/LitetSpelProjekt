@@ -24,9 +24,6 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 {
 	groundCheck();
 
-
-
-	//Sort models by x axis
 	std::vector<Model*> sortedModels;
 	for (int i = 0; i < allModels.size(); i++)
 	{
@@ -48,8 +45,10 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 	{
 		glm::vec3 aabbMin, aabbMax;
 		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
-		aabbMin = aabbMin * pow(5.f, 2);
-		aabbMax = aabbMax * pow(5.f, 2);
+		glm::vec3 scale;
+		glm::decompose(sortedModels[i]->getModelMatrix(), scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+		aabbMin = aabbMin * scale * scale;
+		aabbMax = aabbMax * scale * scale;
 		glm::mat4 boxMat = sortedModels[i]->getModelMatrix();
 		float distance = 10000;
 
@@ -71,8 +70,6 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 	{
 		groundPos = 0;
 	}
-	
-
 
 	if (collidedFrom.y > 0)
 	{

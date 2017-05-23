@@ -761,5 +761,4 @@ void Player::groundCheck()
 	{
 		groundPos = 0;
 	}
-	std::cout << groundPos << std::endl;
 }
