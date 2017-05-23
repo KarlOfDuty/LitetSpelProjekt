@@ -56,9 +56,15 @@ void Model::getScaledMinMaxBouding(glm::vec3 &min, glm::vec3 &max)
 		}
 	}
 	glm::vec3 scale;
-	glm::decompose(modelMatrix, scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+	glm::quat rotation;
+	glm::decompose(modelMatrix, scale, rotation, glm::vec3(), glm::vec3(), glm::vec4());
 	min = minBounding * scale;
 	max = maxBounding * scale;
+	if (rotation.z != 0)
+	{
+		min *= 2.f;
+		max *= 2.f;
+	}
 }
 void Model::getScaledMinMaxBouding(glm::vec3 &min, glm::vec3 &max, glm::mat4 modelMat)
 {
