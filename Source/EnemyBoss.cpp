@@ -15,6 +15,7 @@ EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm
 	bossImmunity = true;
 	this->wallDestroyed = false;
 	this->inRightCorner = true;
+	this->blockExit = false;
 	
 	projectileModel = new Model("models/sphere/sphere.obj");
 	boxModel = new Model("models/cube/cube.obj");
@@ -111,13 +112,25 @@ void EnemyBoss::setChargeCounter(int amountOfCharges)
 	this->chargeCounter = amountOfCharges;
 }
 
-void EnemyBoss::setRotate(Player* player)
+void EnemyBoss::setRotateToPlayer(Player* player)
 {
 	if (getPos().x >= player->getPos().x)
 	{
 		rotateLeft = false;
 	}
 	if (getPos().x <= player->getPos().x)
+	{
+		rotateLeft = true;
+	}
+}
+
+void EnemyBoss::setRotateToOrigin()
+{
+	if (getPos().x >= originPoint.x)
+	{
+		rotateLeft = false;
+	}
+	if (getPos().x <= originPoint.x)
 	{
 		rotateLeft = true;
 	}
@@ -183,8 +196,19 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 8.0f)
 	{
+		if (!blockExit)
+		{
+			allModels.push_back(new Model(boxModel,
+			{
+				4.0, 0.0, 0.0, 0.0,
+				0.0, 5.0, 0.0, 0.0,
+				0.0, 0.0, 5.0, 0.0,
+				30.0, 16.0, 0.0, 1.0
+			}));
+			blockExit = true;
+		}
 		playerSeen = true;
 	}
 
@@ -249,7 +273,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					{
 						if (!attacking)
 						{
-							setRotate(player);
+							setRotateToOrigin();
 						}
 
 						if (attacking)
@@ -297,7 +321,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 						}
 						if (rotateNow)
 						{
-							setRotate(player);
+							setRotateToOrigin();
 							rotateNow = false;
 						}
 						
@@ -347,7 +371,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			{
 				if (!attacking)
 				{
-					setRotate(player);
+					setRotateToOrigin();
 				}
 
 				if (attacking)
@@ -434,7 +458,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 					if (playerTracked)
 					{
-						setRotate(player);
+						setRotateToPlayer(player);
 						this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
 						oldPlayerPos = player->getPos();
 					}

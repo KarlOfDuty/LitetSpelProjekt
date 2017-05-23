@@ -3,6 +3,7 @@
 class EnemyBoss : public Enemy
 {
 private:
+	bool blockExit;
 	int phase;
 	//phase 1
 	int chargeCounter;
@@ -59,7 +60,8 @@ public:
 	void setPhase(int phase);
 	void setCreateTrigger(bool createTrigger);
 	void setChargeCounter(int amountOfCharges);
-	void setRotate(Player *player);
+	void setRotateToPlayer(Player *player);
+	void setRotateToOrigin();
 	void setRotateNow();
 	void loseTrackOfPlayer(bool playerIsFound);
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent);
