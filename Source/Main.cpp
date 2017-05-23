@@ -330,17 +330,24 @@ void update(sf::RenderWindow &window)
 	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
 
 	//Camera update, get new viewMatrix
-	if (aboveView)
+	if (!enemyManager->getBossKill())
 	{
-		playerCamera.update(player->getPos());
-		viewMatrix = glm::lookAt(
-			glm::vec3(0, 100, 0),
-			glm::vec3(1, 1, 1),
-			glm::vec3(0, 1, 0));
+		if (aboveView)
+		{
+			playerCamera.update(player->getPos());
+			viewMatrix = glm::lookAt(
+				glm::vec3(0, 100, 0),
+				glm::vec3(1, 1, 1),
+				glm::vec3(0, 1, 0));
+		}
+		else if (!aboveView)
+		{
+			viewMatrix = playerCamera.update(player->getPos());
+		}
 	}
 	else
 	{
-		viewMatrix = playerCamera.update(player->getPos());
+		viewMatrix = playerCamera.update(enemyManager->getBossPos());
 	}
 
 	if (endLevel)

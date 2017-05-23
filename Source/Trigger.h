@@ -65,8 +65,8 @@ public:
 	std::string type() const;
 	//Own functions
 	bool update(float dt);
-	void activate();
-	void runCommand(int commandID, int targetID);
+	void activate(float dt);
+	void runCommand(int commandID, int targetID, float dt);
 	//Constructors
 	Trigger();
 	Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::vector<GameObject*> activators, std::vector<GameObject*> targets, std::vector<std::string> commands);

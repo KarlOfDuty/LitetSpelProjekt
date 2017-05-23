@@ -16,6 +16,9 @@ EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm
 	this->wallDestroyed = false;
 	this->inRightCorner = true;
 	this->blockExit = false;
+	this->isChandelierCreated = false;
+	this->platformCreated = false;
+	this->moveChandelier = false;
 	
 	projectileModel = new Model("models/sphere/sphere.obj");
 	boxModel = new Model("models/cube/cube.obj");
@@ -29,6 +32,14 @@ EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm
 EnemyBoss::~EnemyBoss()
 {
 
+}
+
+void EnemyBoss::setChandelierButton(Player* player)
+{
+	std::vector<glm::vec2> corners = { glm::vec2(20.0f, 26.0f), glm::vec2(20.0f, 26.0f), glm::vec2(28.0f,35.0f), glm::vec2(28.0f, 35.0f) };
+	TriggerSettings buttonSettings;
+	buttonSettings.onEnter = true;
+	chandelierButton.push_back(new Trigger(corners, buttonSettings, player, this, "finishingBlow"));
 }
 
 void EnemyBoss::setWaterArea(Player * player, std::vector<Model*> &allModels)
@@ -141,6 +152,12 @@ void EnemyBoss::setRotateNow()
 	rotateNow = true;
 }
 
+void EnemyBoss::setChandelierMove()
+{
+	moveChandelier = true;
+	timeBeforeDeath.restart();
+}
+
 void EnemyBoss::loseTrackOfPlayer(bool playerIsFound)
 {
 	playerTracked = playerIsFound;
@@ -185,6 +202,7 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
+	groundCheck();
 
 	if (collidedFrom.y > 0)
 	{
@@ -193,6 +211,20 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	else if (collidedFrom.y <= 0)
 	{
 		collidingWithGround = false;
+	}
+
+	if (!isChandelierCreated)
+	{
+		setChandelierButton(player);
+		chandelierPos = allModels.size();
+		allModels.push_back(new Model(boxModel,
+		{
+			4.0, 0.0, 0.0, 0.0,
+			0.0, 2.0, 0.0, 0.0,
+			0.0, 0.0, 4.0, 0.0,
+			45.0, 28.0, 0.0, 1.0
+		}));
+		isChandelierCreated = true;
 	}
 
 	//Detect player
@@ -205,16 +237,12 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				4.0, 0.0, 0.0, 0.0,
 				0.0, 5.0, 0.0, 0.0,
 				0.0, 0.0, 5.0, 0.0,
-				30.0, 16.0, 0.0, 1.0
+				30.5, 16.0, 0.0, 1.0
 			}));
 			blockExit = true;
 		}
 		playerSeen = true;
 	}
-
-		groundCheck();
-
-
 
 		if (collides)
 		{
@@ -471,7 +499,38 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 		else if (phase == 3)
 		{
+			if (!platformCreated)
+			{
+				chandelierPos -= 8;
+				allModels.push_back(new Model(boxModel,
+				{
+					3.0, 0.0, 0.0, 0.0,
+					0.0, 1.0, 0.0, 0.0,
+					0.0, 0.0, 5.0, 0.0,
+					33.0, 16.0, 0.0, 1.0
+				}));
+				platformCreated = true;
+			}
 
+			if (moveChandelier)
+			{
+				if (timeBeforeDeath.getElapsedTime().asSeconds() < 3.0)
+				{
+					glm::mat4 shitMat = allModels[chandelierPos]->getModelMatrix();
+					shitMat[3].y -= 5 * dt;
+					allModels[chandelierPos]->setModelMatrix(shitMat);
+					this->bossKill = true;
+				}
+				if (timeBeforeDeath.getElapsedTime().asSeconds() >= 3.0)
+				{
+					setBossImmunity(false);
+					applyDamage(40);
+					setBossImmunity(true);
+				}
+			}
+
+			setRotateToPlayer(player);
+			this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
 		}
 
 
@@ -544,9 +603,17 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 
 		//Trigger box
+		if (!chandelierButton.empty())
+		{
+			for (int i = 0; i < chandelierButton.size(); i++)
+			{
+				chandelierButton[i]->update(dt);
+			}
+		}
+
 		if (!waterArea.empty())
 		{
-			for (int i = 0; i < weakPointsArr.size(); i++)
+			for (int i = 0; i < waterArea.size(); i++)
 			{
 				waterArea[i]->update(dt);
 			}
@@ -565,7 +632,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				{
 					Model* temp;
 					temp = boxModel;
-					std::vector<glm::vec2> points = weakPointsArr[0]->getPoints();
+					std::vector<glm::vec2> points = chandelierButton[0]->getPoints();
 					glm::mat4 shitmat = {
 						0.2, 0, 0, 0,
 						0, 0.2, 0, 0,
@@ -577,7 +644,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				}
 				else
 				{
-					std::vector<glm::vec2> points = weakPointsArr[0]->getPoints();
+					std::vector<glm::vec2> points = chandelierButton[0]->getPoints();
 					glm::mat4 shitmat = {
 						0.2, 0, 0, 0,
 						0, 0.2, 0, 0,

@@ -176,6 +176,11 @@ bool Enemy::collisionWithPlayer(Player* player)
 	return false;
 }
 
+bool Enemy::getBossKill() const
+{
+	return bossKill;
+}
+
 void Enemy::update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
 	if (glm::length(pos - player->getPos()) < 25.0f)

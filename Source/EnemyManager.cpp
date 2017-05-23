@@ -70,6 +70,34 @@ void EnemyManager::clearDeadEnemies()
 	}
 }
 
+bool EnemyManager::getBossKill() const
+{
+	EnemyBoss* enemyBossPtr = nullptr;
+	for (int i = 0; i < this->allEnemies.size(); i++)
+	{
+		enemyBossPtr = dynamic_cast<EnemyBoss*>(allEnemies[i]);
+		if (enemyBossPtr != nullptr)
+		{
+			return this->allEnemies[i]->getBossKill();
+		}
+	}
+	return false;
+}
+
+glm::vec3 EnemyManager::getBossPos() const
+{
+	EnemyBoss* enemyBossPtr = nullptr;
+	for (int i = 0; i < this->allEnemies.size(); i++)
+	{
+		enemyBossPtr = dynamic_cast<EnemyBoss*>(allEnemies[i]);
+		if (enemyBossPtr != nullptr)
+		{
+			return this->allEnemies[i]->getPos();
+		}
+	}
+	return glm::vec3(0.0f, 0.0f, 0.0f);
+}
+
 std::vector<Enemy*> &EnemyManager::getAllEnemies()
 {
 	return allEnemies;
