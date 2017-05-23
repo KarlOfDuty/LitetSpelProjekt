@@ -7,7 +7,9 @@ class LevelManager
 private:
 	std::vector<Level*> levels;
 	int levelIndex;
+	int menuIndex;
 public:
+	Level *currentMenu;
 	Level *currentLevel;
 	LevelManager();
 	~LevelManager();

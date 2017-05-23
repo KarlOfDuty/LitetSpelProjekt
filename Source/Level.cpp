@@ -305,6 +305,22 @@ void Level::setupModels()
 		//std::cout << "Loaded." << std::endl;
 	}
 }
+
+//setup menu
+void Level::setupMenuModels()
+{
+	//Boss stuff
+	//remove these
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
+	}));
+	staticModels[0]->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+}
+
 //Delete all models from memory
 void Level::unloadModels()
 {
@@ -373,6 +389,13 @@ void Level::updateTriggers(float dt)
 	for (int i = 0; i < dynamicModels.size(); i++)
 	{
 		dynamicModels[i]->rotate();
+	}
+}
+void Level::spinMenu(float dt)
+{
+	for (int i = 0; i < staticModels.size(); i++)
+	{
+		staticModels[i]->rotate();
 	}
 }
 void Level::deleteTriggers()

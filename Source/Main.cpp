@@ -79,8 +79,9 @@ std::vector<Model*> modelsToBeDrawn;
 
 //Functions
 void render();
-void render2();
+void renderM();
 void update(sf::RenderWindow &window);
+void updateM(sf::RenderWindow &window);
 void createGBuffer();
 void drawQuad();
 void loadLevel();
@@ -165,7 +166,7 @@ int main()
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			if (!firstFrame)
 			{
-				update(window);
+				updateM(window);
 			}
 			else
 			{
@@ -177,7 +178,7 @@ int main()
 			//render();
 
 			window.setActive(true);
-			render2();
+			renderM();
 			window.setActive(false);
 
 			window.pushGLStates();
@@ -329,7 +330,7 @@ void render()
 	drawQuad();
 }
 
-void render2()
+void renderM()
 {
 	//Render depth of scene to texture (from light's perspective)
 	//Get light projection/view matrix.
@@ -352,18 +353,18 @@ void render2()
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO[i]);
 		glClear(GL_DEPTH_BUFFER_BIT);
-		for (int j = 0; j < levelManager.currentLevel->getStaticModels().size(); j++)
+		for (int j = 0; j < levelManager.currentMenu->getStaticModels().size(); j++)
 		{
-			glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[j]->getModelMatrix()[0][0]);
-			levelManager.currentLevel->getStaticModels()[j]->draw(shadowShader);
+			glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &levelManager.currentMenu->getStaticModels()[j]->getModelMatrix()[0][0]);
+			levelManager.currentMenu->getStaticModels()[j]->draw(shadowShader);
 		}
-		glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel().getModelMatrix()[0][0]);
-		enemyManager->draw(shadowShader);
-		if (player->playerIsDead() != true)
-		{
-			player->draw(shadowShader);
-		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel().getModelMatrix()[0][0]);
+		//enemyManager->draw(shadowShader);
+		//if (player->playerIsDead() != true)
+		//{
+		//	player->draw(shadowShader);
+		//}
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, windowWidth, windowHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
@@ -382,22 +383,22 @@ void render2()
 	//Draw functions
 
 	//Only potentially visible static models are drawn
-	for (int i = 0; i < levelManager.currentLevel->getStaticModels().size(); i++)
+	for (int i = 0; i < levelManager.currentMenu->getStaticModels().size(); i++)
 	{
-		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[i]->getModelMatrix()[0][0]);
-		levelManager.currentLevel->getStaticModels().at(i)->draw(deferredGeometryPass);
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &levelManager.currentMenu->getStaticModels()[i]->getModelMatrix()[0][0]);
+		levelManager.currentMenu->getStaticModels().at(i)->draw(deferredGeometryPass);
 	}
-	std::vector<Model*> dynamicModels = levelManager.currentLevel->getDynamicModels();
+	std::vector<Model*> dynamicModels = levelManager.currentMenu->getDynamicModels();
 	for (int i = 0; i < dynamicModels.size(); i++)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
 		dynamicModels.at(i)->draw(deferredGeometryPass);
 	}
-	if (player->playerIsDead() != true)
-	{
-		player->draw(deferredGeometryPass);
-	}
-	enemyManager->draw(deferredGeometryPass);
+	//if (player->playerIsDead() != true)
+	//{
+	//	player->draw(deferredGeometryPass);
+	//}
+	//enemyManager->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -449,7 +450,7 @@ void update(sf::RenderWindow &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemyManager->getAllEnemies());
+		player->update(window, dt, levelManager.currentLevel->getStaticModels(), enemyManager->getAllEnemies());
 	}
 
 	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
@@ -477,6 +478,47 @@ void update(sf::RenderWindow &window)
 	levelManager.currentLevel->updateTriggers(dt);
 	playerCamera.frustumCulling(modelsToBeDrawn);
 	gui.update(player);
+}
+
+void updateM(sf::RenderWindow &window)
+{
+	dt = deltaClock.restart().asSeconds();
+	//Update player if not dead
+	//if (!player->playerIsDead())
+	//{
+	//	player->update(window, dt, levelManager.currentLevel->getStaticModels(), enemyManager->getAllEnemies());
+	//}
+
+	//enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
+
+	//Camera update, get new viewMatrix
+	//if (aboveView)
+	//{
+		viewMatrix = playerCamera.update(player->getPos());
+		//viewMatrix = glm::lookAt(
+		//	glm::vec3(1, 20, 0),
+		//	glm::vec3(1, 1, 0.01),
+		//	glm::vec3(0, 0.01, 0));
+		//viewMatrix = glm::lookAt(
+		//	glm::vec3(1, 0, 0),
+		//	glm::vec3(0, 1, 0),
+		//	glm::vec3(0, 0, 1));
+	//}
+	//else
+	//{
+	//	viewMatrix = playerCamera.update(player->getPos());
+	//}
+
+	if (endLevel)
+	{
+		unloadLevel();
+		loadLevel();
+		endLevel = false;
+	}
+	levelManager.currentMenu->spinMenu(dt);
+	//levelManager.currentLevel->updateTriggers(dt);
+	//playerCamera.frustumCulling(modelsToBeDrawn);
+	//gui.update(player);
 }
 
 //Create the buffer
@@ -606,6 +648,13 @@ void drawQuad()
 
 void loadLevel()
 {
+	//menu
+	levelManager.currentMenu->loadModels();
+	levelManager.currentMenu->setupMenuModels();
+	modelsToBeDrawn = levelManager.currentMenu->getStaticModels();
+	playerCamera.setupQuadTree(levelManager.currentMenu->getStaticModels());
+	//menu/
+
 	levelManager.currentLevel->loadModels();
 	levelManager.currentLevel->setupModels();
 	levelManager.currentLevel->setupTriggers(player);
