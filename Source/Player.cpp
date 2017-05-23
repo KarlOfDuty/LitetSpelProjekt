@@ -730,12 +730,10 @@ void Player::groundCheck()
 	//Now find the ground based on the sorted models
 	bool foundGround = false;
 	float closestDistance = 100;
-	glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y + 2.0f, getPos().z);
+	glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y, getPos().z);
 	glm::vec3 rayDir(0, -1, 0);
 	for (int i = 0; i < sortedModels.size(); i++)
 	{
-		glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y + 2.0f, getPos().z);
-		glm::vec3 rayDir(0, -1, 0);
 		glm::vec3 aabbMin, aabbMax;
 		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
 		aabbMin = aabbMin * pow(5.f, 2);
