@@ -736,8 +736,10 @@ void Player::groundCheck()
 	{
 		glm::vec3 aabbMin, aabbMax;
 		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
-		aabbMin = aabbMin * pow(5.f, 2);
-		aabbMax = aabbMax * pow(5.f, 2);
+		glm::vec3 scale;
+		glm::decompose(sortedModels[i]->getModelMatrix(), scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+		aabbMin = aabbMin * scale * scale;
+		aabbMax = aabbMax * scale * scale;
 		glm::mat4 boxMat = sortedModels[i]->getModelMatrix();
 		float distance = 10000;
 		
@@ -759,4 +761,5 @@ void Player::groundCheck()
 	{
 		groundPos = 0;
 	}
+	std::cout << groundPos << std::endl;
 }
