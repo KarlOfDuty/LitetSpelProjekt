@@ -19,10 +19,9 @@ struct meshInfo {
 	std::vector<glm::vec3> biNormals;
 	std::vector<glm::vec2> uvs;
 
-	string fileName;
-	float diffuse;
+	string diffuseTexture;
+	glm::vec3 diffuse;
 	float specular;
-
 
 	glm::vec3 position;
 	glm::vec3 rotation;
@@ -73,10 +72,7 @@ int currentFrame = 0;
 float prog = 0;
 
 
-bool readMesh(const char* filePath,
-	std::vector<glm::vec3> & anim_vertices,
-	std::vector<glm::vec2> & anim_uvs,
-	std::vector<glm::vec3> & anim_normals)
+bool readMesh(const char* filePath)
 {
 	glm::vec3 vec3;
 	glm::vec2 vec2;
@@ -103,98 +99,116 @@ bool readMesh(const char* filePath,
 
 		cout << nrOfCtrlPoints << endl;
 
-		meshInfo *info = new meshInfo;
+		meshInfo *mesh = new meshInfo;
 
-		info->name = name;
+		mesh->name = name;
 
-		for (int k = 0; k < nrOfCtrlPoints; k++) {
-
+		for (int k = 0; k < nrOfCtrlPoints; k++) 
+		{
 			vec3 = glm::vec3(0);
-
-			//cout << "Tell: " << in.tellg() << endl;
-			//cout << "Pos: " << endl;
+			if (modelDebug)
+			{
+				cout << "Tell: " << in.tellg() << endl;
+				cout << "Pos: " << endl;
+			}
 			//Read the Vertecies for the primitive
-			for (int h = 0; h < 3; h++) {
+			for (int h = 0; h < 3; h++) 
+			{
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
-				//cout << "Vertex: ";
-				//cout << vec3.x << " ";
-				//cout << vec3.y << " ";
-				//cout << vec3.z << endl;
-				info->verts.push_back(vec3);
-				anim_vertices.push_back(vec3);
+				if (modelDebug)
+				{
+					cout << "Vertex: ";
+					cout << vec3.x << " ";
+					cout << vec3.y << " ";
+					cout << vec3.z << endl;
+				}
+				mesh->verts.push_back(vec3);
 			}
 
 			//Read the Normals for the primitive
 			for (int h = 0; h < 3; h++) {
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
-				//cout << "Normal: ";
-				//cout << vec3.x << " ";
-				//cout << vec3.y << " ";
-				//cout << vec3.z << endl;
-				info->norms.push_back(vec3);
-				anim_normals.push_back(vec3);
+				if (modelDebug)
+				{
+					cout << "Normal: ";
+					cout << vec3.x << " ";
+					cout << vec3.y << " ";
+					cout << vec3.z << endl;
+				}
+				mesh->norms.push_back(vec3);
 			}
 
 			//Read the Tangents for the primitive
-			for (int h = 0; h < 3; h++) {
+			for (int h = 0; h < 3; h++) 
+			{
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
-				//cout << "Tangent: ";
-				//cout << vec3.x << " ";
-				//cout << vec3.y << " ";
-				//cout << vec3.z << endl;
-				info->tangent.push_back(vec3);
+				if (modelDebug)
+				{
+					cout << "Tangent: ";
+					cout << vec3.x << " ";
+					cout << vec3.y << " ";
+					cout << vec3.z << endl;
+				}
+				mesh->tangent.push_back(vec3);
 			}
 			//Read the BiNormals for the primitive
-			for (int h = 0; h < 3; h++) {
+			for (int h = 0; h < 3; h++) 
+			{
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
-				//cout << "BiNormal: ";
-				//cout << vec3.x << " ";
-				//cout << vec3.y << " ";
-				//cout << vec3.z << endl;
-				info->biNormals.push_back(vec3);
+				if (modelDebug)
+				{
+					cout << "BiNormal: ";
+					cout << vec3.x << " ";
+					cout << vec3.y << " ";
+					cout << vec3.z << endl;
+				}
+				mesh->biNormals.push_back(vec3);
 			}
 
 			//Read the UVs for the primitive
-			for (int h = 0; h < 3; h++) {
+			for (int h = 0; h < 3; h++) 
+			{
 				in.read(reinterpret_cast<char*>(&vec2), sizeof(vec2));
-				//cout << "UV: ";
-				//cout << vec2.x << " ";
-				//cout << vec2.y << endl;
-				info->uvs.push_back(vec2);
-				anim_uvs.push_back(vec2);
+				if (modelDebug)
+				{
+					cout << "UV: ";
+					cout << vec2.x << " ";
+					cout << vec2.y << endl;
+				}
+				mesh->uvs.push_back(vec2);
 			}
 		}
 
 		//Read the materials for the mesh as well as the Texture file name
 
 		int fileNameLength = 0;
-		float diffuse = 0;
+		glm::vec3 diffuse;
 		float specular = 0;
 
-		string fileName = "";
+		string diffuseTexture = "";
 		in.read(reinterpret_cast<char*>(&fileNameLength), sizeof(int));
 		char *tempFileName;
 		tempFileName = new char[fileNameLength];
 		in.read(tempFileName, fileNameLength);
 		//in.getline(tempName, nrOfChars + 1, '\0');
-		fileName.append(tempFileName, fileNameLength);
+		diffuseTexture.append(tempFileName, fileNameLength);
 
 		in.read(reinterpret_cast<char*>(&diffuse), sizeof(diffuse));
 		in.read(reinterpret_cast<char*>(&specular), sizeof(specular));
 
-		info->diffuse = diffuse;
-		info->specular = specular;
+		mesh->diffuse = diffuse;
+		mesh->specular = specular;
 
 		vec3 = glm::vec3(0);
 		//Read the position, rotation and scale values
 		in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
-		info->position = vec3;
+		mesh->position = vec3;
 		in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
-		info->rotation = vec3;
+		mesh->rotation = vec3;
 		in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
-		info->scale = vec3;
+		mesh->scale = vec3;
 
-		meshes.push_back(info);
+		meshes.push_back(mesh);
 	}
 
 	return true;

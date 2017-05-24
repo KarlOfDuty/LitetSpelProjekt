@@ -21,10 +21,10 @@ Player::Player()
 
 	this->modelMatrix[3] = glm::vec4(0.0f, 2.0f, 0.0f, 1.0);
 	this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	this->modelMatrix *= glm::scale(glm::vec3(0.08f, 0.08f, 0.08f));
+	this->modelMatrix *= glm::scale(glm::vec3(1, 1, 1));
 
 	angle = 0;
-	this->movementSpeed = 4.0f;
+	this->movementSpeed = 100.0f;
 	//Add characters
 	this->health = 20;
 
@@ -333,7 +333,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		waterEffect();
 	}
 	
-	groundCheck();
+	//groundCheck();
 
 	if (getPos().y > groundPos && isOnGround)
 	{
@@ -495,7 +495,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	velocityX = 0;
 	modelMatrix[3].y += velocityY*dt;
 	
-	collision(allModels);
+	//collision(allModels);
 
 	//Handle collision detection with ground
 	if (getPos().y <= groundPos && !isOnGround)

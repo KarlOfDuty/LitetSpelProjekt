@@ -4,6 +4,7 @@
 #include "Trigger.h"
 #include <SFML/Window.hpp>
 #include "SoundSystem.h"
+//Turns on console feedback for reading of model files
 class Level
 {
 private:
@@ -17,6 +18,7 @@ private:
 public:
 	void loadModels();
 	void setupModels();
+	bool readModels(const char* filePath, std::vector<Model*> &modelVector);
 	void unloadModels();
 	void setupTriggers(Player* player);
 	void updateTriggers(float dt);

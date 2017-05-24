@@ -240,10 +240,10 @@
       <Filter>Source Files\Shader</Filter>
     </None>
     <None Include="Shaders\animationFragment.glsl">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shader</Filter>
     </None>
     <None Include="Shaders\animationVertex.glsl">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shader</Filter>
     </None>
   </ItemGroup>
 </Project>

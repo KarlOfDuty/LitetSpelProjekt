@@ -227,7 +227,7 @@ void render()
 	for (int i = 0; i < directionalLights.size(); i++)
 	{
 		lightSpaceMatrix.push_back(glm::mat4());
-		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*10.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
+		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*20.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
 		lightSpaceMatrix[i] = lightProjection * lightView;
 		//Render scene from light's point of view
 		shadowShader.use();

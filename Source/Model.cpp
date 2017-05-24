@@ -150,6 +150,29 @@ void Model::setRotationMatrix(glm::mat4 rotationMat)
 {
 	this->rotationMatrix = rotationMat;
 }
+void Model::setRotationMatrix(glm::vec3 rotation)
+{
+	rotation = rotation * 3.14f / 180.0f;
+	glm::quat quaternion = glm::quat(rotation);
+	
+	//This might not work depending on exporter values
+	this->rotationMatrix = glm::toMat4(quaternion);
+}
+void Model::setPos(glm::vec3 pos)
+{
+	this->modelMatrix[3] = glm::vec4(pos,1.0);
+}
+//Probably only safe to use this before any rotations have been made
+void Model::setScale(glm::vec3& scale)
+{
+	this->modelMatrix[0][0] = scale.x;
+	this->modelMatrix[1][1] = scale.y;
+	this->modelMatrix[2][2] = scale.z;
+}
+void Model::addMesh(Mesh* mesh)
+{
+	meshes.push_back(mesh);
+}
 //Sets the radius of the bounding sphere around this model
 void Model::setBoundingSphereRadius()
 {
@@ -170,7 +193,7 @@ void Model::rotate()
 	this->modelMatrix *= rotationMatrix;
 }
 //Reads a .obj file and creates a Model object from the data
-void Model::read(std::string filename)
+void Model::readOBJ(std::string filename)
 {
 	//Temporary containers
 	std::ifstream file(filename);
@@ -649,7 +672,7 @@ Model::Model(std::string filename)
 	//Initializes the model without a rotation or model matrix. Does not set the model up so it can be drawn.
 	this->modelMatrix = glm::mat4(1.0);
 	this->rotationMatrix = glm::mat4(1.0);
-	read(filename);
+	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
 }
@@ -658,7 +681,7 @@ Model::Model(std::string filename, glm::mat4 modelMat)
 	//Initializes the model without a rotation
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = glm::mat4(1.0);
-	read(filename);
+	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
 }
@@ -667,7 +690,7 @@ Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 	//Initializes the model
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = rotation;
-	read(filename);
+	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
 }
