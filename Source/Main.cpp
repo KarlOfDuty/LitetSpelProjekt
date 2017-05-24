@@ -64,6 +64,10 @@ float farDistance = 10000;
 glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
 
+bool cameraOnBoss = false;
+bool resetCamera = false;
+sf::Clock cameraOnBossTimer;
+
 SoundSystem *soundSystem;
 Menu * menu;
 
@@ -101,8 +105,6 @@ int main()
 	settings.antialiasingLevel = 2;
 	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
-
-	
 
 	//Activate the window
 	window.setActive(true);
@@ -160,20 +162,11 @@ int main()
 				running = true;
 				//testing
 			}
+			
 			//Clear the buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			if (!firstFrame)
-			{
-				update(window);
-			}
-			else
-			{
-				deltaClock.restart();
-				firstFrame = false;
-			}
-
-			//window.setActive(true);
-			//render();
+			
+			deltaClock.restart();
 
 			window.setActive(false);
 
@@ -339,17 +332,29 @@ void update(sf::RenderWindow &window)
 	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
 
 	//Camera update, get new viewMatrix
-	if (aboveView)
+	if (enemyManager->getBossKill() && !cameraOnBoss)
 	{
-		playerCamera.update(player->getPos());
-		viewMatrix = glm::lookAt(
-			glm::vec3(0, 100, 0),
-			glm::vec3(1, 1, 1),
-			glm::vec3(0, 1, 0));
+		cameraOnBossTimer.restart();
+		cameraOnBoss = true;
+	}
+	if (!cameraOnBoss || cameraOnBossTimer.getElapsedTime().asSeconds() >= 8)
+	{
+		if (aboveView)
+		{
+			playerCamera.update(player->getPos());
+			viewMatrix = glm::lookAt(
+				glm::vec3(0, 100, 0),
+				glm::vec3(1, 1, 1),
+				glm::vec3(0, 1, 0));
+		}
+		else if (!aboveView)
+		{
+			viewMatrix = playerCamera.update(player->getPos());
+		}
 	}
 	else
 	{
-		viewMatrix = playerCamera.update(player->getPos());
+		viewMatrix = playerCamera.update(enemyManager->getBossPos());
 	}
 
 	if (endLevel)
@@ -360,7 +365,7 @@ void update(sf::RenderWindow &window)
 	}
 	levelManager.currentLevel->updateTriggers(dt);
 	playerCamera.frustumCulling(modelsToBeDrawn);
-	gui.update(player);
+	gui.update(player, enemyManager);
 }
 
 //Create the buffer
@@ -498,7 +503,7 @@ void loadLevel()
 	enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
 	/*enemyManager->createSlime(glm::vec3(19.0f, 7.0f, 0.0f));
 	enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
-	enemyManager->createGiantBat(glm::vec3(25.0f, 12.0f, 0.0f));
+	enemyManager->createGiantBat(glm::vec3(-15.0f, 12.0f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));

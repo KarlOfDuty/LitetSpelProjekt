@@ -24,6 +24,53 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 {
 	groundCheck();
 
+	std::vector<Model*> sortedModels;
+	for (int i = 0; i < allModels.size(); i++)
+	{
+		glm::vec3 min, max;
+		allModels[i]->getScaledMinMaxBouding(min, max);
+		min += allModels[i]->getPos();
+		max += allModels[i]->getPos();
+		if (getPos().x >= min.x && getPos().x <= max.x)
+		{
+			sortedModels.push_back(allModels[i]);
+		}
+	}
+	//Now find the ground based on the sorted models
+	bool foundGround = false;
+	float closestDistance = 100;
+	glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y, getPos().z);
+	glm::vec3 rayDir(0, -1, 0);
+	for (int i = 0; i < sortedModels.size(); i++)
+	{
+		glm::vec3 aabbMin, aabbMax;
+		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
+		glm::vec3 scale;
+		glm::decompose(sortedModels[i]->getModelMatrix(), scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+		aabbMin = aabbMin * scale * scale;
+		aabbMax = aabbMax * scale * scale;
+		glm::mat4 boxMat = sortedModels[i]->getModelMatrix();
+		float distance = 10000;
+
+		//Raycast downwards to find the distance to ground
+		if (collision::TestRayOBBIntersection(rayOrigin, rayDir, aabbMin, aabbMax, boxMat, distance))
+		{
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				foundGround = true;
+			}
+		}
+	}
+	if (foundGround)
+	{
+		groundPos = rayOrigin.y - closestDistance;
+	}
+	else
+	{
+		groundPos = 0;
+	}
+
 	if (collidedFrom.y > 0)
 	{
 		collidingWithGround = true;
@@ -70,7 +117,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 		collisionTime.restart();
 	}
 
-	if (enemyPosCurrent.y <= 3)
+	if (enemyPosCurrent.y <= groundPos+3)
 	{
 		goUp = true;
 	}

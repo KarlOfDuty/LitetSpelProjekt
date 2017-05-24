@@ -202,9 +202,9 @@ void Level::setupTriggers(Player* player)
 		0.02, 0, 0, 0,
 		0, 0.02, 0, 0,
 		0, 0, 0.02, 0,
-		-2, 5, 0, 1
+		-4, 5, 0, 1
 	});
-	Model* heart = new Model("models/heart/HeartContainer.obj", mat);
+	Model* heart = new Model("models/heart/ HeartContainer.obj", mat);
 	glm::vec3 min, max;
 	heart->getMinMaxBouding(min, max);
 	min += glm::vec3(mat[3]);
@@ -215,7 +215,11 @@ void Level::setupTriggers(Player* player)
 	std::vector<glm::vec2> corners3 = { glm::vec2(min), glm::vec2(min.x,max.y), glm::vec2(max), glm::vec2(max.x,min.y) };
 	TriggerSettings settings3;
 	settings3.onEnter = true;
-	triggerBoxes.push_back(new Trigger(heart->getPoints(), settings3, player, player, "healthPickup"));
+	std::vector<GameObject*> shitVec;
+	shitVec.push_back(player);
+	shitVec.push_back(heart);
+	Trigger* fuck = new Trigger(heart->getPoints(), settings3, player, shitVec, "healthPickup");
+	triggerBoxes.push_back(fuck);
 }
 void Level::updateTriggers(float dt)
 {
@@ -278,8 +282,9 @@ Level::Level()
 		,"models/sphere/sphere.obj"
 		,"models/cube/cubeGreen.obj"
 		,"models/Characters/Bird/BirdTest1.obj"
+		,"models/heart/HeartContainer.obj"
 	};
-	playerPos = glm::vec3(0,2,0);
+	playerPos = glm::vec3(14,4,0);
 }
 Level::Level(std::string filepath)
 {

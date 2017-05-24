@@ -41,6 +41,7 @@ public:
 	float angle;
 	bool rotation;
 	glm::vec3 scaleFactor;
+	bool bossKill;
 
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
@@ -61,6 +62,7 @@ public:
 	void setBossImmunity(bool isImmune);
 	bool collision(std::vector<Model*> &allModels);
 	bool collisionWithPlayer(Player* player);
+	bool getBossKill()const;
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 pos) = 0;
 	void update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player);
 	virtual void updateThis(float dt, glm::vec3 pos, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player) = 0;
