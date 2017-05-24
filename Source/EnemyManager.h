@@ -43,6 +43,8 @@ public:
 	void createBoss(glm::vec3 enemyStartPos);
 	void createFirefly(glm::vec3 enemyStartPos);
 	void clearDeadEnemies();
+	bool getBossKill()const;
+	glm::vec3 getBossPos()const;
 	std::vector<Enemy*> &getAllEnemies();
 	void update(float dt, int playerDamage, std::vector<Model*> &allModels, Player* player);
 	void draw(Shader shader);

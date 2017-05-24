@@ -119,6 +119,34 @@ void Level::setupModels()
 		5.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
+		30.0, 21.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		32.0, 26.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		30.0, 31.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		25.0, 21.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
 		35.0, -2.0, 0.0, 1.0
 	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
@@ -128,7 +156,20 @@ void Level::setupModels()
 		0.0, 0.0, 5.0, 0.0,
 		40.0, -2.0, 0.0, 1.0
 	}));
-
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		40.0, 8.0, 0.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		5.0, 0.0, 0.0, 0.0,
+		0.0, 5.0, 0.0, 0.0,
+		0.0, 0.0, 5.0, 0.0,
+		45.0, -2.0, 0.0, 1.0
+	}));
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
 		5.0, 0.0, 0.0, 0.0,
@@ -395,7 +436,7 @@ Level::Level()
 		,"models/Characters/Bird/BirdTest1.obj"
 		,"models/heart/HeartContainer.obj"
 	};
-	playerPos = glm::vec3(0,2,0);
+	playerPos = glm::vec3(14,4,0);
 }
 Level::Level(std::string filepath)
 {

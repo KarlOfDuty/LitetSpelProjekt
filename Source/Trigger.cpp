@@ -71,7 +71,7 @@ bool Trigger::update(float dt)
 			{
 				for (int i = 0; i < objectsFound - objectsInside; i++)
 				{
-					activate();
+					activate(dt);
 				}
 				timer = 0;
 				triggered = true;
@@ -83,12 +83,12 @@ bool Trigger::update(float dt)
 				{
 					for (int i = 0; i < objectsFound; i++)
 					{
-						activate();
+						activate(dt);
 					}
 				}
 				else
 				{
-					activate();
+					activate(dt);
 				}
 				timer = 0;
 				triggered = true;
@@ -98,7 +98,7 @@ bool Trigger::update(float dt)
 			{
 				for (int i = 0; i < objectsInside - objectsFound; i++)
 				{
-					activate();
+					activate(dt);
 				}
 				timer = 0;
 				triggered = true;
@@ -110,12 +110,12 @@ bool Trigger::update(float dt)
 				{
 					for (int i = 0; i < objectsFound; i++)
 					{
-						activate();
+						activate(dt);
 					}
 				}
 				else
 				{
-					activate();
+					activate(dt);
 				}
 				timer = 0;
 				triggered = true;
@@ -127,12 +127,12 @@ bool Trigger::update(float dt)
 				{
 					for (int i = 0; i < objectsFound; i++)
 					{
-						activate();
+						activate(dt);
 					}
 				}
 				else
 				{
-					activate();
+					activate(dt);
 				}
 				timer = 0;
 				triggered = true;
@@ -144,12 +144,12 @@ bool Trigger::update(float dt)
 				{
 					for (int i = 0; i < objectsFound; i++)
 					{
-						activate();
+						activate(dt);
 					}
 				}
 				else
 				{
-					activate();
+					activate(dt);
 				}
 				timer = 0;
 				triggered = true;
@@ -169,14 +169,14 @@ bool Trigger::update(float dt)
 	return triggered;
 }
 //Activates the trigger
-void Trigger::activate()
+void Trigger::activate(float dt)
 {
 	if (settings.accociativeActions)
 	{
 		//Activate each command on their counterpart in targets
 		for (int i = 0; i < commands.size() && i < targets.size(); i++)
 		{
-			runCommand(i,i);
+			runCommand(i,i, dt);
 			//numberOfActivationsAllowed
 			if (settings.numberOfActivationsAllowed != -1)
 			{
@@ -191,7 +191,7 @@ void Trigger::activate()
 		{
 			for (int j = 0; j < targets.size(); j++)
 			{
-				runCommand(i,j);
+				runCommand(i,j, dt);
 				//numberOfActivationsAllowed
 				if (settings.numberOfActivationsAllowed != -1)
 				{
@@ -201,7 +201,7 @@ void Trigger::activate()
 		}
 	}
 }
-void Trigger::runCommand(int commandID, int targetID)
+void Trigger::runCommand(int commandID, int targetID, float dt)
 {
 	//Add new commands here
 	if (commands[commandID] == "hellogais")
@@ -258,7 +258,7 @@ void Trigger::runCommand(int commandID, int targetID)
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
 
 		enemy->setBossImmunity(false);
-		enemy->applyDamage(10);
+		enemy->applyDamage(30);
 		enemy->setBossImmunity(true);
 		if (enemy->getHealth() == 70)
 		{
@@ -276,9 +276,8 @@ void Trigger::runCommand(int commandID, int targetID)
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
 
 		enemy->setBossImmunity(false);
-		enemy->applyDamage(10);
+		enemy->applyDamage(30);
 		enemy->setBossImmunity(true);
-		std::cout << enemyBoss->getHealth() << std::endl;
 		if (enemy->getHealth() == 40)
 		{
 			enemyBoss->setPhase(3);
@@ -287,9 +286,10 @@ void Trigger::runCommand(int commandID, int targetID)
 
 		enemyBoss->loseTrackOfPlayer(true);
 	}
-	else if (commands[commandID] == "phase3" && targets[targetID]->type() == "Enemy")
+	else if (commands[commandID] == "finishingBlow" && targets[targetID]->type() == "Enemy")
 	{
-		std::cout << "meeeep" << std::endl;
+		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
+		enemyBoss->setChandelierMove();
 	}
 	else if (commands[commandID] == "playerUnderBoss" && targets[targetID]->type() == "Enemy")
 	{
