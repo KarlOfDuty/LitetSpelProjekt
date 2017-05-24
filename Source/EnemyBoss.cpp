@@ -459,7 +459,13 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			{
 				if (removeGroundTimer.getElapsedTime().asSeconds() >= 1.5 && removeGround)
 				{
-					allModels.erase(allModels.begin() + 0, allModels.begin() + 7);
+					allModels.erase(allModels.begin() + 0, allModels.begin() + 5);
+					allModels[0]->setModelMatrix({
+						15.0, 0.0, 0.0, 0.0,
+						0.0, 5.0, 0.0, 0.0,
+						0.0, 0.0, 5.0, 0.0,
+						45.0, 8.0, 0.0, 1.0
+					});
 					removeGround = false;
 				}
 
@@ -523,7 +529,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 			if (!platformCreated)
 			{
-				chandelierPos -= 8;
+				chandelierPos -= 6;
 				allModels.push_back(new Model(boxModel,
 				{
 					3.0, 0.0, 0.0, 0.0,
