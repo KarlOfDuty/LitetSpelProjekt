@@ -29,7 +29,7 @@ float PlayerButterfly::getJumpHeight()
 
 void PlayerButterfly::teleport()
 {
-
+	//not used
 }
 void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector<Projectile*> &allProjectiles, glm::vec2 position)
 {
