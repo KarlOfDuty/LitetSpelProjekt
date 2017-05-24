@@ -75,7 +75,7 @@ void main()
 	float specular = texture(gAlbedoSpec, texCoords).a;
 	vec3 ambient = texture(gAmbient, texCoords).rgb;
 	//Ambient is not used because of reasons
-	vec3 lighting = diffuse*0.9f;
+	vec3 lighting = diffuse*0.3f;
 	vec3 viewDir = normalize(viewPos - fragPos);
 
 	for(int i = 0; i < numberOfDirLights; i++)
