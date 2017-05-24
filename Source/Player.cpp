@@ -485,8 +485,10 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			{
 				this->setPos(prevPos);
 			}
-
-			tpCooldown.restart();
+			else
+			{
+				tpCooldown.restart();
+			}
 		}
 	}
 
