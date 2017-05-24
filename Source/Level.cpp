@@ -147,8 +147,8 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		in.read(reinterpret_cast<char*>(&rotation), sizeof(rotation));
 		in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
 
-		model->setPos(pos - glm::vec3(0,0,1000));
-		model->setScale(glm::vec3(1.0f));
+		model->setPos(pos);
+		model->setScale(scale);
 		model->setRotationMatrix(rotation);
 		model->rotate();
 		model->addMesh(mesh);
