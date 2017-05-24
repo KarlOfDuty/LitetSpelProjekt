@@ -46,7 +46,9 @@ private:
 	std::vector<glm::vec2> weakPoint;
 	std::vector<Trigger*> weakPointsArr;
 	Model* boxModel;
-	std::vector<Model*> debugWeakPointsBox;
+	//std::vector<Model*> debugWeakPointsBox;
+	Model* weakPointModel;
+	Model* chandelierModel;
 	std::vector<glm::vec4> corners;
 	std::vector<GameObject*> playerProjectiles;
 	std::vector<GameObject*> playerAndBoss;

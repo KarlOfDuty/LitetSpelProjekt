@@ -452,7 +452,7 @@ Level::Level()
 		,"models/cube/cubeGreen.obj"
 		,"models/Characters/Bird/BirdTest1.obj"
 	};
-	playerPos = glm::vec3(0,2,0);
+	playerPos = glm::vec3(14,4,0);
 }
 Level::Level(std::string filepath)
 {

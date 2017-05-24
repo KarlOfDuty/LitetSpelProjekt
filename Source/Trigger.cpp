@@ -244,7 +244,7 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
 
 		enemy->setBossImmunity(false);
-		enemy->applyDamage(10);
+		enemy->applyDamage(30);
 		enemy->setBossImmunity(true);
 		if (enemy->getHealth() == 70)
 		{
@@ -262,9 +262,8 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
 
 		enemy->setBossImmunity(false);
-		enemy->applyDamage(10);
+		enemy->applyDamage(30);
 		enemy->setBossImmunity(true);
-		std::cout << enemyBoss->getHealth() << std::endl;
 		if (enemy->getHealth() == 40)
 		{
 			enemyBoss->setPhase(3);

@@ -145,10 +145,10 @@ void EnemyManager::draw(Shader shader)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &allEnemies[i]->getModel()->getModelMatrix()[0][0]);
 		allEnemies[i]->draw(shader);
-		EnemyBoss* bird = dynamic_cast<EnemyBoss*>(allEnemies[i]);
-		if (bird != nullptr)
+		EnemyBoss* boss = dynamic_cast<EnemyBoss*>(allEnemies[i]);
+		if (boss != nullptr)
 		{
-			std::vector<Model*> temp = bird->getDebugModels();
+			std::vector<Model*> temp = boss->getDebugModels();
 			for (int i = 0; i < temp.size(); i++)
 			{
 				glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &temp[i]->getModelMatrix()[0][0]);
