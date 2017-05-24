@@ -22,9 +22,17 @@ GUI::GUI()
 	deadText.setOrigin(deadText.getGlobalBounds().left + round(deadText.getGlobalBounds().width / 2), deadText.getGlobalBounds().top + round(deadText.getGlobalBounds().height / 2));
 	deadText.setPosition(1280 / 2, 720 / 2);
 
+	bossText.setFont(deadFont);
+	bossText.setString("YOU WON, FUCKING GOOD JOB M8");
+	bossText.setCharacterSize(72);
+	bossText.setFillColor(sf::Color(20, 200, 20, 0));
+	bossText.setOrigin(bossText.getGlobalBounds().left + round(bossText.getGlobalBounds().width / 2), bossText.getGlobalBounds().top + round(bossText.getGlobalBounds().height / 2));
+	bossText.setPosition(1280 / 2, 720 / 2);
+
 	heartLeftImage.loadFromFile("sprites/leftHeart.png");
 	heartRightImage.loadFromFile("sprites/rightHeart.png");
 
+	bossIsKilled = false;
 }
 
 
@@ -33,7 +41,7 @@ GUI::~GUI()
 
 }
 
-void GUI::update(Player * player)
+void GUI::update(Player * player, EnemyManager* enemy)
 {
 	healthBar.clear();
 	for (int i = 0; i < player->getHealth(); i++)
@@ -76,6 +84,56 @@ void GUI::update(Player * player)
 		deadBox.setOutlineColor(newOutlineColor);
 		deadText.setFillColor(newTextColor);
 	}
+	if (enemy->getBossKill())
+	{
+		if (!bossIsKilled)
+		{
+			bossTextDelay.restart();
+			bossIsKilled = true;
+		}
+		if (bossTextDelay.getElapsedTime().asSeconds() >= 4 && bossTextDelay.getElapsedTime().asSeconds() <= 8)
+		{
+			sf::Color newColor = deadBox.getFillColor();
+			sf::Color newOutlineColor = deadBox.getOutlineColor();
+			sf::Color newTextColor = bossText.getFillColor();
+			if (newColor.a + 3 > 255)
+			{
+				newColor.a = 255;
+				newOutlineColor.a = 255;
+				newTextColor.a = 255;
+			}
+			else
+			{
+				newColor.a += 3;
+				newOutlineColor.a += 3;
+				newTextColor.a += 3;
+			}
+			deadBox.setFillColor(newColor);
+			deadBox.setOutlineColor(newOutlineColor);
+			bossText.setFillColor(newTextColor);
+		}
+		else if (bossTextDelay.getElapsedTime().asSeconds() >= 8)
+		{
+			sf::Color newColor = deadBox.getFillColor();
+			sf::Color newOutlineColor = deadBox.getOutlineColor();
+			sf::Color newTextColor = bossText.getFillColor();
+			if (newColor.a - 3 < 0)
+			{
+				newColor.a = 0;
+				newOutlineColor.a = 0;
+				newTextColor.a = 0;
+			}
+			else
+			{
+				newColor.a -= 3;
+				newOutlineColor.a -= 3;
+				newTextColor.a -= 3;
+			}
+			deadBox.setFillColor(newColor);
+			deadBox.setOutlineColor(newOutlineColor);
+			bossText.setFillColor(newTextColor);
+		}
+	}
 }
 
 void GUI::draw(sf::RenderTarget & target, sf::RenderStates states) const
@@ -86,4 +144,5 @@ void GUI::draw(sf::RenderTarget & target, sf::RenderStates states) const
 	}
 	target.draw(deadBox);
 	target.draw(deadText);
+	target.draw(bossText);
 }
