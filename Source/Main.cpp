@@ -65,6 +65,10 @@ glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / 
 glm::mat4 viewMatrix;
 glm::mat4 viewMatrixM;
 
+bool cameraOnBoss = false;
+bool resetCamera = false;
+sf::Clock cameraOnBossTimer;
+
 SoundSystem *soundSystem;
 Menu * menu;
 
@@ -105,8 +109,6 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "OpenGL", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
 
-	
-
 	//Activate the window
 	window.setActive(true);
 
@@ -143,7 +145,7 @@ int main()
 
 	//menu system
 	menu = new Menu(window.getSize().x, window.getSize().y, soundSystem);
-	viewMatrixM = playerCamera.update(player->getPos());
+	viewMatrixM = playerCamera.update(glm::vec3(0,2,0));
 
 	//quit = 0, menu 1 and game 2
 	int running = 1;
@@ -461,17 +463,29 @@ void update(sf::RenderWindow &window)
 	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
 
 	//Camera update, get new viewMatrix
-	if (aboveView)
+	if (enemyManager->getBossKill() && !cameraOnBoss)
 	{
-		playerCamera.update(player->getPos());
-		viewMatrix = glm::lookAt(
-			glm::vec3(0, 100, 0),
-			glm::vec3(1, 1, 1),
-			glm::vec3(0, 1, 0));
+		cameraOnBossTimer.restart();
+		cameraOnBoss = true;
+	}
+	if (!cameraOnBoss || cameraOnBossTimer.getElapsedTime().asSeconds() >= 8)
+	{
+		if (aboveView)
+		{
+			playerCamera.update(player->getPos());
+			viewMatrix = glm::lookAt(
+				glm::vec3(0, 100, 0),
+				glm::vec3(1, 1, 1),
+				glm::vec3(0, 1, 0));
+		}
+		else if (!aboveView)
+		{
+			viewMatrix = playerCamera.update(player->getPos());
+		}
 	}
 	else
 	{
-		viewMatrix = playerCamera.update(player->getPos());
+		viewMatrix = playerCamera.update(enemyManager->getBossPos());
 	}
 
 	if (endLevel)
@@ -482,7 +496,7 @@ void update(sf::RenderWindow &window)
 	}
 	levelManager.currentLevel->updateTriggers(dt);
 	playerCamera.frustumCulling(modelsToBeDrawn);
-	gui.update(player);
+	gui.update(player, enemyManager);
 }
 
 void updateM(sf::RenderWindow &window)
@@ -665,16 +679,16 @@ void loadLevel()
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
-	enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
-	/*enemyManager->createSlime(glm::vec3(19.0f, 7.0f, 0.0f));
-	enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
-	enemyManager->createGiantBat(glm::vec3(25.0f, 12.0f, 0.0f));
-	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
-	enemyManager->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
-	enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
-	enemyManager->createCrab(glm::vec3(-30.0f, 7.0f, 0.0f));
-	enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
-	enemyManager->createSkeleton(glm::vec3(30.0f, 7.0f, 0.0f), false);*/
+	//enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
+	//enemyManager->createSlime(glm::vec3(19.0f, 7.0f, 0.0f));
+	//enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
+	//enemyManager->createGiantBat(glm::vec3(-15.0f, 12.0f, 0.0f));
+	//enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
+	//enemyManager->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
+	//enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
+	//enemyManager->createCrab(glm::vec3(-30.0f, 7.0f, 0.0f));
+	//enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
+	//enemyManager->createSkeleton(glm::vec3(30.0f, 7.0f, 0.0f), false);
 
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 	//Some lights with random values
