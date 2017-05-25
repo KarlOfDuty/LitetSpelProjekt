@@ -13,7 +13,6 @@ void Level::loadModels()
 void Level::setupModels()
 {
 	readModels("models/level/meshInfo.bb",staticModels);
-	bool fsdfsdf = 0;
 }
 bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 {
@@ -35,13 +34,13 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		//in.getline(tempName, nrOfChars + 1, '\0');
 		name.append(tempName, nrOfChars);
 
-		std::cout << name << std::endl;
+		if (modelDebug)std::cout << name << std::endl;
 		delete tempName;
 
 		int nrOfCtrlPoints = 0;
 		in.read(reinterpret_cast<char*>(&nrOfCtrlPoints), sizeof(int));
 
-		std::cout << nrOfCtrlPoints << std::endl;
+		if (modelDebug)std::cout << nrOfCtrlPoints << std::endl;
 		Model *model = new Model();
 		Mesh *mesh = new Mesh();
 		mesh->name = name;
@@ -68,8 +67,10 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 				}
 				mesh->vertices[(k * 3) + h].pos = vec3;
 			}
-			//Read the Normals for the primitive
-			for (int h = 0; h < 3; h++) {
+
+			for (int h = 0; h < 3; h++)
+			{
+				//Read the Normals for the primitive
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 				if (modelDebug)
 				{
@@ -79,10 +80,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.z << std::endl;
 				}
 				mesh->vertices[(k * 3) + h].normal = vec3;
-			}
-			//Read the Tangents for the primitive
-			for (int h = 0; h < 3; h++)
-			{
+				//Read the Tangents for the primitive
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 				if (modelDebug)
 				{
@@ -92,10 +90,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.z << std::endl;
 				}
 				mesh->vertices[(k * 3) + h].tangent = vec3;
-			}
-			//Read the BiNormals for the primitive
-			for (int h = 0; h < 3; h++)
-			{
+				//Read the BiNormals for the primitive
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 				if (modelDebug)
 				{
@@ -204,7 +199,7 @@ void Level::setupTriggers(Player* player)
 		0, 0, 0.02, 0,
 		-4, 5, 0, 1
 	});
-	Model* heart = new Model("models/heart/ HeartContainer.obj", mat);
+	Model* heart = new Model("models/heart/HeartContainer.obj", mat);
 	glm::vec3 min, max;
 	heart->getMinMaxBouding(min, max);
 	min += glm::vec3(mat[3]);

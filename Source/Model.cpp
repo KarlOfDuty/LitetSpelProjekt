@@ -546,7 +546,9 @@ void Model::setupModel()
 		}
 		loadTextures(i);
 	}
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices.front(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 
+		vertices.size() * sizeof(Vertex), 
+		&vertices[0], GL_STATIC_DRAW);
 	//Position
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0));
