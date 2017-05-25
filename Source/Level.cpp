@@ -310,14 +310,14 @@ void Level::setupModels()
 void Level::setupMenuModels()
 {
 	//spinning map stuff
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	staticModels.push_back(new Model(*(modelLibrary.at(3)),
 	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
+		0.2, 0.0, 0.0, 0.0,
+		0.0, 0.2, 0.0, 0.0,
+		0.0, 0.0, 0.2, 0.0,
+		0.0, 1.0, 0.0, 1.0
 	}));
-	staticModels[0]->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-0.1f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	staticModels[0]->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-0.5f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
