@@ -387,13 +387,13 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		//If in air
 		if (!isOnGround)
 		{
-			velocityY -= 30 * dt;
+			velocityY -= 100 * dt;
 		}
 
 		//Maximum falling speed
-		if (velocityY < -30)
+		if (velocityY < -200)
 		{
-			velocityY = -30;
+			velocityY = -200;
 		}
 	}
 	else 
