@@ -148,13 +148,15 @@ void EnemyManager::draw(Shader shader)
 		EnemyBoss* boss = dynamic_cast<EnemyBoss*>(allEnemies[i]);
 		if (boss != nullptr)
 		{
-			std::vector<Model*> temp = boss->getDebugModels();
-			for (int i = 0; i < temp.size(); i++)
+			if (boss->getWeakPointActive() == true)
 			{
-				glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &temp[i]->getModelMatrix()[0][0]);
-				temp[i]->draw(shader);
+				std::vector<Model*> temp = boss->getTriggerModels();
+				for (int i = 0; i < temp.size(); i++)
+				{
+					glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &temp[i]->getModelMatrix()[0][0]);
+					temp[i]->draw(shader);
+				}
 			}
-
 		}
 	}
 	for (int i = 0; i < allProjectiles->size(); i++)

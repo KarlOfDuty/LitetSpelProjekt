@@ -16,7 +16,7 @@ void Level::setupModels()
 	//remove these
 	staticModels.push_back(new Model(*(modelLibrary.at(2)),
 	{
-		5.0, 0.0, 0.0, 0.0,
+		4.0, 0.0, 0.0, 0.0,
 		0.0, 5.0, 0.0, 0.0,
 		0.0, 0.0, 5.0, 0.0,
 		60.0, 13.0, 0.0, 1.0

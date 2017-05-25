@@ -87,6 +87,7 @@ void Enemy::applyDamage(int appliedDamage)
 	{
 		if (this->damageImmunity.getElapsedTime().asSeconds() >= immunityTime)
 		{
+			this->playerSeen = true;
 			this->health -= appliedDamage;
 			this->damageImmunity.restart();
 		}

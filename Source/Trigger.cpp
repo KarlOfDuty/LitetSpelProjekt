@@ -268,6 +268,7 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 			enemyBoss->setCreateTrigger(true);
 		}
 		enemyBoss->setRotateNow();
+		enemyBoss->setAttacking(false);
 		enemyBoss->setChargeCounter(0);
 	}
 	else if (commands[commandID] == "phase2" && targets[targetID]->type() == "Enemy")

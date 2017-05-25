@@ -3,10 +3,12 @@
 class EnemyBoss : public Enemy
 {
 private:
+	bool weakPointActive;
 	int chandelierPos;
 	bool isChandelierCreated;
 	bool blockExit;
 	int phase;
+
 	//phase 1
 	int chargeCounter;
 	sf::Clock dazeTimer;
@@ -46,7 +48,6 @@ private:
 	std::vector<glm::vec2> weakPoint;
 	std::vector<Trigger*> weakPointsArr;
 	Model* boxModel;
-	//std::vector<Model*> debugWeakPointsBox;
 	Model* weakPointModel;
 	Model* chandelierModel;
 	std::vector<glm::vec4> corners;
@@ -69,12 +70,14 @@ public:
 	void setPhase(int phase);
 	void setCreateTrigger(bool createTrigger);
 	void setChargeCounter(int amountOfCharges);
+	void setAttacking(bool isAttacking);
 	void setRotateToPlayer(Player *player);
 	void setRotateToOrigin();
 	void setRotateNow();
 	void setChandelierMove();
 	void loseTrackOfPlayer(bool playerIsFound);
+	bool getWeakPointActive();
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent);
 	virtual void updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player);
-	std::vector<Model*> getDebugModels();
+	std::vector<Model*> getTriggerModels();
 };

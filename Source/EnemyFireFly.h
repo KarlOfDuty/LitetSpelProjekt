@@ -6,12 +6,14 @@ private:
 	int attackRange;
 	sf::Clock attackCooldown;
 	std::vector<Projectile*> *allProjectiles;
+	Model* projectileModel;
 	//workarounds for collision
 	bool collides;
 	bool collidingWithGround;
 	bool returnToStart;
 	sf::Clock collisionTime;
 	glm::vec3 startPosition;
+	sf::Clock timeSinceCollision;
 public:
 	EnemyFireFly(int health, Model* enemyModel, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles);
 	virtual ~EnemyFireFly();

@@ -7,6 +7,7 @@ private:
 	sf::Clock attackCooldown;
 	sf::Clock waitTimer;
 	sf::Clock waitBeforeAttack;
+	sf::Clock jumpDelay;
 	float acceleration;
 	bool patrol;
 	bool rotateLeft;
