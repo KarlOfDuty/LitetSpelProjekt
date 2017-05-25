@@ -7,6 +7,10 @@ private:
 	bool isChandelierCreated;
 	bool blockExit;
 	int phase;
+	SoundSystem * sound;
+	bool sound1;
+	bool sound2;
+	bool sound3;
 	//phase 1
 	int chargeCounter;
 	sf::Clock dazeTimer;
@@ -60,7 +64,7 @@ private:
 	sf::Clock collisionTime;
 	glm::vec3 startPosition;
 public:
-	EnemyBoss(int health, Model* enemyModel, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles);
+	EnemyBoss(int health, Model* enemyModel, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles, SoundSystem * sound);
 	virtual ~EnemyBoss();
 	void setChandelierButton(Player* player);
 	void setWaterArea(Player* player, std::vector<Model*> &allModels);

@@ -63,6 +63,7 @@ float nearDistance = 0.01f;
 float farDistance = 10000;
 glm::mat4 projectionMatrix = glm::perspective(verticalFOV, (float)windowWidth / (float)windowHeight, nearDistance, farDistance);
 glm::mat4 viewMatrix;
+glm::mat4 viewMatrixM;
 
 bool cameraOnBoss = false;
 bool resetCamera = false;
@@ -83,7 +84,9 @@ std::vector<Model*> modelsToBeDrawn;
 
 //Functions
 void render();
+void renderM();
 void update(sf::RenderWindow &window);
+void updateM(sf::RenderWindow &window);
 void createGBuffer();
 void drawQuad();
 void loadLevel();
@@ -115,9 +118,16 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
+	//Sound system
+	soundSystem = new SoundSystem();
+	soundSystem->loadSound("audio/sharkman/bowRelease.flac", "bowRelease");
+	soundSystem->loadSound("audio/youdied.flac", "youDied");
+	soundSystem->loadSound("audio/enemys/boss.flac", "wierdScreemFromBoss");
+	//soundSystem->playMusic("audio/music/never.flac");
+
 	////Characters
 	player = new Player();
-	enemyManager = new EnemyManager();
+	enemyManager = new EnemyManager(soundSystem);
 
 	//Event handler
 	eventHandler = EventHandler();
@@ -134,14 +144,11 @@ int main()
 
 	eventHandler = EventHandler();
 
-	//Sound system
-	soundSystem = new SoundSystem();
-	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
-	soundSystem->loadSound("audio/youdied.flac", "youDied");
-	//soundSystem->playMusic("audio/music/never.flac");
+
 
 	//menu system
 	menu = new Menu(window.getSize().x, window.getSize().y, soundSystem);
+	viewMatrixM = playerCamera.update(glm::vec3(0,2,0));
 
 	//quit = 0, menu 1 and game 2
 	int running = 1;
@@ -165,9 +172,19 @@ int main()
 			
 			//Clear the buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-			deltaClock.restart();
 
+			if (!firstFrame)
+			{
+				updateM(window);
+			}
+			else
+			{
+				deltaClock.restart();
+				firstFrame = false;
+			}
+
+			window.setActive(true);
+			renderM();
 			window.setActive(false);
 
 			window.pushGLStates();
@@ -179,6 +196,10 @@ int main()
 		else if(running == 2)
 		{
 			running = eventHandler.handleEvents(window, player, soundSystem, menu);
+			if (running == 1)
+			{
+				menu->pause();
+			}
 			//Clear the buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			if (!firstFrame)
@@ -319,6 +340,119 @@ void render()
 	drawQuad();
 }
 
+void renderM()
+{
+	//Render depth of scene to texture (from light's perspective)
+	//Get light projection/view matrix.
+	glm::mat4 lightProjection;
+	glm::mat4 lightView;
+	std::vector<glm::mat4> lightSpaceMatrix;
+	GLfloat nearPlane = 0.01f;
+	GLfloat farPlane = 30.0f;
+	lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, nearPlane, farPlane);
+	glCullFace(GL_FRONT);
+	for (int i = 0; i < directionalLights.size(); i++)
+	{
+		lightSpaceMatrix.push_back(glm::mat4());
+		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*10.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
+		lightSpaceMatrix[i] = lightProjection * lightView;
+		//Render scene from light's point of view
+		shadowShader.use();
+		glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, ("lightSpaceMatrix[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix[i]));
+		glUniform1i(glGetUniformLocation(shadowShader.program, "index"), i);
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO[i]);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		for (int j = 0; j < levelManager.currentMenu->getStaticModels().size(); j++)
+		{
+			glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &levelManager.currentMenu->getStaticModels()[j]->getModelMatrix()[0][0]);
+			levelManager.currentMenu->getStaticModels()[j]->draw(shadowShader);
+		}
+		//glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel().getModelMatrix()[0][0]);
+		//enemyManager->draw(shadowShader);
+		//if (player->playerIsDead() != true)
+		//{
+		//	player->draw(shadowShader);
+		//}
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, windowWidth, windowHeight);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+	glCullFace(GL_BACK);
+	//Geometry pass
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	deferredGeometryPass.use();
+
+	//View and Projection Matrix
+	GLint viewID = glGetUniformLocation(deferredGeometryPass.program, "view");
+	glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
+	GLint projectionID = glGetUniformLocation(deferredGeometryPass.program, "projection");
+	glUniformMatrix4fv(projectionID, 1, GL_FALSE, &projectionMatrix[0][0]);
+
+	//Draw functions
+
+	//Only potentially visible static models are drawn
+	for (int i = 0; i < levelManager.currentMenu->getStaticModels().size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &levelManager.currentMenu->getStaticModels()[i]->getModelMatrix()[0][0]);
+		levelManager.currentMenu->getStaticModels().at(i)->draw(deferredGeometryPass);
+	}
+	std::vector<Model*> dynamicModels = levelManager.currentMenu->getDynamicModels();
+	for (int i = 0; i < dynamicModels.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
+		dynamicModels.at(i)->draw(deferredGeometryPass);
+	}
+	//if (player->playerIsDead() != true)
+	//{
+	//	player->draw(deferredGeometryPass);
+	//}
+	//enemyManager->draw(deferredGeometryPass);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//Lighting pass
+	deferredLightingPass.use();
+
+	//Bind all the textures
+	int textureID = 0;
+	glActiveTexture(GL_TEXTURE0 + textureID++);
+	glBindTexture(GL_TEXTURE_2D, gPosition);
+	glActiveTexture(GL_TEXTURE0 + textureID++);
+	glBindTexture(GL_TEXTURE_2D, gNormal);
+	glActiveTexture(GL_TEXTURE0 + textureID++);
+	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+	glActiveTexture(GL_TEXTURE0 + textureID++);
+	glBindTexture(GL_TEXTURE_2D, gAmbient);
+	for (int i = 0; i < directionalLights.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + textureID++);
+		glBindTexture(GL_TEXTURE_2D, depthMap[i]);
+	}
+	//Send all lights to the shader
+	for (GLuint i = 0; i < pointLights.size(); i++)
+	{
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].position").c_str()), 1, &pointLights[i]->pos[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].colour").c_str()), 1, &pointLights[i]->colour[0]);
+		// Linear and quadratic for calculation of the lights radius
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].linear").c_str()), pointLights[i]->linear);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].quadratic").c_str()), pointLights[i]->quadratic);
+	}
+	for (GLuint i = 0; i < directionalLights.size(); i++)
+	{
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].dir").c_str()), 1, &directionalLights[i]->getDirection()[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].colour").c_str()), 1, &directionalLights[i]->getColour()[0]);
+		glUniformMatrix4fv(glGetUniformLocation(deferredLightingPass.program, ("lightSpaceMatrix[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix[i]));
+	}
+	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfPointLights"), pointLights.size());
+	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfDirLights"), directionalLights.size());
+	glUniform3fv(glGetUniformLocation(deferredLightingPass.program, "viewPos"), 1, &playerCamera.getCameraPos()[0]);
+	//Draw a fullscreen quad combining the information
+	drawQuad();
+}
+
 //Update function
 void update(sf::RenderWindow &window)
 {
@@ -326,7 +460,7 @@ void update(sf::RenderWindow &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemyManager->getAllEnemies());
+		player->update(window, dt, levelManager.currentLevel->getStaticModels(), enemyManager->getAllEnemies());
 	}
 
 	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
@@ -366,6 +500,47 @@ void update(sf::RenderWindow &window)
 	levelManager.currentLevel->updateTriggers(dt);
 	playerCamera.frustumCulling(modelsToBeDrawn);
 	gui.update(player, enemyManager);
+}
+
+void updateM(sf::RenderWindow &window)
+{
+	dt = deltaClock.restart().asSeconds();
+	//Update player if not dead
+	//if (!player->playerIsDead())
+	//{
+	//	player->update(window, dt, levelManager.currentLevel->getStaticModels(), enemyManager->getAllEnemies());
+	//}
+
+	//enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
+
+	//Camera update, get new viewMatrix
+	//if (aboveView)
+	//{
+		viewMatrix = viewMatrixM;
+		//viewMatrix = glm::lookAt(
+		//	glm::vec3(1, 20, 0),
+		//	glm::vec3(1, 1, 0.01),
+		//	glm::vec3(0, 0.01, 0));
+		//viewMatrix = glm::lookAt(
+		//	glm::vec3(1, 0, 0),
+		//	glm::vec3(0, 1, 0),
+		//	glm::vec3(0, 0, 1));
+	//}
+	//else
+	//{
+	//	viewMatrix = playerCamera.update(player->getPos());
+	//}
+
+	if (endLevel)
+	{
+		unloadLevel();
+		loadLevel();
+		endLevel = false;
+	}
+	levelManager.currentMenu->spinMenu(dt);
+	//levelManager.currentLevel->updateTriggers(dt);
+	//playerCamera.frustumCulling(modelsToBeDrawn);
+	//gui.update(player);
 }
 
 //Create the buffer
@@ -495,12 +670,19 @@ void drawQuad()
 
 void loadLevel()
 {
+	//menu
+	levelManager.currentMenu->loadModels();
+	levelManager.currentMenu->setupMenuModels();
+	modelsToBeDrawn = levelManager.currentMenu->getStaticModels();
+	playerCamera.setupQuadTree(levelManager.currentMenu->getStaticModels());
+	//menu/
+
 	levelManager.currentLevel->loadModels();
 	levelManager.currentLevel->setupModels();
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
-	//enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
+	enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
 	//enemyManager->createSlime(glm::vec3(19.0f, 7.0f, 0.0f));
 	//enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
 	//enemyManager->createGiantBat(glm::vec3(-15.0f, 12.0f, 0.0f));

@@ -2,7 +2,10 @@
 LevelManager::LevelManager()
 {
 	levels.push_back(new Level());
-	levelIndex = 0;
+	levels.push_back(new Level());
+	menuIndex = 0;
+	levelIndex = 1;
+	currentMenu = levels[menuIndex];
 	currentLevel = levels[levelIndex];
 }
 
