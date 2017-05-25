@@ -32,6 +32,8 @@ std::vector<meshInfo*> meshes;
 
 struct skelInfo {
 
+	int animationIndex;
+
 	int nrOfClusters;
 	string jointName;
 	glm::vec4 globalBindPose0;
@@ -103,7 +105,7 @@ bool readMesh(const char* filePath)
 
 		mesh->name = name;
 
-		for (int k = 0; k < nrOfCtrlPoints; k++) 
+		for (int k = 0; k < nrOfCtrlPoints; k++)
 		{
 			vec3 = glm::vec3(0);
 			if (modelDebug)
@@ -112,7 +114,7 @@ bool readMesh(const char* filePath)
 				cout << "Pos: " << endl;
 			}
 			//Read the Vertecies for the primitive
-			for (int h = 0; h < 3; h++) 
+			for (int h = 0; h < 3; h++)
 			{
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 				if (modelDebug)
@@ -136,11 +138,8 @@ bool readMesh(const char* filePath)
 					cout << vec3.z << endl;
 				}
 				mesh->norms.push_back(vec3);
-			}
 
-			//Read the Tangents for the primitive
-			for (int h = 0; h < 3; h++) 
-			{
+				//Read the Tangents for the primitive
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 				if (modelDebug)
 				{
@@ -150,10 +149,9 @@ bool readMesh(const char* filePath)
 					cout << vec3.z << endl;
 				}
 				mesh->tangent.push_back(vec3);
-			}
-			//Read the BiNormals for the primitive
-			for (int h = 0; h < 3; h++) 
-			{
+
+				//Read the BiNormals for the primitive
+
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 				if (modelDebug)
 				{
@@ -166,7 +164,7 @@ bool readMesh(const char* filePath)
 			}
 
 			//Read the UVs for the primitive
-			for (int h = 0; h < 3; h++) 
+			for (int h = 0; h < 3; h++)
 			{
 				in.read(reinterpret_cast<char*>(&vec2), sizeof(vec2));
 				if (modelDebug)
@@ -219,6 +217,10 @@ void loadSkeleton(const char* filePath) {
 	//First nrOfClusters
 	ifstream in(filePath, ios::binary);
 	int clusterNr = 0;
+
+	int indexNr = 0;
+	in.read(reinterpret_cast<char*>(&indexNr), sizeof(int));
+
 	in.read(reinterpret_cast<char*>(&nrOfKeyframes), sizeof(int));
 
 	in.read(reinterpret_cast<char*>(&clusterNr), sizeof(int));
@@ -239,7 +241,7 @@ void loadSkeleton(const char* filePath) {
 		skelInfo *info = new skelInfo;
 		info->nrOfKeys = nrOfKeyframes;
 		info->jointName = name;
-
+		info->animationIndex = indexNr;
 		glm::vec4 globalBindVec0;
 		glm::vec4 globalBindVec1;
 		glm::vec4 globalBindVec2;
