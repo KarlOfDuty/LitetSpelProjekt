@@ -127,7 +127,7 @@ int main()
 
 	////Characters
 	player = new Player();
-	enemyManager = new EnemyManager();
+	enemyManager = new EnemyManager(soundSystem);
 
 	//Event handler
 	eventHandler = EventHandler();

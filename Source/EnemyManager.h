@@ -31,8 +31,9 @@ private:
 	Model* skeletonModel;
 	Model* crabModel;
 	Model* fireflyModel;
+	SoundSystem * sound;
 public:
-	EnemyManager();
+	EnemyManager(SoundSystem * sound);
 	~EnemyManager();
 	void createSlime(glm::vec3 enemyStartPos);
 	void createToad(glm::vec3 enemyStartPos);
