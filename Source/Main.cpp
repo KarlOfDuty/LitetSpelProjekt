@@ -130,7 +130,6 @@ int main()
 	loadLevel();
 	//Create the gbuffer textures and lights
 	createGBuffer();
-	player->setStaticModels(levelManager.currentLevel->getStaticModels());
 
 	eventHandler = EventHandler();
 
@@ -326,10 +325,10 @@ void update(sf::RenderWindow &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window, dt, levelManager.currentLevel->getStaticModels() , enemyManager->getAllEnemies());
+		player->update(window, dt, levelManager.currentLevel->getCollisionBoxes() , enemyManager->getAllEnemies());
 	}
 
-	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
+	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getCollisionBoxes(), player);
 
 	//Camera update, get new viewMatrix
 	if (enemyManager->getBossKill() && !cameraOnBoss)
@@ -495,8 +494,7 @@ void drawQuad()
 
 void loadLevel()
 {
-	levelManager.currentLevel->loadModels();
-	levelManager.currentLevel->setupModels();
+	levelManager.currentLevel->loadLevel();
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
@@ -522,6 +520,7 @@ void loadLevel()
 		glm::vec3(1.0f, -2.0f, 0.0f),
 		glm::vec3(1.0f, 1.0f, 1.0f)));
 	player->setPos(levelManager.currentLevel->getPlayerPos());
+	player->setStaticModels(levelManager.currentLevel->getCollisionBoxes());
 }
 void unloadLevel()
 {

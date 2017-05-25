@@ -8,11 +8,43 @@ void Level::loadModels()
 	//	modelLibrary.push_back(new Model(modelFilePaths[i]));
 	//}
 }
-//Places the loaded models in the world, keeping pointers to the original 
-//meshes to avoid copying large amounts of data in memory (obj only)
-void Level::setupModels()
+void Level::loadLevel()
 {
-	readModels("models/level/meshInfo.bb",staticModels);
+	//Temporary containers
+	std::ifstream file(filePath);
+	std::string str = "";
+
+	//Gets a single line of the file at a time
+	while (std::getline(file, str))
+	{
+		std::stringstream line;
+		std::string path;
+		//Takes the first word of the line and compares it to variable names
+		line << str;
+		line >> str;
+		std::cout << str << std::endl;
+		if (str == "staticModels")
+		{
+			line >> path;
+			readModels(path.c_str(), staticModels);
+		}
+		else if (str == "dynamicModels")
+		{
+			line >> path;
+			readModels(path.c_str(), dynamicModels);
+		}
+		else if (str == "colliders")
+		{
+			line >> path;
+			readModels(path.c_str(), colliders);
+			if(showColliders)readModels(path.c_str(), staticModels);
+		}
+		else if (str == "triggers")
+		{
+			line >> path;
+			//readModels(path.c_str(), staticModels);
+		}
+	}
 }
 bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 {
@@ -67,7 +99,6 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 				}
 				mesh->vertices[(k * 3) + h].pos = vec3;
 			}
-
 			for (int h = 0; h < 3; h++)
 			{
 				//Read the Normals for the primitive
@@ -156,16 +187,9 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 //Delete all models from memory
 void Level::unloadModels()
 {
-	for (int i = 0; i < modelLibrary.size(); i++)
-	{
-		//Only the model library deletes it's meshes as the others only have pointers to these meshes
-		modelLibrary[i]->deleteMeshes();
-		delete modelLibrary[i];
-	}
-	modelLibrary.clear();
-
 	for (int i = 0; i < staticModels.size(); i++)
 	{
+		staticModels[i]->deleteMeshes();
 		delete staticModels[i];
 	}
 	staticModels.clear();
@@ -175,6 +199,13 @@ void Level::unloadModels()
 		delete dynamicModels[i];
 	}
 	dynamicModels.clear();
+
+	for (int i = 0; i < colliders.size(); i++)
+	{
+		colliders[i]->deleteMeshes();
+		delete colliders[i];
+	}
+	colliders.clear();
 }
 //Sets the triggerboxes for this level
 void Level::setupTriggers(Player* player)
@@ -256,6 +287,10 @@ std::vector<Model*>& Level::getStaticModels()
 {
 	return staticModels;
 }
+std::vector<Model*>& Level::getCollisionBoxes()
+{
+	return colliders;
+}
 std::vector<Model*> Level::getDynamicModels()
 {
 	return dynamicModels;
@@ -271,19 +306,13 @@ glm::vec3 Level::getPlayerPos()
 //Constructors
 Level::Level()
 {
-	modelFilePaths =
-	{
-		"models/cube/cube.obj"
-		,"models/sphere/sphere.obj"
-		,"models/cube/cubeGreen.obj"
-		,"models/Characters/Bird/BirdTest1.obj"
-		,"models/heart/HeartContainer.obj"
-	};
+	this->filePath = "";
 	playerPos = glm::vec3(14,4,0);
 }
-Level::Level(std::string filepath)
+Level::Level(std::string filePath)
 {
-	//Imports this level from file
+	this->filePath = filePath;
+	playerPos = glm::vec3(14, 4, 0);
 }
 //Destructor
 Level::~Level()

@@ -3,21 +3,24 @@
 #include "Model.h"
 #include "Trigger.h"
 #include <SFML/Window.hpp>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 #include "SoundSystem.h"
 //Turns on console feedback for reading of model files
 class Level
 {
 private:
+
 	glm::vec3 playerPos = glm::vec3(0,2,0);
-	std::vector<Model*> modelLibrary;
 	std::vector<Model*> staticModels;
-	std::vector<Model*> collidables;
+	std::vector<Model*> colliders;
 	std::vector<Model*> dynamicModels;
 	std::vector<Trigger*> triggerBoxes;
-	std::vector<std::string> modelFilePaths;
 public:
+	std::string filePath;
 	void loadModels();
-	void setupModels();
+	void loadLevel();
 	bool readModels(const char* filePath, std::vector<Model*> &modelVector);
 	void unloadModels();
 	void setupTriggers(Player* player);
@@ -27,10 +30,11 @@ public:
 	void stopMusic(SoundSystem *soundSystem);
 	std::vector<Model*> getDynamicModels();
 	std::vector<Model*>& getStaticModels();
+	std::vector<Model*>& getCollisionBoxes();
 	std::vector<Trigger*> getTriggers();
 	glm::vec3 getPlayerPos();
 	Level();
-	Level(std::string filepath);
+	Level(std::string filePath);
 	~Level();
 };
 #endif

@@ -37,7 +37,24 @@ struct Material
 	//Searching Functions
 	static int findMaterial(std::string name, std::vector<Material> materials);
 };
-//A single vertex (corner) in a face.
+struct Joint
+{
+	int animationIndex;
+	int nrOfClusters;
+	std::string jointName;
+	glm::mat4 globalBindPosMat;
+	std::vector<glm::mat4> transformMat;
+
+	int nrOfKeys;
+};
+struct Weight
+{
+	int nrOfIndices;
+	std::vector<int> indexPos;
+	std::vector<glm::vec3> polygonVerteciesIndex;
+	std::vector<glm::ivec4> controllers;
+	std::vector<glm::vec4> weightsInfluence;
+};
 struct Vertex
 {
 	glm::vec3 pos;
@@ -57,12 +74,19 @@ struct Mesh
 static bool modelDebug = false;
 //Turns on console feedback for reading of material files
 static bool matDebug = false;
+//Shows collision boxes
+static bool showColliders = true;
 class Model : public GameObject
 {
 private:
+	glm::mat4 currentJointTrans[100];
+	int nrOfKeyframes = 0;
+	int currentFrame = 0;
+
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
 	std::vector<Mesh*> meshes;
+	std::vector<Joint*> skeleton;
 	std::vector<glm::vec2> allPoints;
 	glm::vec3 minBounding;
 	glm::vec3 maxBounding;

@@ -52,7 +52,6 @@ struct skelInfo {
 
 	int nrOfKeys;
 };
-std::vector<skelInfo*> skeleton;
 
 struct weights {
 	int nrOfIndices;
@@ -82,7 +81,8 @@ bool readMesh(const char* filePath)
 	int nrOfMeshes = 0;
 	in.read(reinterpret_cast<char*>(&nrOfMeshes), sizeof(int));
 
-	for (int i = 0; i < nrOfMeshes; i++) {
+	for (int i = 0; i < nrOfMeshes; i++) 
+	{
 		//Get the name
 		string name = "";
 		int nrOfChars = 0;

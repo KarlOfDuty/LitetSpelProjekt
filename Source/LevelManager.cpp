@@ -1,7 +1,7 @@
 #include "LevelManager.h"
 LevelManager::LevelManager()
 {
-	levels.push_back(new Level());
+	levels.push_back(new Level("config/level1.ini"));
 	levelIndex = 0;
 	currentLevel = levels[levelIndex];
 }
