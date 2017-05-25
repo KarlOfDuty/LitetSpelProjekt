@@ -117,7 +117,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 		collisionTime.restart();
 	}
 
-	if (enemyPosCurrent.y <= 3)
+	if (enemyPosCurrent.y <= groundPos+3)
 	{
 		goUp = true;
 	}

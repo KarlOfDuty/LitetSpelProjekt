@@ -3,6 +3,9 @@
 class EnemyBoss : public Enemy
 {
 private:
+	int chandelierPos;
+	bool isChandelierCreated;
+	bool blockExit;
 	int phase;
 	SoundSystem * sound;
 	bool sound1;
@@ -27,8 +30,12 @@ private:
 	Model* projectileModel;
 	bool removeGround;
 	sf::Clock removeGroundTimer;
+	bool inRightCorner;
 
 	//phase 3
+	bool platformCreated;
+	bool moveChandelier;
+	sf::Clock timeBeforeDeath;
 
 	//rotation stuff
 	bool rotateLeft;
@@ -38,11 +45,14 @@ private:
 
 	//trigger stuff
 	bool createTrigger;
+	std::vector<Trigger*> chandelierButton;
 	std::vector<Trigger*> waterArea;
 	std::vector<glm::vec2> weakPoint;
 	std::vector<Trigger*> weakPointsArr;
 	Model* boxModel;
-	std::vector<Model*> debugWeakPointsBox;
+	//std::vector<Model*> debugWeakPointsBox;
+	Model* weakPointModel;
+	Model* chandelierModel;
 	std::vector<glm::vec4> corners;
 	std::vector<GameObject*> playerProjectiles;
 	std::vector<GameObject*> playerAndBoss;
@@ -56,14 +66,17 @@ private:
 public:
 	EnemyBoss(int health, Model* enemyModel, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles, SoundSystem * sound);
 	virtual ~EnemyBoss();
+	void setChandelierButton(Player* player);
 	void setWaterArea(Player* player, std::vector<Model*> &allModels);
 	void weakPoints(std::vector<GameObject*> allProjectiles, std::string command, int amountOfTimes);
 	void editWeakPoint(float xValue, float yValue, Player* player);
 	void setPhase(int phase);
 	void setCreateTrigger(bool createTrigger);
 	void setChargeCounter(int amountOfCharges);
-	void setRotate(Player *player);
+	void setRotateToPlayer(Player *player);
+	void setRotateToOrigin();
 	void setRotateNow();
+	void setChandelierMove();
 	void loseTrackOfPlayer(bool playerIsFound);
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent);
 	virtual void updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player);
