@@ -222,19 +222,19 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 {
 
 	groundCheck();
-	if (sound1 == true)
+	if (sound1 == true && phase == 1)
 	{
-		this->sound->loadSound("audio/youdied.flac", "youDied");
+		this->sound->playSound("wierdScreemFromBoss");
 		sound1 = false;
 	}
-	if (sound2 == true)
+	if (sound2 == true && phase == 2)
 	{
-		this->sound->loadSound("audio/youdied.flac", "youDied");
+		this->sound->playSound("wierdScreemFromBoss");
 		sound2 = false;
 	}
-	if (sound3 == true)
+	if (sound3 == true && phase == 3)
 	{
-		this->sound->loadSound("audio/youdied.flac", "youDied");
+		this->sound->playSound("wierdScreemFromBoss");
 		sound3 = false;
 	}
 	if (collidedFrom.y > 0)
