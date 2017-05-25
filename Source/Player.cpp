@@ -33,6 +33,8 @@ Player::Player()
 	this->playerCharacters[2] = new PlayerButterfly(butterflyModel, false);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
+	this->goingLeft = false;
+	this->goingRight = true;
 
 	allAttackBoxes = std::vector<Projectile*>();
 	allArrowAttackBoxes = std::vector<Projectile*>();
@@ -147,7 +149,7 @@ void Player::lightAttackPressed(sf::Window &window)
 		int middleScreenX = window.getSize().x / 2;
 		glm::vec2 position;
 		glm::vec2 direction;
-		if (mouseX >= middleScreenX)
+ 		if (goingRight)
 		{
 			position = glm::vec2(getPos().x + 1.0f, getPos().y);
 			direction = glm::vec2(1, 0);
@@ -191,7 +193,7 @@ void Player::heavyAttackPressed(sf::Window &window)
 		int middleScreenX = window.getSize().x / 2;
 		glm::vec2 position;
 		glm::vec2 direction;
-		if (mouseX >= middleScreenX)
+		if (goingRight)
 		{
 			position = glm::vec2(getPos().x + 1.0f, getPos().y);
 			direction = glm::vec2(1, 0);
