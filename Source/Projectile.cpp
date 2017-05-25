@@ -61,6 +61,11 @@ glm::vec2 Projectile::getPosition()
 	return this->position;
 }
 
+int Projectile::getDamage()
+{
+	return damage;
+}
+
 void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 playerPos)
 {
 	//Update only if there is has been no collision
@@ -237,7 +242,7 @@ void Projectile::draw(Shader shader)
 	}
 }
 
-void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate, bool shouldDelete)
+void Projectile::shoot(Model* projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate, bool shouldDelete)
 {
 	//Copy info supplied
 	position = startPos;
@@ -245,6 +250,7 @@ void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 pro
 	direction = projectileDirection;
 	retardation = projectileRetardation;
 	deleteOnImpact = shouldDelete;
+	damage = projectileDamage;
 	enemyMeleeAttack = false;
 	//Create new modelmat for model
 	glm::mat4 modelMat({
@@ -286,12 +292,13 @@ void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 pro
 	timeSinceCollision.restart();
 }
 
-void Projectile::aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
+void Projectile::aoe(Model* projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
 {
 	//Copy info supplied
 	position = startPos;
 	scale = projectileScale;
 	direction = projectileDirection;
+	damage = projectileDamage;
 	deleteOnImpact = false;
 	enemyMeleeAttack = false;
 
@@ -328,12 +335,13 @@ void Projectile::aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 proje
 	timeSinceCollision.restart();
 }
 
-void Projectile::melee(Model * projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
+void Projectile::melee(Model * projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
 {
 	//Copy info supplied
 	position = startPos;
 	scale = projectileScale;
 	direction = projectileDirection;
+	damage = projectileDamage;
 	deleteOnImpact = false;
 	enemyMeleeAttack = false;
 
@@ -370,12 +378,13 @@ void Projectile::melee(Model * projectileModel, glm::vec2 startPos, glm::vec2 pr
 	timeSinceCollision.restart();
 }
 
-void Projectile::enemyMelee(Model * projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
+void Projectile::enemyMelee(Model * projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
 {
 	//Copy info supplied
 	position = startPos;
 	scale = projectileScale;
 	direction = projectileDirection;
+	damage = projectileDamage;
 	deleteOnImpact = false;
 	enemyMeleeAttack = true;
 	//Create new modelmat for model

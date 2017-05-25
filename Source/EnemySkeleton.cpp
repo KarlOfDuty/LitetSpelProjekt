@@ -30,7 +30,7 @@ void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyP
 				glm::vec3 scale(0.0f, 2.0f, 1.0f);
 				glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-1, 0) : glm::vec2(1, 0);
 				Projectile* temp = new Projectile;
-				temp->enemyMelee(box, getPos(), direction, 10.0f, scale);
+				temp->enemyMelee(box, getDamage(), getPos(), direction, 10.0f, scale);
 				allProjectiles->push_back(temp);
 				attack = false;
 				attackCooldown.restart();

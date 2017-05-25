@@ -50,7 +50,7 @@ void PlayerShark::shootArrow(std::vector<Projectile*>& allProjectiles, glm::vec2
 			{
 				if (!allProjectiles[i]->isInUse())
 				{
-					allProjectiles[i]->shoot(arrowModel, position, direction, glm::vec2(5.0f, 30.0f), arrowVelocity, scale);
+					allProjectiles[i]->shoot(arrowModel, 3 ,position, direction, glm::vec2(5.0f, 30.0f), arrowVelocity, scale);
 					i = (int)allProjectiles.size();
 				}
 			}
@@ -58,7 +58,7 @@ void PlayerShark::shootArrow(std::vector<Projectile*>& allProjectiles, glm::vec2
 		else
 		{
 			Projectile* temp = new Projectile();
-			temp->shoot(arrowModel, position, direction, glm::vec2(5.0f, 30.0f), arrowVelocity, scale);
+			temp->shoot(arrowModel, 3, position, direction, glm::vec2(5.0f, 30.0f), arrowVelocity, scale);
 			allProjectiles.push_back(temp);
 		}
 		attackCooldown.restart();

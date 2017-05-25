@@ -34,7 +34,7 @@ void EnemyFireFly::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPo
 				{
 					if (!allProjectiles->at(i)->isInUse())
 					{
-						allProjectiles->at(i)->shoot(getModel(), getPos(), direction, glm::vec2(), 10.f, glm::vec3(0.2, 0.2, 0.2),false,true);
+						allProjectiles->at(i)->shoot(getModel(), getDamage(), getPos(), direction, glm::vec2(), 10.f, glm::vec3(0.2, 0.2, 0.2),false,true);
 						i = (int)allProjectiles->size();
 					}
 				}
@@ -43,7 +43,7 @@ void EnemyFireFly::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPo
 		else
 		{
 			Projectile* temp = new Projectile;
-			temp->shoot(getModel(), getPos(), direction, glm::vec2(), 10.f, glm::vec3(0.2, 0.2, 0.2),false,true);
+			temp->shoot(getModel(), getDamage(), getPos(), direction, glm::vec2(), 10.f, glm::vec3(0.2, 0.2, 0.2),false,true);
 			allProjectiles->push_back(temp);
 		}
 		attackCooldown.restart();

@@ -10,6 +10,7 @@ class Projectile : public GameObject
 {
 private:
 	Model* model;
+	int damage;
 	float rotation;
 	glm::vec2 position;
 	glm::vec2 velocity;
@@ -40,12 +41,13 @@ public:
 	bool isCollidingWithWorld();
 	void disableArrow();
 	glm::vec2 getPosition();
+	int getDamage();
 	void update(float dt, std::vector<Model*> &allObjects, glm::vec2 playerPos);
 	void draw(Shader shader);
-	void shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate = true, bool deleteOnImpact = false);
-	void aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale);
-	void melee(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale);
-	void enemyMelee(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale);
+	void shoot(Model* projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate = true, bool deleteOnImpact = false);
+	void aoe(Model* projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale);
+	void melee(Model* projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale);
+	void enemyMelee(Model* projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale);
 	void collision(std::vector<Model*> &allObjects);
 };
 

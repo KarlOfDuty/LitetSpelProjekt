@@ -195,7 +195,7 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 				{
 					if (!allProjectiles->at(i)->isInUse())
 					{
-						allProjectiles->at(i)->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.2, 0.2, 0.2), false, true);
+						allProjectiles->at(i)->shoot(projectileModel, getDamage(), getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.2, 0.2, 0.2), false, true);
 						i = (int)allProjectiles->size();
 					}
 				}
@@ -204,7 +204,7 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 		else
 		{
 			Projectile* temp = new Projectile;
-			temp->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.2, 0.2, 0.2), false, true);
+			temp->shoot(projectileModel, getDamage(), getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.2, 0.2, 0.2), false, true);
 			allProjectiles->push_back(temp);
 		}
 		attackCooldown.restart();

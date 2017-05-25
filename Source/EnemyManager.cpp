@@ -131,7 +131,7 @@ void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allMo
 			{
 				if (collision::collision(arrowPoints, player->getPoints()))
 				{
-					player->applyDamage(1);
+					player->applyDamage(allProjectiles->at(i)->getDamage());
 					allProjectiles->at(i)->disableArrow();
 				}
 			}
