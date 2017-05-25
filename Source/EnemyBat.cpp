@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyBat::EnemyBat(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
+EnemyBat::EnemyBat(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	swoopAttack = true;
 	startPosition = enemyStartPos;

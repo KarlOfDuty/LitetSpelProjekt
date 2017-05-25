@@ -116,6 +116,13 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
+	//Sound system
+	soundSystem = new SoundSystem();
+	soundSystem->loadSound("audio/sharkman/bowRelease.flac", "bowRelease");
+	soundSystem->loadSound("audio/youdied.flac", "youDied");
+	soundSystem->loadSound("audio/enemys/boss.flac", "wierdScreemFromBoss");
+	//soundSystem->playMusic("audio/music/never.flac");
+
 	////Characters
 	player = new Player();
 	enemyManager = new EnemyManager();
@@ -135,11 +142,7 @@ int main()
 
 	eventHandler = EventHandler();
 
-	//Sound system
-	soundSystem = new SoundSystem();
-	soundSystem->loadSound("audio/sharkman/bowRelease.flac","bowRelease");
-	soundSystem->loadSound("audio/youdied.flac", "youDied");
-	//soundSystem->playMusic("audio/music/never.flac");
+
 
 	//menu system
 	menu = new Menu(window.getSize().x, window.getSize().y, soundSystem);

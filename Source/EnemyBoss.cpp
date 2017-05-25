@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
+EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	this->allProjectiles = allProjectiles;
 	this->acceleration = 0.4f;
@@ -15,6 +15,10 @@ EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm
 	bossImmunity = true;
 	this->centerOfRoom = enemyStartPos;
 	this->wallDestroyed = false;
+	this->sound = sound;
+	this->sound1 = true;
+	this->sound2 = true;
+	this->sound3 = true;
 	
 	projectileModel = new Model("models/sphere/sphere.obj");
 	boxModel = new Model("models/cube/cube.obj");
@@ -172,7 +176,19 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
+	if (sound1 == true)
+	{
+		this->sound->loadSound("audio/youdied.flac", "youDied");
 
+	}
+	if (sound2 == true)
+	{
+		this->sound->loadSound("audio/youdied.flac", "youDied");
+	}
+	if (sound3 == true)
+	{
+		this->sound->loadSound("audio/youdied.flac", "youDied");
+	}
 	if (collidedFrom.y > 0)
 	{
 		collidingWithGround = true;

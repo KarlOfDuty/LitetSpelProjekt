@@ -9,7 +9,7 @@ Enemy::Enemy()
 }
 
 
-Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor)
+Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound)
 {
 	this->health = health;
 	this->model = model;
@@ -23,6 +23,7 @@ Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 e
 	angle = 0;
 	this->checkPoint.x = enemyStartPos.x;
 	bossImmunity = false;
+	this->sound = sound;
 }
 
 Enemy::~Enemy()
