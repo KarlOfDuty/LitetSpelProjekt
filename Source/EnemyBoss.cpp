@@ -20,6 +20,7 @@ EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm
 	this->platformCreated = false;
 	this->moveChandelier = false;
 	this->weakPointActive = false;
+	this->playerInWater = false;
 	
 	projectileModel = new Model("models/sphere/sphereFire.obj");
 	boxModel = new Model("models/cube/cube.obj");
@@ -50,6 +51,7 @@ void EnemyBoss::setChandelierButton(Player* player)
 	std::vector<glm::vec2> corners = { glm::vec2(20.0f, 26.0f), glm::vec2(20.0f, 28.0f), glm::vec2(22.0f,26.0f), glm::vec2(22.0f, 28.0f) };
 	TriggerSettings buttonSettings;
 	buttonSettings.onEnter = true;
+	buttonSettings.numberOfActivationsAllowed = 1;
 	chandelierButton.push_back(new Trigger(corners, buttonSettings, player, this, "finishingBlow"));
 }
 
@@ -124,6 +126,11 @@ void EnemyBoss::setPhase(int phase)
 	this->phase = phase;
 }
 
+void EnemyBoss::setPlayerInWater(bool isInWater)
+{
+	this->playerInWater = isInWater;
+}
+
 void EnemyBoss::setCreateTrigger(bool createTrigger)
 {
 	this->createTrigger = createTrigger;
@@ -184,6 +191,21 @@ void EnemyBoss::loseTrackOfPlayer(bool playerIsFound)
 bool EnemyBoss::getWeakPointActive()
 {
 	return this->weakPointActive;
+}
+
+int EnemyBoss::getPhase() const
+{
+	return this->phase;
+}
+
+bool EnemyBoss::getPlayerTracked() const
+{
+	return this->playerTracked;
+}
+
+bool EnemyBoss::getPlayerInWater() const
+{
+	return this->playerInWater;
 }
 
 void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
@@ -513,6 +535,25 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 						}
 					}
 
+					if (!playerInWater)
+					{
+						if (!rotateLeft)
+						{
+							if (enemyPosCurrent.x >= player->getPos().x)
+							{
+								playerTracked = true;
+							}
+						}
+						if (
+							rotateLeft)
+						{
+							if (enemyPosCurrent.x < player->getPos().x)
+							{
+								playerTracked = true;
+							}
+						}
+					}
+
 					if (playerTracked)
 					{
 						setRotateToPlayer(player);
@@ -578,19 +619,22 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 			if (this->getHealth() > 10)
 			{
-				setRotateToPlayer(player);
-				this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+				if (playerTracked)
+				{
+					setRotateToPlayer(player);
+					this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+					oldPlayerPos = player->getPos();
+				}
+				else if (!playerTracked)
+				{
+					this->attackPlayer(dt, oldPlayerPos, enemyPosCurrent);
+				}
 			}
 			else if (this->getHealth() <= 10)
 			{
 				if (!weakPointsArr.empty())
 				{
 					this->weakPointsArr.clear();
-				}
-
-				if (!chandelierButton.empty())
-				{
-					chandelierButton.clear();
 				}
 			}
 		}
@@ -665,7 +709,10 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			editWeakPoint(2.0f, -1.2f, player);
 		}
 
-		this->collisionWithPlayer(player);
+		if (this->getHealth() > 10)
+		{
+			this->collisionWithPlayer(player);
+		}
 
 		//Trigger box
 		if (!chandelierButton.empty())
