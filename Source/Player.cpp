@@ -73,10 +73,10 @@ int Player::getHealth() const
 std::vector<glm::vec2> Player::getPoints()
 {
 	std::vector<glm::vec2> playerPoints;
-	playerPoints.push_back(glm::vec2(-0.5f, -0.0f));
-	playerPoints.push_back(glm::vec2(0.5f, -0.0f));
-	playerPoints.push_back(glm::vec2(0.5f, 1.0f));
-	playerPoints.push_back(glm::vec2(-0.5f, 1.0f));
+	playerPoints.push_back(glm::vec2(-10.0f, -0.0f));
+	playerPoints.push_back(glm::vec2(10.0f, -0.0f));
+	playerPoints.push_back(glm::vec2(10.0f, 35.0f));
+	playerPoints.push_back(glm::vec2(-10.0f, 35.0f));
 	for (int k = 0; k < playerPoints.size(); k++)
 	{
 		playerPoints[k] += glm::vec2(getPos());
@@ -269,13 +269,13 @@ void Player::aiming(sf::Window &window,float dt)
 				position.x, position.y , 0.0, 1.0
 			});
 
-			if (debugCubes.size() <= i)
+			if (aimingCubes.size() <= i)
 			{
-				debugCubes.push_back(new Model(arrow, modelMat));
+				aimingCubes.push_back(new Model(arrow, modelMat));
 			}
 			else
 			{
-				debugCubes[i]->setModelMatrix(modelMat);
+				aimingCubes[i]->setModelMatrix(modelMat);
 			}
 		}
 	}
@@ -545,6 +545,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
 		aiming(window, dt);
+		std::cout << getPos().x << ", " << getPos().y << std::endl;
 	}
 }
 
@@ -564,11 +565,17 @@ void Player::draw(Shader shader)
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right) && player == playerCharacters[1])
 	{
-		for (int i = 0; i < debugCubes.size(); i++)
+		for (int i = 0; i < aimingCubes.size(); i++)
 		{
-			glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &debugCubes[i]->getModelMatrix()[0][0]);
-			debugCubes[i]->draw(shader);
+			glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &aimingCubes[i]->getModelMatrix()[0][0]);
+			aimingCubes[i]->draw(shader);
 		}
+	}
+
+	for (int i = 0; i < debugCubes.size(); i++)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &debugCubes[i]->getModelMatrix()[0][0]);
+		debugCubes[i]->draw(shader);
 	}
 }
 
@@ -585,16 +592,35 @@ void Player::collision(std::vector<Model*> &allModels)
 			glm::vec3 objectMin, objectMax;
 			allModels[i]->getScaledMinMaxBouding(objectMin, objectMax);
 			glm::vec2 distance = allModels[i]->getPos() - getPos();
-			if (abs(distance.x) < 2.0f+objectMax.x)
+			if (abs(distance.x) < 50.0f+objectMax.x)
 			{
-				if (abs(distance.y) < 2.0f + objectMax.y)
+				if (abs(distance.y) < 50.0f + objectMax.y)
 				{
 					closeObjects.push_back(allModels[i]);
 				}
 			}
 		}
 
-		if (closeObjects.size())
+		if (collisionChecks == 0)
+		{
+			debugCubes.clear();
+			for (int i = 0; i < closeObjects.size(); i++)
+			{
+				std::vector<glm::vec2> closePoints = closeObjects[i]->getPoints();
+				for (int j = 0; j < closePoints.size(); j++)
+				{
+					glm::mat4 matrix({
+						10, 0, 0, 0,
+						0, 10, 0, 0,
+						0, 0, 2000, 0,
+						closePoints[j].x, closePoints[j].y, 0, 1
+					});
+					debugCubes.push_back(new Model(arrow, matrix));
+				}
+			}
+		}
+
+		if (!closeObjects.empty())
 		{
 			std::vector<glm::vec2> playerPoints = getPoints();
 
@@ -606,7 +632,7 @@ void Player::collision(std::vector<Model*> &allModels)
 				glm::vec2 mtv;
 				if (collision::collision(playerPoints, objectPoints, mtv))
 				{
-					if (radians > 0.0f && radians < 0.79f)
+					if (radians != 0.0f && radians < 0.79f && radians > -0.79f)
 					{
 						if (mtv.y > 0)
 						{
@@ -614,8 +640,13 @@ void Player::collision(std::vector<Model*> &allModels)
 						}
 						else
 						{
-							velocityY -= 0.5f;
+							if (velocityY > 0)
+							{
+								velocityY = 0;
+							}
 						}
+						modelMatrix[3].x += mtv.x;
+
 					}
 					else
 					{
@@ -626,9 +657,11 @@ void Player::collision(std::vector<Model*> &allModels)
 						}
 					}
 					modelMatrix[3].y += mtv.y;
-					if (mtv.y > 0)
+					if (mtv.y > groundPos)
 					{
-						if (modelMatrix[3].y < 0) modelMatrix[3].y = 0;
+						if (modelMatrix[3].y < groundPos)
+							modelMatrix[3].y = groundPos;
+
 						groundPos = modelMatrix[3].y;
 					}
 				}
@@ -643,62 +676,6 @@ void Player::collision(std::vector<Model*> &allModels)
 			collides = false;
 		}
 		collisionChecks++;
-		/*
-		int index = -1;
-		float minDistance = 1000;
-		glm::vec2 player2dPos = glm::vec2(getPos().x, getPos().y + 0.5f);
-		for (int i = 0; i < allModels.size(); i++)
-		{
-			float distance = glm::length(player2dPos - glm::vec2(allModels[i]->getModelMatrix()[3]));
-			if (distance < minDistance)
-			{
-				minDistance = distance;
-				index = i;
-			}
-		}
-
-		if (index != -1)
-		{
-			std::vector<glm::vec2> playerPoints = getPoints();
-			std::vector<glm::vec2> objectPoints;
-			float radians = 0.0f;
-			getPoints(objectPoints, allModels[index], radians);
-			glm::vec2 mtv;
-			if (collision::collision(playerPoints, objectPoints, mtv))
-			{
-				if (radians > 0.0f && radians < 0.79f)
-				{
-					if (mtv.y > 0)
-					{
-						modelMatrix[3].y -= 0.05f;
-					}
-					else
-					{
-						velocityY -= 0.5f;
-					}
-				}
-				else
-				{
-					modelMatrix[3].x += mtv.x;
-					if (mtv.y < 0)
-					{
-						velocityY = 0;
-					}
-				}
-				modelMatrix[3].y += mtv.y;
-				if (mtv.y > 0)
-				{
-					if (modelMatrix[3].y < 0) modelMatrix[3].y = 0;
-					groundPos = modelMatrix[3].y;
-				}
-			}
-			else
-			{
-				collides = false;
-			}
-		}
-		collisionChecks++;
-		*/
 	}
 }
 void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians)
