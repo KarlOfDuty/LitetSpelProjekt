@@ -19,6 +19,8 @@ private:
 	bool returnToStart;
 	sf::Clock collisionTime;
 	glm::vec3 startPosition;
+	int collisionCounter;
+	sf::Clock timeSinceCollision;
 public:
 	EnemyCrab(int health, Model* enemyModel, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound);
 	virtual ~EnemyCrab();

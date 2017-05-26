@@ -8,6 +8,8 @@ EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, int immunityTim
 	this->startPosition = enemyStartPos;
 	this->allProjectiles = allProjectiles;
 	this->sound = sound;
+
+	projectileModel = new Model("models/sphere/sphereFire.obj");
 }
 
 EnemyFireFly::~EnemyFireFly()
@@ -35,7 +37,7 @@ void EnemyFireFly::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPo
 				{
 					if (!allProjectiles->at(i)->isInUse())
 					{
-						allProjectiles->at(i)->shoot(getModel(), getPos(), direction, glm::vec2(), 10.f, glm::vec3(0.2, 0.2, 0.2),false,true);
+						allProjectiles->at(i)->shoot(projectileModel, getPos(), direction, glm::vec2(), 10.f, glm::vec3(0.1, 0.1, 0.1),false,true);
 						i = (int)allProjectiles->size();
 					}
 				}
@@ -44,7 +46,7 @@ void EnemyFireFly::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPo
 		else
 		{
 			Projectile* temp = new Projectile;
-			temp->shoot(getModel(), getPos(), direction, glm::vec2(), 10.f, glm::vec3(0.2, 0.2, 0.2),false,true);
+			temp->shoot(projectileModel, getPos(), direction, glm::vec2(), 10.f, glm::vec3(0.1, 0.1, 0.1),false,true);
 			allProjectiles->push_back(temp);
 		}
 		attackCooldown.restart();
@@ -66,7 +68,15 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 che
 
 	if (collides)
 	{
-		velocityY += 3.0f*dt;
+		velocityY += 5.0f*dt;
+		if (collidedFrom.y > 0)
+		{
+			if (attackRange > 0)
+			{
+				attackRange -= 1;
+			}
+			timeSinceCollision.restart();
+		}
 
 		if (collisionTime.getElapsedTime().asSeconds() >= 5)
 		{
@@ -77,6 +87,11 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 che
 	else
 	{
 		collisionTime.restart();
+	}
+
+	if (timeSinceCollision.getElapsedTime().asSeconds() >= 0.5)
+	{
+		attackRange = 10;
 	}
 
 	//Detect player
@@ -100,21 +115,20 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 che
 		{
 			if (enemyPosCurrent.x > player->getPos().x + attackRange)
 			{
-				velocityX -= 1.5f*dt;
+				velocityX -= 3.0f*dt;
 			}
 			else if (enemyPosCurrent.x < player->getPos().x - attackRange)
 			{
-				velocityX += 1.5f*dt;
+				velocityX += 3.0f*dt;
 			}
 			if (enemyPosCurrent.y > player->getPos().y + 2)
 			{
-				velocityY -= 1.5f*dt;
+				velocityY -= 3.0f*dt;
 			}
 			else if (enemyPosCurrent.y < player->getPos().y + 2)
 			{
-				velocityY += 1.5f*dt;
+				velocityY += 3.0f*dt;
 			}
-			playerSeen = true;
 		}
 	}
 	else
@@ -125,24 +139,20 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 che
 			{
 				if (enemyPosCurrent.x > startPosition.x)
 				{
-					velocityX -= 1.5f*dt;
+					velocityX -= 3.0f*dt;
 				}
 				else if (enemyPosCurrent.x < startPosition.x)
 				{
-					velocityX += 1.5f*dt;
+					velocityX += 3.0f*dt;
 				}
 				if (enemyPosCurrent.y > startPosition.y)
 				{
-					velocityY -= 1.5f*dt;
+					velocityY -= 3.0f*dt;
 				}
 				else if (enemyPosCurrent.y < startPosition.y)
 				{
-					velocityY += 1.5f*dt;
+					velocityY += 3.0f*dt;
 				}
-			}
-			else
-			{
-				velocityY += 3.0f*dt;
 			}
 		}
 		else

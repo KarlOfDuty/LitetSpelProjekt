@@ -76,10 +76,13 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 
 	if (collides)
 	{
-		collisionCounter++;
-		if (collisionCounter < 60)
+		if (collidedFrom.y > 0 || collidedFrom.x != 0)
 		{
-			velocityY += 5.0f*dt;
+			collisionCounter++;
+		}
+		if (collisionCounter < 300)
+		{
+			velocityY += 6.0f*dt;
 		}
 
 		checkpoint.x = player->getPos().x + distX(rng);
@@ -91,6 +94,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 			playerSeen = false;
 			goForPlayer = false;
 		}
+		
 		timeSinceCollision.restart();
 	}
 	else
@@ -104,7 +108,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 8.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 12.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -125,19 +129,19 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 			{
 				if (enemyPosCurrent.x > player->getPos().x)
 				{
-					velocityX -= 2.5f*dt;
+					velocityX -= 3.0f*dt;
 				}
 				else if (enemyPosCurrent.x < player->getPos().x)
 				{
-					velocityX += 2.5f*dt;
+					velocityX += 3.0f*dt;
 				}
 				if (enemyPosCurrent.y > player->getPos().y)
 				{
-					velocityY -= 2.5f*dt;
+					velocityY -= 3.0f*dt;
 				}
 				else if (enemyPosCurrent.y < player->getPos().y)
 				{
-					velocityY += 2.5f*dt;
+					velocityY += 3.0f*dt;
 				}
 				playerSeen = true;
 			}
@@ -175,19 +179,19 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 				{
 					if (enemyPosCurrent.x > startPosition.x)
 					{
-						velocityX -= 2.5f*dt;
+						velocityX -= 3.0f*dt;
 					}
 					else if (enemyPosCurrent.x < startPosition.x)
 					{
-						velocityX += 2.5f*dt;
+						velocityX += 3.0f*dt;
 					}
 					if (enemyPosCurrent.y > startPosition.y)
 					{
-						velocityY -= 2.5f*dt;
+						velocityY -= 3.0f*dt;
 					}
 					else if (enemyPosCurrent.y < startPosition.y)
 					{
-						velocityY += 2.5f*dt;
+						velocityY += 3.0f*dt;
 					}
 				}
 				else

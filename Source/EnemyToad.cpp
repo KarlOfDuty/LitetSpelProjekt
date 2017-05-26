@@ -10,6 +10,8 @@ EnemyToad::EnemyToad(int health, Model* model, int damage, int immunityTime, glm
 	this->allProjectiles = allProjectiles;
 	projectileModel = new Model("models/sphere/sphere.obj");
 	this->sound = sound;
+
+	projectileModel = new Model("models/sphere/sphereGreen.obj");
 }
 
 EnemyToad::~EnemyToad()

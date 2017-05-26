@@ -68,14 +68,19 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	{
 		if (collidedFrom.x != 0)
 		{
+			collisionCounter++;
 			movingRight = false;
 			movingLeft = false;
 			moving = false;
-			if (collisionTime.getElapsedTime().asSeconds() >= 5)
+			velocityX = 0;
+			oldOriginPoint = enemyPosCurrent;
+			walkTimer.restart();
+			if (collisionCounter > 10)
 			{
 				returnToStart = true;
 				playerSeen = false;
 			}
+			timeSinceCollision.restart();
 		}
 	}
 
@@ -84,8 +89,13 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		collisionTime.restart();
 	}
 
+	if (timeSinceCollision.getElapsedTime().asSeconds() >= 2)
+	{
+		collisionCounter = 0;
+	}
+
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 5.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 7.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -98,105 +108,103 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	}
 
 	//Move
-	if (moving)
-	{
-		if (!returnToStart)
-		{
-			if (playerSeen)
-			{
-				if (!movingLeft)
-				{
-					if (enemyPosCurrent.x >= player->getPos().x)
-					{
-						movingRight = true;
-					}
-				}
-				if (!movingRight)
-				{
-					if (enemyPosCurrent.x <= player->getPos().x)
-					{
-						movingLeft = true;
-					}
-				}
-				if (movingRight)
-				{
-					velocityX = velocityX - acceleration * dt;
-				}
-				else if (movingLeft)
-				{
-					velocityX = velocityX + acceleration * dt;
-				}
-				playerSeen = true;
-			}
-			else
-			{
-				//Patrol
-				if (!movingLeft)
-				{
-					if ((!checkPointReached))
-					{
-						movingRight = true;
-					}
-				}
-				if (!movingRight)
-				{
-					if (checkPointReached)
-					{
-						movingLeft = true;
-					}
-				}
-				if (movingRight)
-				{
-					velocityX = velocityX - acceleration * dt;
-				}
-				else if (movingLeft)
-				{
-					velocityX = velocityX + acceleration * dt;
-				}
-			}
-		}
-		else
-		{
-			if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
-			{
-				if (movingLeft == false)
-				{
-					if (enemyPosCurrent.x >= startPosition.x)
-					{
-						movingRight = true;
-					}
-				}
-				if (movingRight == false)
-				{
-					if (enemyPosCurrent.x <= startPosition.x)
-					{
-						movingLeft = true;
-					}
-				}
-				if (movingRight == true)
-				{
-					velocityX = velocityX - acceleration * dt;
-				}
-				else if (movingLeft == true)
-				{
-					velocityX = velocityX + acceleration * dt;
-				}
-			}
-			else
-			{
-				returnToStart = false;
-				playerSeen = false;
-			}
-		}
-	}
-	
-
 	if (collidingWithGround)
 	{
-
+		//Move
+		if (moving)
+		{
+			if (!returnToStart)
+			{
+				if (playerSeen)
+				{
+					if (!movingLeft)
+					{
+						if (enemyPosCurrent.x >= player->getPos().x)
+						{
+							movingRight = true;
+						}
+					}
+					if (!movingRight)
+					{
+						if (enemyPosCurrent.x <= player->getPos().x)
+						{
+							movingLeft = true;
+						}
+					}
+					if (movingRight)
+					{
+						velocityX = velocityX - acceleration * dt;
+					}
+					else if (movingLeft)
+					{
+						velocityX = velocityX + acceleration * dt;
+					}
+					playerSeen = true;
+				}
+				else
+				{
+					//Patrol
+					if (!movingLeft)
+					{
+						if ((!checkPointReached))
+						{
+							movingRight = true;
+						}
+					}
+					if (!movingRight)
+					{
+						if (checkPointReached)
+						{
+							movingLeft = true;
+						}
+					}
+					if (movingRight)
+					{
+						velocityX = velocityX - acceleration * dt;
+					}
+					else if (movingLeft)
+					{
+						velocityX = velocityX + acceleration * dt;
+					}
+				}
+			}
+			else
+			{
+				if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
+				{
+					if (movingLeft == false)
+					{
+						if (enemyPosCurrent.x >= startPosition.x)
+						{
+							movingRight = true;
+						}
+					}
+					if (movingRight == false)
+					{
+						if (enemyPosCurrent.x <= startPosition.x)
+						{
+							movingLeft = true;
+						}
+					}
+					if (movingRight == true)
+					{
+						velocityX = velocityX - acceleration * dt;
+					}
+					else if (movingLeft == true)
+					{
+						velocityX = velocityX + acceleration * dt;
+					}
+				}
+				else
+				{
+					returnToStart = false;
+					playerSeen = false;
+				}
+			}
+		}
 	}
 
-	if (!isOnGround)
+	if (!collidingWithGround)
 	{
 		velocityY -= 30 * dt;
 	}

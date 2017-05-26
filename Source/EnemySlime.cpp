@@ -47,7 +47,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	{
 		if (collidedFrom.x != 0 && collidedFrom.y > 0)
 		{
-			velocityY = 10;
+			velocityY = 15;
 		}
 
 		if (collidedFrom.x != 0)
@@ -66,7 +66,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 5.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 7.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -104,22 +104,22 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 		else
 		{
 			//Patrol
-			//if (enemyPosCurrent.x >= checkPoint.x)
-			//{
-			//	rotateLeft = false;
-			//}
-			//if (enemyPosCurrent.x <= checkPoint.x)
-			//{
-			//	rotateLeft = true;
-			//}
-			//if (checkPointReached == false)
-			//{
-			//	velocityX -= 2.0f*dt;
-			//}
-			//else if (checkPointReached == true)
-			//{
-			//	velocityX += 2.0f*dt;
-			//}
+			if (enemyPosCurrent.x >= checkPoint.x + 2)
+			{
+				rotateLeft = false;
+			}
+			if (enemyPosCurrent.x <= checkPoint.x - 2)
+			{
+				rotateLeft = true;
+			}
+			if (checkPointReached == false)
+			{
+				velocityX -= 2.0f*dt;
+			}
+			else if (checkPointReached == true)
+			{
+				velocityX += 2.0f*dt;
+			}
 		}
 	}
 	else
@@ -136,11 +136,11 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 		{
 			if (enemyPosCurrent.x > startPosition.x)
 			{
-				velocityX -= 1.0f*dt;
+				velocityX -= 2.0f*dt;
 			}
 			else if (enemyPosCurrent.x < startPosition.x)
 			{
-				velocityX += 1.0f*dt;
+				velocityX += 2.0f*dt;
 			}
 		}
 		else
@@ -154,7 +154,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	{
 		if (collisionWithPlayer(player))
 		{
-			velocityY = 10;
+			velocityY = 8;
 		}
 	}
 
@@ -163,9 +163,9 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 		velocityY -= 30*dt;
 	}
 
-	if (velocityY > 10)
+	if (velocityY > 15)
 	{
-		velocityY = 10;
+		velocityY = 15;
 	}
 
 	//Maximum falling speed
