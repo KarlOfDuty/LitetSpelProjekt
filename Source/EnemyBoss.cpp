@@ -25,12 +25,8 @@ EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm
 	this->isChandelierCreated = false;
 	this->platformCreated = false;
 	this->moveChandelier = false;
-<<<<<<< HEAD
 	this->weakPointActive = false;
 	this->playerInWater = false;
-=======
-
->>>>>>> refs/remotes/origin/master
 	
 	projectileModel = new Model("models/sphere/sphereFire.obj");
 	boxModel = new Model("models/cube/cube.obj");

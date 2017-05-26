@@ -8,15 +8,12 @@ private:
 	bool isChandelierCreated;
 	bool blockExit;
 	int phase;
-<<<<<<< HEAD
 	bool playerInWater;
-
-=======
 	SoundSystem * sound;
 	bool sound1;
 	bool sound2;
 	bool sound3;
->>>>>>> refs/remotes/origin/master
+
 	//phase 1
 	int chargeCounter;
 	sf::Clock dazeTimer;
