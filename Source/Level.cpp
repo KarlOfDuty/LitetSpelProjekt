@@ -180,6 +180,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		model->rotate();
 		model->addMesh(mesh);
 		model->setupModel();
+		model->loadTextures(0);
 		model->setBoundingSphereRadius();
 		modelVector.push_back(model);
 	}

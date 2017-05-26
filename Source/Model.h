@@ -92,8 +92,6 @@ private:
 	glm::vec3 minBounding;
 	glm::vec3 maxBounding;
 	float boundingSphereRadius;
-
-	void loadTextures(int meshNr);
 public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
@@ -119,6 +117,7 @@ public:
 	void loadSkeleton(const char* filePath);
 	void loadWeights(const char* filePath);
 	void setupModel();
+	void loadTextures(int meshNr);
 	void draw(Shader shader);
 	void setBoundingSphereRadius();
 	float getBoundingSphereRadius() const;

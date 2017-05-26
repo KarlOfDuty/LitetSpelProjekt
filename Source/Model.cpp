@@ -497,53 +497,53 @@ void Model::readOBJ(std::string filename)
 		meshVertices = std::vector<Vertex>();
 	}
 }
-//void Model::loadSkeleton(const char* filePath)
-//{
-//	//First nrOfClusters
-//	std::ifstream in(filePath, std::ios::binary);
-//	int clusterNr = 0;
-//
-//	int indexNr = 0;
-//	in.read(reinterpret_cast<char*>(&indexNr), sizeof(int));
-//	in.read(reinterpret_cast<char*>(&nrOfKeyframes), sizeof(int));
-//	in.read(reinterpret_cast<char*>(&clusterNr), sizeof(int));
-//	for (int i = 0; i < clusterNr; i++) 
-//	{
-//		//Get the name
-//		std::string name = "";
-//		int nrOfChars = 0;
-//		in.read(reinterpret_cast<char*>(&nrOfChars), sizeof(int));
-//		char *tempName;
-//		tempName = new char[nrOfChars];
-//		in.read(tempName, nrOfChars);
-//		name.append(tempName, nrOfChars);
-//
-//		std::cout << name << std::endl;
-//		delete tempName;
-//
-//		Joint *joint = new Joint();
-//		joint->nrOfKeys = nrOfKeyframes;
-//		joint->jointName = name;
-//		joint->animationIndex = indexNr;
-//
-//		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[0]), sizeof(joint->globalBindPosMat[0]));
-//		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[1]), sizeof(joint->globalBindPosMat[1]));
-//		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[2]), sizeof(joint->globalBindPosMat[2]));
-//		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[3]), sizeof(joint->globalBindPosMat[3]));
-//
-//		for (int o = 0; o < nrOfKeyframes; o++)
-//		{
-//			glm::mat4 tempMap;
-//			in.read(reinterpret_cast<char*>(&tempMap[0]), sizeof(tempMap[0]));
-//			in.read(reinterpret_cast<char*>(&tempMap[1]), sizeof(tempMap[1]));
-//			in.read(reinterpret_cast<char*>(&tempMap[2]), sizeof(tempMap[2]));
-//			in.read(reinterpret_cast<char*>(&tempMap[3]), sizeof(tempMap[3]));
-//			joint->transformMat.push_back(tempMap);
-//		}
-//		skeleton.push_back(joint);
-//	}
-//}
-//
+void Model::loadSkeleton(const char* filePath)
+{
+	//First nrOfClusters
+	std::ifstream in(filePath, std::ios::binary);
+	int clusterNr = 0;
+
+	int indexNr = 0;
+	in.read(reinterpret_cast<char*>(&indexNr), sizeof(int));
+	in.read(reinterpret_cast<char*>(&nrOfKeyframes), sizeof(int));
+	in.read(reinterpret_cast<char*>(&clusterNr), sizeof(int));
+	for (int i = 0; i < clusterNr; i++) 
+	{
+		//Get the name
+		std::string name = "";
+		int nrOfChars = 0;
+		in.read(reinterpret_cast<char*>(&nrOfChars), sizeof(int));
+		char *tempName;
+		tempName = new char[nrOfChars];
+		in.read(tempName, nrOfChars);
+		name.append(tempName, nrOfChars);
+
+		std::cout << name << std::endl;
+		delete tempName;
+
+		Joint *joint = new Joint();
+		joint->nrOfKeys = nrOfKeyframes;
+		joint->jointName = name;
+		joint->animationIndex = indexNr;
+
+		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[0]), sizeof(joint->globalBindPosMat[0]));
+		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[1]), sizeof(joint->globalBindPosMat[1]));
+		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[2]), sizeof(joint->globalBindPosMat[2]));
+		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[3]), sizeof(joint->globalBindPosMat[3]));
+
+		for (int o = 0; o < nrOfKeyframes; o++)
+		{
+			glm::mat4 tempMap;
+			in.read(reinterpret_cast<char*>(&tempMap[0]), sizeof(tempMap[0]));
+			in.read(reinterpret_cast<char*>(&tempMap[1]), sizeof(tempMap[1]));
+			in.read(reinterpret_cast<char*>(&tempMap[2]), sizeof(tempMap[2]));
+			in.read(reinterpret_cast<char*>(&tempMap[3]), sizeof(tempMap[3]));
+			joint->transformMat.push_back(tempMap);
+		}
+		skeleton.push_back(joint);
+	}
+}
+
 //void Model::loadWeights(const char* filePath) 
 //{
 //	std::ifstream in(filePath, std::ios::binary);
@@ -746,24 +746,6 @@ void Model::loadTextures(int i)
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
-	//Check weather to use normal map
-	if (meshes[i]->material.normalMapFile != "")
-	{
-		glGenTextures(1, &meshes[i]->material.normalMapTexture);
-		glBindTexture(GL_TEXTURE_2D, meshes[i]->material.normalMapTexture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		int width, height;
-		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.normalMapFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		SOIL_free_image_data(image);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
 }
 //Constructors
 Model::Model(std::string filename)
