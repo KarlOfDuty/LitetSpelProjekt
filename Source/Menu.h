@@ -4,8 +4,8 @@
 #include "SFML/Graphics.hpp"
 #include "SoundSystem.h"
 
-#define MAX_NUMBER_OF_ITEMS 3
-#define MAX_NUMBER_OF_OPTIONS 5
+#define MAX_NUMBER_OF_ITEMS 4
+#define MAX_NUMBER_OF_OPTIONS 4
 
 class Menu
 {
@@ -14,9 +14,10 @@ public:
 	~Menu();
 
 	void draw(sf::RenderWindow &window);
-	void MoveUp();
-	void MoveDown();
+	void MoveLeft();
+	void MoveRight();
 	int Select();
+	void pause();
 
 private:
 	SoundSystem * soundS;

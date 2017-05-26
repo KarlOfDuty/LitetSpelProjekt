@@ -310,6 +310,51 @@ void Level::setupModels()
 		//std::cout << "Loaded." << std::endl;
 	}
 }
+
+//setup menu
+void Level::setupMenuModels()
+{
+	//spinning map stuff
+	staticModels.push_back(new Model(*(modelLibrary.at(3)),
+	{
+		0.2, 0.0, 0.0, 0.0,
+		0.0, 0.2, 0.0, 0.0,
+		0.0, 0.0, 0.2, 0.0,
+		0.0, 1.0, 0.0, 1.0
+	}));
+	staticModels[0]->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-0.5f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		2.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		-6.0, 5.0, 5.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		2.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		-2.0, 5.0, 5.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		2.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		2.0, 5.0, 5.0, 1.0
+	}));
+	staticModels.push_back(new Model(*(modelLibrary.at(2)),
+	{
+		2.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		6.0, 5.0, 5.0, 1.0
+	}));
+
+}
+
 //Delete all models from memory
 void Level::unloadModels()
 {
@@ -382,6 +427,13 @@ void Level::updateTriggers(float dt)
 	for (int i = 0; i < dynamicModels.size(); i++)
 	{
 		dynamicModels[i]->rotate();
+	}
+}
+void Level::spinMenu(float dt)
+{
+	for (int i = 0; i < staticModels.size(); i++)
+	{
+		staticModels[i]->rotate();
 	}
 }
 void Level::deleteTriggers()

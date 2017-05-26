@@ -17,9 +17,11 @@ private:
 public:
 	void loadModels();
 	void setupModels();
+	void setupMenuModels();
 	void unloadModels();
 	void setupTriggers(Player* player);
 	void updateTriggers(float dt);
+	void spinMenu(float dt);
 	void deleteTriggers();
 	void playMusic(SoundSystem *soundSystem);
 	void stopMusic(SoundSystem *soundSystem);
