@@ -9,6 +9,7 @@
 #include "Projectile.h"
 #include "Collision.h"
 extern bool endLevel;
+extern bool nextLevel;
 struct TriggerSettings
 {
 	//Activates once an activator enters the trigger

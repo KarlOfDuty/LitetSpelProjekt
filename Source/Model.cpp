@@ -497,6 +497,97 @@ void Model::readOBJ(std::string filename)
 		meshVertices = std::vector<Vertex>();
 	}
 }
+//void Model::loadSkeleton(const char* filePath)
+//{
+//	//First nrOfClusters
+//	std::ifstream in(filePath, std::ios::binary);
+//	int clusterNr = 0;
+//
+//	int indexNr = 0;
+//	in.read(reinterpret_cast<char*>(&indexNr), sizeof(int));
+//	in.read(reinterpret_cast<char*>(&nrOfKeyframes), sizeof(int));
+//	in.read(reinterpret_cast<char*>(&clusterNr), sizeof(int));
+//	for (int i = 0; i < clusterNr; i++) 
+//	{
+//		//Get the name
+//		std::string name = "";
+//		int nrOfChars = 0;
+//		in.read(reinterpret_cast<char*>(&nrOfChars), sizeof(int));
+//		char *tempName;
+//		tempName = new char[nrOfChars];
+//		in.read(tempName, nrOfChars);
+//		name.append(tempName, nrOfChars);
+//
+//		std::cout << name << std::endl;
+//		delete tempName;
+//
+//		Joint *joint = new Joint();
+//		joint->nrOfKeys = nrOfKeyframes;
+//		joint->jointName = name;
+//		joint->animationIndex = indexNr;
+//
+//		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[0]), sizeof(joint->globalBindPosMat[0]));
+//		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[1]), sizeof(joint->globalBindPosMat[1]));
+//		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[2]), sizeof(joint->globalBindPosMat[2]));
+//		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[3]), sizeof(joint->globalBindPosMat[3]));
+//
+//		for (int o = 0; o < nrOfKeyframes; o++)
+//		{
+//			glm::mat4 tempMap;
+//			in.read(reinterpret_cast<char*>(&tempMap[0]), sizeof(tempMap[0]));
+//			in.read(reinterpret_cast<char*>(&tempMap[1]), sizeof(tempMap[1]));
+//			in.read(reinterpret_cast<char*>(&tempMap[2]), sizeof(tempMap[2]));
+//			in.read(reinterpret_cast<char*>(&tempMap[3]), sizeof(tempMap[3]));
+//			joint->transformMat.push_back(tempMap);
+//		}
+//		skeleton.push_back(joint);
+//	}
+//}
+//
+//void Model::loadWeights(const char* filePath) 
+//{
+//	std::ifstream in(filePath, std::ios::binary);
+//
+//	int indices = 0;
+//	int nrOfPolygons = 0;
+//	in.read(reinterpret_cast<char*>(&nrOfPolygons), sizeof(int));
+//	in.read(reinterpret_cast<char*>(&indices), sizeof(int));
+//	this->nrOfIndices = indices;
+//	int polygonIndex[3];
+//	int jointIndex = 0;
+//	float influence = 0;
+//
+//	glm::ivec3 polygonVertexIndex;
+//	glm::ivec4 controllers;
+//	glm::vec4 weightInfluences;
+//
+//	for (int k = 0; k < nrOfPolygons; k++)
+//	{
+//		for (int i = 0; i < 3; i++) 
+//		{
+//			in.read(reinterpret_cast<char*>(&polygonIndex[i]), sizeof(int));
+//			polygonVertexIndex[i] = polygonIndex[i];
+//		}
+//		weightInfo.polygonVerteciesIndex.push_back(polygonVertexIndex);
+//		weightInfo.indexPos.push_back(k);
+//
+//		for (int i = 0; i < 3; i++) {
+//
+//			for (int q = 0; q < 4; q++) {
+//				int check = in.tellg();
+//				in.read(reinterpret_cast<char*>(&jointIndex), sizeof(int));
+//				controllers[q] = jointIndex;
+//
+//				in.read(reinterpret_cast<char*>(&influence), sizeof(influence));
+//				weightInfluences[q] = influence;
+//				check = in.tellg();
+//
+//			}
+//			weightInfo.controllers.push_back(controllers);
+//			weightInfo.weightsInfluence.push_back(weightInfluences);
+//		}
+//	}
+//}
 //Draws the model
 void Model::draw(Shader shader)
 {

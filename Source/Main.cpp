@@ -37,6 +37,7 @@ int jumpPress;
 bool keyReleased;
 
 bool endLevel = false;
+bool nextLevel = false;
 const bool aboveView = false;
 
 //gBuffer
@@ -355,7 +356,13 @@ void update(sf::RenderWindow &window)
 	{
 		viewMatrix = playerCamera.update(enemyManager->getBossPos());
 	}
-
+	if (nextLevel)
+	{
+		unloadLevel();
+		levelManager.nextLevel();
+		loadLevel();
+		nextLevel = false;
+	}
 	if (endLevel)
 	{
 		unloadLevel();
@@ -517,7 +524,7 @@ void loadLevel()
 	//	glm::vec3(0.6f, 0.9f, 0.9f),
 	//	0.0000f, 0.00f));
 	directionalLights.push_back(new DirectionalLight(
-		glm::vec3(1.0f, -2.0f, 0.0f),
+		glm::vec3(-1.0f, -2.0f, 0.0f),
 		glm::vec3(1.0f, 1.0f, 1.0f)));
 	player->setPos(levelManager.currentLevel->getPlayerPos());
 	player->setStaticModels(levelManager.currentLevel->getCollisionBoxes());
@@ -535,4 +542,9 @@ void unloadLevel()
 		delete pointLights[i];
 	}
 	pointLights.clear();
+	for (int i = 0; i < directionalLights.size(); i++)
+	{
+		delete directionalLights[i];
+	}
+	directionalLights.clear();
 }

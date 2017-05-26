@@ -45,6 +45,7 @@ void Level::loadLevel()
 			//readModels(path.c_str(), staticModels);
 		}
 	}
+	file.close();
 }
 bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 {
@@ -210,18 +211,11 @@ void Level::unloadModels()
 //Sets the triggerboxes for this level
 void Level::setupTriggers(Player* player)
 {
-	std::vector<glm::vec2> corners = { glm::vec2(3,2), glm::vec2(6,2), glm::vec2(3,0), glm::vec2(6,0) };
-	TriggerSettings settings;
-	settings.onEnter = true;
-	settings.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners, settings, player, player, "endLevel"));
-
 	//water land
-	std::vector<glm::vec2> corners2 = { glm::vec2(9,5), glm::vec2(15,5), glm::vec2(9,0), glm::vec2(15,0) };
+	std::vector<glm::vec2> corners2 = { glm::vec2(-20,0), glm::vec2(-20,400), glm::vec2(-200,400), glm::vec2(-200,0) };
 	TriggerSettings settings2;
 	settings2.onEnter = true;
-	settings2.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "hellogais"));
+	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "nextLevel"));
 
 	//health pickup
 	glm::mat4 mat({
@@ -307,12 +301,12 @@ glm::vec3 Level::getPlayerPos()
 Level::Level()
 {
 	this->filePath = "";
-	playerPos = glm::vec3(14,4,0);
+	playerPos = glm::vec3(0,0,0);
 }
 Level::Level(std::string filePath)
 {
 	this->filePath = filePath;
-	playerPos = glm::vec3(14, 4, 0);
+	playerPos = glm::vec3(0, 0, 0);
 }
 //Destructor
 Level::~Level()

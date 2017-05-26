@@ -49,11 +49,10 @@ struct Joint
 };
 struct Weight
 {
-	int nrOfIndices;
-	std::vector<int> indexPos;
-	std::vector<glm::vec3> polygonVerteciesIndex;
+	int indexPos;
+	glm::vec3 polygonVertexIndex;
 	std::vector<glm::ivec4> controllers;
-	std::vector<glm::vec4> weightsInfluence;
+	std::vector<glm::vec4> weightInfluence;
 };
 struct Vertex
 {
@@ -87,6 +86,8 @@ private:
 	glm::mat4 rotationMatrix;
 	std::vector<Mesh*> meshes;
 	std::vector<Joint*> skeleton;
+	int nrOfIndices;
+	std::vector<Weight> weights;
 	std::vector<glm::vec2> allPoints;
 	glm::vec3 minBounding;
 	glm::vec3 maxBounding;
@@ -115,6 +116,8 @@ public:
 	void addMesh(Mesh* mesh);
 	void rotate();
 	void readOBJ(std::string filename);
+	void loadSkeleton(const char* filePath);
+	void loadWeights(const char* filePath);
 	void setupModel();
 	void draw(Shader shader);
 	void setBoundingSphereRadius();

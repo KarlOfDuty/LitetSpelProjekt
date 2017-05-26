@@ -334,7 +334,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	}
 	
 	groundCheck();
-
+	groundPos = -50;
 	if (getPos().y > groundPos && isOnGround)
 	{
 		isOnGround = false;
@@ -456,12 +456,12 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			glm::vec3 prevPos = getPos();
 			if (goingLeft == true)
 			{
-				glm::vec3 minus4 = {-4,0,0};
+				glm::vec3 minus4 = {-100,0,0};
 				this->setPos(this->getPos() + minus4);
 			}
 			else
 			{
-				glm::vec3 plus4 = {4,0,0};
+				glm::vec3 plus4 = {100,0,0};
 				this->setPos(this->getPos() + plus4);
 			}
 
@@ -585,9 +585,9 @@ void Player::collision(std::vector<Model*> &allModels)
 			glm::vec3 objectMin, objectMax;
 			allModels[i]->getScaledMinMaxBouding(objectMin, objectMax);
 			glm::vec2 distance = allModels[i]->getPos() - getPos();
-			if (abs(distance.x) < 2.0f+objectMax.x)
+			if (abs(distance.x) < 50.0f+objectMax.x)
 			{
-				if (abs(distance.y) < 2.0f + objectMax.y)
+				if (abs(distance.y) < 50.0f + objectMax.y)
 				{
 					closeObjects.push_back(allModels[i]);
 				}
@@ -616,6 +616,7 @@ void Player::collision(std::vector<Model*> &allModels)
 						{
 							velocityY -= 0.5f;
 						}
+						modelMatrix[3].x += mtv.x;
 					}
 					else
 					{

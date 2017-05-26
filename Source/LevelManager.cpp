@@ -2,6 +2,7 @@
 LevelManager::LevelManager()
 {
 	levels.push_back(new Level("config/level1.ini"));
+	levels.push_back(new Level("config/level2.ini"));
 	levelIndex = 0;
 	currentLevel = levels[levelIndex];
 }
@@ -18,14 +19,16 @@ void LevelManager::startLevel(int level)
 }
 void LevelManager::nextLevel()
 {
-	if (levels.size() > levelIndex + 1)
+	levelIndex++;
+	if (levelIndex < levels.size())
 	{
-		levelIndex++;
 		currentLevel = levels[levelIndex];
 	}
 	else
 	{
 		backToMenu();
+		levelIndex = 0;
+		currentLevel = levels[0];
 	}
 }
 void LevelManager::backToMenu()
