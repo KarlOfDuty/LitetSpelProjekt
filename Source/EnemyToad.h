@@ -6,6 +6,8 @@ private:
 	int attackRange;
 	bool checkPointReached;
 	sf::Clock jumpTimer;
+	SoundSystem * sound;
+	sf::Clock soundTimer;
 	bool movingLeft;
 	bool movingRight;
 	bool rotateLeft;

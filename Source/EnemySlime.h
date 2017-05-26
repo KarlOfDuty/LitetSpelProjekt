@@ -12,6 +12,9 @@ private:
 	bool collidingWithGround;
 	sf::Clock collisionTime;
 	glm::vec3 startPosition;
+	SoundSystem * sound;
+	sf::Clock soundTimer;
+
 public:
 	EnemySlime(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound);
 	virtual ~EnemySlime();

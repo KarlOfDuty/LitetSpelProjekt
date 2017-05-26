@@ -123,6 +123,13 @@ int main()
 	soundSystem->loadSound("audio/sharkman/bowRelease.flac", "bowRelease");
 	soundSystem->loadSound("audio/youdied.flac", "youDied");
 	soundSystem->loadSound("audio/enemys/boss.flac", "wierdScreemFromBoss");
+	soundSystem->loadSound("audio/enemys/frog.flac", "chukelingFrogNoise");
+	soundSystem->loadSound("audio/enemys/slime.flac", "goopySlimeSounds");
+	soundSystem->loadSound("audio/enemys/sklet.flac", "clickySkeliClacks");
+	soundSystem->loadSound("audio/enemys/fireFly.flac", "wierdBuzzing");
+	soundSystem->loadSound("audio/enemys/crabb.flac", "snapyCraby");
+	soundSystem->loadSound("audio/enemys/bats.flac", "screees");
+
 	//soundSystem->playMusic("audio/music/never.flac");
 
 	////Characters
@@ -683,15 +690,15 @@ void loadLevel()
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
 	enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
-	//enemyManager->createSlime(glm::vec3(19.0f, 7.0f, 0.0f));
+	//enemyManager->createSlime(glm::vec3(-16.0f, 7.0f, 0.0f));
 	//enemyManager->createToad(glm::vec3(-16.0f, 7.0f, 0.0f));
-	//enemyManager->createGiantBat(glm::vec3(-15.0f, 12.0f, 0.0f));
-	//enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
-	//enemyManager->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
-	//enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
-	//enemyManager->createCrab(glm::vec3(-30.0f, 7.0f, 0.0f));
+	enemyManager->createGiantBat(glm::vec3(-11.0f, 12.0f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(-16.2f, 5.8f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(-15.0f, 5.3f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(-14.0f, 5.6f, 0.0f));
+	//enemyManager->createCrab(glm::vec3(-16.0f, 7.0f, 0.0f));
 	//enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
-	//enemyManager->createSkeleton(glm::vec3(30.0f, 7.0f, 0.0f), false);
+	//enemyManager->createSkeleton(glm::vec3(-16.0f, 7.0f, 0.0f), false);
 
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 	//Some lights with random values

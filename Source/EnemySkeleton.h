@@ -18,6 +18,8 @@ private:
 	glm::vec3 Dodgecheckpoint;
 	bool checkPointGiven;
 	bool jumped;
+	SoundSystem * sound;
+	sf::Clock soundTimer;
 
 	//workarounds for collision
 	bool collides;

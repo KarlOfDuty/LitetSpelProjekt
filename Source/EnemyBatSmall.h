@@ -15,6 +15,8 @@ private:
 	bool returnToStart;
 	sf::Clock timeSinceCollision;
 	sf::Clock collisionTime;
+	SoundSystem * sound;
+	sf::Clock soundTimer;
 public:
 	EnemyBatSmall(int health, Model* enemyModel, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound);
 	virtual ~EnemyBatSmall();

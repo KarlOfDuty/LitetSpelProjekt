@@ -12,6 +12,7 @@ EnemySkeleton::EnemySkeleton(int health, Model* model, int damage, int immunityT
 	this->allProjectiles = allProjectiles;
 	this->checkPointGiven = false;
 	box = new Model("models/cube/cubeGreen.obj");
+	this->sound = sound;
 }
 
 EnemySkeleton::~EnemySkeleton()
@@ -118,6 +119,13 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 		playerSeen = true;
 		returnToStart = false;
 	}
+
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 8)
+	{
+		this->sound->playSound("clickySkeliClacks");
+		soundTimer.restart();
+	}
+
 
 	if (!returnToStart)
 	{

@@ -8,6 +8,7 @@ EnemyCrab::EnemyCrab(int health, Model* model, int damage, int immunityTime, glm
 	this->moving = true;
 	this->oldOriginPoint = enemyStartPos;
 	this->startPosition = enemyStartPos;
+	this->sound = sound;
 }
 
 EnemyCrab::~EnemyCrab()
@@ -88,6 +89,12 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	{
 		playerSeen = true;
 		returnToStart = false;
+	}
+
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 6)
+	{
+		this->sound->playSound("snapyCraby");
+		soundTimer.restart();
 	}
 
 	//Move

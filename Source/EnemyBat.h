@@ -14,6 +14,8 @@ private:
 	bool checkPointReached;
 	bool xPointReached;
 	bool yPointReached;
+	SoundSystem * sound;
+	sf::Clock soundTimer;
 
 	//workarounds for collision
 	bool collides;
