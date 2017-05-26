@@ -10,6 +10,8 @@ private:
 	bool movingLeft;
 	bool movingRight;
 	sf::Clock walkTimer;
+	SoundSystem * sound;
+	sf::Clock soundTimer;
 
 	//workarounds for collision
 	bool collides;

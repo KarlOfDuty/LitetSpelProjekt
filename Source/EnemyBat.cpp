@@ -8,6 +8,7 @@ EnemyBat::EnemyBat(int health, Model* model, int damage, int immunityTime, glm::
 	startPosition = enemyStartPos;
 	returnToStart = false;
 	newCheckPoint = enemyStartPos;
+	this->sound = sound;
 }
 
 EnemyBat::~EnemyBat()
@@ -199,6 +200,12 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 	{
 		playerSeen = true;
 		returnToStart = false;
+	}
+
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 6)
+	{
+		this->sound->playSound("screees");
+		soundTimer.restart();
 	}
 
 	//Move

@@ -250,7 +250,6 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 				heartModel->setModelMatrix(test);
 			}
 		}
-		delete this;
 	}
 	else if (commands[commandID] == "phase1" && targets[targetID]->type() == "Enemy")
 	{

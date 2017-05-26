@@ -7,6 +7,8 @@ EnemyFireFly::EnemyFireFly(int health, Model* model, int damage, int immunityTim
 	this->attackRange = 10;
 	this->startPosition = enemyStartPos;
 	this->allProjectiles = allProjectiles;
+	this->sound = sound;
+
 	projectileModel = new Model("models/sphere/sphereFire.obj");
 }
 
@@ -98,6 +100,13 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 che
 		playerSeen = true;
 		returnToStart = false;
 	}
+
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 6)
+	{
+		this->sound->playSound("wierdBuzzing");
+		soundTimer.restart();
+	}
+
 
 	//Move
 	if (!returnToStart)

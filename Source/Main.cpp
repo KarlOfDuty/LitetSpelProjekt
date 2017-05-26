@@ -123,6 +123,13 @@ int main()
 	soundSystem->loadSound("audio/sharkman/bowRelease.flac", "bowRelease");
 	soundSystem->loadSound("audio/youdied.flac", "youDied");
 	soundSystem->loadSound("audio/enemys/boss.flac", "wierdScreemFromBoss");
+	soundSystem->loadSound("audio/enemys/frog.flac", "chukelingFrogNoise");
+	soundSystem->loadSound("audio/enemys/slime.flac", "goopySlimeSounds");
+	soundSystem->loadSound("audio/enemys/sklet.flac", "clickySkeliClacks");
+	soundSystem->loadSound("audio/enemys/fireFly.flac", "wierdBuzzing");
+	soundSystem->loadSound("audio/enemys/crabb.flac", "snapyCraby");
+	soundSystem->loadSound("audio/enemys/bats.flac", "screees");
+
 	//soundSystem->playMusic("audio/music/never.flac");
 
 	////Characters
@@ -692,7 +699,6 @@ void loadLevel()
 	//enemyManager->createCrab(glm::vec3(43.0f, 22.0f, 0.0f));
 	//enemyManager->createFirefly(glm::vec3(43.0f, 22.0f, 0.0f));
 	//enemyManager->createSkeleton(glm::vec3(43.0f, 22.0f, 0.0f), true);
-
 
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 	//Some lights with random values

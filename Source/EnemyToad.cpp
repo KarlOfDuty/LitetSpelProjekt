@@ -8,6 +8,9 @@ EnemyToad::EnemyToad(int health, Model* model, int damage, int immunityTime, glm
 	this->startPosition = enemyStartPos;
 	this->returnToStart = false;
 	this->allProjectiles = allProjectiles;
+	projectileModel = new Model("models/sphere/sphere.obj");
+	this->sound = sound;
+
 	projectileModel = new Model("models/sphere/sphereGreen.obj");
 }
 
@@ -87,8 +90,17 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		//Detect player
 		if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
 		{
+
 			playerSeen = true;
 			returnToStart = false;
+
+
+		}
+
+		if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 15 )
+		{
+			this->sound->playSound("chukelingFrogNoise");
+			soundTimer.restart();
 		}
 
 		if (!returnToStart)
