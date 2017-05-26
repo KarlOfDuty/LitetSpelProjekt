@@ -8,7 +8,7 @@ EnemyToad::EnemyToad(int health, Model* model, int damage, int immunityTime, glm
 	this->startPosition = enemyStartPos;
 	this->returnToStart = false;
 	this->allProjectiles = allProjectiles;
-	projectileModel = new Model("models/sphere/sphere.obj");
+	projectileModel = new Model("models/sphere/sphereGreen.obj");
 }
 
 EnemyToad::~EnemyToad()

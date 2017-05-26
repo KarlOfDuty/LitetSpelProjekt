@@ -86,6 +86,11 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 		{
 			velocityY += 7.0f*dt;
 		}
+		if (collidedFrom.y < 0 && collidedFrom.x != 0)
+		{
+			newCheckPoint.y = enemyPosCurrent.y;
+			newCheckPoint.x = enemyPosCurrent.x;
+		}
 		if (collidedFrom.y > 0)
 		{
 			if (enemyPosCurrent.x > player->getPos().x)
