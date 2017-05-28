@@ -544,50 +544,52 @@ void Model::loadSkeleton(const char* filePath)
 	}
 }
 
-//void Model::loadWeights(const char* filePath) 
-//{
-//	std::ifstream in(filePath, std::ios::binary);
-//
-//	int indices = 0;
-//	int nrOfPolygons = 0;
-//	in.read(reinterpret_cast<char*>(&nrOfPolygons), sizeof(int));
-//	in.read(reinterpret_cast<char*>(&indices), sizeof(int));
-//	this->nrOfIndices = indices;
-//	int polygonIndex[3];
-//	int jointIndex = 0;
-//	float influence = 0;
-//
-//	glm::ivec3 polygonVertexIndex;
-//	glm::ivec4 controllers;
-//	glm::vec4 weightInfluences;
-//
-//	for (int k = 0; k < nrOfPolygons; k++)
-//	{
-//		for (int i = 0; i < 3; i++) 
-//		{
-//			in.read(reinterpret_cast<char*>(&polygonIndex[i]), sizeof(int));
-//			polygonVertexIndex[i] = polygonIndex[i];
-//		}
-//		weightInfo.polygonVerteciesIndex.push_back(polygonVertexIndex);
-//		weightInfo.indexPos.push_back(k);
-//
-//		for (int i = 0; i < 3; i++) {
-//
-//			for (int q = 0; q < 4; q++) {
-//				int check = in.tellg();
-//				in.read(reinterpret_cast<char*>(&jointIndex), sizeof(int));
-//				controllers[q] = jointIndex;
-//
-//				in.read(reinterpret_cast<char*>(&influence), sizeof(influence));
-//				weightInfluences[q] = influence;
-//				check = in.tellg();
-//
-//			}
-//			weightInfo.controllers.push_back(controllers);
-//			weightInfo.weightsInfluence.push_back(weightInfluences);
-//		}
-//	}
-//}
+void Model::loadWeight(const char* filePath)
+{
+
+	std::ifstream in(filePath, std::ios::binary);
+
+	int nrOfIndices = 0;
+	int nrOfPolygons = 0;
+	in.read(reinterpret_cast<char*>(&nrOfPolygons), sizeof(int));
+	in.read(reinterpret_cast<char*>(&nrOfIndices), sizeof(int));
+	weightInfo.nrOfIndices = nrOfIndices;
+	int polygonIndex[3];
+	int jointIndex = 0;
+	float influence = 0;
+
+	glm::ivec3 polygonVertexIndex;
+	glm::ivec4 controllers;
+	glm::vec4 weightInfluences;
+
+	for (int k = 0; k < nrOfPolygons; k++) 
+	{
+		for (int i = 0; i < 3; i++) 
+		{
+			in.read(reinterpret_cast<char*>(&polygonIndex[i]), sizeof(int));
+			polygonVertexIndex[i] = polygonIndex[i];
+		}
+		weightInfo.polygonVerteciesIndex.push_back(polygonVertexIndex);
+		weightInfo.indexPos.push_back(k);
+
+		for (int i = 0; i < 3; i++)
+		{
+			for (int q = 0; q < 4; q++)
+			{
+				int check = in.tellg();
+				in.read(reinterpret_cast<char*>(&jointIndex), sizeof(int));
+				controllers[q] = jointIndex;
+
+				in.read(reinterpret_cast<char*>(&influence), sizeof(influence));
+				weightInfluences[q] = influence;
+				check = in.tellg();
+
+			}
+			weightInfo.controllers.push_back(controllers);
+			weightInfo.weightsInfluence.push_back(weightInfluences);
+		}
+	}
+}
 //Draws the model
 void Model::draw(Shader shader)
 {

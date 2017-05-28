@@ -30,15 +30,14 @@ void main() {
 	vec4 finalModelPos = vec4(0.0);
 	vec4 finalNormal = vec4(0.0);
 
-	for (int i = 0; i < 4; i++) {
-		
+	for (int i = 0; i < 4; i++)
+	{
 		mat4 jointTrans = currentJointTrans[vertex_controllers[i]];
 		vec4 posePos = jointTrans * vec4(vertex_position, 1.0);
 		finalModelPos += posePos * vertex_weight[i];
 	
 		vec4 worldNormal = jointTrans * vec4(vertex_normal, 0.0);
 		finalNormal += worldNormal * vertex_weight[i];
-	
 	}
 
 	gl_Position = MVP * finalModelPos;

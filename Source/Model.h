@@ -44,15 +44,15 @@ struct Joint
 	std::string jointName;
 	glm::mat4 globalBindPosMat;
 	std::vector<glm::mat4> transformMat;
-
 	int nrOfKeys;
 };
-struct Weight
+struct Weights
 {
-	int indexPos;
-	glm::vec3 polygonVertexIndex;
+	int nrOfIndices;
+	std::vector<int> indexPos;
+	std::vector<glm::vec3> polygonVerteciesIndex;
 	std::vector<glm::ivec4> controllers;
-	std::vector<glm::vec4> weightInfluence;
+	std::vector<glm::vec4> weightsInfluence;
 };
 struct Vertex
 {
@@ -74,7 +74,7 @@ static bool modelDebug = false;
 //Turns on console feedback for reading of material files
 static bool matDebug = false;
 //Shows collision boxes
-static bool showColliders = true;
+static bool showColliders = false;
 class Model : public GameObject
 {
 private:
@@ -87,7 +87,7 @@ private:
 	std::vector<Mesh*> meshes;
 	std::vector<Joint*> skeleton;
 	int nrOfIndices;
-	std::vector<Weight> weights;
+	Weights weightInfo;
 	std::vector<glm::vec2> allPoints;
 	glm::vec3 minBounding;
 	glm::vec3 maxBounding;
@@ -115,7 +115,7 @@ public:
 	void rotate();
 	void readOBJ(std::string filename);
 	void loadSkeleton(const char* filePath);
-	void loadWeights(const char* filePath);
+	void loadWeight(const char* filePath);
 	void setupModel();
 	void loadTextures(int meshNr);
 	void draw(Shader shader);

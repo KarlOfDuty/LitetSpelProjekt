@@ -1,19 +1,10 @@
 #include "Level.h"
 
-//Loads a single copy of all obj models used into memory
-void Level::loadModels()
-{
-	//for (int i = 0; i < modelFilePaths.size(); i++)
-	//{
-	//	modelLibrary.push_back(new Model(modelFilePaths[i]));
-	//}
-}
 void Level::loadLevel()
 {
 	//Temporary containers
 	std::ifstream file(filePath);
 	std::string str = "";
-
 	//Gets a single line of the file at a time
 	while (std::getline(file, str))
 	{
@@ -22,7 +13,7 @@ void Level::loadLevel()
 		//Takes the first word of the line and compares it to variable names
 		line << str;
 		line >> str;
-		std::cout << str << std::endl;
+		if (modelDebug)std::cout << str << std::endl;
 		if (str == "staticModels")
 		{
 			line >> path;
@@ -64,7 +55,6 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		char *tempName;
 		tempName = new char[nrOfChars];
 		in.read(tempName, nrOfChars);
-		//in.getline(tempName, nrOfChars + 1, '\0');
 		name.append(tempName, nrOfChars);
 
 		if (modelDebug)std::cout << name << std::endl;
@@ -146,37 +136,45 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 				mesh->vertices[(k * 3) + h].texPos = vec2;
 			}
 		}
-		//Read the materials for the mesh as well as the Texture file name
+		//Diffuse texture file
 		int fileNameLength = 0;
-		glm::vec3 diffuse;
-		float specular = 0;
-
-		std::string diffuseTexture = "";
 		in.read(reinterpret_cast<char*>(&fileNameLength), sizeof(int));
-		char *tempFileName;
-		tempFileName = new char[fileNameLength];
-		in.read(tempFileName, fileNameLength);
-		diffuseTexture.append(tempFileName, fileNameLength);
-
-		in.read(reinterpret_cast<char*>(&diffuse), sizeof(diffuse));
-		in.read(reinterpret_cast<char*>(&specular), sizeof(specular));
-
+		if (fileNameLength)
+		{
+			std::string diffuseFileName = "";
+			char *tempFileName = new char[fileNameLength];
+			in.read(tempFileName, fileNameLength);
+			diffuseFileName.append(tempFileName, fileNameLength);
+			if (diffuseFileName != "NULL")
+			{
+				std::cout << "'" << diffuseFileName << "'" << std::endl;
+				mesh->material.textureMapDiffuseFile = diffuseFileName;
+			}
+		}
+		//Diffuse colour
+		glm::vec3 diffuseColour;
+		in.read(reinterpret_cast<char*>(&diffuseColour), sizeof(diffuseColour));
 		mesh->material.diffuseColour = glm::vec3(0.5,0.5,0.5);
-		mesh->material.diffuseColour = diffuse;
-		mesh->material.specularColour = glm::vec3(specular, specular, specular);
+		mesh->material.diffuseColour = diffuseColour;
+		//Specularity
+		float specularity = 0;
+		in.read(reinterpret_cast<char*>(&specularity), sizeof(specularity));
+		mesh->material.specularColour = glm::vec3(specularity, specularity, specularity);
+		//Not used
 		mesh->material.ambientColour = glm::vec3(0.5,0.5,0.5);
-
+		//Position
 		glm::vec3 pos;
-		glm::vec3 scale;
-		glm::vec3 rotation;
-		//Read the position, rotation and scale values
 		in.read(reinterpret_cast<char*>(&pos), sizeof(pos));
-		in.read(reinterpret_cast<char*>(&rotation), sizeof(rotation));
-		in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
-
 		model->setPos(pos);
-		model->setScale(scale);
+		//Rotation
+		glm::vec3 rotation;
+		in.read(reinterpret_cast<char*>(&rotation), sizeof(rotation));
 		model->setRotationMatrix(rotation);
+		//Scale
+		glm::vec3 scale;
+		in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
+		model->setScale(scale);
+		//Set up model
 		model->rotate();
 		model->addMesh(mesh);
 		model->setupModel();
@@ -184,6 +182,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		model->setBoundingSphereRadius();
 		modelVector.push_back(model);
 	}
+	in.close();
 	return true;
 }
 //Delete all models from memory
@@ -263,20 +262,12 @@ void Level::deleteTriggers()
 }
 void Level::playMusic(SoundSystem* soundSystem)
 {
-
+	//Should probably be able to switch music track
 }
 void Level::stopMusic(SoundSystem* soundSystem)
 {
 
 }
-//void Level::playMusic(SoundSystem *soundSystem)
-//{
-//	soundSystem->playMusic("audio/music/never.flac");
-//}
-//void Level::stopMusic(SoundSystem *soundSystem)
-//{
-//	soundSystem->stopMusic();
-//}
 //Getters
 std::vector<Model*>& Level::getStaticModels()
 {
