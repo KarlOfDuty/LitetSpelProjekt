@@ -214,13 +214,13 @@ void render()
 	glm::mat4 lightView;
 	std::vector<glm::mat4> lightSpaceMatrix;
 	GLfloat nearPlane = 0.01f;
-	GLfloat farPlane = 30.0f;
-	lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, nearPlane, farPlane);
+	GLfloat farPlane = 1200.0f;
+	lightProjection = glm::ortho(-200.0f, 500.0f, -600.0f, 600.0f, nearPlane, farPlane);
 	glCullFace(GL_FRONT);
 	for (int i = 0; i < directionalLights.size(); i++)
 	{
 		lightSpaceMatrix.push_back(glm::mat4());
-		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*20.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
+		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*600.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
 		lightSpaceMatrix[i] = lightProjection * lightView;
 		//Render scene from light's point of view
 		shadowShader.use();
@@ -524,7 +524,7 @@ void loadLevel()
 	//	glm::vec3(0.6f, 0.9f, 0.9f),
 	//	0.0000f, 0.00f));
 	directionalLights.push_back(new DirectionalLight(
-		glm::vec3(-1.0f, -2.0f, 0.0f),
+		glm::normalize(glm::vec3(1.0f, -4.0f, 0.0f)),
 		glm::vec3(1.0f, 1.0f, 1.0f)));
 	player->setPos(levelManager.currentLevel->getPlayerPos());
 	player->setStaticModels(levelManager.currentLevel->getCollisionBoxes());

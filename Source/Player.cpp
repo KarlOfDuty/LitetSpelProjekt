@@ -73,10 +73,10 @@ int Player::getHealth() const
 std::vector<glm::vec2> Player::getPoints()
 {
 	std::vector<glm::vec2> playerPoints;
-	playerPoints.push_back(glm::vec2(-0.5f, -0.0f));
-	playerPoints.push_back(glm::vec2(0.5f, -0.0f));
-	playerPoints.push_back(glm::vec2(0.5f, 1.0f));
-	playerPoints.push_back(glm::vec2(-0.5f, 1.0f));
+	playerPoints.push_back(glm::vec2(-10.0f, 0.0f));
+	playerPoints.push_back(glm::vec2(10.0f, 1.0f));
+	playerPoints.push_back(glm::vec2(10.0f, 0.0f));
+	playerPoints.push_back(glm::vec2(-10.0f, 1.0f));
 	for (int k = 0; k < playerPoints.size(); k++)
 	{
 		playerPoints[k] += glm::vec2(getPos());
@@ -91,19 +91,17 @@ void Player::swap(int character)
 
 //Makes the player jump
 void Player::jump()
-{
-	if(this->diving == false)
-	{	if (player->getMaxJumps() > jumps)
+{		
+	if (player->getMaxJumps() > jumps)
+	{
+		if (diving)
+		{
+			velocityY = player->getJumpHeight();			
+		}
+		else
 		{
 			velocityY = player->getJumpHeight();
 			jumps++;
-		}
-	}
-	else
-	{
-		if (player->getMaxJumps() > jumps)
-		{
-			velocityY = player->getJumpHeight();
 		}
 	}
 }
@@ -111,11 +109,7 @@ void Player::jump()
 
 void Player::waterEffect()
 {
-	if (this->player == playerCharacters[2])
-	{
-		setHealth(0);
-	}
-	else if (this->player == playerCharacters[0])
+	if (this->player != playerCharacters[1])
 	{
 		setHealth(0);
 	}
@@ -123,7 +117,7 @@ void Player::waterEffect()
 
 void Player::applyDamage(int appliedDamage)
 {
-	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.2)
+	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.2f)
 	{
 		this->health -= appliedDamage;
 		this->damageImmunity.restart();
@@ -201,7 +195,7 @@ void Player::heavyAttackPressed(sf::Window &window)
 			position = glm::vec2(getPos().x - 1.0f, getPos().y);
 			direction = glm::vec2(-1, 0);
 		}
-		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 1.f);
+		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 1.0f);
 	}
 	PlayerShark* shark = dynamic_cast<PlayerShark*>(player);
 	if (shark != nullptr)
@@ -387,13 +381,13 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		//If in air
 		if (!isOnGround)
 		{
-			velocityY -= 100 * dt;
+			velocityY -= 200 * dt;
 		}
 
 		//Maximum falling speed
-		if (velocityY < -200)
+		if (velocityY < -500)
 		{
-			velocityY = -200;
+			velocityY = -500;
 		}
 	}
 	else 

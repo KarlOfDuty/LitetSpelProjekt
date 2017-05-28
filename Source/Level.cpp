@@ -147,7 +147,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 			diffuseFileName.append(tempFileName, fileNameLength);
 			if (diffuseFileName != "NULL")
 			{
-				std::cout << "'" << diffuseFileName << "'" << std::endl;
+				if (modelDebug)std::cout << "'" << diffuseFileName << "'" << std::endl;
 				mesh->material.textureMapDiffuseFile = diffuseFileName;
 			}
 		}
@@ -165,7 +165,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		//Position
 		glm::vec3 pos;
 		in.read(reinterpret_cast<char*>(&pos), sizeof(pos));
-		model->setPos(pos);
+		model->setPos(pos + glm::vec3(0, 0, -50));
 		//Rotation
 		glm::vec3 rotation;
 		in.read(reinterpret_cast<char*>(&rotation), sizeof(rotation));
@@ -215,7 +215,7 @@ void Level::setupTriggers(Player* player)
 	std::vector<glm::vec2> corners2 = { glm::vec2(-20,0), glm::vec2(-20,400), glm::vec2(-200,400), glm::vec2(-200,0) };
 	TriggerSettings settings2;
 	settings2.onEnter = true;
-	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "nextLevel"));
+	//triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "nextLevel"));
 
 	//health pickup
 	glm::mat4 mat({

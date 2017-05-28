@@ -86,7 +86,6 @@ private:
 	glm::mat4 rotationMatrix;
 	std::vector<Mesh*> meshes;
 	std::vector<Joint*> skeleton;
-	int nrOfIndices;
 	Weights weightInfo;
 	std::vector<glm::vec2> allPoints;
 	glm::vec3 minBounding;
@@ -114,6 +113,7 @@ public:
 	void addMesh(Mesh* mesh);
 	void rotate();
 	void readOBJ(std::string filename);
+	bool Model::readModel(const char* filePath);
 	void loadSkeleton(const char* filePath);
 	void loadWeight(const char* filePath);
 	void setupModel();

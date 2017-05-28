@@ -497,6 +497,147 @@ void Model::readOBJ(std::string filename)
 		meshVertices = std::vector<Vertex>();
 	}
 }
+bool Model::readModel(const char* filePath)
+{
+	glm::vec3 vec3;
+	glm::vec2 vec2;
+	std::ifstream in(filePath, std::ios::binary);
+	int nrOfMeshes = 0;
+	in.read(reinterpret_cast<char*>(&nrOfMeshes), sizeof(int));
+	//Read the name of the mesh
+	std::string name = "";
+	int nrOfChars = 0;
+	in.read(reinterpret_cast<char*>(&nrOfChars), sizeof(int));
+	char *tempName;
+	tempName = new char[nrOfChars];
+	in.read(tempName, nrOfChars);
+	name.append(tempName, nrOfChars);
+	if (modelDebug)std::cout << name << std::endl;
+	delete[] tempName;
+
+	int nrOfCtrlPoints = 0;
+	in.read(reinterpret_cast<char*>(&nrOfCtrlPoints), sizeof(int));
+
+	if (modelDebug)std::cout << nrOfCtrlPoints << std::endl;
+	Mesh *mesh = new Mesh();
+	mesh->name = name;
+
+	for (int k = 0; k < nrOfCtrlPoints; k++)
+	{
+		vec3 = glm::vec3(0);
+		if (modelDebug)
+		{
+			std::cout << "Tell: " << in.tellg() << std::endl;
+			std::cout << "Pos: " << std::endl;
+		}
+		//Read the Vertices for the primitive
+		for (int h = 0; h < 3; h++)
+		{
+			mesh->vertices.push_back(Vertex());
+			in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+			if (modelDebug)
+			{
+				std::cout << "Vertex: ";
+				std::cout << vec3.x << " ";
+				std::cout << vec3.y << " ";
+				std::cout << vec3.z << std::endl;
+			}
+			mesh->vertices[(k * 3) + h].pos = vec3;
+		}
+		for (int h = 0; h < 3; h++)
+		{
+			//Read the Normals for the primitive
+			in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+			if (modelDebug)
+			{
+				std::cout << "Normal: ";
+				std::cout << vec3.x << " ";
+				std::cout << vec3.y << " ";
+				std::cout << vec3.z << std::endl;
+			}
+			mesh->vertices[(k * 3) + h].normal = vec3;
+			//Read the Tangents for the primitive
+			in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+			if (modelDebug)
+			{
+				std::cout << "Tangent: ";
+				std::cout << vec3.x << " ";
+				std::cout << vec3.y << " ";
+				std::cout << vec3.z << std::endl;
+			}
+			mesh->vertices[(k * 3) + h].tangent = vec3;
+			//Read the BiNormals for the primitive
+			in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+			if (modelDebug)
+			{
+				std::cout << "BiNormal: ";
+				std::cout << vec3.x << " ";
+				std::cout << vec3.y << " ";
+				std::cout << vec3.z << std::endl;
+			}
+			mesh->vertices[(k * 3) + h].biTangent = vec3;
+		}
+		//Read the UVs for the primitive
+		for (int h = 0; h < 3; h++)
+		{
+			in.read(reinterpret_cast<char*>(&vec2), sizeof(vec2));
+			if (modelDebug)
+			{
+				std::cout << "UV: ";
+				std::cout << vec2.x << " ";
+				std::cout << vec2.y << std::endl;
+			}
+			mesh->vertices[(k * 3) + h].texPos = vec2;
+		}
+	}
+	//Diffuse texture file
+	int fileNameLength = 0;
+	in.read(reinterpret_cast<char*>(&fileNameLength), sizeof(int));
+	if (fileNameLength)
+	{
+		std::string diffuseFileName = "";
+		char *tempFileName = new char[fileNameLength];
+		in.read(tempFileName, fileNameLength);
+		diffuseFileName.append(tempFileName, fileNameLength);
+		if (diffuseFileName != "NULL")
+		{
+			std::cout << "'" << diffuseFileName << "'" << std::endl;
+			mesh->material.textureMapDiffuseFile = diffuseFileName;
+		}
+		delete[] tempFileName;
+	}
+	//Diffuse colour
+	glm::vec3 diffuseColour;
+	in.read(reinterpret_cast<char*>(&diffuseColour), sizeof(diffuseColour));
+	mesh->material.diffuseColour = glm::vec3(0.5, 0.5, 0.5);
+	mesh->material.diffuseColour = diffuseColour;
+	//Specularity
+	float specularity = 0;
+	in.read(reinterpret_cast<char*>(&specularity), sizeof(specularity));
+	mesh->material.specularColour = glm::vec3(specularity, specularity, specularity);
+	//Not used
+	mesh->material.ambientColour = glm::vec3(0.5, 0.5, 0.5);
+	//Position
+	glm::vec3 pos;
+	in.read(reinterpret_cast<char*>(&pos), sizeof(pos));
+	this->setPos(pos);
+	//Rotation
+	glm::vec3 rotation;
+	in.read(reinterpret_cast<char*>(&rotation), sizeof(rotation));
+	this->setRotationMatrix(rotation);
+	//Scale
+	glm::vec3 scale;
+	in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
+	this->setScale(scale);
+	//Set up model
+	this->rotate();
+	this->addMesh(mesh);
+	this->setupModel();
+	this->loadTextures(0);
+	this->setBoundingSphereRadius();
+	in.close();
+	return true;
+}
 void Model::loadSkeleton(const char* filePath)
 {
 	//First nrOfClusters
@@ -543,7 +684,6 @@ void Model::loadSkeleton(const char* filePath)
 		skeleton.push_back(joint);
 	}
 }
-
 void Model::loadWeight(const char* filePath)
 {
 
