@@ -12,6 +12,7 @@ private:
 public:
 	Level *currentMenu;
 	Level *currentLevel;
+	LevelManager();
 	LevelManager(EnemyManager * enemy);
 	~LevelManager();
 	void startLevel(int level);
