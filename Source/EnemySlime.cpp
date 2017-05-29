@@ -6,6 +6,7 @@ EnemySlime::EnemySlime(int health, Model* model, int damage, int immunityTime, g
 {
 	startPosition = enemyStartPos;
 	returnToStart = false;
+	this->sound = sound;
 }
 
 EnemySlime::~EnemySlime()
@@ -69,6 +70,12 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	{
 		playerSeen = true;
 		returnToStart = false;
+	}
+
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 8)
+	{
+		this->sound->playSound("goopySlimeSounds");
+		soundTimer.restart();
 	}
 
 	//Move

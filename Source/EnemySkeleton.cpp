@@ -12,6 +12,7 @@ EnemySkeleton::EnemySkeleton(int health, Model* model, int damage, int immunityT
 	this->allProjectiles = allProjectiles;
 	this->checkPointGiven = false;
 	box = new Model("models/cube/cubeGreen.obj");
+	this->sound = sound;
 }
 
 EnemySkeleton::~EnemySkeleton()
@@ -119,135 +120,142 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 		returnToStart = false;
 	}
 
-		if (!returnToStart)
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 8)
+	{
+		this->sound->playSound("clickySkeliClacks");
+		soundTimer.restart();
+	}
+
+
+	if (!returnToStart)
+	{
+		//Move
+		if (playerSeen)
 		{
-			//Move
-			if (playerSeen)
+			if (attack)
 			{
-				if (attack)
+				if (enemyPosCurrent.x > player->getPos().x)
 				{
-					if (enemyPosCurrent.x > player->getPos().x)
+					rotateLeft = false;
+				}
+				else if (enemyPosCurrent.x < player->getPos().x)
+				{
+					rotateLeft = true;
+				}
+				if (glm::length(enemyPosCurrent.x - player->getPos().x) > attackRange)
+				{
+					if (enemyPosCurrent.x > player->getPos().x + attackRange)
 					{
-						rotateLeft = false;
+						velocityX -= 3.8f*dt;
 					}
-					else if (enemyPosCurrent.x < player->getPos().x)
+					else if (enemyPosCurrent.x < player->getPos().x - attackRange)
 					{
-						rotateLeft = true;
+						velocityX += 3.8f*dt;
 					}
-					if (glm::length(enemyPosCurrent.x - player->getPos().x) > attackRange)
-					{
-						if (enemyPosCurrent.x > player->getPos().x + attackRange)
-						{
-							velocityX -= 3.8f*dt;
-						}
-						else if (enemyPosCurrent.x < player->getPos().x - attackRange)
-						{
-							velocityX += 3.8f*dt;
-						}
-						waitBeforeAttack.restart();
-					}
-					else
-					{
-						this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
-					}
+					waitBeforeAttack.restart();
 				}
 				else
 				{
-					if (waitTimer.getElapsedTime().asSeconds() >= 0.15)
-					{
-						if (!dodgeLeft)
-						{
-							if (!jumped)
-							{
-								if (collidingWithGround)
-								{
-									if (jumpDelay.getElapsedTime().asSeconds() >= 0.2)
-									{
-										velocityY = 7;
-										jumped = true;
-									}
-								}
-							}
-							velocityX = velocityX + acceleration * dt;
-						}
-						else
-						{
-							if (!jumped)
-							{
-								if (collidingWithGround)
-								{
-									if (jumpDelay.getElapsedTime().asSeconds() >= 0.2)
-									{
-										velocityY = 7;
-										jumped = true;
-									}
-								}
-							}
-							velocityX = velocityX - acceleration * dt;
-						}
-
-						if (fabs(enemyPosCurrent.x - Dodgecheckpoint.x) < 0.5f)
-						{
-							jumped = false;
-							velocityX = 0;
-							attack = true;
-							dodgeLeft = false;
-							checkPointGiven = false;
-						}
-					}
+					this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
 				}
 			}
 			else
 			{
-				//Patrol
-				if (patrol)
+				if (waitTimer.getElapsedTime().asSeconds() >= 0.15)
 				{
-					if (enemyPosCurrent.x >= checkPoint.x + 3)
+					if (!dodgeLeft)
 					{
-						rotateLeft = false;
+						if (!jumped)
+						{
+							if (collidingWithGround)
+							{
+								if (jumpDelay.getElapsedTime().asSeconds() >= 0.2)
+								{
+									velocityY = 7;
+									jumped = true;
+								}
+							}
+						}
+						velocityX = velocityX + acceleration * dt;
 					}
-					if (enemyPosCurrent.x <= checkPoint.x - 3)
+					else
 					{
-						rotateLeft = true;
+						if (!jumped)
+						{
+							if (collidingWithGround)
+							{
+								if (jumpDelay.getElapsedTime().asSeconds() >= 0.2)
+								{
+									velocityY = 7;
+									jumped = true;
+								}
+							}
+						}
+						velocityX = velocityX - acceleration * dt;
 					}
-					if (checkPointReached == false)
+
+					if (fabs(enemyPosCurrent.x - Dodgecheckpoint.x) < 0.5f)
 					{
-						velocityX -= 1.8f*dt;
-					}
-					else if (checkPointReached == true)
-					{
-						velocityX += 1.8f*dt;
+						jumped = false;
+						velocityX = 0;
+						attack = true;
+						dodgeLeft = false;
+						checkPointGiven = false;
 					}
 				}
 			}
 		}
 		else
 		{
-			if (enemyPosCurrent.x >= startPosition.x)
+			//Patrol
+			if (patrol)
 			{
-				rotateLeft = false;
-			}
-			if (enemyPosCurrent.x <= startPosition.x)
-			{
-				rotateLeft = true;
-			}
-			if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
-			{
-				if (enemyPosCurrent.x > startPosition.x)
+				if (enemyPosCurrent.x >= checkPoint.x + 3)
+				{
+					rotateLeft = false;
+				}
+				if (enemyPosCurrent.x <= checkPoint.x - 3)
+				{
+					rotateLeft = true;
+				}
+				if (checkPointReached == false)
 				{
 					velocityX -= 1.8f*dt;
 				}
-				else if (enemyPosCurrent.x < startPosition.x)
+				else if (checkPointReached == true)
 				{
 					velocityX += 1.8f*dt;
 				}
 			}
-			else
+		}
+	}
+	else
+	{
+		if (enemyPosCurrent.x >= startPosition.x)
+		{
+			rotateLeft = false;
+		}
+		if (enemyPosCurrent.x <= startPosition.x)
+		{
+			rotateLeft = true;
+		}
+		if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
+		{
+			if (enemyPosCurrent.x > startPosition.x)
 			{
-				returnToStart = false;
-				playerSeen = false;
+				velocityX -= 1.8f*dt;
+			}
+			else if (enemyPosCurrent.x < startPosition.x)
+			{
+				velocityX += 1.8f*dt;
 			}
 		}
+		else
+		{
+			returnToStart = false;
+			playerSeen = false;
+		}
+	}
 
 	if (!collidingWithGround)
 	{
