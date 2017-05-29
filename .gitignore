@@ -259,3 +259,6 @@ Source/LitetSpel/x64/Release/*.obj
 *.exe
 x64/Release/Source.iobj
 x64/Release/Source.ipdb
+x64/Release/Source.iobj
+x64/Release/Source.iobj
+x64/Release/Source.iobj

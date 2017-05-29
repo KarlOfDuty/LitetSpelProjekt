@@ -12,7 +12,7 @@ class Level
 {
 private:
 
-	glm::vec3 playerPos = glm::vec3(0,2,0);
+	glm::vec3 playerPos = glm::vec3(0, 2, 0);
 	std::vector<Model*> staticModels;
 	std::vector<Model*> colliders;
 	std::vector<Model*> dynamicModels;

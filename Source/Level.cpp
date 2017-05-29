@@ -28,7 +28,7 @@ void Level::loadLevel()
 		{
 			line >> path;
 			readModels(path.c_str(), colliders);
-			if(showColliders)readModels(path.c_str(), staticModels);
+			if (showColliders)readModels(path.c_str(), staticModels);
 		}
 		else if (str == "triggers")
 		{
@@ -154,14 +154,14 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		//Diffuse colour
 		glm::vec3 diffuseColour;
 		in.read(reinterpret_cast<char*>(&diffuseColour), sizeof(diffuseColour));
-		mesh->material.diffuseColour = glm::vec3(0.5,0.5,0.5);
+		mesh->material.diffuseColour = glm::vec3(0.5, 0.5, 0.5);
 		mesh->material.diffuseColour = diffuseColour;
 		//Specularity
 		float specularity = 0;
 		in.read(reinterpret_cast<char*>(&specularity), sizeof(specularity));
 		mesh->material.specularColour = glm::vec3(specularity, specularity, specularity);
 		//Not used
-		mesh->material.ambientColour = glm::vec3(0.5,0.5,0.5);
+		mesh->material.ambientColour = glm::vec3(0.5, 0.5, 0.5);
 		//Position
 		glm::vec3 pos;
 		in.read(reinterpret_cast<char*>(&pos), sizeof(pos));
@@ -293,7 +293,7 @@ glm::vec3 Level::getPlayerPos()
 Level::Level()
 {
 	this->filePath = "";
-	playerPos = glm::vec3(0,0,0);
+	playerPos = glm::vec3(0, 0, 0);
 }
 Level::Level(std::string filePath)
 {

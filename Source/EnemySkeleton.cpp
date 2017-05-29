@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemySkeleton::EnemySkeleton(int health, Model* model, int damage, int immunityTime, bool patrol, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
+EnemySkeleton::EnemySkeleton(int health, Model* model, int damage, int immunityTime, bool patrol, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	this->attack = true;
 	this->acceleration = 0.8f;
@@ -12,6 +12,7 @@ EnemySkeleton::EnemySkeleton(int health, Model* model, int damage, int immunityT
 	this->allProjectiles = allProjectiles;
 	this->checkPointGiven = false;
 	box = new Model("models/cube/cubeGreen.obj");
+	this->sound = sound;
 }
 
 EnemySkeleton::~EnemySkeleton()
@@ -21,24 +22,21 @@ EnemySkeleton::~EnemySkeleton()
 
 void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
-	if (attack)
+	if (waitBeforeAttack.getElapsedTime().asSeconds() >= 0.1)
 	{
-		if (waitBeforeAttack.getElapsedTime().asSeconds() >= 0.1)
+		if (attackCooldown.getElapsedTime().asSeconds() >= 1)
 		{
-			if (attackCooldown.getElapsedTime().asSeconds() >= 1)
-			{
-				glm::vec3 scale(0.0f, 2.0f, 1.0f);
-				glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-1, 0) : glm::vec2(1, 0);
-				Projectile* temp = new Projectile;
-				temp->enemyMelee(box, getPos(), direction, 10.0f, scale);
-				allProjectiles->push_back(temp);
-				attack = false;
-				attackCooldown.restart();
-				waitTimer.restart();
-			}
+			glm::vec3 scale(0.0f, 2.0f, 1.0f);
+			glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-1, 0) : glm::vec2(1, 0);
+			Projectile* temp = new Projectile;
+			temp->enemyMelee(box, getPos(), direction, 10.0f, scale);
+			allProjectiles->push_back(temp);
+			attack = false;
+			jumpDelay.restart();
+			attackCooldown.restart();
+			waitTimer.restart();
 		}
 	}
-	
 }
 
 void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*>& allModels, Player* player)
@@ -54,39 +52,42 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 		collidingWithGround = false;
 	}
 
-	if (!attack)
+	if (collidingWithGround)
 	{
-		if (!checkPointGiven)
+		if (!attack)
 		{
-			if (enemyPosCurrent.x > player->getPos().x)
+			if (!checkPointGiven)
 			{
-				Dodgecheckpoint.x = player->getPos().x + 10;
-				Dodgecheckpoint.y = enemyPosCurrent.y;
-				Dodgecheckpoint.z = enemyPosCurrent.z;
-				dodgeLeft = false;
-				checkPointGiven = true;
-			}
-			else if (enemyPosCurrent.x < player->getPos().x)
-			{
-				Dodgecheckpoint.x = player->getPos().x - 10;
-				Dodgecheckpoint.y = enemyPosCurrent.y;
-				Dodgecheckpoint.z = enemyPosCurrent.z;
-				dodgeLeft = true;
-				checkPointGiven = true;
+				if (enemyPosCurrent.x > player->getPos().x)
+				{
+					Dodgecheckpoint.x = player->getPos().x + 10;
+					Dodgecheckpoint.y = enemyPosCurrent.y;
+					Dodgecheckpoint.z = enemyPosCurrent.z;
+					dodgeLeft = false;
+					checkPointGiven = true;
+				}
+				else if (enemyPosCurrent.x < player->getPos().x)
+				{
+					Dodgecheckpoint.x = player->getPos().x - 10;
+					Dodgecheckpoint.y = enemyPosCurrent.y;
+					Dodgecheckpoint.z = enemyPosCurrent.z;
+					dodgeLeft = true;
+					checkPointGiven = true;
+				}
 			}
 		}
-	}
 
-	//Patrol check 
-	if (patrol)
-	{
-		if (enemyPosCurrent.x < checkPoint.x - 3)
+		//Patrol check 
+		if (patrol)
 		{
-			checkPointReached = true;
-		}
-		else if (enemyPosCurrent.x > checkPoint.x + 3)
-		{
-			checkPointReached = false;
+			if (enemyPosCurrent.x < checkPoint.x - 3)
+			{
+				checkPointReached = true;
+			}
+			else if (enemyPosCurrent.x > checkPoint.x + 3)
+			{
+				checkPointReached = false;
+			}
 		}
 	}
 
@@ -113,11 +114,18 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 5.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
 	}
+
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 8)
+	{
+		this->sound->playSound("clickySkeliClacks");
+		soundTimer.restart();
+	}
+
 
 	if (!returnToStart)
 	{
@@ -134,7 +142,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 				{
 					rotateLeft = true;
 				}
-				if (glm::length(enemyPosCurrent - player->getPos()) > attackRange)
+				if (glm::length(enemyPosCurrent.x - player->getPos().x) > attackRange)
 				{
 					if (enemyPosCurrent.x > player->getPos().x + attackRange)
 					{
@@ -151,7 +159,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 					this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
 				}
 			}
-			else 
+			else
 			{
 				if (waitTimer.getElapsedTime().asSeconds() >= 0.15)
 				{
@@ -159,10 +167,13 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 					{
 						if (!jumped)
 						{
-							if (enemyPosCurrent.y == 0.0f)
+							if (collidingWithGround)
 							{
-								velocityY = 9;
-								jumped = true;
+								if (jumpDelay.getElapsedTime().asSeconds() >= 0.2)
+								{
+									velocityY = 7;
+									jumped = true;
+								}
 							}
 						}
 						velocityX = velocityX + acceleration * dt;
@@ -171,10 +182,13 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 					{
 						if (!jumped)
 						{
-							if (enemyPosCurrent.y == 0.0f)
+							if (collidingWithGround)
 							{
-								velocityY = 9;
-								jumped = true;
+								if (jumpDelay.getElapsedTime().asSeconds() >= 0.2)
+								{
+									velocityY = 7;
+									jumped = true;
+								}
 							}
 						}
 						velocityX = velocityX - acceleration * dt;
@@ -196,11 +210,11 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 			//Patrol
 			if (patrol)
 			{
-				if (enemyPosCurrent.x >= checkPoint.x)
+				if (enemyPosCurrent.x >= checkPoint.x + 3)
 				{
 					rotateLeft = false;
 				}
-				if (enemyPosCurrent.x <= checkPoint.x)
+				if (enemyPosCurrent.x <= checkPoint.x - 3)
 				{
 					rotateLeft = true;
 				}
@@ -241,11 +255,6 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 			returnToStart = false;
 			playerSeen = false;
 		}
-	}
-
-	if (collidingWithGround)
-	{
-		
 	}
 
 	if (!collidingWithGround)

@@ -2,12 +2,13 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyBat::EnemyBat(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
+EnemyBat::EnemyBat(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	swoopAttack = true;
 	startPosition = enemyStartPos;
 	returnToStart = false;
 	newCheckPoint = enemyStartPos;
+	this->sound = sound;
 }
 
 EnemyBat::~EnemyBat()
@@ -90,6 +91,11 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 		if (collidedFrom.y == 0 && collidedFrom.x != 0)
 		{
 			velocityY += 80.0f*dt;
+		}
+		if (collidedFrom.y < 0 && collidedFrom.x != 0)
+		{
+			newCheckPoint.y = enemyPosCurrent.y;
+			newCheckPoint.x = enemyPosCurrent.x;
 		}
 		if (collidedFrom.y > 0)
 		{
@@ -199,6 +205,12 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 	{
 		playerSeen = true;
 		returnToStart = false;
+	}
+
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 6)
+	{
+		this->sound->playSound("screees");
+		soundTimer.restart();
 	}
 
 	//Move

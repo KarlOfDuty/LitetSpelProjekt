@@ -253,7 +253,6 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 				heartModel->setModelMatrix(test);
 			}
 		}
-		delete this;
 	}
 	else if (commands[commandID] == "phase1" && targets[targetID]->type() == "Enemy")
 	{
@@ -271,6 +270,7 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 			enemyBoss->setCreateTrigger(true);
 		}
 		enemyBoss->setRotateNow();
+		enemyBoss->setAttacking(false);
 		enemyBoss->setChargeCounter(0);
 	}
 	else if (commands[commandID] == "phase2" && targets[targetID]->type() == "Enemy")
@@ -297,7 +297,15 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 	else if (commands[commandID] == "playerUnderBoss" && targets[targetID]->type() == "Enemy")
 	{
 		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
-		enemyBoss->loseTrackOfPlayer(false);
+		if (enemyBoss->getPhase() == 2)
+		{
+			enemyBoss->setPlayerInWater(!enemyBoss->getPlayerInWater());
+			enemyBoss->loseTrackOfPlayer(false);
+		}
+		if (enemyBoss->getPhase() == 3)
+		{
+			enemyBoss->loseTrackOfPlayer(!enemyBoss->getPlayerTracked());
+		}
 	}
 	else if (commands[commandID] == "playerUnderBoss" && targets[targetID]->type() == "Player")
 	{

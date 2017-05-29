@@ -2,10 +2,11 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemySlime::EnemySlime(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
+EnemySlime::EnemySlime(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	startPosition = enemyStartPos;
 	returnToStart = false;
+	this->sound = sound;
 }
 
 EnemySlime::~EnemySlime()
@@ -69,6 +70,12 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	{
 		playerSeen = true;
 		returnToStart = false;
+	}
+
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 8)
+	{
+		this->sound->playSound("goopySlimeSounds");
+		soundTimer.restart();
 	}
 
 	//Move
@@ -155,6 +162,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	{
 		velocityY -= 300*dt;
 	}
+
 
 	if (velocityY > 200)
 	{

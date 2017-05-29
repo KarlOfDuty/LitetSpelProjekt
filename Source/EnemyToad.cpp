@@ -2,13 +2,16 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyToad::EnemyToad(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
+EnemyToad::EnemyToad(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	this->attackRange = 100;
 	this->startPosition = enemyStartPos;
 	this->returnToStart = false;
 	this->allProjectiles = allProjectiles;
 	projectileModel = new Model("models/sphere/sphere.obj");
+	this->sound = sound;
+
+	projectileModel = new Model("models/sphere/sphereGreen.obj");
 }
 
 EnemyToad::~EnemyToad()
@@ -87,8 +90,17 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		//Detect player
 		if (glm::length(enemyPosCurrent - player->getPos()) < 200.0f)
 		{
+
 			playerSeen = true;
 			returnToStart = false;
+
+
+		}
+
+		if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 15 )
+		{
+			this->sound->playSound("chukelingFrogNoise");
+			soundTimer.restart();
 		}
 
 		if (!returnToStart)

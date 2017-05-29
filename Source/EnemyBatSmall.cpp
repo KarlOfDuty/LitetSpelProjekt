@@ -2,11 +2,12 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyBatSmall::EnemyBatSmall(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
+EnemyBatSmall::EnemyBatSmall(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	goForPlayer = true;
 	startPosition = enemyStartPos;
 	returnToStart = false;
+	this->sound = sound;
 }
 
 EnemyBatSmall::~EnemyBatSmall()
@@ -76,7 +77,11 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 	if (collides)
 	{
 		collisionCounter++;
-		if (collisionCounter < 80)
+		if (collidedFrom.y > 0 || collidedFrom.x != 0)
+		{
+			collisionCounter++;
+		}
+		if (collisionCounter < 300)
 		{
 			velocityY += 70.0f*dt;
 		}
@@ -90,6 +95,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 			playerSeen = false;
 			goForPlayer = false;
 		}
+		
 		timeSinceCollision.restart();
 	}
 	else
@@ -107,6 +113,12 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 	{
 		playerSeen = true;
 		returnToStart = false;
+	}
+
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 6)
+	{
+		this->sound->playSound("screees");
+		soundTimer.restart();
 	}
 
 	//Move

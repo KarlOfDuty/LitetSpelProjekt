@@ -199,7 +199,7 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 pla
 						model->setRotationMatrix(scaleMat);
 						model->rotate();
 
-						if (abs(scale.x*direction.x) >= 2)
+						if (abs(scale.x*direction.x) >= 3)
 						{
 							isUsed = false;
 						}
