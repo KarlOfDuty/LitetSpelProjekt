@@ -74,9 +74,9 @@ std::vector<glm::vec2> Player::getPoints()
 {
 	std::vector<glm::vec2> playerPoints;
 	playerPoints.push_back(glm::vec2(-10.0f, 0.0f));
-	playerPoints.push_back(glm::vec2(10.0f, 1.0f));
+	playerPoints.push_back(glm::vec2(10.0f, 35.0f));
 	playerPoints.push_back(glm::vec2(10.0f, 0.0f));
-	playerPoints.push_back(glm::vec2(-10.0f, 1.0f));
+	playerPoints.push_back(glm::vec2(-10.0f, 35.0f));
 	for (int k = 0; k < playerPoints.size(); k++)
 	{
 		playerPoints[k] += glm::vec2(getPos());
@@ -334,7 +334,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	}
 	
 	groundCheck();
-	groundPos = -50;
+
 	if (getPos().y > groundPos && isOnGround)
 	{
 		isOnGround = false;
@@ -606,31 +606,29 @@ void Player::collision(std::vector<Model*> &allModels)
 				glm::vec2 mtv;
 				if (collision::collision(playerPoints, objectPoints, mtv))
 				{
-					if (radians > 0.0f && radians < 0.79f)
+					if (radians > -0.79f && radians != 0.0f && radians < 0.79f)
 					{
-						if (mtv.y > 0)
-						{
-							modelMatrix[3].y -= 0.10f;
-						}
-						else
-						{
-							velocityY -= 0.5f;
-						}
-						modelMatrix[3].x += mtv.x;
-					}
-					else
-					{
-						modelMatrix[3].x += mtv.x;
-						if (mtv.y < 0)
+						if (mtv.y < 0 && mtv.x <= 0.5 && mtv.x > 0)
 						{
 							velocityY = 0;
 						}
+						modelMatrix[3].x += mtv.x;
+
 					}
+					else if (radians == 0)
+					{
+						modelMatrix[3].x += mtv.x;
+					}
+
 					modelMatrix[3].y += mtv.y;
 					if (mtv.y > 0)
 					{
-						if (modelMatrix[3].y < 0) modelMatrix[3].y = 0;
-						groundPos = modelMatrix[3].y;
+						if (abs(groundPos - modelMatrix[3].y) <= 10)
+						{
+							if (modelMatrix[3].y < groundPos)
+								modelMatrix[3].y = groundPos;
+							groundPos = modelMatrix[3].y;
+						}
 					}
 				}
 				else
@@ -644,62 +642,6 @@ void Player::collision(std::vector<Model*> &allModels)
 			collides = false;
 		}
 		collisionChecks++;
-		/*
-		int index = -1;
-		float minDistance = 1000;
-		glm::vec2 player2dPos = glm::vec2(getPos().x, getPos().y + 0.5f);
-		for (int i = 0; i < allModels.size(); i++)
-		{
-			float distance = glm::length(player2dPos - glm::vec2(allModels[i]->getModelMatrix()[3]));
-			if (distance < minDistance)
-			{
-				minDistance = distance;
-				index = i;
-			}
-		}
-
-		if (index != -1)
-		{
-			std::vector<glm::vec2> playerPoints = getPoints();
-			std::vector<glm::vec2> objectPoints;
-			float radians = 0.0f;
-			getPoints(objectPoints, allModels[index], radians);
-			glm::vec2 mtv;
-			if (collision::collision(playerPoints, objectPoints, mtv))
-			{
-				if (radians > 0.0f && radians < 0.79f)
-				{
-					if (mtv.y > 0)
-					{
-						modelMatrix[3].y -= 0.05f;
-					}
-					else
-					{
-						velocityY -= 0.5f;
-					}
-				}
-				else
-				{
-					modelMatrix[3].x += mtv.x;
-					if (mtv.y < 0)
-					{
-						velocityY = 0;
-					}
-				}
-				modelMatrix[3].y += mtv.y;
-				if (mtv.y > 0)
-				{
-					if (modelMatrix[3].y < 0) modelMatrix[3].y = 0;
-					groundPos = modelMatrix[3].y;
-				}
-			}
-			else
-			{
-				collides = false;
-			}
-		}
-		collisionChecks++;
-		*/
 	}
 }
 void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians)
@@ -755,20 +697,43 @@ void Player::groundCheck()
 	}
 	//Now find the ground based on the sorted models
 	bool foundGround = false;
-	float closestDistance = 100;
-	glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y, getPos().z);
+	float closestDistance = 100000;
+	glm::vec3 rayOrigin = glm::vec3(getPos().x - 9, getPos().y, getPos().z);
 	glm::vec3 rayDir(0, -1, 0);
 	for (int i = 0; i < sortedModels.size(); i++)
 	{
 		glm::vec3 aabbMin, aabbMax;
-		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
 		glm::vec3 scale;
 		glm::decompose(sortedModels[i]->getModelMatrix(), scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
 		aabbMin = aabbMin * scale * scale;
 		aabbMax = aabbMax * scale * scale;
 		glm::mat4 boxMat = sortedModels[i]->getModelMatrix();
 		float distance = 10000;
-		
+
+		//Raycast downwards to find the distance to ground
+		if (collision::TestRayOBBIntersection(rayOrigin, rayDir, aabbMin, aabbMax, boxMat, distance))
+		{
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				foundGround = true;
+			}
+		}
+	}
+	rayOrigin = glm::vec3(getPos().x + 9, getPos().y, getPos().z);
+	rayDir = glm::vec3(0, -1, 0);
+	for (int i = 0; i < sortedModels.size(); i++)
+	{
+		glm::vec3 aabbMin, aabbMax;
+		glm::vec3 scale;
+		glm::decompose(sortedModels[i]->getModelMatrix(), scale, glm::quat(), glm::vec3(), glm::vec3(), glm::vec4());
+		sortedModels[i]->getMinMaxBouding(aabbMin, aabbMax);
+		aabbMin = aabbMin * scale * scale;
+		aabbMax = aabbMax * scale * scale;
+		glm::mat4 boxMat = sortedModels[i]->getModelMatrix();
+		float distance = 10000;
+
 		//Raycast downwards to find the distance to ground
 		if (collision::TestRayOBBIntersection(rayOrigin, rayDir, aabbMin, aabbMax, boxMat, distance))
 		{
@@ -787,4 +752,5 @@ void Player::groundCheck()
 	{
 		groundPos = 0;
 	}
+	std::cout << closestDistance << std::endl;
 }
