@@ -694,7 +694,7 @@ void loadLevel()
 	/*enemyManager->createBatSwarm(glm::vec3(1100.2f, 320.8f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(1090.0f, 332.3f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(1110.0f, 330.6f, 0.0f));*/
-	enemyManager->createCrab(glm::vec3(670.0f, 40.0f, 0.0f));
+	//enemyManager->createCrab(glm::vec3(670.0f, 40.0f, 0.0f));
 	//enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
 	//enemyManager->createSkeleton(glm::vec3(30.0f, 7.0f, 0.0f), false);
 

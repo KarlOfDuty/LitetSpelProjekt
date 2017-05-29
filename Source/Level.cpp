@@ -30,10 +30,15 @@ void Level::loadLevel()
 			readModels(path.c_str(), colliders);
 			if (showColliders)readModels(path.c_str(), staticModels);
 		}
+		else if (str == "enemies")
+		{
+			line >> path;
+			readEnemys(path.c_str());
+		}
 		else if (str == "triggers")
 		{
 			line >> path;
-			//readModels(path.c_str(), staticModels);
+			readTrigers(path.c_str());
 		}
 	}
 	file.close();
@@ -185,59 +190,113 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 	in.close();
 	return true;
 }
-bool Level::readEnemys(std::ifstream &file)
+bool Level::readEnemys(const char* filePath)
 {
+	//Temporary containers
+	std::ifstream file(filePath);
 	std::string str = "";
 	//Gets a single line of the file at a time
 	while (std::getline(file, str))
 	{
 		std::stringstream line;
 		std::string type;
+		line << str;
+		line >> str;
+
 		float x;
 		float y;
 		float z;
-		//Takes the first word of the line and compares it to variable names
+		line >> type;
+		line >> x;
+		line >> y;
+		line >> z;
+		if (type == "bats")
+		{
+			enemyList->createBatSwarm(glm::vec3(x, y, z));
+		}
+		else if (type == "boss")
+		{
+			enemyList->createBoss(glm::vec3(x, y, z));
+		}
+		else if (type == "crab")
+		{
+			enemyList->createCrab(glm::vec3(x, y, z));
+		}
+		else if (type == "firefly")
+		{
+			enemyList->createFirefly(glm::vec3(x, y, z));
+		}
+		else if (type == "bat")
+		{
+			enemyList->createGiantBat(glm::vec3(x, y, z));
+		}
+		else if (type == "skeleton")
+		{
+			enemyList->createSkeleton(glm::vec3(x, y, z), false);
+		}
+		else if (type == "slime")
+		{
+			enemyList->createSlime(glm::vec3(x, y, z));
+		}
+		else if (type == "toad")
+		{
+			enemyList->createToad(glm::vec3(x, y, z));
+		}
+	}
+	file.close();
+	return true;
+}
+bool Level::readTrigers(const char * filePath)
+{
+	//Temporary containers
+	std::ifstream file(filePath);
+	std::string str = "";
+	//Gets a single line of the file at a time
+	while (std::getline(file, str))
+	{
+		std::stringstream line;
+		std::string type;
 		line << str;
 		line >> str;
-		if (modelDebug)std::cout << str << std::endl;
-		if (str == "enemys")
+
+		float x;
+		float y;
+		float z;
+		line >> type;
+		line >> x;
+		line >> y;
+		line >> z;
+		if (type == "bats")
 		{
-			line >> type;
-			line >> x;
-			line >> y;
-			line >> z;
-			if (type == "bats")
-			{
-				enemyList->createBatSwarm(glm::vec3(x, y, z));
-			}
-			else if (type == "boss")
-			{
-				enemyList->createBoss(glm::vec3(x, y, z));
-			}
-			else if (type == "crab")
-			{
-				enemyList->createCrab(glm::vec3(x, y, z));
-			}
-			else if (type == "firefly")
-			{
-				enemyList->createFirefly(glm::vec3(x, y, z));
-			}
-			else if (type == "bat")
-			{
-				enemyList->createGiantBat(glm::vec3(x, y, z));
-			}
-			else if (type == "skeleton")
-			{
-				enemyList->createSkeleton(glm::vec3(x, y, z), false);
-			}
-			else if (type == "slime")
-			{
-				enemyList->createSlime(glm::vec3(x, y, z));
-			}
-			else if (type == "toad")
-			{
-				enemyList->createToad(glm::vec3(x, y, z));
-			}
+			enemyList->createBatSwarm(glm::vec3(x, y, z));
+		}
+		else if (type == "boss")
+		{
+			enemyList->createBoss(glm::vec3(x, y, z));
+		}
+		else if (type == "crab")
+		{
+			enemyList->createCrab(glm::vec3(x, y, z));
+		}
+		else if (type == "firefly")
+		{
+			enemyList->createFirefly(glm::vec3(x, y, z));
+		}
+		else if (type == "bat")
+		{
+			enemyList->createGiantBat(glm::vec3(x, y, z));
+		}
+		else if (type == "skeleton")
+		{
+			enemyList->createSkeleton(glm::vec3(x, y, z), false);
+		}
+		else if (type == "slime")
+		{
+			enemyList->createSlime(glm::vec3(x, y, z));
+		}
+		else if (type == "toad")
+		{
+			enemyList->createToad(glm::vec3(x, y, z));
 		}
 	}
 	file.close();

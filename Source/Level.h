@@ -24,7 +24,8 @@ public:
 	void loadModels();
 	void loadLevel();
 	bool readModels(const char* filePath, std::vector<Model*> &modelVector);
-	bool readEnemys(std::ifstream &file);
+	bool readEnemys(const char* filePath);
+	bool readTrigers(const char* filePath);
 	void unloadModels();
 	void setupTriggers(Player* player);
 	void updateTriggers(float dt);
