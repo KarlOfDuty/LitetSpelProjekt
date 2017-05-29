@@ -58,7 +58,7 @@ void EnemyManager::createBoss(glm::vec3 enemyStartPos)
 
 void EnemyManager::createFirefly(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, 0.5, enemyStartPos, glm::vec3(0.16f, 0.16f, 0.16f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, 0.5, enemyStartPos, glm::vec3(5.16f, 5.16f, 5.16f), allProjectiles, sound));
 }
 
 void EnemyManager::clearDeadEnemies()

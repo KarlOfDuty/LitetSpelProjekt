@@ -68,7 +68,7 @@ void EnemyFireFly::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 che
 
 	if (collides)
 	{
-		velocityY += 5.0f*dt;
+		velocityY += 60.0f*dt;
 		if (collidedFrom.y > 0)
 		{
 			if (attackRange > 0)
