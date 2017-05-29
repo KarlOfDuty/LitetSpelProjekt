@@ -13,7 +13,10 @@ void Player::freeMemory()
 
 Player::Player()
 {
-	Model* birdModel = new Model("models/Characters/Bird/BirdTest1.obj", modelMatrix);
+	Model* birdModel = new Model();
+	birdModel->readModel("models/Characters/Bird/model.bb");
+	birdModel->loadSkeleton("models/Characters/Bird/skelInfo.bb");
+	birdModel->loadWeight("models/Characters/Bird/weightInfo.bb");
 	Model* sharkModel = new Model("models/Characters/Shark/Fish_T-Pose_Export.obj", modelMatrix);
 	Model* butterflyModel = new Model("models/Characters/Butterfly/ButterFly.obj", modelMatrix);
 
@@ -304,6 +307,7 @@ std::string Player::type() const
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
+	player->update();
 	allAttackBoxes.clear();
 	for (int i = 0; i < allArrowAttackBoxes.size(); i++)
 	{
@@ -317,7 +321,6 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	{
 		allAttackBoxes.push_back(allMeleeAttackBoxes[i]);
 	}
-
 	allStaticModels = allModels;
 
 	//Kill player and reset jumps in water

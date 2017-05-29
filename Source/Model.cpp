@@ -308,8 +308,6 @@ void Model::readOBJ(std::string filename)
 					i++;
 				};
 				Vertex aVertex;
-				//This variable is handled in the setup function
-				aVertex.useNormalMap = 0;
 				//Creates a vertex from the data pointed to by the indices
 				if (i == 3)
 				{
@@ -659,8 +657,8 @@ void Model::loadSkeleton(const char* filePath)
 		in.read(tempName, nrOfChars);
 		name.append(tempName, nrOfChars);
 
-		std::cout << name << std::endl;
-		delete tempName;
+		//std::cout << name << std::endl;
+		delete[] tempName;
 
 		Joint *joint = new Joint();
 		joint->nrOfKeys = nrOfKeyframes;
@@ -681,7 +679,8 @@ void Model::loadSkeleton(const char* filePath)
 			in.read(reinterpret_cast<char*>(&tempMap[3]), sizeof(tempMap[3]));
 			joint->transformMat.push_back(tempMap);
 		}
-		skeleton.push_back(joint);
+		this->skeleton.push_back(joint);
+		hasAnimations = true;
 	}
 }
 void Model::loadWeight(const char* filePath)
@@ -693,12 +692,10 @@ void Model::loadWeight(const char* filePath)
 	int nrOfPolygons = 0;
 	in.read(reinterpret_cast<char*>(&nrOfPolygons), sizeof(int));
 	in.read(reinterpret_cast<char*>(&nrOfIndices), sizeof(int));
-	weightInfo.nrOfIndices = nrOfIndices;
 	int polygonIndex[3];
 	int jointIndex = 0;
 	float influence = 0;
 
-	glm::ivec3 polygonVertexIndex;
 	glm::ivec4 controllers;
 	glm::vec4 weightInfluences;
 
@@ -707,10 +704,7 @@ void Model::loadWeight(const char* filePath)
 		for (int i = 0; i < 3; i++) 
 		{
 			in.read(reinterpret_cast<char*>(&polygonIndex[i]), sizeof(int));
-			polygonVertexIndex[i] = polygonIndex[i];
 		}
-		weightInfo.polygonVerteciesIndex.push_back(polygonVertexIndex);
-		weightInfo.indexPos.push_back(k);
 
 		for (int i = 0; i < 3; i++)
 		{
@@ -725,14 +719,41 @@ void Model::loadWeight(const char* filePath)
 				check = in.tellg();
 
 			}
-			weightInfo.controllers.push_back(controllers);
-			weightInfo.weightsInfluence.push_back(weightInfluences);
+			meshes[0]->vertices[(k*3) + i].controllers = controllers;
+			meshes[0]->vertices[(k * 3) + i].weightsInfluence = weightInfluences;
+		}
+	}
+}
+void Model::updateAnimation()
+{
+	if (skeleton.size())
+	{
+		if (currentFrame < this->skeleton[0]->nrOfKeys-1)
+		{
+			currentFrame++;
+		}
+		else
+		{
+			currentFrame = 1;
 		}
 	}
 }
 //Draws the model
 void Model::draw(Shader shader)
 {
+	if (skeleton.size())
+	{
+		//std::cout << this->skeleton[0]->transformMat.size() << " " << currentFrame << std::endl;
+		for (int i = 0; i < skeleton.size(); i++)
+		{
+			currentJointTrans[i] = skeleton[i]->globalBindPosMat;
+		}
+		for (int j = 0; j < 100; j++)
+		{
+			glUniformMatrix4fv(glGetUniformLocation(shader.program, ("currentJointTrans[" + std::to_string(j) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(currentJointTrans[j]));
+		}
+	}
+	glUniform1i(glGetUniformLocation(shader.program,"hasAnimation"),hasAnimations);
 	//Draw vertices
 	glBindVertexArray(this->VAO);
 	for (int i = 0; i < this->meshes.size(); i++)
@@ -771,10 +792,6 @@ void Model::setupModel()
 		//Iterate through vertices in the face
 		for (int j = 0; j < meshes[i]->vertices.size(); j++)
 		{
-			if (meshes[i]->material.normalMapFile != "")
-			{
-				meshes[i]->vertices[j].useNormalMap = 1;
-			}
 			vertices.push_back(meshes[i]->vertices.at(j));
 		}
 		loadTextures(i);
@@ -791,9 +808,12 @@ void Model::setupModel()
 	//Normal
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 5));
-	//UseNormalMap Bool
+	//Weights
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 4, GL_INT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 8));
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 8));
+	//Controllers
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_INT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 12));
 	//Unbind the vertex array buffer
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -893,6 +913,7 @@ void Model::loadTextures(int i)
 Model::Model(std::string filename)
 {
 	//Initializes the model without a rotation or model matrix. Does not set the model up so it can be drawn.
+	this->hasAnimations = false;
 	this->modelMatrix = glm::mat4(1.0);
 	this->rotationMatrix = glm::mat4(1.0);
 	readOBJ(filename);
@@ -902,6 +923,7 @@ Model::Model(std::string filename)
 Model::Model(std::string filename, glm::mat4 modelMat)
 {
 	//Initializes the model without a rotation
+	this->hasAnimations = false;
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = glm::mat4(1.0);
 	readOBJ(filename);
@@ -911,6 +933,7 @@ Model::Model(std::string filename, glm::mat4 modelMat)
 Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 {
 	//Initializes the model
+	this->hasAnimations = false;
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = rotation;
 	readOBJ(filename);
@@ -920,12 +943,14 @@ Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 Model::Model()
 {
 	//Initializes the model with no data
+	this->hasAnimations = false;
 	this->modelMatrix = glm::mat4(1.0);
 	this->rotationMatrix = glm::mat4(1.0);
 }
 //Copy constructors
 Model::Model(Model &otherModel)
 {
+	this->hasAnimations = otherModel.hasAnimations;
 	this->modelMatrix = otherModel.modelMatrix;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->meshes = otherModel.meshes;
@@ -935,6 +960,7 @@ Model::Model(Model &otherModel)
 }
 Model::Model(Model *otherModel)
 {
+	this->hasAnimations = otherModel->hasAnimations;
 	this->modelMatrix = otherModel->modelMatrix;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->meshes = otherModel->meshes;
@@ -944,6 +970,7 @@ Model::Model(Model *otherModel)
 }
 Model::Model(Model &otherModel, glm::mat4 modelMat)
 {
+	this->hasAnimations = otherModel.hasAnimations;
 	this->modelMatrix =  modelMat;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->meshes = otherModel.meshes;
@@ -953,6 +980,7 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 }
 Model::Model(Model *otherModel, glm::mat4 modelMat)
 {
+	this->hasAnimations = otherModel->hasAnimations;
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->meshes = otherModel->meshes;

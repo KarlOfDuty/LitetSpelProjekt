@@ -234,11 +234,11 @@ void render()
 			glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[j]->getModelMatrix()[0][0]);
 			levelManager.currentLevel->getStaticModels()[j]->draw(shadowShader);
 		}
-		glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel().getModelMatrix()[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel()->getModelMatrix()[0][0]);
 		enemyManager->draw(shadowShader);
 		if (player->playerIsDead() != true)
 		{
-			player->draw(shadowShader);
+			//player->draw(shadowShader);
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, windowWidth, windowHeight);
@@ -330,7 +330,6 @@ void update(sf::RenderWindow &window)
 	}
 
 	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getCollisionBoxes(), player);
-
 	//Camera update, get new viewMatrix
 	if (enemyManager->getBossKill() && !cameraOnBoss)
 	{
