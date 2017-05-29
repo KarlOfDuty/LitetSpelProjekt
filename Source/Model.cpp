@@ -627,6 +627,10 @@ bool Model::readModel(const char* filePath)
 	glm::vec3 scale;
 	in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
 	this->setScale(scale);
+
+	bool hasAnimation = false;
+	in.read(reinterpret_cast<char*>(&hasAnimation), sizeof(bool));
+
 	//Set up model
 	this->rotate();
 	this->addMesh(mesh);
@@ -685,13 +689,9 @@ void Model::loadSkeleton(const char* filePath)
 }
 void Model::loadWeight(const char* filePath)
 {
-
 	std::ifstream in(filePath, std::ios::binary);
-
-	int nrOfIndices = 0;
 	int nrOfPolygons = 0;
 	in.read(reinterpret_cast<char*>(&nrOfPolygons), sizeof(int));
-	in.read(reinterpret_cast<char*>(&nrOfIndices), sizeof(int));
 	int polygonIndex[3];
 	int jointIndex = 0;
 	float influence = 0;
@@ -746,7 +746,7 @@ void Model::draw(Shader shader)
 		//std::cout << this->skeleton[0]->transformMat.size() << " " << currentFrame << std::endl;
 		for (int i = 0; i < skeleton.size(); i++)
 		{
-			currentJointTrans[i] = skeleton[i]->globalBindPosMat;
+			currentJointTrans[i] = skeleton[i]->transformMat[2];
 		}
 		for (int j = 0; j < 100; j++)
 		{

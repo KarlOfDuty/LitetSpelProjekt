@@ -174,6 +174,10 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		glm::vec3 scale;
 		in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
 		model->setScale(scale);
+
+		bool hasAnimation = false;
+		in.read(reinterpret_cast<char*>(&hasAnimation), sizeof(bool));
+
 		//Set up model
 		model->rotate();
 		model->addMesh(mesh);
