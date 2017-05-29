@@ -1,8 +1,9 @@
 #include "LevelManager.h"
-LevelManager::LevelManager()
+LevelManager::LevelManager(EnemyManager * enemy)
 {
-	levels.push_back(new Level("config/level1.ini"));
-	levels.push_back(new Level("config/level2.ini"));
+	this->enemyList = enemy;
+	levels.push_back(new Level("config/level1.ini", enemyList));
+	levels.push_back(new Level("config/level2.ini", enemyList));
 	levelIndex = 0;
 	currentLevel = levels[levelIndex];
 }
