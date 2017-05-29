@@ -21,10 +21,10 @@ Player::Player()
 
 	this->modelMatrix[3] = glm::vec4(0.0f, 2.0f, 0.0f, 1.0);
 	this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	this->modelMatrix *= glm::scale(glm::vec3(0.08f, 0.08f, 0.08f));
+	this->modelMatrix *= glm::scale(glm::vec3(1, 1, 1));
 
 	angle = 0;
-	this->movementSpeed = 4.0f;
+	this->movementSpeed = 100.0f;
 	//Add characters
 	this->health = 20;
 
@@ -73,10 +73,10 @@ int Player::getHealth() const
 std::vector<glm::vec2> Player::getPoints()
 {
 	std::vector<glm::vec2> playerPoints;
-	playerPoints.push_back(glm::vec2(-0.5f, -0.0f));
-	playerPoints.push_back(glm::vec2(0.5f, -0.0f));
-	playerPoints.push_back(glm::vec2(0.5f, 1.0f));
-	playerPoints.push_back(glm::vec2(-0.5f, 1.0f));
+	playerPoints.push_back(glm::vec2(-10.0f, 0.0f));
+	playerPoints.push_back(glm::vec2(10.0f, 1.0f));
+	playerPoints.push_back(glm::vec2(10.0f, 0.0f));
+	playerPoints.push_back(glm::vec2(-10.0f, 1.0f));
 	for (int k = 0; k < playerPoints.size(); k++)
 	{
 		playerPoints[k] += glm::vec2(getPos());
@@ -91,19 +91,17 @@ void Player::swap(int character)
 
 //Makes the player jump
 void Player::jump()
-{
-	if(this->diving == false)
-	{	if (player->getMaxJumps() > jumps)
+{		
+	if (player->getMaxJumps() > jumps)
+	{
+		if (diving)
+		{
+			velocityY = player->getJumpHeight();			
+		}
+		else
 		{
 			velocityY = player->getJumpHeight();
 			jumps++;
-		}
-	}
-	else
-	{
-		if (player->getMaxJumps() > jumps)
-		{
-			velocityY = player->getJumpHeight();
 		}
 	}
 }
@@ -111,11 +109,7 @@ void Player::jump()
 
 void Player::waterEffect()
 {
-	if (this->player == playerCharacters[2])
-	{
-		setHealth(0);
-	}
-	else if (this->player == playerCharacters[0])
+	if (this->player != playerCharacters[1])
 	{
 		setHealth(0);
 	}
@@ -123,7 +117,7 @@ void Player::waterEffect()
 
 void Player::applyDamage(int appliedDamage)
 {
-	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.2)
+	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.2f)
 	{
 		this->health -= appliedDamage;
 		this->damageImmunity.restart();
@@ -201,7 +195,7 @@ void Player::heavyAttackPressed(sf::Window &window)
 			position = glm::vec2(getPos().x - 1.0f, getPos().y);
 			direction = glm::vec2(-1, 0);
 		}
-		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 1.f);
+		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 1.0f);
 	}
 	PlayerShark* shark = dynamic_cast<PlayerShark*>(player);
 	if (shark != nullptr)
@@ -310,6 +304,12 @@ std::string Player::type() const
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+	{
+		std::cout << this->getPos().x << " x" << std::endl;
+		std::cout << this->getPos().y << " y" << std::endl;
+	}
+
 	allAttackBoxes.clear();
 	for (int i = 0; i < allArrowAttackBoxes.size(); i++)
 	{
@@ -334,7 +334,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	}
 	
 	groundCheck();
-
+	groundPos = -50;
 	if (getPos().y > groundPos && isOnGround)
 	{
 		isOnGround = false;
@@ -387,13 +387,13 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		//If in air
 		if (!isOnGround)
 		{
-			velocityY -= 30 * dt;
+			velocityY -= 200 * dt;
 		}
 
 		//Maximum falling speed
-		if (velocityY < -30)
+		if (velocityY < -500)
 		{
-			velocityY = -30;
+			velocityY = -500;
 		}
 	}
 	else 
@@ -456,12 +456,12 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			glm::vec3 prevPos = getPos();
 			if (goingLeft == true)
 			{
-				glm::vec3 minus4 = {-4,0,0};
+				glm::vec3 minus4 = {-100,0,0};
 				this->setPos(this->getPos() + minus4);
 			}
 			else
 			{
-				glm::vec3 plus4 = {4,0,0};
+				glm::vec3 plus4 = {100,0,0};
 				this->setPos(this->getPos() + plus4);
 			}
 
@@ -585,9 +585,9 @@ void Player::collision(std::vector<Model*> &allModels)
 			glm::vec3 objectMin, objectMax;
 			allModels[i]->getScaledMinMaxBouding(objectMin, objectMax);
 			glm::vec2 distance = allModels[i]->getPos() - getPos();
-			if (abs(distance.x) < 2.0f+objectMax.x)
+			if (abs(distance.x) < 50.0f+objectMax.x)
 			{
-				if (abs(distance.y) < 2.0f + objectMax.y)
+				if (abs(distance.y) < 50.0f + objectMax.y)
 				{
 					closeObjects.push_back(allModels[i]);
 				}
@@ -616,6 +616,7 @@ void Player::collision(std::vector<Model*> &allModels)
 						{
 							velocityY -= 0.5f;
 						}
+						modelMatrix[3].x += mtv.x;
 					}
 					else
 					{

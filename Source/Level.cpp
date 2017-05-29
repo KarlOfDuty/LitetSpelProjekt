@@ -1,373 +1,196 @@
 #include "Level.h"
 
-//Loads a single copy of all models into memory
-void Level::loadModels()
+void Level::loadLevel()
 {
-	for (int i = 0; i < modelFilePaths.size(); i++)
+	//Temporary containers
+	std::ifstream file(filePath);
+	std::string str = "";
+	//Gets a single line of the file at a time
+	while (std::getline(file, str))
 	{
-		modelLibrary.push_back(new Model(modelFilePaths[i]));
+		std::stringstream line;
+		std::string path;
+		//Takes the first word of the line and compares it to variable names
+		line << str;
+		line >> str;
+		if (modelDebug)std::cout << str << std::endl;
+		if (str == "staticModels")
+		{
+			line >> path;
+			readModels(path.c_str(), staticModels);
+		}
+		else if (str == "dynamicModels")
+		{
+			line >> path;
+			readModels(path.c_str(), dynamicModels);
+		}
+		else if (str == "colliders")
+		{
+			line >> path;
+			readModels(path.c_str(), colliders);
+			if (showColliders)readModels(path.c_str(), staticModels);
+		}
+		else if (str == "triggers")
+		{
+			line >> path;
+			//readModels(path.c_str(), staticModels);
+		}
 	}
+	file.close();
 }
-//Places the loaded models in the world, keeping pointers to the original 
-//meshes to avoid copying large amounts of data in memory
-void Level::setupModels()
+bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 {
-	//Boss stuff
-	//remove these
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		4.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		60.0, 13.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		35.0, 3.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		40.0, 3.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		45.0, 3.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		50.0, 3.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		55.0, 3.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		25.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		45.0, 8.0, 0.0, 1.0
-	}));
+	glm::vec3 vec3;
+	glm::vec2 vec2;
+	std::ifstream in(filePath, std::ios::binary);
+	int nrOfMeshes = 0;
+	in.read(reinterpret_cast<char*>(&nrOfMeshes), sizeof(int));
 
+	for (int i = 0; i < nrOfMeshes; i++)
+	{
+		//Get the name
+		std::string name = "";
+		int nrOfChars = 0;
+		in.read(reinterpret_cast<char*>(&nrOfChars), sizeof(int));
+		char *tempName;
+		tempName = new char[nrOfChars];
+		in.read(tempName, nrOfChars);
+		name.append(tempName, nrOfChars);
 
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		25.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		25.0, 3.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		25.0, 7.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		30.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		30.0, 3.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		30.0, 8.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		30.0, 11.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		30.0, 21.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		1.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		32.0, 26.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		30.0, 31.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		25.0, 21.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		35.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		40.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		40.0, 8.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		45.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		45.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		50.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		55.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		60.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		60.0, 3.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		60.0, 8.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		60.0, 10.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		60.0, 18.0, 0.0, 1.0
-	}));
-	//--------------------
+		if (modelDebug)std::cout << name << std::endl;
+		delete tempName;
 
-	staticModels.push_back(new Model(modelLibrary[0],
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		-13.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		-13.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		-18.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		-8.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		-3.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		2.0, -2.0, 0.0, 1.0
-	}));
+		int nrOfCtrlPoints = 0;
+		in.read(reinterpret_cast<char*>(&nrOfCtrlPoints), sizeof(int));
 
-	
-	
-	Model* slope = new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		8.0, 0.5, 0.0, 1.0
-	});
-	slope->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-	slope->rotate();
-	staticModels.push_back(slope);
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		14.0, -2.0, 0.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		5.0, 0.0, 0.0, 0.0,
-		0.0, 5.0, 0.0, 0.0,
-		0.0, 0.0, 5.0, 0.0,
-		19.0, 3.0, 0.0, 1.0
-	}));
+		if (modelDebug)std::cout << nrOfCtrlPoints << std::endl;
+		Model *model = new Model();
+		Mesh *mesh = new Mesh();
+		mesh->name = name;
 
-	std::srand((int)time(0));
-	//Loads spheres in random positions
-	for (int i = 0; i < 0; i++)
-	{
-		staticModels.push_back(new Model(modelLibrary[1], {
-			1.0, 0.0, 0.0, 0.0,
-			0.0, 1.0, 0.0, 0.0,
-			0.0, 0.0, 1.0, 0.0,
-			(rand() % 100) - 50, (rand() % 100) - 50, (rand() % 100) - 50, 1.0 }));
-		//std::cout << "Loaded." << std::endl;
+		for (int k = 0; k < nrOfCtrlPoints; k++)
+		{
+			vec3 = glm::vec3(0);
+			if (modelDebug)
+			{
+				std::cout << "Tell: " << in.tellg() << std::endl;
+				std::cout << "Pos: " << std::endl;
+			}
+			//Read the Vertices for the primitive
+			for (int h = 0; h < 3; h++)
+			{
+				mesh->vertices.push_back(Vertex());
+				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+				if (modelDebug)
+				{
+					std::cout << "Vertex: ";
+					std::cout << vec3.x << " ";
+					std::cout << vec3.y << " ";
+					std::cout << vec3.z << std::endl;
+				}
+				mesh->vertices[(k * 3) + h].pos = vec3;
+			}
+			for (int h = 0; h < 3; h++)
+			{
+				//Read the Normals for the primitive
+				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+				if (modelDebug)
+				{
+					std::cout << "Normal: ";
+					std::cout << vec3.x << " ";
+					std::cout << vec3.y << " ";
+					std::cout << vec3.z << std::endl;
+				}
+				mesh->vertices[(k * 3) + h].normal = vec3;
+				//Read the Tangents for the primitive
+				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+				if (modelDebug)
+				{
+					std::cout << "Tangent: ";
+					std::cout << vec3.x << " ";
+					std::cout << vec3.y << " ";
+					std::cout << vec3.z << std::endl;
+				}
+				mesh->vertices[(k * 3) + h].tangent = vec3;
+				//Read the BiNormals for the primitive
+				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+				if (modelDebug)
+				{
+					std::cout << "BiNormal: ";
+					std::cout << vec3.x << " ";
+					std::cout << vec3.y << " ";
+					std::cout << vec3.z << std::endl;
+				}
+				mesh->vertices[(k * 3) + h].biTangent = vec3;
+			}
+			//Read the UVs for the primitive
+			for (int h = 0; h < 3; h++)
+			{
+				in.read(reinterpret_cast<char*>(&vec2), sizeof(vec2));
+				if (modelDebug)
+				{
+					std::cout << "UV: ";
+					std::cout << vec2.x << " ";
+					std::cout << vec2.y << std::endl;
+				}
+				mesh->vertices[(k * 3) + h].texPos = vec2;
+			}
+		}
+		//Diffuse texture file
+		int fileNameLength = 0;
+		in.read(reinterpret_cast<char*>(&fileNameLength), sizeof(int));
+		if (fileNameLength)
+		{
+			std::string diffuseFileName = "";
+			char *tempFileName = new char[fileNameLength];
+			in.read(tempFileName, fileNameLength);
+			diffuseFileName.append(tempFileName, fileNameLength);
+			if (diffuseFileName != "NULL")
+			{
+				if (modelDebug)std::cout << "'" << diffuseFileName << "'" << std::endl;
+				mesh->material.textureMapDiffuseFile = diffuseFileName;
+			}
+		}
+		//Diffuse colour
+		glm::vec3 diffuseColour;
+		in.read(reinterpret_cast<char*>(&diffuseColour), sizeof(diffuseColour));
+		mesh->material.diffuseColour = glm::vec3(0.5, 0.5, 0.5);
+		mesh->material.diffuseColour = diffuseColour;
+		//Specularity
+		float specularity = 0;
+		in.read(reinterpret_cast<char*>(&specularity), sizeof(specularity));
+		mesh->material.specularColour = glm::vec3(specularity, specularity, specularity);
+		//Not used
+		mesh->material.ambientColour = glm::vec3(0.5, 0.5, 0.5);
+		//Position
+		glm::vec3 pos;
+		in.read(reinterpret_cast<char*>(&pos), sizeof(pos));
+		model->setPos(pos + glm::vec3(0, 0, -50));
+		//Rotation
+		glm::vec3 rotation;
+		in.read(reinterpret_cast<char*>(&rotation), sizeof(rotation));
+		model->setRotationMatrix(rotation);
+		//Scale
+		glm::vec3 scale;
+		in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
+		model->setScale(scale);
+		//Set up model
+		model->rotate();
+		model->addMesh(mesh);
+		model->setupModel();
+		model->loadTextures(0);
+		model->setBoundingSphereRadius();
+		modelVector.push_back(model);
 	}
+	in.close();
+	return true;
 }
-
-//setup menu
-void Level::setupMenuModels()
-{
-	//spinning map stuff
-	staticModels.push_back(new Model(*(modelLibrary.at(3)),
-	{
-		0.2, 0.0, 0.0, 0.0,
-		0.0, 0.2, 0.0, 0.0,
-		0.0, 0.0, 0.2, 0.0,
-		0.0, 1.0, 0.0, 1.0
-	}));
-	staticModels[0]->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-0.5f), glm::vec3(0.0f, 1.0f, 0.0f)));
-
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		2.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		-6.0, 5.0, 5.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		2.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		-2.0, 5.0, 5.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		2.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		2.0, 5.0, 5.0, 1.0
-	}));
-	staticModels.push_back(new Model(*(modelLibrary.at(2)),
-	{
-		2.0, 0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		6.0, 5.0, 5.0, 1.0
-	}));
-
-}
-
 //Delete all models from memory
 void Level::unloadModels()
 {
-	for (int i = 0; i < modelLibrary.size(); i++)
-	{
-		//Only the model library deletes it's meshes as the others only have pointers to these meshes
-		modelLibrary[i]->deleteMeshes();
-		delete modelLibrary[i];
-	}
-	modelLibrary.clear();
-
 	for (int i = 0; i < staticModels.size(); i++)
 	{
+		staticModels[i]->deleteMeshes();
 		delete staticModels[i];
 	}
 	staticModels.clear();
@@ -377,22 +200,22 @@ void Level::unloadModels()
 		delete dynamicModels[i];
 	}
 	dynamicModels.clear();
+
+	for (int i = 0; i < colliders.size(); i++)
+	{
+		colliders[i]->deleteMeshes();
+		delete colliders[i];
+	}
+	colliders.clear();
 }
 //Sets the triggerboxes for this level
 void Level::setupTriggers(Player* player)
 {
-	std::vector<glm::vec2> corners = { glm::vec2(3,2), glm::vec2(6,2), glm::vec2(3,0), glm::vec2(6,0) };
-	TriggerSettings settings;
-	settings.onEnter = true;
-	settings.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners, settings, player, player, "endLevel"));
-
 	//water land
-	std::vector<glm::vec2> corners2 = { glm::vec2(9,5), glm::vec2(15,5), glm::vec2(9,0), glm::vec2(15,0) };
+	std::vector<glm::vec2> corners2 = { glm::vec2(-20,0), glm::vec2(-20,400), glm::vec2(-200,400), glm::vec2(-200,0) };
 	TriggerSettings settings2;
 	settings2.onEnter = true;
-	settings2.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "hellogais"));
+	//triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "nextLevel"));
 
 	//health pickup
 	glm::mat4 mat({
@@ -401,7 +224,7 @@ void Level::setupTriggers(Player* player)
 		0, 0, 0.02, 0,
 		-4, 5, 0, 1
 	});
-	Model* heart = new Model(modelLibrary[4], mat);
+	Model* heart = new Model("models/heart/HeartContainer.obj", mat);
 	glm::vec3 min, max;
 	heart->getMinMaxBouding(min, max);
 	min += glm::vec3(mat[3]);
@@ -429,13 +252,6 @@ void Level::updateTriggers(float dt)
 		dynamicModels[i]->rotate();
 	}
 }
-void Level::spinMenu(float dt)
-{
-	for (int i = 0; i < staticModels.size(); i++)
-	{
-		staticModels[i]->rotate();
-	}
-}
 void Level::deleteTriggers()
 {
 	for (int i = 0; i < triggerBoxes.size(); i++)
@@ -446,24 +262,20 @@ void Level::deleteTriggers()
 }
 void Level::playMusic(SoundSystem* soundSystem)
 {
-
+	//Should probably be able to switch music track
 }
 void Level::stopMusic(SoundSystem* soundSystem)
 {
 
 }
-//void Level::playMusic(SoundSystem *soundSystem)
-//{
-//	soundSystem->playMusic("audio/music/never.flac");
-//}
-//void Level::stopMusic(SoundSystem *soundSystem)
-//{
-//	soundSystem->stopMusic();
-//}
 //Getters
 std::vector<Model*>& Level::getStaticModels()
 {
 	return staticModels;
+}
+std::vector<Model*>& Level::getCollisionBoxes()
+{
+	return colliders;
 }
 std::vector<Model*> Level::getDynamicModels()
 {
@@ -480,19 +292,13 @@ glm::vec3 Level::getPlayerPos()
 //Constructors
 Level::Level()
 {
-	modelFilePaths =
-	{
-		"models/cube/cube.obj"
-		,"models/sphere/sphere.obj"
-		,"models/cube/cubeGreen.obj"
-		,"models/Characters/Bird/BirdTest1.obj"
-		,"models/heart/HeartContainer.obj"
-	};
-	playerPos = glm::vec3(14,4,0);
+	this->filePath = "";
+	playerPos = glm::vec3(0, 0, 0);
 }
-Level::Level(std::string filepath)
+Level::Level(std::string filePath)
 {
-	//Imports this level from file
+	this->filePath = filePath;
+	playerPos = glm::vec3(0, 0, 0);
 }
 //Destructor
 Level::~Level()

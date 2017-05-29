@@ -41,7 +41,6 @@ std::string Trigger::type() const
 //Update function, checks for activators and runs activate(), also returns true if any activations were made
 bool Trigger::update(float dt)
 {
-
 	bool triggered = false;
 	if (settings.numberOfActivationsAllowed == -1 || settings.numberOfActivationsAllowed > 0)
 	{
@@ -212,6 +211,10 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 	{
 		Player* player = dynamic_cast<Player*>(targets[targetID]);
 		player->setDiving(!player->getDiving());
+	}
+	else if (commands[commandID] == "nextLevel")
+	{
+		nextLevel = true;
 	}
 	else if (commands[commandID] == "fire" && targets[targetID]->type() == "Player")
 	{

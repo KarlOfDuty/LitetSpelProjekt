@@ -37,6 +37,7 @@ int jumpPress;
 bool keyReleased;
 
 bool endLevel = false;
+bool nextLevel = false;
 const bool aboveView = false;
 
 //gBuffer
@@ -147,7 +148,6 @@ int main()
 	loadLevel();
 	//Create the gbuffer textures and lights
 	createGBuffer();
-	player->setStaticModels(levelManager.currentLevel->getStaticModels());
 
 	eventHandler = EventHandler();
 
@@ -190,9 +190,9 @@ int main()
 				firstFrame = false;
 			}
 
-			window.setActive(true);
+			/*window.setActive(true);
 			renderM();
-			window.setActive(false);
+			window.setActive(false);*/
 
 			window.pushGLStates();
 			menu->draw(window);
@@ -242,13 +242,13 @@ void render()
 	glm::mat4 lightView;
 	std::vector<glm::mat4> lightSpaceMatrix;
 	GLfloat nearPlane = 0.01f;
-	GLfloat farPlane = 30.0f;
-	lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, nearPlane, farPlane);
+	GLfloat farPlane = 1200.0f;
+	lightProjection = glm::ortho(-200.0f, 500.0f, -600.0f, 600.0f, nearPlane, farPlane);
 	glCullFace(GL_FRONT);
 	for (int i = 0; i < directionalLights.size(); i++)
 	{
 		lightSpaceMatrix.push_back(glm::mat4());
-		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*10.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
+		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*600.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
 		lightSpaceMatrix[i] = lightProjection * lightView;
 		//Render scene from light's point of view
 		shadowShader.use();
@@ -467,10 +467,10 @@ void update(sf::RenderWindow &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window, dt, levelManager.currentLevel->getStaticModels(), enemyManager->getAllEnemies());
+		player->update(window, dt, levelManager.currentLevel->getCollisionBoxes() , enemyManager->getAllEnemies());
 	}
 
-	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
+	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getCollisionBoxes(), player);
 
 	//Camera update, get new viewMatrix
 	if (enemyManager->getBossKill() && !cameraOnBoss)
@@ -497,7 +497,13 @@ void update(sf::RenderWindow &window)
 	{
 		viewMatrix = playerCamera.update(enemyManager->getBossPos());
 	}
-
+	if (nextLevel)
+	{
+		unloadLevel();
+		levelManager.nextLevel();
+		loadLevel();
+		nextLevel = false;
+	}
 	if (endLevel)
 	{
 		unloadLevel();
@@ -544,7 +550,6 @@ void updateM(sf::RenderWindow &window)
 		loadLevel();
 		endLevel = false;
 	}
-	levelManager.currentMenu->spinMenu(dt);
 	//levelManager.currentLevel->updateTriggers(dt);
 	//playerCamera.frustumCulling(modelsToBeDrawn);
 	//gui.update(player);
@@ -677,30 +682,22 @@ void drawQuad()
 
 void loadLevel()
 {
-	//menu
-	levelManager.currentMenu->loadModels();
-	levelManager.currentMenu->setupMenuModels();
-	modelsToBeDrawn = levelManager.currentMenu->getStaticModels();
-	playerCamera.setupQuadTree(levelManager.currentMenu->getStaticModels());
-	//menu/
-
-	levelManager.currentLevel->loadModels();
-	levelManager.currentLevel->setupModels();
+	levelManager.currentLevel->loadLevel();
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
-
-	enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
-	//enemyManager->createSlime(glm::vec3(43.0f, 22.0f, 0.0f));
-	//enemyManager->createToad(glm::vec3(43.0f, 22.0f, 0.0f));
-	//enemyManager->createGiantBat(glm::vec3(43.0f, 22.0f, 0.0f));
-	/*enemyManager->createBatSwarm(glm::vec3(44.8f, 22.8f, 0.0f));
-	enemyManager->createBatSwarm(glm::vec3(43.1f, 21.3f, 0.0f));
-	enemyManager->createBatSwarm(glm::vec3(41.4f, 22.6f, 0.0f));*/
-	//enemyManager->createCrab(glm::vec3(43.0f, 22.0f, 0.0f));
-	//enemyManager->createFirefly(glm::vec3(43.0f, 22.0f, 0.0f));
-	//enemyManager->createSkeleton(glm::vec3(43.0f, 22.0f, 0.0f), true);
-
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
+
+	//enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
+	//enemyManager->createSlime(glm::vec3(666.0f, 30.0f, 0.0f));
+	//enemyManager->createToad(glm::vec3(666.0f, 30.0f, 0.0f));
+	//enemyManager->createGiantBat(glm::vec3(1050.0f, 330.0f, 0.0f));
+	/*enemyManager->createBatSwarm(glm::vec3(1100.2f, 320.8f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(1090.0f, 332.3f, 0.0f));
+	enemyManager->createBatSwarm(glm::vec3(1110.0f, 330.6f, 0.0f));*/
+	enemyManager->createCrab(glm::vec3(670.0f, 40.0f, 0.0f));
+	//enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
+	//enemyManager->createSkeleton(glm::vec3(30.0f, 7.0f, 0.0f), false);
+
 	//Some lights with random values
 	std::srand((int)time(0));
 	//pointLights.push_back(new PointLight(
@@ -708,9 +705,10 @@ void loadLevel()
 	//	glm::vec3(0.6f, 0.9f, 0.9f),
 	//	0.0000f, 0.00f));
 	directionalLights.push_back(new DirectionalLight(
-		glm::vec3(1.0f, -2.0f, 0.0f),
+		glm::normalize(glm::vec3(1.0f, -4.0f, 0.0f)),
 		glm::vec3(1.0f, 1.0f, 1.0f)));
 	player->setPos(levelManager.currentLevel->getPlayerPos());
+	player->setStaticModels(levelManager.currentLevel->getCollisionBoxes());
 }
 void unloadLevel()
 {
@@ -725,4 +723,9 @@ void unloadLevel()
 		delete pointLights[i];
 	}
 	pointLights.clear();
+	for (int i = 0; i < directionalLights.size(); i++)
+	{
+		delete directionalLights[i];
+	}
+	directionalLights.clear();
 }
