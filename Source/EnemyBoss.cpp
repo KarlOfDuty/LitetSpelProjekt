@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
+EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	this->allProjectiles = allProjectiles;
 	this->acceleration = 0.4f;
@@ -14,13 +14,21 @@ EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm
 	this->rotateNow = false;
 	bossImmunity = true;
 	this->wallDestroyed = false;
+
+	this->sound = sound;
+	this->sound1 = true;
+	this->sound2 = true;
+	this->sound3 = true;
+
 	this->inRightCorner = true;
 	this->blockExit = false;
 	this->isChandelierCreated = false;
 	this->platformCreated = false;
 	this->moveChandelier = false;
+	this->weakPointActive = false;
+	this->playerInWater = false;
 	
-	projectileModel = new Model("models/sphere/sphere.obj");
+	projectileModel = new Model("models/sphere/sphereFire.obj");
 	boxModel = new Model("models/cube/cube.obj");
 	
 	glm::mat4 hideModelMatrix({
@@ -31,7 +39,7 @@ EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm
 	});
 
 	chandelierModel = new Model("models/cube/cube.obj", hideModelMatrix);
-	weakPointModel = new Model("models/sphere/sphere.obj", hideModelMatrix);
+	weakPointModel = new Model("models/sphere/sphereRed.obj", hideModelMatrix);
 
 	corners.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
 	corners.push_back(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -49,6 +57,7 @@ void EnemyBoss::setChandelierButton(Player* player)
 	std::vector<glm::vec2> corners = { glm::vec2(20.0f, 26.0f), glm::vec2(20.0f, 28.0f), glm::vec2(22.0f,26.0f), glm::vec2(22.0f, 28.0f) };
 	TriggerSettings buttonSettings;
 	buttonSettings.onEnter = true;
+	buttonSettings.numberOfActivationsAllowed = 1;
 	chandelierButton.push_back(new Trigger(corners, buttonSettings, player, this, "finishingBlow"));
 }
 
@@ -123,6 +132,11 @@ void EnemyBoss::setPhase(int phase)
 	this->phase = phase;
 }
 
+void EnemyBoss::setPlayerInWater(bool isInWater)
+{
+	this->playerInWater = isInWater;
+}
+
 void EnemyBoss::setCreateTrigger(bool createTrigger)
 {
 	this->createTrigger = createTrigger;
@@ -131,6 +145,12 @@ void EnemyBoss::setCreateTrigger(bool createTrigger)
 void EnemyBoss::setChargeCounter(int amountOfCharges)
 {
 	this->chargeCounter = amountOfCharges;
+}
+
+void EnemyBoss::setAttacking(bool isAttacking)
+{
+	this->attacking = isAttacking;
+	walkTimer.restart();
 }
 
 void EnemyBoss::setRotateToPlayer(Player* player)
@@ -174,9 +194,29 @@ void EnemyBoss::loseTrackOfPlayer(bool playerIsFound)
 	playerTracked = playerIsFound;
 }
 
+bool EnemyBoss::getWeakPointActive()
+{
+	return this->weakPointActive;
+}
+
+int EnemyBoss::getPhase() const
+{
+	return this->phase;
+}
+
+bool EnemyBoss::getPlayerTracked() const
+{
+	return this->playerTracked;
+}
+
+bool EnemyBoss::getPlayerInWater() const
+{
+	return this->playerInWater;
+}
+
 void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
-	if (attackCooldown.getElapsedTime().asSeconds() >= 1)
+	if (attackCooldown.getElapsedTime().asSeconds() >= 0.5)
 	{
 		float rotation = -atan2(getPos().x - playerPos.x, getPos().y - playerPos.y-2);
 		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
@@ -195,7 +235,7 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 				{
 					if (!allProjectiles->at(i)->isInUse())
 					{
-						allProjectiles->at(i)->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.2, 0.2, 0.2), false, true);
+						allProjectiles->at(i)->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.4, 0.4, 0.4), false, true);
 						i = (int)allProjectiles->size();
 					}
 				}
@@ -204,7 +244,7 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 		else
 		{
 			Projectile* temp = new Projectile;
-			temp->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.2, 0.2, 0.2), false, true);
+			temp->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.4, 0.4, 0.4), false, true);
 			allProjectiles->push_back(temp);
 		}
 		attackCooldown.restart();
@@ -213,8 +253,23 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 
 void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
-	groundCheck();
 
+	groundCheck();
+	if (sound1 == true && phase == 1)
+	{
+		this->sound->playSound("wierdScreemFromBoss");
+		sound1 = false;
+	}
+	if (sound2 == true && phase == 2)
+	{
+		this->sound->playSound("wierdScreemFromBoss");
+		sound2 = false;
+	}
+	if (sound3 == true && phase == 3)
+	{
+		this->sound->playSound("wierdScreemFromBoss");
+		sound3 = false;
+	}
 	if (collidedFrom.y > 0)
 	{
 		collidingWithGround = true;
@@ -239,7 +294,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 8.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
 	{
 		if (!blockExit)
 		{
@@ -271,8 +326,6 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 		if (phase == 1)
 		{
-			editWeakPoint(4.0f, -2.0f, player);
-
 			if (!playerProjectiles.empty())
 			{
 				if (createTrigger)
@@ -310,6 +363,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					//Charge
 					if (chargeCounter < 3)
 					{
+						this->weakPointActive = false;
 						if (!attacking)
 						{
 							setRotateToOrigin();
@@ -345,6 +399,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 					if (chargeCounter >= 3)
 					{
+						this->weakPointActive = true;
 						if (!weakPointsArr.empty())
 						{
 							for (int i = 0; i < weakPointsArr.size(); i++)
@@ -374,8 +429,6 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 		else if (phase == 2)
 		{
-			editWeakPoint(2.0f, -1.0f, player);
-
 			if (!attacking)
 			{
 				if (walkTimer.getElapsedTime().asSeconds() >= 1.0)
@@ -408,6 +461,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 			if (!wallDestroyed)
 			{
+				this->weakPointActive = false;
 				if (!attacking)
 				{
 					setRotateToOrigin();
@@ -495,9 +549,29 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				{
 					if (!weakPointsArr.empty())
 					{
+						this->weakPointActive = true;
 						for (int i = 0; i < weakPointsArr.size(); i++)
 						{
 							weakPointsArr[i]->update(dt);
+						}
+					}
+
+					if (!playerInWater)
+					{
+						if (!rotateLeft)
+						{
+							if (enemyPosCurrent.x >= player->getPos().x)
+							{
+								playerTracked = true;
+							}
+						}
+						if (
+							rotateLeft)
+						{
+							if (enemyPosCurrent.x < player->getPos().x)
+							{
+								playerTracked = true;
+							}
 						}
 					}
 
@@ -540,6 +614,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				platformCreated = true;
 			}
 
+			this->weakPointActive = true;
 
 			if (moveChandelier)
 			{
@@ -565,19 +640,22 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 			if (this->getHealth() > 10)
 			{
-				setRotateToPlayer(player);
-				this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+				if (playerTracked)
+				{
+					setRotateToPlayer(player);
+					this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+					oldPlayerPos = player->getPos();
+				}
+				else if (!playerTracked)
+				{
+					this->attackPlayer(dt, oldPlayerPos, enemyPosCurrent);
+				}
 			}
 			else if (this->getHealth() <= 10)
 			{
 				if (!weakPointsArr.empty())
 				{
 					this->weakPointsArr.clear();
-				}
-
-				if (!chandelierButton.empty())
-				{
-					chandelierButton.clear();
 				}
 			}
 		}
@@ -643,7 +721,19 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			rotateModel(90.0f);
 		}
 
-		this->collisionWithPlayer(player);
+		if (phase == 1)
+		{
+			editWeakPoint(3.5f, -2.0f, player);
+		}
+		else if (phase == 2)
+		{
+			editWeakPoint(2.0f, -1.2f, player);
+		}
+
+		if (this->getHealth() > 10)
+		{
+			this->collisionWithPlayer(player);
+		}
 
 		//Trigger box
 		if (!chandelierButton.empty())
@@ -669,19 +759,20 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				weakPointsArr[i]->setPos(weakPoint);
 			}
 		}
+
 		glm::vec2 center(0,0);
 		for (int i = 0; i < weakPoint.size(); i++)
 		{
 			center += weakPoint[i];
 		}
 		center = center / (float)weakPoint.size();
-		glm::mat4 ModELMat({
+		glm::mat4 ModelMat({
 			0.3,0,0,0,
 			0,0.3,0,0,
 			0,0,0.3,0,
 			center.x,center.y,0,1
 		});
-		weakPointModel->setModelMatrix(ModELMat);
+		weakPointModel->setModelMatrix(ModelMat);
 
 		center = glm::vec2();
 		std::vector<glm::vec2> chandelierPoints = chandelierButton[0]->getPoints();
@@ -690,19 +781,22 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			center += chandelierPoints[i];
 		}
 		center = center / (float)chandelierPoints.size();
-		ModELMat = glm::mat4({
+		ModelMat = glm::mat4({
 			2,0,0,0,
 			0,2,0,0,
 			0,0,2,0,
 			center.x,center.y,0,1
 		});
-		chandelierModel->setModelMatrix(ModELMat);
+		chandelierModel->setModelMatrix(ModelMat);
 }
 
-std::vector<Model*> EnemyBoss::getDebugModels()
+std::vector<Model*> EnemyBoss::getTriggerModels()
 {
-	std::vector<Model*> knas;
-	knas.push_back(weakPointModel);
-	knas.push_back(chandelierModel);
-	return knas;
+	std::vector<Model*> triggerModels;
+	triggerModels.push_back(weakPointModel);
+	if (phase == 3)
+	{
+		triggerModels.push_back(chandelierModel);
+	}
+	return triggerModels;
 }
