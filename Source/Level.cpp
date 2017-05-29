@@ -33,7 +33,112 @@ void Level::loadLevel()
 		else if (str == "triggers")
 		{
 			line >> path;
-			//readModels(path.c_str(), staticModels);
+			readTriggers(path.c_str(), triggerBoxes);
+		}
+	}
+	file.close();
+}
+bool Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector)
+{
+	//Temporary containers
+	TriggerSettings settings;
+	std::vector<GameObject*> activators;
+	std::vector<GameObject*> targets;
+	std::vector<std::string> commands;
+	std::ifstream file(filePath);
+	std::string str = "";
+	int tempInt = 0;
+	float tempFloat = 0.0f;
+	//Gets a single line of the file at a time
+	while (std::getline(file, str))
+	{
+		std::stringstream line;
+		std::string path;
+		//Takes the first word of the line and compares it to variable names
+		line << str;
+		line >> str;
+		//New trigger
+		if (str == "trigger")
+		{
+			//Read corners
+			std::vector<glm::vec2> points = std::vector<glm::vec2>(4);
+			for (int i = 0; i < 4; i++)
+			{
+				line >> points[i].x;
+				line >> points[i].y;
+			}
+			vector.push_back(new Trigger(points,settings,activators,targets,commands));
+			//Reset variables for the next trigger
+			settings = TriggerSettings();
+			activators.clear();
+			targets.clear();
+		}
+		//Activators
+		else if (str == "activator")
+		{
+			//TODO: Set activator
+		}
+		//Targets
+		else if (str == "target")
+		{
+			//TODO: Set target
+		}
+		//Commands
+		else if (str == "command")
+		{
+			line >> str;
+			commands.push_back(str);
+		}
+		//Settings
+		else if (str == "onEnter")
+		{
+			line >> tempInt;
+			settings.onEnter = tempInt;
+		}
+		else if (str == "onEnterAll")
+		{
+			line >> tempInt;
+			settings.onEnterAll = tempInt;
+		}
+		else if (str == "onExit")
+		{
+			line >> tempInt;
+			settings.onExit = tempInt;
+		}
+		else if (str == "onExitAll")
+		{
+			line >> tempInt;
+			settings.onExitAll = tempInt;
+		}
+		else if (str == "whileInside")
+		{
+			line >> tempInt;
+			settings.whileInside = tempInt;
+		}
+		else if (str == "whileAllInside")
+		{
+			line >> tempInt;
+			settings.whileAllInside = tempInt;
+		}
+		else if (str == "perActivator")
+		{
+			line >> tempInt;
+			settings.perActivator = tempInt;
+		}
+		else if (str == "frequency")
+		{
+			line >> tempFloat;
+			settings.frequency = tempFloat;
+		}
+		else if (str == "numberOfActivationsAllowed")
+		{
+			line >> tempInt;
+			settings.numberOfActivationsAllowed = tempInt;
+		}
+		else if (str == "accociativeActions")
+		{
+			line >> tempInt;
+			settings.accociativeActions = tempInt;
 		}
 	}
 	file.close();

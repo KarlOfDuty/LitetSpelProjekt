@@ -32,8 +32,6 @@ struct TriggerSettings
 	float frequency = 0;
 	//Maximum allowed activations
 	int numberOfActivationsAllowed = -1;
-	//Decides what actions will be taken on the targets
-	std::vector<std::string> actions;
 	//If false, all commands will try to execute on all targets
 	//If true, each command will execute on their counterpart in the targets vector
 	bool accociativeActions = false;
