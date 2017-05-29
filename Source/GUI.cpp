@@ -23,7 +23,7 @@ GUI::GUI()
 	deadText.setPosition(1280 / 2, 720 / 2);
 
 	bossText.setFont(deadFont);
-	bossText.setString("YOU WON, FUCKING GOOD JOB M8");
+	bossText.setString("VICTORY");
 	bossText.setCharacterSize(72);
 	bossText.setFillColor(sf::Color(20, 200, 20, 0));
 	bossText.setOrigin(bossText.getGlobalBounds().left + round(bossText.getGlobalBounds().width / 2), bossText.getGlobalBounds().top + round(bossText.getGlobalBounds().height / 2));
