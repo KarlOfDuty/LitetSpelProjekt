@@ -752,5 +752,4 @@ void Player::groundCheck()
 	{
 		groundPos = 0;
 	}
-	std::cout << closestDistance << std::endl;
 }
