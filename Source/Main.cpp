@@ -682,7 +682,7 @@ void loadLevel()
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
-	//enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
+	enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
 	//enemyManager->createSlime(glm::vec3(43.0f, 22.0f, 0.0f));
 	//enemyManager->createToad(glm::vec3(43.0f, 22.0f, 0.0f));
 	//enemyManager->createGiantBat(glm::vec3(43.0f, 22.0f, 0.0f));
