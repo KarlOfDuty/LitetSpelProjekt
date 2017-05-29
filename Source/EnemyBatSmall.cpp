@@ -83,7 +83,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 		}
 		if (collisionCounter < 300)
 		{
-			velocityY += 70.0f*dt;
+			velocityY += 80.0f*dt;
 		}
 
 		checkpoint.x = player->getPos().x + distX(rng);

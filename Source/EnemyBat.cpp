@@ -90,7 +90,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 	{
 		if (collidedFrom.y == 0 && collidedFrom.x != 0)
 		{
-			velocityY += 80.0f*dt;
+			velocityY += 90.0f*dt;
 		}
 		if (collidedFrom.y < 0 && collidedFrom.x != 0)
 		{
