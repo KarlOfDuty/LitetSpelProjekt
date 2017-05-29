@@ -295,7 +295,7 @@ bool collision::TestRayOBBIntersection(glm::vec3 ray_origin, glm::vec3 ray_direc
 
 	// Test intersection with the 2 planes perpendicular to the OBB's Z axis
 	// Exactly the same thing than above.
-	{
+	/*{
 		glm::vec3 zaxis(ModelMatrix[2].x, ModelMatrix[2].y, ModelMatrix[2].z);
 		float e = glm::dot(zaxis, delta);
 		float f = glm::dot(ray_direction, zaxis);
@@ -319,7 +319,7 @@ bool collision::TestRayOBBIntersection(glm::vec3 ray_origin, glm::vec3 ray_direc
 			if (-e + aabb_min.z > 0.0f || -e + aabb_max.z < 0.0f)
 				return false;
 		}
-	}
+	}*/
 
 	intersection_distance = tMin;
 	return true;
