@@ -304,6 +304,12 @@ std::string Player::type() const
 //Update function
 void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels, std::vector<Enemy*> allEnemies)
 {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+	{
+		std::cout << this->getPos().x << " x" << std::endl;
+		std::cout << this->getPos().y << " y" << std::endl;
+	}
+
 	allAttackBoxes.clear();
 	for (int i = 0; i < allArrowAttackBoxes.size(); i++)
 	{

@@ -4,7 +4,7 @@
 
 EnemyToad::EnemyToad(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
 {
-	this->attackRange = 10;
+	this->attackRange = 100;
 	this->startPosition = enemyStartPos;
 	this->returnToStart = false;
 	this->allProjectiles = allProjectiles;
@@ -20,7 +20,7 @@ void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 {
 	if (attackCooldown.getElapsedTime().asSeconds() >= 2)
 	{
-		glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-0.6, 0.4) : glm::vec2(0.6, 0.4);
+		glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-0.6, 0.3) : glm::vec2(0.6, 0.3);
 		int activeArrows = 0;
 		for (int i = 0; i < allProjectiles->size(); i++)
 		{
@@ -35,7 +35,7 @@ void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 				{
 					if (!allProjectiles->at(i)->isInUse())
 					{
-						allProjectiles->at(i)->shoot(projectileModel, getPos(), direction, glm::vec2(0, 10.f), 15.f, glm::vec3(0.2, 0.2, 0.2),false,true);
+						allProjectiles->at(i)->shoot(projectileModel, getPos(), direction, glm::vec2(0, 100.f), 200.f, glm::vec3(4.0, 4.0, 4.0),false,true);
 						i = (int)allProjectiles->size();
 					}
 				}
@@ -44,7 +44,7 @@ void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 		else
 		{
 			Projectile* temp = new Projectile;
-			temp->shoot(projectileModel, getPos(), direction, glm::vec2(0, 10.f), 15.f, glm::vec3(0.2, 0.2, 0.2),false,true);
+			temp->shoot(projectileModel, getPos(), direction, glm::vec2(0, 100.f), 200.f, glm::vec3(4.0, 4.0, 4.0),false,true);
 			allProjectiles->push_back(temp);
 		}
 		attackCooldown.restart();
@@ -85,7 +85,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 
 		//Detect player
-		if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
+		if (glm::length(enemyPosCurrent - player->getPos()) < 200.0f)
 		{
 			playerSeen = true;
 			returnToStart = false;
@@ -95,22 +95,22 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			if (collidingWithGround)
 			{
-				if (glm::length(enemyPosCurrent - player->getPos()) > 8.0f)
+				if (enemyPosCurrent.x >= player->getPos().x)
 				{
-					if (enemyPosCurrent.x >= player->getPos().x)
-					{
-						rotateLeft = false;
-					}
-					if (enemyPosCurrent.x <= player->getPos().x)
-					{
-						rotateLeft = true;
-					}
+					rotateLeft = false;
+				}
+				if (enemyPosCurrent.x <= player->getPos().x)
+				{
+					rotateLeft = true;
+				}
+				if (glm::length(enemyPosCurrent - player->getPos()) > 60.0f + attackRange)
+				{
 					//Jump
 					if (playerSeen)
 					{
 						if (jumpTimer.getElapsedTime().asSeconds() >= 1.7)
 						{
-							velocityY = 15;
+							velocityY = 200;
 							jumpTimer.restart();
 						}
 
@@ -144,13 +144,13 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				}
 				if (movingRight == true)
 				{
-					velocityX -= 3.0f*dt;
+					velocityX -= 60.0f*dt;
 				}
 				else if (movingLeft == true)
 				{
-					velocityX += 3.0f*dt;
+					velocityX += 60.0f*dt;
 				}
-				velocityY -= 30 * dt;
+				velocityY -= 300 * dt;
 			}
 		}
 		else
@@ -166,11 +166,11 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					rotateLeft = true;
 				}
 				//Jump
-				if (glm::length(enemyPosCurrent.x - startPosition.x) > 1.5f)
+				if (glm::length(enemyPosCurrent.x - startPosition.x) > 15.0f)
 				{
 					if (jumpTimer.getElapsedTime().asSeconds() >= 1.7)
 					{
-						velocityY = 15;
+						velocityY = 200;
 						jumpTimer.restart();
 					}
 				}
@@ -202,27 +202,27 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				}
 				if (movingRight == true)
 				{
-					velocityX -= 3.0f*dt;
+					velocityX -= 60.0f*dt;
 				}
 				else if (movingLeft == true)
 				{
-					velocityX += 3.0f*dt;
+					velocityX += 60.0f*dt;
 				}
-				velocityY -= 30 * dt;
+				velocityY -= 300 * dt;
 			}
 		}
 
-		if (velocityY < -30)
+		if (velocityY < -300)
 		{
-			velocityY = -30;
+			velocityY = -300;
 		}
-		if (velocityX > 3)
+		if (velocityX > 60)
 		{
-			velocityX = 3;
+			velocityX = 60;
 		}
-		if (velocityX < -3)
+		if (velocityX < -60)
 		{
-			velocityX = -3;
+			velocityX = -60;
 		}
 
 		//Apply velocity

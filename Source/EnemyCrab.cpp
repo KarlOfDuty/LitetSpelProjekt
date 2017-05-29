@@ -4,7 +4,7 @@
 
 EnemyCrab::EnemyCrab(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
 {
-	this->acceleration = 0.2f;
+	this->acceleration = 0.5f;
 	this->moving = true;
 	this->oldOriginPoint = enemyStartPos;
 	this->startPosition = enemyStartPos;
@@ -52,7 +52,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	if (moving)
 	{
-		if (glm::length(enemyPosCurrent - oldOriginPoint) > 4.0f)
+		if (glm::length(enemyPosCurrent - oldOriginPoint) > 40.0f)
 		{
 			oldOriginPoint = enemyPosCurrent;
 			moving = false;
@@ -84,7 +84,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 5.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 150.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -150,7 +150,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 		else
 		{
-			if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
+			if (glm::length(enemyPosCurrent.x - startPosition.x) > 10.5f)
 			{
 				if (movingLeft == false)
 				{

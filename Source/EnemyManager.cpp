@@ -20,22 +20,22 @@ EnemyManager::~EnemyManager()
 
 void EnemyManager::createSlime(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemySlime(3, new Model(slimeModel), 1, 0.5, enemyStartPos, glm::vec3(0.19f, 0.19f, 0.19f)));
+	this->allEnemies.push_back(new EnemySlime(3, new Model(slimeModel), 1, 0.5, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f)));
 }
 
 void EnemyManager::createToad(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyToad(5, new Model(toadModel), 2, 0.5, enemyStartPos, glm::vec3(0.18f, 0.18f, 0.18f), allProjectiles));
+	this->allEnemies.push_back(new EnemyToad(5, new Model(toadModel), 2, 0.5, enemyStartPos, glm::vec3(3.30f, 3.30f, 3.30f), allProjectiles));
 }
 
 void EnemyManager::createGiantBat(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, 0.5, enemyStartPos, glm::vec3(0.12f, 0.12f, 0.12f)));
+	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, 0.5, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f)));
 }
 
 void EnemyManager::createBatSwarm(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBatSmall(1, new Model(batSmallModel), 1, 0.5, enemyStartPos, glm::vec3(0.13f, 0.13f, 0.13f)));
+	this->allEnemies.push_back(new EnemyBatSmall(1, new Model(batSmallModel), 1, 0.5, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f)));
 	allSmallBats.push_back(allEnemies.back());
 }
 
@@ -46,7 +46,7 @@ void EnemyManager::createSkeleton(glm::vec3 enemyStartPos, bool patrol)
 
 void EnemyManager::createCrab(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyCrab(6, new Model(crabModel), 3, 0.5, enemyStartPos, glm::vec3(0.19f, 0.19f, 0.19f)));
+	this->allEnemies.push_back(new EnemyCrab(6, new Model(crabModel), 3, 0.5, enemyStartPos, glm::vec3(2.19f, 2.19f, 2.19f)));
 }
 
 void EnemyManager::createBoss(glm::vec3 enemyStartPos)
