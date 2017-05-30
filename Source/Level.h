@@ -20,7 +20,7 @@ private:
 public:
 	std::string filePath;
 	void loadLevel(Player* player);
-	bool readTriggers(const char * filePath, std::vector<Trigger*>& vector, Player* player);
+	void readTriggers(const char * filePath, std::vector<Trigger*>& vector, Player* player);
 	bool readModels(const char* filePath, std::vector<Model*> &modelVector);
 	void unloadModels();
 	void setupTriggers(Player* player);
