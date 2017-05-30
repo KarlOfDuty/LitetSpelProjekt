@@ -1,6 +1,6 @@
 #include "Level.h"
 
-void Level::loadLevel()
+void Level::loadLevel(Player* player)
 {
 	//Temporary containers
 	std::ifstream file(filePath);
@@ -33,17 +33,17 @@ void Level::loadLevel()
 		else if (str == "triggers")
 		{
 			line >> path;
-			readTriggers(path.c_str(), triggerBoxes);
+			readTriggers(path.c_str(), triggerBoxes, player);
 		}
 	}
 	file.close();
 }
-bool Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector)
+bool Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Player* player)
 {
 	//Temporary containers
 	TriggerSettings settings;
-	std::vector<GameObject*> activators;
-	std::vector<GameObject*> targets;
+	std::vector<GameObject*> activators = std::vector<GameObject*>();
+	std::vector<GameObject*> targets = std::vector<GameObject*>();
 	std::vector<std::string> commands;
 	std::ifstream file(filePath);
 	std::string str = "";
@@ -66,6 +66,7 @@ bool Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector)
 			{
 				line >> points[i].x;
 				line >> points[i].y;
+				line >> str;
 			}
 			vector.push_back(new Trigger(points,settings,activators,targets,commands));
 			//Reset variables for the next trigger
@@ -76,12 +77,50 @@ bool Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector)
 		//Activators
 		else if (str == "activator")
 		{
-			//TODO: Set activator
+			line >> str;
+			if (str == "player")
+			{
+				activators.push_back(player);
+			}
+			else if (str == "staticModel")
+			{
+				line >> tempInt;
+				activators.push_back(staticModels[tempInt]);
+			}
+			else if (str == "dynamicModel")
+			{
+				line >> tempInt;
+				activators.push_back(dynamicModels[tempInt]);
+			}
+			else if (str == "collider")
+			{
+				line >> tempInt;
+				activators.push_back(colliders[tempInt]);
+			}
 		}
 		//Targets
 		else if (str == "target")
 		{
-			//TODO: Set target
+			line >> str;
+			if (str == "player")
+			{
+				targets.push_back(player);
+			}
+			else if (str == "staticModel")
+			{
+				line >> tempInt;
+				targets.push_back(staticModels[tempInt]);
+			}
+			else if (str == "dynamicModel")
+			{
+				line >> tempInt;
+				targets.push_back(dynamicModels[tempInt]);
+			}
+			else if (str == "collider")
+			{
+				line >> tempInt;
+				targets.push_back(colliders[tempInt]);
+			}
 		}
 		//Commands
 		else if (str == "command")

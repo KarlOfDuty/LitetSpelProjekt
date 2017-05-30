@@ -48,12 +48,7 @@ bool Trigger::update(float dt)
 		int objectsFound = 0;
 		for (int i = 0; i < activators.size(); i++)
 		{
-			//TODO: Do we need to use both collision methods or just the second one?
-			if (collision::collision(corners, activators[i]->getPoints()))
-			{
-				objectsFound++;
-			}
-			else if (collision::isInside(corners, activators[i]->getPoints()))
+			if (collision::isInside(corners, activators[i]->getPoints()))
 			{
 				objectsFound++;
 			}

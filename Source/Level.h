@@ -19,8 +19,8 @@ private:
 	std::vector<Trigger*> triggerBoxes;
 public:
 	std::string filePath;
-	void loadLevel();
-	bool readTriggers(const char * filePath, std::vector<Trigger*>& vector);
+	void loadLevel(Player* player);
+	bool readTriggers(const char * filePath, std::vector<Trigger*>& vector, Player* player);
 	bool readModels(const char* filePath, std::vector<Model*> &modelVector);
 	void unloadModels();
 	void setupTriggers(Player* player);

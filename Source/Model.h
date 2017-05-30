@@ -49,8 +49,6 @@ struct Joint
 struct Weights
 {
 	int nrOfIndices;
-	std::vector<int> indexPos;
-	std::vector<glm::vec3> polygonVerteciesIndex;
 	std::vector<glm::ivec4> controllers;
 	std::vector<glm::vec4> weightsInfluence;
 };
