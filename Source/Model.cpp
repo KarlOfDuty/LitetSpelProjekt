@@ -541,6 +541,8 @@ bool Model::readModel(const char* filePath)
 				std::cout << vec3.z << std::endl;
 			}
 			mesh->vertices[(k * 3) + h].pos = vec3;
+			mesh->vertices[(k * 3) + h].controllers = glm::ivec4(0);
+			mesh->vertices[(k * 3) + h].weightsInfluence = glm::vec4(0);
 		}
 		for (int h = 0; h < 3; h++)
 		{
@@ -563,7 +565,7 @@ bool Model::readModel(const char* filePath)
 				std::cout << vec3.y << " ";
 				std::cout << vec3.z << std::endl;
 			}
-			mesh->vertices[(k * 3) + h].tangent = vec3;
+			//mesh->vertices[(k * 3) + h].tangent = vec3;
 			//Read the BiNormals for the primitive
 			in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 			if (modelDebug)
@@ -573,7 +575,7 @@ bool Model::readModel(const char* filePath)
 				std::cout << vec3.y << " ";
 				std::cout << vec3.z << std::endl;
 			}
-			mesh->vertices[(k * 3) + h].biTangent = vec3;
+			//mesh->vertices[(k * 3) + h].biTangent = vec3;
 		}
 		//Read the UVs for the primitive
 		for (int h = 0; h < 3; h++)
@@ -630,12 +632,11 @@ bool Model::readModel(const char* filePath)
 
 	bool hasAnimation = false;
 	in.read(reinterpret_cast<char*>(&hasAnimation), sizeof(bool));
+	this->hasAnimations = hasAnimation;
 
 	//Set up model
 	this->rotate();
 	this->addMesh(mesh);
-	this->setupModel();
-	this->loadTextures(0);
 	this->setBoundingSphereRadius();
 	in.close();
 	return true;
@@ -684,7 +685,6 @@ void Model::loadSkeleton(const char* filePath)
 			joint->transformMat.push_back(tempMap);
 		}
 		this->skeleton.push_back(joint);
-		hasAnimations = true;
 	}
 }
 void Model::loadWeight(const char* filePath)
@@ -728,7 +728,7 @@ void Model::updateAnimation()
 {
 	if (skeleton.size())
 	{
-		if (currentFrame < this->skeleton[0]->nrOfKeys-1)
+		if (currentFrame < this->skeleton[0]->nrOfKeys)
 		{
 			currentFrame++;
 		}
@@ -746,14 +746,14 @@ void Model::draw(Shader shader)
 		//std::cout << this->skeleton[0]->transformMat.size() << " " << currentFrame << std::endl;
 		for (int i = 0; i < skeleton.size(); i++)
 		{
-			currentJointTrans[i] = skeleton[i]->transformMat[2];
+			currentJointTrans[i] = skeleton[i]->transformMat[currentFrame - 1] * skeleton[i]->globalBindPosMat;
 		}
 		for (int j = 0; j < 100; j++)
 		{
 			glUniformMatrix4fv(glGetUniformLocation(shader.program, ("currentJointTrans[" + std::to_string(j) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(currentJointTrans[j]));
 		}
 	}
-	glUniform1i(glGetUniformLocation(shader.program,"hasAnimation"),hasAnimations);
+	glUniform1i(glGetUniformLocation(shader.program,"hasAnimation"),(int)hasAnimations);
 	//Draw vertices
 	glBindVertexArray(this->VAO);
 	for (int i = 0; i < this->meshes.size(); i++)
@@ -813,7 +813,7 @@ void Model::setupModel()
 	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 8));
 	//Controllers
 	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 4, GL_INT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 12));
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 12));
 	//Unbind the vertex array buffer
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -953,6 +953,7 @@ Model::Model(Model &otherModel)
 	this->hasAnimations = otherModel.hasAnimations;
 	this->modelMatrix = otherModel.modelMatrix;
 	this->rotationMatrix = otherModel.rotationMatrix;
+	this->skeleton = otherModel.skeleton;
 	this->meshes = otherModel.meshes;
 	this->VAO = otherModel.VAO;
 	this->VBO = otherModel.VBO;
@@ -963,6 +964,7 @@ Model::Model(Model *otherModel)
 	this->hasAnimations = otherModel->hasAnimations;
 	this->modelMatrix = otherModel->modelMatrix;
 	this->rotationMatrix = otherModel->rotationMatrix;
+	this->skeleton = otherModel->skeleton;
 	this->meshes = otherModel->meshes;
 	this->VAO = otherModel->VAO;
 	this->VBO = otherModel->VBO;
@@ -973,6 +975,7 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 	this->hasAnimations = otherModel.hasAnimations;
 	this->modelMatrix =  modelMat;
 	this->rotationMatrix = otherModel.rotationMatrix;
+	this->skeleton = otherModel.skeleton;
 	this->meshes = otherModel.meshes;
 	this->VAO = otherModel.VAO;
 	this->VBO = otherModel.VBO;
@@ -983,6 +986,7 @@ Model::Model(Model *otherModel, glm::mat4 modelMat)
 	this->hasAnimations = otherModel->hasAnimations;
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = otherModel->rotationMatrix;
+	this->skeleton = otherModel->skeleton;
 	this->meshes = otherModel->meshes;
 	this->VAO = otherModel->VAO;
 	this->VBO = otherModel->VBO;

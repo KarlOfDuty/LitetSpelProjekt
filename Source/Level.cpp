@@ -89,6 +89,8 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.z << std::endl;
 				}
 				mesh->vertices[(k * 3) + h].pos = vec3;
+				mesh->vertices[(k * 3) + h].controllers = glm::ivec4(0);
+				mesh->vertices[(k * 3) + h].weightsInfluence = glm::vec4(0);
 			}
 			for (int h = 0; h < 3; h++)
 			{
@@ -111,7 +113,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.y << " ";
 					std::cout << vec3.z << std::endl;
 				}
-				mesh->vertices[(k * 3) + h].tangent = vec3;
+				//mesh->vertices[(k * 3) + h].tangent = vec3;
 				//Read the BiNormals for the primitive
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 				if (modelDebug)
@@ -121,7 +123,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.y << " ";
 					std::cout << vec3.z << std::endl;
 				}
-				mesh->vertices[(k * 3) + h].biTangent = vec3;
+				//mesh->vertices[(k * 3) + h].biTangent = vec3;
 			}
 			//Read the UVs for the primitive
 			for (int h = 0; h < 3; h++)
@@ -182,7 +184,6 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		model->rotate();
 		model->addMesh(mesh);
 		model->setupModel();
-		model->loadTextures(0);
 		model->setBoundingSphereRadius();
 		modelVector.push_back(model);
 	}
@@ -216,34 +217,34 @@ void Level::unloadModels()
 void Level::setupTriggers(Player* player)
 {
 	//water land
-	std::vector<glm::vec2> corners2 = { glm::vec2(-20,0), glm::vec2(-20,400), glm::vec2(-200,400), glm::vec2(-200,0) };
-	TriggerSettings settings2;
-	settings2.onEnter = true;
+	//std::vector<glm::vec2> corners2 = { glm::vec2(-20,0), glm::vec2(-20,400), glm::vec2(-200,400), glm::vec2(-200,0) };
+	//TriggerSettings settings2;
+	//settings2.onEnter = true;
 	//triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "nextLevel"));
 
-	//health pickup
-	glm::mat4 mat({
-		0.02, 0, 0, 0,
-		0, 0.02, 0, 0,
-		0, 0, 0.02, 0,
-		-4, 5, 0, 1
-	});
-	Model* heart = new Model("models/heart/HeartContainer.obj", mat);
-	glm::vec3 min, max;
-	heart->getMinMaxBouding(min, max);
-	min += glm::vec3(mat[3]);
-	max += glm::vec3(mat[3]);
-	heart->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-6.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	dynamicModels.push_back(heart);
+	////health pickup
+	//glm::mat4 mat({
+	//	0.02, 0, 0, 0,
+	//	0, 0.02, 0, 0,
+	//	0, 0, 0.02, 0,
+	//	-4, 5, 0, 1
+	//});
+	//Model* heart = new Model("models/heart/HeartContainer.obj", mat);
+	//glm::vec3 min, max;
+	//heart->getMinMaxBouding(min, max);
+	//min += glm::vec3(mat[3]);
+	//max += glm::vec3(mat[3]);
+	//heart->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-6.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	//dynamicModels.push_back(heart);
 
-	std::vector<glm::vec2> corners3 = { glm::vec2(min), glm::vec2(min.x,max.y), glm::vec2(max), glm::vec2(max.x,min.y) };
-	TriggerSettings settings3;
-	settings3.onEnter = true;
-	std::vector<GameObject*> shitVec;
-	shitVec.push_back(player);
-	shitVec.push_back(heart);
-	Trigger* fuck = new Trigger(heart->getPoints(), settings3, player, shitVec, "healthPickup");
-	triggerBoxes.push_back(fuck);
+	//std::vector<glm::vec2> corners3 = { glm::vec2(min), glm::vec2(min.x,max.y), glm::vec2(max), glm::vec2(max.x,min.y) };
+	//TriggerSettings settings3;
+	//settings3.onEnter = true;
+	//std::vector<GameObject*> shitVec;
+	//shitVec.push_back(player);
+	//shitVec.push_back(heart);
+	//Trigger* fuck = new Trigger(heart->getPoints(), settings3, player, shitVec, "healthPickup");
+	//triggerBoxes.push_back(fuck);
 }
 void Level::updateTriggers(float dt)
 {

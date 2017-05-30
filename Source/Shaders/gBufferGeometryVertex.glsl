@@ -31,12 +31,10 @@ void main()
 		{
 			mat4 jointTrans = currentJointTrans[vertexControllers[i]];
 			vec4 posePos = jointTrans * vec4(vertexPos, 1.0f);
-			//finalModelPos += posePos * vertexWeight[i];
-			finalVertexPos = vec4(vertexPos,1.0f);
+			finalVertexPos += posePos * vertexWeight[i];
 
-			vec4 worldNormal = jointTrans * vec4(vertexNormal, 1.0f);
+			vec4 worldNormal = jointTrans * vec4(vertexNormal, 0.0f);
 			finalNormal += worldNormal * vertexWeight[i];
-			finalNormal = vec4(normal,1.0f);
 		}
 	}
 	else
@@ -44,14 +42,14 @@ void main()
 		finalVertexPos = vec4(vertexPos,1.0f);
 		finalNormal = vec4(normal,1.0f);
 	}
-	//Position converted to clip space
-	gl_Position = projection * view * model * finalVertexPos;
 	vec4 worldPos = model * finalVertexPos;
+	//Position converted to clip space
+	gl_Position = projection * view * worldPos;
 	fragPos = worldPos.xyz;
 	vec2 UV = vertexTexture;
 	UV.y = (vertexTexture.y * -1.0f) + 1.0f;
 	texCoords = UV;
 	//Calculate normal
 	mat3 normalMatrix = transpose(inverse(mat3(model)));
-    normal = normalMatrix * finalNormal.xyz;
+    normal = finalNormal.xyz;
 }

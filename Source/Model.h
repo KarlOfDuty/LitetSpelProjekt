@@ -16,6 +16,7 @@
 #include <SOIL.h>
 #include "Shader.h"
 #include "GameObject.h"
+extern Shader deferredGeometryPass;
 //A material specifying how shading, coloring and texturing works
 struct Material
 {
@@ -54,8 +55,8 @@ struct Vertex
 	glm::vec3 normal;
 	glm::vec4 weightsInfluence;
 	glm::ivec4 controllers;
-	glm::vec3 tangent;
-	glm::vec3 biTangent;
+	//glm::vec3 tangent;
+	//glm::vec3 biTangent;
 };
 struct Mesh
 {
@@ -73,7 +74,7 @@ class Model : public GameObject
 {
 private:
 	int nrOfKeyframes = 0;
-	int currentFrame = 0;
+	int currentFrame = 1;
 	bool hasAnimations;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;

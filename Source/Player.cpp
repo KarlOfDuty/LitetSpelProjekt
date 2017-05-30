@@ -17,6 +17,7 @@ Player::Player()
 	birdModel->readModel("models/Characters/Bird/model.bb");
 	birdModel->loadSkeleton("models/Characters/Bird/skelInfo.bb");
 	birdModel->loadWeight("models/Characters/Bird/weightInfo.bb");
+	birdModel->setupModel();
 	Model* sharkModel = new Model("models/Characters/Shark/Fish_T-Pose_Export.obj", modelMatrix);
 	Model* butterflyModel = new Model("models/Characters/Butterfly/ButterFly.obj", modelMatrix);
 
