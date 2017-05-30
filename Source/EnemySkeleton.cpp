@@ -5,10 +5,10 @@
 EnemySkeleton::EnemySkeleton(int health, Model* model, int damage, int immunityTime, bool patrol, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	this->attack = true;
-	this->acceleration = 0.8f;
+	this->acceleration = 16.0f;
 	this->patrol = patrol;
 	this->startPosition = enemyStartPos;
-	this->attackRange = 3.0f;
+	this->attackRange = 40.0f;
 	this->allProjectiles = allProjectiles;
 	this->checkPointGiven = false;
 	box = new Model("models/cube/cubeGreen.obj");
@@ -22,14 +22,14 @@ EnemySkeleton::~EnemySkeleton()
 
 void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
-	if (waitBeforeAttack.getElapsedTime().asSeconds() >= 0.1)
+	if (waitBeforeAttack.getElapsedTime().asSeconds() >= 0.3)
 	{
 		if (attackCooldown.getElapsedTime().asSeconds() >= 1)
 		{
-			glm::vec3 scale(0.0f, 2.0f, 1.0f);
+			glm::vec3 scale(0.0, 50.0, 2.0);
 			glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-1, 0) : glm::vec2(1, 0);
 			Projectile* temp = new Projectile;
-			temp->enemyMelee(box, getPos(), direction, 10.0f, scale);
+			temp->enemyMelee(box, enemyPosCurrent, direction, 200.0f, scale);
 			allProjectiles->push_back(temp);
 			attack = false;
 			jumpDelay.restart();
@@ -60,7 +60,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 			{
 				if (enemyPosCurrent.x > player->getPos().x)
 				{
-					Dodgecheckpoint.x = player->getPos().x + 10;
+					Dodgecheckpoint.x = player->getPos().x + 150;
 					Dodgecheckpoint.y = enemyPosCurrent.y;
 					Dodgecheckpoint.z = enemyPosCurrent.z;
 					dodgeLeft = false;
@@ -68,7 +68,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 				}
 				else if (enemyPosCurrent.x < player->getPos().x)
 				{
-					Dodgecheckpoint.x = player->getPos().x - 10;
+					Dodgecheckpoint.x = player->getPos().x - 150;
 					Dodgecheckpoint.y = enemyPosCurrent.y;
 					Dodgecheckpoint.z = enemyPosCurrent.z;
 					dodgeLeft = true;
@@ -80,11 +80,11 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 		//Patrol check 
 		if (patrol)
 		{
-			if (enemyPosCurrent.x < checkPoint.x - 3)
+			if (enemyPosCurrent.x < checkPoint.x - 100)
 			{
 				checkPointReached = true;
 			}
-			else if (enemyPosCurrent.x > checkPoint.x + 3)
+			else if (enemyPosCurrent.x > checkPoint.x + 100)
 			{
 				checkPointReached = false;
 			}
@@ -93,10 +93,27 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 
 	if (collides)
 	{
-		if (collidedFrom.x != 0 && collidedFrom.y > 0)
+		if (attack)
 		{
-			velocityY = 15;
+			if (collidedFrom.x != 0 && collidedFrom.y > 0)
+			{
+				velocityY = 200;
+			}
 		}
+
+
+		if (!attack)
+		{
+			if (collidedFrom.x != 0 && collidedFrom.y > 0)
+			{
+				jumped = false;
+				velocityX = 0;
+				attack = true;
+				dodgeLeft = false;
+				checkPointGiven = false;
+			}
+		}
+		
 
 		if (collidedFrom.x != 0)
 		{
@@ -114,7 +131,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 200.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -146,17 +163,20 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 				{
 					if (enemyPosCurrent.x > player->getPos().x + attackRange)
 					{
-						velocityX -= 3.8f*dt;
+						velocityX -= 70.0f*dt;
 					}
 					else if (enemyPosCurrent.x < player->getPos().x - attackRange)
 					{
-						velocityX += 3.8f*dt;
+						velocityX += 70.0f*dt;
 					}
 					waitBeforeAttack.restart();
 				}
 				else
 				{
-					this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+					if (glm::length(enemyPosCurrent.y - player->getPos().y) < 70.0f)
+					{
+						this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+					}
 				}
 			}
 			else
@@ -171,7 +191,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 							{
 								if (jumpDelay.getElapsedTime().asSeconds() >= 0.2)
 								{
-									velocityY = 7;
+									velocityY = 120;
 									jumped = true;
 								}
 							}
@@ -186,7 +206,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 							{
 								if (jumpDelay.getElapsedTime().asSeconds() >= 0.2)
 								{
-									velocityY = 7;
+									velocityY = 120;
 									jumped = true;
 								}
 							}
@@ -194,7 +214,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 						velocityX = velocityX - acceleration * dt;
 					}
 
-					if (fabs(enemyPosCurrent.x - Dodgecheckpoint.x) < 0.5f)
+					if (fabs(enemyPosCurrent.x - Dodgecheckpoint.x) < 10.5f)
 					{
 						jumped = false;
 						velocityX = 0;
@@ -210,21 +230,21 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 			//Patrol
 			if (patrol)
 			{
-				if (enemyPosCurrent.x >= checkPoint.x + 3)
+				if (enemyPosCurrent.x >= checkPoint.x + 100)
 				{
 					rotateLeft = false;
 				}
-				if (enemyPosCurrent.x <= checkPoint.x - 3)
+				if (enemyPosCurrent.x <= checkPoint.x - 100)
 				{
 					rotateLeft = true;
 				}
 				if (checkPointReached == false)
 				{
-					velocityX -= 1.8f*dt;
+					velocityX -= 50.8f*dt;
 				}
 				else if (checkPointReached == true)
 				{
-					velocityX += 1.8f*dt;
+					velocityX += 50.8f*dt;
 				}
 			}
 		}
@@ -239,15 +259,15 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 		{
 			rotateLeft = true;
 		}
-		if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
+		if (glm::length(enemyPosCurrent.x - startPosition.x) > 10.5f)
 		{
 			if (enemyPosCurrent.x > startPosition.x)
 			{
-				velocityX -= 1.8f*dt;
+				velocityX -= 50.8f*dt;
 			}
 			else if (enemyPosCurrent.x < startPosition.x)
 			{
-				velocityX += 1.8f*dt;
+				velocityX += 50.8f*dt;
 			}
 		}
 		else
@@ -259,25 +279,25 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 
 	if (!collidingWithGround)
 	{
-		velocityY -= 30 * dt;
+		velocityY -= 400 * dt;
 	}
 
-	if (velocityY > 15)
+	if (velocityY > 200)
 	{
-		velocityY = 15;
+		velocityY = 200;
 	}
 
 	//Maximum falling speed
-	if (velocityY < -30)
+	if (velocityY < -400)
 	{
-		velocityY = -30;
+		velocityY = -400;
 	}
 
 
 	if (!attack)
 	{
-		if (velocityX < -1.0) velocityX = -1.0f;
-		if (velocityX > 1.0) velocityX = 1.0f;
+		if (velocityX < -15.0) velocityX = -15.0f;
+		if (velocityX > 15.0) velocityX = 15.0f;
 	}
 
 	//Apply velocity
