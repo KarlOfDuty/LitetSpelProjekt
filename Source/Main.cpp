@@ -235,11 +235,11 @@ void render()
 			levelManager.currentLevel->getStaticModels()[j]->draw(shadowShader);
 		}
 		glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel()->getModelMatrix()[0][0]);
-		enemyManager->draw(shadowShader);
 		if (player->playerIsDead() != true)
 		{
 			//player->draw(shadowShader);
 		}
+		enemyManager->draw(shadowShader);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, windowWidth, windowHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
