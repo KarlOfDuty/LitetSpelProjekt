@@ -15,11 +15,21 @@ Player::Player()
 {
 	Model* birdModel = new Model();
 	birdModel->readModel("models/Characters/Bird/model.bb");
-	birdModel->loadSkeleton("models/Characters/Bird/skelInfo.bb");
 	birdModel->loadWeight("models/Characters/Bird/weightInfo.bb");
+	birdModel->loadSkeleton("models/Characters/Bird/Run/skelInfo.bb");
 	birdModel->setupModel();
-	Model* sharkModel = new Model("models/Characters/Shark/Fish_T-Pose_Export.obj", modelMatrix);
-	Model* butterflyModel = new Model("models/Characters/Butterfly/ButterFly.obj", modelMatrix);
+	Model* sharkModel = new Model();
+	sharkModel->readModel("models/Characters/Shark/model.bb");
+	sharkModel->loadWeight("models/Characters/Shark/weightInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Run/skelInfo.bb");
+	sharkModel->setupModel();
+	Model* butterflyModel = new Model();
+	butterflyModel->readModel("models/Characters/Butter/model.bb");
+	butterflyModel->loadWeight("models/Characters/Butter/weightInfo.bb");
+	butterflyModel->loadSkeleton("models/Characters/Butter/Run/skelInfo.bb");
+	butterflyModel->setupModel();
+	//Model* sharkModel = new Model("models/Characters/Shark/Fish_T-Pose_Export.obj", modelMatrix);
+	//Model* butterflyModel = new Model("models/Characters/Butterfly/ButterFly.obj", modelMatrix);
 
 	arrow = new Model("models/cube/cubeGreen.obj");
 
