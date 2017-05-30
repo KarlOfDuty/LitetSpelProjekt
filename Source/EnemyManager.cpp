@@ -32,7 +32,7 @@ void EnemyManager::createToad(glm::vec3 enemyStartPos)
 
 void EnemyManager::createGiantBat(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, 0.5, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f), sound));
+	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, 0.5, enemyStartPos, glm::vec3(2.5f, 2.5f, 2.5f), sound));
 }
 
 void EnemyManager::createBatSwarm(glm::vec3 enemyStartPos)
@@ -43,7 +43,7 @@ void EnemyManager::createBatSwarm(glm::vec3 enemyStartPos)
 
 void EnemyManager::createSkeleton(glm::vec3 enemyStartPos, bool patrol)
 {
-	this->allEnemies.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, 0.5, patrol, enemyStartPos, glm::vec3(0.12f, 0.12f, 0.12f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, 0.5, patrol, enemyStartPos, glm::vec3(1.8f, 1.8f, 1.8f), allProjectiles, sound));
 }
 
 void EnemyManager::createCrab(glm::vec3 enemyStartPos)
