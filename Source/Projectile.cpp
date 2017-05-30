@@ -199,11 +199,11 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 pla
 						model->setRotationMatrix(scaleMat);
 						model->rotate();
 
-						if (abs(scale.x*direction.x) >= 30)
+						if (abs(scale.x*direction.x) >= 35)
 						{
 							isUsed = false;
 						}
-						if (scale.y*direction.y >= 55)
+						if (scale.y*direction.y >= 75)
 						{
 							isUsed = false;
 						}
@@ -374,7 +374,6 @@ void Projectile::enemyMelee(Model * projectileModel, glm::vec2 startPos, glm::ve
 {
 	//Copy info supplied
 	position = startPos;
-	position.y -= 20.0f;
 	scale = projectileScale;
 	direction = projectileDirection;
 	deleteOnImpact = false;
