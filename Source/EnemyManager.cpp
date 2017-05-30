@@ -32,7 +32,7 @@ void EnemyManager::createToad(glm::vec3 enemyStartPos)
 
 void EnemyManager::createGiantBat(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, 0.5, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f), sound));
+	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, 0.5, enemyStartPos, glm::vec3(2.5f, 2.5f, 2.5f), sound));
 }
 
 void EnemyManager::createBatSwarm(glm::vec3 enemyStartPos)
@@ -43,7 +43,7 @@ void EnemyManager::createBatSwarm(glm::vec3 enemyStartPos)
 
 void EnemyManager::createSkeleton(glm::vec3 enemyStartPos, bool patrol)
 {
-	this->allEnemies.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, 0.5, patrol, enemyStartPos, glm::vec3(0.12f, 0.12f, 0.12f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, 0.5, patrol, enemyStartPos, glm::vec3(1.5f, 1.3f, 1.5f), allProjectiles, sound));
 }
 
 void EnemyManager::createCrab(glm::vec3 enemyStartPos)
@@ -53,12 +53,12 @@ void EnemyManager::createCrab(glm::vec3 enemyStartPos)
 
 void EnemyManager::createBoss(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBoss(100, new Model(bossModel), 1, 1.8, enemyStartPos, glm::vec3(0.25f, 0.25f, 0.25f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemyBoss(100, new Model(bossModel), 1, 1.8, enemyStartPos, glm::vec3(3.5f, 3.5f, 3.5f), allProjectiles, sound));
 }
 
 void EnemyManager::createFirefly(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, 0.5, enemyStartPos, glm::vec3(0.16f, 0.16f, 0.16f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, 0.5, enemyStartPos, glm::vec3(5.16f, 5.16f, 5.16f), allProjectiles, sound));
 }
 
 void EnemyManager::clearDeadEnemies()
@@ -150,15 +150,15 @@ void EnemyManager::draw(Shader shader)
 		EnemyBoss* boss = dynamic_cast<EnemyBoss*>(allEnemies[i]);
 		if (boss != nullptr)
 		{
-			if (boss->getWeakPointActive() == true)
-			{
+			/*if (boss->getWeakPointActive() == true)
+			{*/
 				std::vector<Model*> temp = boss->getTriggerModels();
 				for (int i = 0; i < temp.size(); i++)
 				{
 					glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &temp[i]->getModelMatrix()[0][0]);
 					temp[i]->draw(shader);
 				}
-			}
+			/*}*/
 		}
 	}
 	for (int i = 0; i < allProjectiles->size(); i++)

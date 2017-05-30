@@ -4,7 +4,7 @@
 
 EnemyCrab::EnemyCrab(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
-	this->acceleration = 0.5f;
+	this->acceleration = 5.0f;
 	this->moving = true;
 	this->oldOriginPoint = enemyStartPos;
 	this->startPosition = enemyStartPos;
@@ -53,7 +53,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	if (moving)
 	{
-		if (glm::length(enemyPosCurrent - oldOriginPoint) > 40.0f)
+		if (glm::length(enemyPosCurrent - oldOriginPoint) > 100.0f)
 		{
 			oldOriginPoint = enemyPosCurrent;
 			moving = false;
@@ -95,7 +95,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 150.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 300.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -220,8 +220,8 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		velocityY = -300;
 	}
 
-	if (velocityX < -0.5) velocityX = -0.5f;
-	if (velocityX > 0.5) velocityX = 0.5f;
+	if (velocityX < -5.0) velocityX = -5.0f;
+	if (velocityX > 5.0) velocityX = 5.0f;
 
 
 	//Apply velocity

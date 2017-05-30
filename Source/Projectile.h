@@ -40,7 +40,7 @@ public:
 	bool isCollidingWithWorld();
 	void disableArrow();
 	glm::vec2 getPosition();
-	void update(float dt, std::vector<Model*> &allObjects, glm::vec2 playerPos);
+	void update(float dt, std::vector<Model*> &allObjects, glm::vec2 playerPos, bool goingRight = false);
 	void draw(Shader shader);
 	void shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate = true, bool deleteOnImpact = false);
 	void aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale);
