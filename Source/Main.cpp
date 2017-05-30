@@ -687,7 +687,7 @@ void loadLevel()
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 
-	enemyManager->createBoss(glm::vec3(680.0f, 50.0f, 0.0f));
+	//enemyManager->createBoss(glm::vec3(680.0f, 50.0f, 0.0f));
 	//enemyManager->createSlime(glm::vec3(666.0f, 30.0f, 0.0f));
 	//enemyManager->createToad(glm::vec3(666.0f, 30.0f, 0.0f));
 	//enemyManager->createGiantBat(glm::vec3(1050.0f, 330.0f, 0.0f));

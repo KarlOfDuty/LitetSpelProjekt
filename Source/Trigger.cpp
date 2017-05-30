@@ -236,23 +236,24 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
 		enemy->setHealth(0);
 	}
-	else if (commands[commandID] == "healthPickup" && targets[targetID]->type() == "Model")
+	else if (commands[commandID] == "healthPickup" && targets[targetID]->type() == "Player")
 	{
 		Player* player = dynamic_cast<Player*>(targets[targetID]);
 		if (player != nullptr)
 		{
 			player->setHealth(player->getHealth() + 5);
 		}
-		else
+	}
+	else if (commands[commandID] == "healthPickup" && targets[targetID]->type() == "Model")
+	{
+		Model* heartModel = dynamic_cast<Model*>(targets[targetID]);
+		if (heartModel != nullptr)
 		{
-			Model* heartModel = dynamic_cast<Model*>(targets[targetID]);
-			if (heartModel != nullptr)
-			{
-				glm::mat4 test = heartModel->getModelMatrix();
-				test[3].z = 1000000;
-				heartModel->setModelMatrix(test);
-			}
+			glm::mat4 test = heartModel->getModelMatrix();
+			test[3].z = 1000000;
+			heartModel->setModelMatrix(test);
 		}
+		delete this;
 	}
 	else if (commands[commandID] == "phase1" && targets[targetID]->type() == "Enemy")
 	{

@@ -33,6 +33,7 @@ public:
 	std::vector<Model*>& getCollisionBoxes();
 	std::vector<Trigger*> getTriggers();
 	glm::vec3 getPlayerPos();
+	void createPickup(Model * pickupModel, glm::vec2 position, std::string triggerName, Player * player);
 	Level();
 	Level(std::string filePath);
 	~Level();
