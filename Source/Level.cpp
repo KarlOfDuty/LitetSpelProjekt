@@ -17,7 +17,7 @@ void Level::loadLevel(Player* player)
 		if (str == "staticModels")
 		{
 			line >> path;
-			//readModels(path.c_str(), staticModels);
+			readModels(path.c_str(), staticModels);
 		}
 		else if (str == "dynamicModels")
 		{
@@ -38,7 +38,7 @@ void Level::loadLevel(Player* player)
 	}
 	file.close();
 }
-bool Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Player* player)
+void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Player* player)
 {
 	//Temporary containers
 	TriggerSettings settings;
@@ -277,7 +277,8 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec2.x << " ";
 					std::cout << vec2.y << std::endl;
 				}
-				mesh->vertices[(k * 3) + h].texPos = vec2;
+				mesh->vertices[(k * 3) + h].texPos.x = vec2.x;
+				mesh->vertices[(k * 3) + h].texPos.y = (vec2.y * -1.0f) + 1.0;
 			}
 		}
 		//Diffuse texture file
