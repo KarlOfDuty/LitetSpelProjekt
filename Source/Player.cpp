@@ -117,7 +117,7 @@ void Player::waterEffect()
 
 void Player::applyDamage(int appliedDamage)
 {
-	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.2f)
+	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.5f)
 	{
 		this->health -= appliedDamage;
 		this->damageImmunity.restart();
