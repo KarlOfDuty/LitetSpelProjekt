@@ -709,8 +709,6 @@ void Model::loadWeight(const char* filePath)
 			in.read(reinterpret_cast<char*>(&polygonIndex[i]), sizeof(int));
 			polygonVertexIndex[i] = polygonIndex[i];
 		}
-		weightInfo.polygonVerteciesIndex.push_back(polygonVertexIndex);
-		weightInfo.indexPos.push_back(k);
 
 		for (int i = 0; i < 3; i++)
 		{

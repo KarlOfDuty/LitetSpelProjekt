@@ -682,7 +682,7 @@ void drawQuad()
 
 void loadLevel()
 {
-	levelManager.currentLevel->loadLevel();
+	levelManager.currentLevel->loadLevel(player);
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());

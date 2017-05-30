@@ -48,7 +48,11 @@ bool Trigger::update(float dt)
 		int objectsFound = 0;
 		for (int i = 0; i < activators.size(); i++)
 		{
-			if (collision::isInside(corners, activators[i]->getPoints()))
+			if (collision::collision(corners, activators[i]->getPoints()))
+			{
+				objectsFound++;
+			}
+			else if (collision::isInside(corners, activators[i]->getPoints()))
 			{
 				objectsFound++;
 			}
