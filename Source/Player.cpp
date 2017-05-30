@@ -33,6 +33,7 @@ Player::Player()
 	this->playerCharacters[2] = new PlayerButterfly(butterflyModel, false);
 	this->player = playerCharacters[0];
 	this->isOnGround = true;
+	this->goingRight = true;
 
 	allAttackBoxes = std::vector<Projectile*>();
 	allArrowAttackBoxes = std::vector<Projectile*>();
@@ -131,7 +132,7 @@ void Player::lightAttackPressed(sf::Window &window)
 	{
 		int mouseX = sf::Mouse::getPosition(window).x;
 		int middleScreenX = window.getSize().x / 2;
-		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 3.0f, getPos().y) : glm::vec2(getPos().x - 3.0f, getPos().y);
+		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 50.0f, getPos().y) : glm::vec2(getPos().x - 50.0f, getPos().y);
 		butterfly->shootAoe(allStaticModels, allAOEAttackBoxes, position);
 	}
 	PlayerBird* bird = dynamic_cast<PlayerBird*>(player);
@@ -141,9 +142,9 @@ void Player::lightAttackPressed(sf::Window &window)
 		int middleScreenX = window.getSize().x / 2;
 		glm::vec2 position;
 		glm::vec2 direction;
-		if (mouseX >= middleScreenX)
+		if (goingRight)
 		{
-			position = glm::vec2(getPos().x + 1.0f, getPos().y);
+			position = glm::vec2(getPos().x + 10.0f, getPos().y);
 			direction = glm::vec2(1, 0);
 		}
 		else
@@ -164,7 +165,7 @@ void Player::lightAttackReleased(sf::Window &window)
 		glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
 		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
 		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
-		glm::vec2 startPos = glm::vec2(getPos().x, getPos().y + 2.0f);
+		glm::vec2 startPos = glm::vec2(getPos().x, getPos().y + 30.0f);
 		bird->shootArrow(allArrowAttackBoxes, startPos, direction);
 	}
 }
@@ -175,27 +176,25 @@ void Player::heavyAttackPressed(sf::Window &window)
 	{
 		int mouseX = sf::Mouse::getPosition(window).x;
 		int middleScreenX = window.getSize().x / 2;
-		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 10.0f, getPos().y) : glm::vec2(getPos().x - 10.0f, getPos().y);
+		glm::vec2 position = (mouseX >= middleScreenX) ? glm::vec2(getPos().x + 150.0f, getPos().y) : glm::vec2(getPos().x - 150.0f, getPos().y);
 		butterfly->shootAoe(allStaticModels, allAOEAttackBoxes, position);
 	}
 	PlayerBird* bird = dynamic_cast<PlayerBird*>(player);
 	if (bird != nullptr)
 	{
-		int mouseX = sf::Mouse::getPosition(window).x;
-		int middleScreenX = window.getSize().x / 2;
 		glm::vec2 position;
 		glm::vec2 direction;
-		if (mouseX >= middleScreenX)
+		if (goingRight)
 		{
-			position = glm::vec2(getPos().x + 1.0f, getPos().y);
+			position = glm::vec2(getPos().x + 10.0f, getPos().y);
 			direction = glm::vec2(1, 0);
 		}
 		else
 		{
-			position = glm::vec2(getPos().x - 1.0f, getPos().y);
+			position = glm::vec2(getPos().x - 10.0f, getPos().y);
 			direction = glm::vec2(-1, 0);
 		}
-		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 1.0f);
+		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 10.0f);
 	}
 	PlayerShark* shark = dynamic_cast<PlayerShark*>(player);
 	if (shark != nullptr)
@@ -213,9 +212,9 @@ void Player::heavyAttackReleased(sf::Window &window)
 		glm::vec2 middleScreen(window.getSize().x / 2, window.getSize().y / 2);
 		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
 		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
-		glm::vec2 startPos = glm::vec2(getPos().x, getPos().y + 2.0f);
+		glm::vec2 startPos = glm::vec2(getPos().x, getPos().y + 30.0f);
 		bird->shootArrow(allArrowAttackBoxes, startPos, direction);
-		bird->arrowVelocity = 30.0f;
+		bird->arrowVelocity = 300.0f;
 	}
 }
 
@@ -232,13 +231,13 @@ void Player::aiming(sf::Window &window,float dt)
 	PlayerShark* bird = dynamic_cast<PlayerShark*>(player);
 	if (bird != nullptr)
 	{
-		if (bird->arrowVelocity >= 60.0f)
+		if (bird->arrowVelocity >= 600.0f)
 		{
-			bird->arrowVelocity = 60.0f;
+			bird->arrowVelocity = 600.0f;
 		}
 		else
 		{
-			bird->arrowVelocity += 20.0f * dt;
+			bird->arrowVelocity += 200.0f * dt;
 		}
 
 		glm::vec2 mousePos(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
@@ -246,20 +245,20 @@ void Player::aiming(sf::Window &window,float dt)
 		float rotation = atan2(mousePos.x - middleScreen.x, mousePos.y - middleScreen.y);
 		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
 
-		glm::vec2 position = glm::vec2(getPos().x, getPos().y + 2.f);
+		glm::vec2 position = glm::vec2(getPos().x, getPos().y + 30.f);
 		glm::vec2 velocity = glm::vec2(glm::abs(direction.x*bird->arrowVelocity), direction.y*bird->arrowVelocity);
 		for (int i = 0; i < 30; i++)
 		{
-			velocity.x -= 5.0f*0.02f;
+			velocity.x -= 50.0f*0.02f;
 			if (velocity.x < 0) velocity.x = 0;
-			velocity.y -= 30.0f*0.02f;
+			velocity.y -= 300.0f*0.02f;
 			position.x += direction.x*velocity.x*0.02f;
 			position.y += velocity.y*0.02f;
 
 			glm::mat4 modelMat({
-				0.1, 0.0, 0.0, 0.0,
-				0.0, 0.1, 0.0, 0.0,
-				0.0, 0.0, 0.1, 0.0,
+				2.0, 0.0, 0.0, 0.0,
+				0.0, 2.0, 0.0, 0.0,
+				0.0, 0.0, 2.0, 0.0,
 				position.x, position.y , 0.0, 1.0
 			});
 
@@ -456,17 +455,18 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			glm::vec3 prevPos = getPos();
 			if (goingLeft == true)
 			{
-				glm::vec3 minus4 = {-100,0,0};
+				glm::vec3 minus4 = {-50,00,0};
 				this->setPos(this->getPos() + minus4);
 			}
 			else
 			{
-				glm::vec3 plus4 = {100,0,0};
+				glm::vec3 plus4 = {50,00,0};
 				this->setPos(this->getPos() + plus4);
 			}
 
 			//colisions
 			bool colided = false;
+			glm::vec2 mtvValue(0, 0);
 			for(int index = 0; index < allModels.size() && colided == false; index++)
 			{
 				std::vector<glm::vec2> playerPoints = getPoints();
@@ -474,8 +474,12 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 				float radians = 0.0f;
 				getPoints(objectPoints, allModels[index], radians);
 				glm::vec2 mtv;
-				colided = collision::collision(playerPoints, objectPoints, mtv);
-				if (colided == false)
+				collision::collision(playerPoints, objectPoints, mtv);
+				if (mtv != glm::vec2(0,0) && abs(mtv.x) < 20 && abs(mtv.y) < 20)
+				{
+					mtvValue = mtv;
+				}
+				if (mtv == glm::vec2(0,0))
 				{
 					colided = collision::isInside(playerPoints, objectPoints);
 				}
@@ -515,7 +519,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	{
 		if (allAttackBoxes[i]->isInUse())
 		{
-			if (glm::distance(getPos(), allAttackBoxes[i]->getPos()) < 40.0f)
+			if (glm::distance(getPos(), allAttackBoxes[i]->getPos()) < 500.0f)
 			{
 				allAttackBoxes[i]->update(dt, allModels, getPos());
 				std::vector<glm::vec2> arrowPoints = allAttackBoxes[i]->getPoints();
@@ -677,6 +681,10 @@ void Player::setDiving(bool diving)
 
 void Player::setHealth(int health)
 {
+	if (health > 20)
+	{
+		health = 20;
+	}
 	this->health = health;
 }
 
@@ -752,5 +760,4 @@ void Player::groundCheck()
 	{
 		groundPos = 0;
 	}
-	std::cout << closestDistance << std::endl;
 }

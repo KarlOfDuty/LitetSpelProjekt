@@ -17,7 +17,7 @@ void Level::loadLevel()
 		if (str == "staticModels")
 		{
 			line >> path;
-			readModels(path.c_str(), staticModels);
+			//readModels(path.c_str(), staticModels);
 		}
 		else if (str == "dynamicModels")
 		{
@@ -217,29 +217,8 @@ void Level::setupTriggers(Player* player)
 	settings2.onEnter = true;
 	//triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "nextLevel"));
 
-	//health pickup
-	glm::mat4 mat({
-		0.02, 0, 0, 0,
-		0, 0.02, 0, 0,
-		0, 0, 0.02, 0,
-		-4, 5, 0, 1
-	});
-	Model* heart = new Model("models/heart/HeartContainer.obj", mat);
-	glm::vec3 min, max;
-	heart->getMinMaxBouding(min, max);
-	min += glm::vec3(mat[3]);
-	max += glm::vec3(mat[3]);
-	heart->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-6.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	dynamicModels.push_back(heart);
-
-	std::vector<glm::vec2> corners3 = { glm::vec2(min), glm::vec2(min.x,max.y), glm::vec2(max), glm::vec2(max.x,min.y) };
-	TriggerSettings settings3;
-	settings3.onEnter = true;
-	std::vector<GameObject*> shitVec;
-	shitVec.push_back(player);
-	shitVec.push_back(heart);
-	Trigger* fuck = new Trigger(heart->getPoints(), settings3, player, shitVec, "healthPickup");
-	triggerBoxes.push_back(fuck);
+	Model* heart = new Model("models/heart/HeartContainer.obj");
+	createPickup(heart, glm::vec2(200, 110), "healthPickup", player);
 }
 void Level::updateTriggers(float dt)
 {
@@ -288,6 +267,31 @@ std::vector<Trigger*> Level::getTriggers()
 glm::vec3 Level::getPlayerPos()
 {
 	return playerPos;
+}
+void Level::createPickup(Model* pickupModel, glm::vec2 position, std::string triggerName, Player* player)
+{
+	glm::mat4 mat({
+		0.5, 0, 0, 0,
+		0, 0.5, 0, 0,
+		0, 0, 0.5, 0,
+		position.x, position.y, 0, 1
+	});
+	Model* thisPickup = new Model(pickupModel, mat);
+	glm::vec3 min, max;
+	thisPickup->getMinMaxBouding(min, max);
+	min += glm::vec3(mat[3]);
+	max += glm::vec3(mat[3]);
+	thisPickup->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-6.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	dynamicModels.push_back(thisPickup);
+
+	std::vector<glm::vec2> corners3 = { glm::vec2(min), glm::vec2(min.x,max.y), glm::vec2(max), glm::vec2(max.x,min.y) };
+	TriggerSettings settings3;
+	settings3.onEnter = true;
+	std::vector<GameObject*> allObjects;
+	allObjects.push_back(player);
+	allObjects.push_back(thisPickup);
+	Trigger* pickupTrigger = new Trigger(thisPickup->getPoints(), settings3, player, allObjects, triggerName);
+	triggerBoxes.push_back(pickupTrigger);
 }
 //Constructors
 Level::Level()

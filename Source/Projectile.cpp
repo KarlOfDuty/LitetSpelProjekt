@@ -127,86 +127,84 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 pla
 				model->setRotationMatrix(scaleMat);
 				model->rotate();
 
-				if (abs(scale.x*direction.x) >= 2)
+				if (abs(scale.x*direction.x) >= 20)
 				{
 					isUsed = false;
 				}
-				if (scale.y*direction.y >= 2)
+				if (scale.y*direction.y >= 20)
 				{
 					isUsed = false;
 				}
 			}
 			else
 			{
+				if (!enemyMeleeAttack)
 				{
-					if (!enemyMeleeAttack)
+					if (position.x < (playerPos.x + scale.x / 2 + 10.0f*direction.x))
 					{
-						if (position.x < (playerPos.x + scale.x / 2 + 1.0f*direction.x))
+						if (direction.x == -1)
 						{
-							if (direction.x == -1)
-							{
-								direction.x = 1;
-								scale.x = -scale.x;
-							}
-						}
-						else if (position.x >(playerPos.x + scale.x / 2 + 1.0f*direction.x))
-						{
-							if (direction.x == 1)
-							{
-								direction.x = -1;
-								scale.x = -scale.x;
-							}
-						}
-
-						scale.x += direction.x * velocity.x * dt;
-						scale.y += direction.y * velocity.y * dt;
-						position.x = playerPos.x + scale.x / 2 + 1.0f*direction.x;
-						position.y = playerPos.y + 1.5f;
-						model->setModelMatrix({
-							1.0, 0.0, 0.0, 0.0,
-							0.0, 1.0, 0.0, 0.0,
-							0.0, 0.0, 1.0, 0.0,
-							position.x, position.y , 0.0, 1.0
-						});
-
-						//Set rotation if isRotating, else just set scale
-						glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
-						model->setRotationMatrix(scaleMat);
-						model->rotate();
-
-						if (abs(scale.x*direction.x) >= 2)
-						{
-							isUsed = false;
-						}
-						if (scale.y*direction.y >= 2)
-						{
-							isUsed = false;
+							direction.x = 1;
+							scale.x = -scale.x;
 						}
 					}
-					else
+					else if (position.x >(playerPos.x + scale.x / 2 + 10.0f*direction.x))
 					{
-						position.x += (velocity.x/2) * direction.x * dt;
-						model->setModelMatrix({
-							1.0, 0.0, 0.0, 0.0,
-							0.0, 1.0, 0.0, 0.0,
-							0.0, 0.0, 1.0, 0.0,
-							position.x, position.y , 0.0, 1.0
-						});
-						scale.x += velocity.x * dt;
-						//scale.y += direction.y * velocity.y * dt;
-						glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
-						
-						model->setRotationMatrix(scaleMat);
-						model->rotate();
+						if (direction.x == 1)
+						{
+							direction.x = -1;
+							scale.x = -scale.x;
+						}
+					}
 
-						if (abs(scale.x*direction.x) >= 3)
-						{
-							isUsed = false;
-						}
-						if (scale.y*direction.y >= 2)
-						{
-							isUsed = false;
-						}
+					scale.x += direction.x * velocity.x * dt;
+					scale.y += direction.y * velocity.y * dt;
+					position.x = playerPos.x + scale.x / 2 + 10.0f*direction.x;
+					position.y = playerPos.y + 20.f;
+					model->setModelMatrix({
+						1.0, 0.0, 0.0, 0.0,
+						0.0, 1.0, 0.0, 0.0,
+						0.0, 0.0, 1.0, 0.0,
+						position.x, position.y , 0.0, 1.0
+					});
+
+					//Set rotation if isRotating, else just set scale
+					glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
+					model->setRotationMatrix(scaleMat);
+					model->rotate();
+
+					if (abs(scale.x*direction.x) >= 20)
+					{
+						isUsed = false;
+					}
+					if (scale.y*direction.y >= 20)
+					{
+						isUsed = false;
+					}
+				}
+				else
+				{
+					position.x += (velocity.x/2) * direction.x * dt;
+					model->setModelMatrix({
+						1.0, 0.0, 0.0, 0.0,
+						0.0, 1.0, 0.0, 0.0,
+						0.0, 0.0, 1.0, 0.0,
+						position.x, position.y , 0.0, 1.0
+					});
+					scale.x += velocity.x * dt;
+					//scale.y += direction.y * velocity.y * dt;
+					glm::mat4 scaleMat = glm::scale(glm::mat4(), scale);
+						
+					model->setRotationMatrix(scaleMat);
+					model->rotate();
+
+					if (abs(scale.x*direction.x) >= 3)
+					{
+						isUsed = false;
+					}
+					if (scale.y*direction.y >= 2)
+					{
+						isUsed = false;
 					}
 				}
 			}
