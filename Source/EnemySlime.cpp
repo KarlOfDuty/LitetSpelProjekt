@@ -66,7 +66,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 150.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 200.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;

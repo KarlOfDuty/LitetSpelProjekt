@@ -118,7 +118,7 @@ void Player::waterEffect()
 
 void Player::applyDamage(int appliedDamage)
 {
-	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.2f)
+	if (this->damageImmunity.getElapsedTime().asSeconds() >= 1.5f)
 	{
 		this->health -= appliedDamage;
 		this->damageImmunity.restart();
@@ -149,7 +149,7 @@ void Player::lightAttackPressed(sf::Window &window)
 		}
 		else
 		{
-			position = glm::vec2(getPos().x - 1.0f, getPos().y);
+			position = glm::vec2(getPos().x - 10.0f, getPos().y);
 			direction = glm::vec2(-1, 0);
 		}
 		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 20.f);
@@ -521,7 +521,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		{
 			if (glm::distance(getPos(), allAttackBoxes[i]->getPos()) < 500.0f)
 			{
-				allAttackBoxes[i]->update(dt, allModels, getPos());
+				allAttackBoxes[i]->update(dt, allModels, getPos(), goingRight);
 				std::vector<glm::vec2> arrowPoints = allAttackBoxes[i]->getPoints();
 				for (int k = 0; k < allEnemies.size(); k++)
 				{

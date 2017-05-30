@@ -5,10 +5,10 @@
 EnemyBoss::EnemyBoss(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	this->allProjectiles = allProjectiles;
-	this->acceleration = 0.4f;
+	this->acceleration = 7.0f;
 	this->originPoint = enemyStartPos;
 	this->attacking = true;
-	this->phase = 1;
+	this->phase = 2;
 	this->chargeCounter = 0;
 	this->createTrigger = true;
 	this->rotateNow = false;
@@ -91,17 +91,17 @@ void EnemyBoss::editWeakPoint(float xValue, float yValue, Player* player)
 {
 	if (rotateLeft)
 	{
-		corners[0] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(-xValue, yValue+0.5f, 0.0f, 1.0f);
+		corners[0] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(-xValue, yValue+5.0f, 0.0f, 1.0f);
 		corners[1] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(-xValue, yValue, 0.0f, 1.0f);
-		corners[2] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(-xValue+0.5f, yValue+0.5f, 0.0f, 1.0f);
-		corners[3] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(-xValue+0.5f, yValue, 0.0f, 1.0f);
+		corners[2] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(-xValue+5.0f, yValue+5.0f, 0.0f, 1.0f);
+		corners[3] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(-xValue+5.0f, yValue, 0.0f, 1.0f);
 	}
 	if (!rotateLeft)
 	{
-		corners[0] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(xValue, yValue+0.5f, 0.0f, 1.0f);
+		corners[0] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(xValue, yValue+5.0f, 0.0f, 1.0f);
 		corners[1] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(xValue, yValue, 0.0f, 1.0f);
-		corners[2] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(xValue+0.5f, yValue+0.5f, 0.0f, 1.0f);
-		corners[3] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(xValue+0.5f, yValue, 0.0f, 1.0f);
+		corners[2] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(xValue+5.0f, yValue+5.0f, 0.0f, 1.0f);
+		corners[3] = glm::vec4(getPos().x, getPos().y, getPos().z, 0.0) + glm::vec4(xValue+5.0f, yValue, 0.0f, 1.0f);
 	}
 
 	weakPoint = { glm::vec2(corners[0].x, corners[0].y),
@@ -216,7 +216,7 @@ bool EnemyBoss::getPlayerInWater() const
 
 void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
-	if (attackCooldown.getElapsedTime().asSeconds() >= 0.5)
+	if (attackCooldown.getElapsedTime().asSeconds() >= 0.9)
 	{
 		float rotation = -atan2(getPos().x - playerPos.x, getPos().y - playerPos.y-2);
 		glm::vec2 direction = glm::normalize(glm::vec2(sin(rotation), -cos(rotation)));
@@ -235,7 +235,7 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 				{
 					if (!allProjectiles->at(i)->isInUse())
 					{
-						allProjectiles->at(i)->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.4, 0.4, 0.4), false, true);
+						allProjectiles->at(i)->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 150.f, glm::vec3(4.0, 4.0, 4.0), false, true);
 						i = (int)allProjectiles->size();
 					}
 				}
@@ -244,7 +244,7 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 		else
 		{
 			Projectile* temp = new Projectile;
-			temp->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 15.f, glm::vec3(0.4, 0.4, 0.4), false, true);
+			temp->shoot(projectileModel, getPos(), direction, glm::vec2(0, 0), 150.f, glm::vec3(4.0, 4.0, 4.0), false, true);
 			allProjectiles->push_back(temp);
 		}
 		attackCooldown.restart();
@@ -294,7 +294,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 10.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 150.0f)
 	{
 		if (!blockExit)
 		{
@@ -312,7 +312,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 		if (collides)
 		{
-			if (collisionTime.getElapsedTime().asSeconds() >= 5)
+			if (collisionTime.getElapsedTime().asSeconds() >= 10)
 			{
 				returnToStart = true;
 				playerSeen = false;
@@ -393,6 +393,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 							{
 								velocityX = velocityX + acceleration * dt;
 							}
+							
 						}
 						dazeTimer.restart();
 					}
@@ -423,8 +424,8 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				}
 			}
 
-			if (velocityX < -0.5) velocityX = -0.5f;
-			if (velocityX > 0.5) velocityX = 0.5f;
+			if (velocityX < -7.0) velocityX = -7.0f;
+			if (velocityX > 7.0) velocityX = 7.0f;
 
 		}
 		else if (phase == 2)
@@ -455,7 +456,6 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					movingLeft = false;
 					velocityX = 0;
 					walkTimer.restart();
-					chargeCounter = chargeCounter + 1;
 				}
 			}
 
@@ -506,6 +506,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					setWaterArea(player, allModels);
 					removeGroundTimer.restart();
 					removeGround = true;
+					playerTracked = true;
 				}
 			}
 
@@ -524,7 +525,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				}
 
 				//If boss is outside center go to center
-				if (glm::length(enemyPosCurrent.x - originPoint.x) > 0.5f)
+				if (glm::length(enemyPosCurrent.x - originPoint.x) > 10.5f)
 				{
 					if (getPos().x > originPoint.x)
 					{
@@ -536,16 +537,16 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					}
 					if (enemyPosCurrent.x >= originPoint.x)
 					{
-						velocityX -= 3.5f*dt;
+						velocityX -= 50.0f*dt;
 					}
 					else if (enemyPosCurrent.x < originPoint.x)
 					{
-						velocityX += 3.5f*dt;
+						velocityX += 50.0f*dt;
 					}
 				}
 
 				//If boss is in center
-				if (glm::length(enemyPosCurrent.x - originPoint.x) < 0.5f)
+				if (glm::length(enemyPosCurrent.x - originPoint.x) < 10.5f)
 				{
 					if (!weakPointsArr.empty())
 					{
@@ -663,18 +664,18 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 		if (!collidingWithGround)
 		{
-			velocityY -= 30 * dt;
+			velocityY -= 300 * dt;
 		}
 
-		if (velocityY > 10)
+		if (velocityY > 100)
 		{
-			velocityY = 10;
+			velocityY = 100;
 		}
 
 		//Maximum falling speed
-		if (velocityY < -30)
+		if (velocityY < -300)
 		{
-			velocityY = -30;
+			velocityY = -300;
 		}
 
 			//Apply velocity
@@ -723,11 +724,11 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 		if (phase == 1)
 		{
-			editWeakPoint(3.5f, -2.0f, player);
+			editWeakPoint(45.5f, -30.0f, player);
 		}
 		else if (phase == 2)
 		{
-			editWeakPoint(2.0f, -1.2f, player);
+			editWeakPoint(20.0f, -18.0f, player);
 		}
 
 		if (this->getHealth() > 10)
@@ -767,9 +768,9 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 		center = center / (float)weakPoint.size();
 		glm::mat4 ModelMat({
-			0.3,0,0,0,
-			0,0.3,0,0,
-			0,0,0.3,0,
+			5.0,0,0,0,
+			0,5.0,0,0,
+			0,0,5.0,0,
 			center.x,center.y,0,1
 		});
 		weakPointModel->setModelMatrix(ModelMat);
@@ -782,9 +783,9 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 		center = center / (float)chandelierPoints.size();
 		ModelMat = glm::mat4({
-			2,0,0,0,
-			0,2,0,0,
-			0,0,2,0,
+			6,0,0,0,
+			0,6,0,0,
+			0,0,6,0,
 			center.x,center.y,0,1
 		});
 		chandelierModel->setModelMatrix(ModelMat);

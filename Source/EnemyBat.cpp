@@ -39,7 +39,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 	}
 	//Now find the ground based on the sorted models
 	bool foundGround = false;
-	float closestDistance = 100;
+	float closestDistance = 100000;
 	glm::vec3 rayOrigin = glm::vec3(getPos().x, getPos().y, getPos().z);
 	glm::vec3 rayDir(0, -1, 0);
 	for (int i = 0; i < sortedModels.size(); i++)
@@ -81,16 +81,11 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 		collidingWithGround = false;
 	}
 
-	//movement calculations
-	midX = startPosition.y - 400;
-	float curve = glm::pow(enemyPosCurrent.y - midX, 0.8);
-	//
-
 	if (collides)
 	{
 		if (collidedFrom.y == 0 && collidedFrom.x != 0)
 		{
-			velocityY += 80.0f*dt;
+			velocityY += 90.0f*dt;
 		}
 		if (collidedFrom.y < 0 && collidedFrom.x != 0)
 		{
@@ -99,16 +94,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 		}
 		if (collidedFrom.y > 0)
 		{
-			if (enemyPosCurrent.x > player->getPos().x)
-			{
-				velocityY -= curve*dt;
-				velocityX -= 80.0f*dt;
-			}
-			else if (enemyPosCurrent.x < player->getPos().x)
-			{
-				velocityY -= curve*dt;
-				velocityX += 80.0f*dt;
-			}
+			goUp = true;
 		}
 
 		if (collidedFrom.y < 0)
@@ -128,7 +114,7 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 		collisionTime.restart();
 	}
 
-	if (enemyPosCurrent.y <= 50+30)
+	if (enemyPosCurrent.y <= groundPos+60)
 	{
 		goUp = true;
 	}
@@ -214,6 +200,10 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 	}
 
 	//Move
+	//movement calculations
+	midX = startPosition.y - 400;
+	float curve = glm::pow(enemyPosCurrent.y - midX, 0.8);
+	//
 	if (!returnToStart)
 	{
 		if (swoopAttack)
@@ -222,22 +212,22 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 			{
 				if (fabs(enemyPosCurrent.x - newCheckPoint.x) > 1.1f && goingLeft && !goUp)
 				{
-					velocityX -= 80.0f*dt;
+					velocityX -= 100.0f*dt;
 					velocityY -= curve*dt;
 				}
 				else if (fabs(enemyPosCurrent.x - newCheckPoint.x) > 1.1f && goingRight && !goUp)
 				{
-					velocityX += 80.0f*dt;
+					velocityX += 100.0f*dt;
 					velocityY -= curve*dt;
 				}
 				if (fabs(enemyPosCurrent.y - newCheckPoint.y) > 1.1f && goingLeft && goUp)
 				{
-					velocityX -= 80.0f*dt;
+					velocityX -= 100.0f*dt;
 					velocityY += curve*dt;
 				}
 				else if (fabs(enemyPosCurrent.y - newCheckPoint.y) > 1.1f && goingRight && goUp)
 				{
-					velocityX += 80.0f*dt;
+					velocityX += 100.0f*dt;
 					velocityY += curve*dt;
 				}
 			}
@@ -251,24 +241,24 @@ void EnemyBat::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPo
 			{
 				if (enemyPosCurrent.x > startPosition.x)
 				{
-					velocityX -= 50.5f*dt;
+					velocityX -= 70.5f*dt;
 				}
 				else if (enemyPosCurrent.x < startPosition.x)
 				{
-					velocityX += 50.5f*dt;
+					velocityX += 70.5f*dt;
 				}
 				if (enemyPosCurrent.y > startPosition.y)
 				{
-					velocityY -= 50.5f*dt;
+					velocityY -= 70.5f*dt;
 				}
 				else if (enemyPosCurrent.y < startPosition.y)
 				{
-					velocityY += 50.5f*dt;
+					velocityY += 70.5f*dt;
 				}
 			}
 			else
 			{
-				velocityY += 50.0f*dt;
+				velocityY += 80.0f*dt;
 			}
 		}
 		else

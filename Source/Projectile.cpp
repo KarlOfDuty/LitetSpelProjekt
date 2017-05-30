@@ -61,7 +61,7 @@ glm::vec2 Projectile::getPosition()
 	return this->position;
 }
 
-void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 playerPos)
+void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 playerPos, bool goingRight)
 {
 	//Update only if there is has been no collision
 	if (!hasCollided)
@@ -140,6 +140,23 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 pla
 			{
 				if (!enemyMeleeAttack)
 				{
+					if (goingRight)
+					{
+						if (direction.x != 1)
+						{
+							direction.x = 1;
+							scale.x = -scale.x;
+						}
+					}
+					else
+					{
+						if (direction.x != -1)
+						{
+							direction.x = -1;
+							scale.x = -scale.x;
+						}
+					}
+					/*
 					if (position.x < (playerPos.x + scale.x / 2 + 10.0f*direction.x))
 					{
 						if (direction.x == -1)
@@ -156,6 +173,7 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 pla
 							scale.x = -scale.x;
 						}
 					}
+					*/
 
 					scale.x += direction.x * velocity.x * dt;
 					scale.y += direction.y * velocity.y * dt;
@@ -197,12 +215,11 @@ void Projectile::update(float dt, std::vector<Model*> &allObjects, glm::vec2 pla
 						
 					model->setRotationMatrix(scaleMat);
 					model->rotate();
-
-					if (abs(scale.x*direction.x) >= 3)
+					if (abs(scale.x*direction.x) >= 30)
 					{
 						isUsed = false;
 					}
-					if (scale.y*direction.y >= 2)
+					if (scale.y*direction.y >= 55)
 					{
 						isUsed = false;
 					}
@@ -372,6 +389,7 @@ void Projectile::enemyMelee(Model * projectileModel, glm::vec2 startPos, glm::ve
 {
 	//Copy info supplied
 	position = startPos;
+	position.y -= 20.0f;
 	scale = projectileScale;
 	direction = projectileDirection;
 	deleteOnImpact = false;
