@@ -3,7 +3,7 @@
 PlayerBird::PlayerBird(Model model, bool inWater) :PlayerChar(model, inWater)
 {
 	this->maxJumps = 2;
-	this->jumpHeight = 200;
+	this->jumpHeight = 210;
 	box = new Model("models/cube/cubeGreen.obj");
 }
 

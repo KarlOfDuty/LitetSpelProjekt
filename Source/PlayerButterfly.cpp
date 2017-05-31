@@ -3,7 +3,7 @@
 PlayerButterfly::PlayerButterfly(Model model, bool inWater) :PlayerChar(model, inWater)
 {
 	this->maxJumps = 1;
-	this->jumpHeight = 150;
+	this->jumpHeight = 210;
 	box = new Model("models/cube/cubeGreen.obj");
 }
 
@@ -105,6 +105,5 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 			temp->aoe(box, position, direction, 50.0f, scale);
 			allProjectiles.push_back(temp);
 		}
-		std::cout << minDist << std::endl;
 	}
 }

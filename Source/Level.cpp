@@ -354,13 +354,26 @@ void Level::unloadModels()
 	colliders.clear();
 }
 //Sets the triggerboxes for this level
-void Level::setupTriggers(Player* player)
+void Level::setupTriggers(Player* player, std::vector<Enemy*> allEnemies)
 {
 	//water land
-	std::vector<glm::vec2> corners2 = { glm::vec2(-20,0), glm::vec2(-20,400), glm::vec2(-200,400), glm::vec2(-200,0) };
-	TriggerSettings settings2;
-	settings2.onEnter = true;
-	//triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "nextLevel"));
+	for (int i = 0; i < allEnemies.size(); i++)
+	{
+		playerAndEnemy.push_back(allEnemies[i]);
+	}
+	playerAndEnemy.push_back(player);
+
+	std::vector<glm::vec2> corners1 = { glm::vec2(1150,90), glm::vec2(1295,90), glm::vec2(1150,-25), glm::vec2(1295,-25) };
+	TriggerSettings settings1;
+	settings1.onEnter = true;
+	settings1.onExit = true;
+	triggerBoxes.push_back(new Trigger(corners1, settings1, playerAndEnemy, playerAndEnemy, "water"));
+
+	std::vector<glm::vec2> corners2 = { glm::vec2(2030,395), glm::vec2(2705,395), glm::vec2(2030,260), glm::vec2(2705,260) };
+	triggerBoxes.push_back(new Trigger(corners2, settings1, playerAndEnemy, playerAndEnemy, "water"));
+
+	std::vector<glm::vec2> corners3 = { glm::vec2(5000,475), glm::vec2(5620,475), glm::vec2(5000,200), glm::vec2(5620,200) };
+	triggerBoxes.push_back(new Trigger(corners3, settings1, playerAndEnemy, playerAndEnemy, "water"));
 
 	Model* heart = new Model("models/heart/HeartContainer.obj");
 	createPickup(heart, glm::vec2(200, 110), "healthPickup", player);
