@@ -243,7 +243,7 @@ bool Enemy::getBossKill() const
 
 void Enemy::update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
-	if (glm::length(pos - player->getPos()) < 500.0f)
+	if (glm::length(pos - player->getPos()) < 400.0f)
 	{
 		updateThis(dt, pos, checkPoint, allSmallBats, allModels, player);
 	}

@@ -8,6 +8,8 @@
 #include <sstream>
 #include <iostream>
 #include "SoundSystem.h"
+#include "Enemy.h"
+
 //Turns on console feedback for reading of model files
 class Level
 {
@@ -18,7 +20,9 @@ private:
 	std::vector<Model*> colliders;
 	std::vector<Model*> dynamicModels;
 	std::vector<Trigger*> triggerBoxes;
+	std::vector<GameObject*> playerAndEnemy;
 	EnemyManager * enemyList;
+
 public:
 	std::string filePath;
 	void loadLevel(Player* player);
@@ -27,7 +31,7 @@ public:
 	bool readEnemys(const char* filePath);
 	bool readTrigers(const char* filePath);
 	void unloadModels();
-	void setupTriggers(Player* player);
+	void setupTriggers(Player* player, std::vector<Enemy*> allEnemies);
 	void updateTriggers(float dt);
 	void deleteTriggers();
 	void playMusic(SoundSystem *soundSystem);

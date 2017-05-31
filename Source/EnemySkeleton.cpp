@@ -5,7 +5,7 @@
 EnemySkeleton::EnemySkeleton(int health, Model* model, int damage, int immunityTime, bool patrol, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, std::vector<Projectile*> *allProjectiles, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	this->attack = true;
-	this->acceleration = 16.0f;
+	this->acceleration = 13.0f;
 	this->patrol = patrol;
 	this->startPosition = enemyStartPos;
 	this->attackRange = 40.0f;
@@ -22,11 +22,11 @@ EnemySkeleton::~EnemySkeleton()
 
 void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
 {
-	if (waitBeforeAttack.getElapsedTime().asSeconds() >= 0.3)
+	if (waitBeforeAttack.getElapsedTime().asSeconds() >= 0.2)
 	{
 		if (attackCooldown.getElapsedTime().asSeconds() >= 1)
 		{
-			glm::vec3 scale(0.0, 50.0, 2.0);
+			glm::vec3 scale(0.0, 75.0, 2.0);
 			glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-1, 0) : glm::vec2(1, 0);
 			Projectile* temp = new Projectile;
 			temp->enemyMelee(box, enemyPosCurrent, direction, 200.0f, scale);

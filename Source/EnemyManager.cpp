@@ -2,13 +2,13 @@
 
 EnemyManager::EnemyManager(SoundSystem * sound)
 {
-	slimeModel = new Model("models/Enemies/Slime/Slime.obj");
-	toadModel = new Model("models/Enemies/Toad/Toad.obj");
-	batModel = new Model("models/Enemies/Bat/BigBat.obj");
-	batSmallModel = new Model("models/Enemies/BatSmall/SmallBat.obj");
+	slimeModel = new Model("models/Enemies/Slime/newSlime.obj");
+	toadModel = new Model("models/Enemies/Toad/newToad.obj");
+	batModel = new Model("models/Enemies/Bat/newBigBat.obj");
+	batSmallModel = new Model("models/Enemies/BatSmall/newSmallBat.obj");
 	bossModel = new Model("models/Enemies/Boss/FullBoss.obj");
-	skeletonModel = new Model("models/Enemies/Skeleton/Skeleton.obj");
-	crabModel = new Model("models/Enemies/Crab/Crab.obj");
+	skeletonModel = new Model("models/Enemies/Skeleton/newSkeleton.obj");
+	crabModel = new Model("models/Enemies/Crab/newCrab.obj");
 	fireflyModel = new Model("models/cube/cube.obj");
 	allProjectiles = new std::vector<Projectile*>();
 
@@ -48,7 +48,7 @@ void EnemyManager::createSkeleton(glm::vec3 enemyStartPos, bool patrol)
 
 void EnemyManager::createCrab(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyCrab(6, new Model(crabModel), 3, 0.5, enemyStartPos, glm::vec3(2.19f, 2.19f, 2.19f), sound));
+	this->allEnemies.push_back(new EnemyCrab(6, new Model(crabModel), 3, 0.5, enemyStartPos, glm::vec3(2.70f, 2.70f, 2.70f), sound));
 }
 
 void EnemyManager::createBoss(glm::vec3 enemyStartPos)
@@ -104,6 +104,7 @@ std::vector<Enemy*> &EnemyManager::getAllEnemies()
 {
 	return allEnemies;
 }
+
 
 void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allModels, Player* player)
 {
