@@ -152,7 +152,7 @@ void Player::lightAttackPressed(sf::Window &window)
 			position = glm::vec2(getPos().x - 10.0f, getPos().y);
 			direction = glm::vec2(-1, 0);
 		}
-		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 20.f);
+		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 150.f);
 	}
 }
 void Player::lightAttackReleased(sf::Window &window)
@@ -521,7 +521,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 							{
 								allAttackBoxes[i]->disableArrow();
 							}
-							allEnemies[k]->applyDamage(100);
+							allEnemies[k]->applyDamage(allAttackBoxes[i]->getDamage());
 							k = (int)allEnemies.size();
 						}
 					}

@@ -102,7 +102,7 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 		{
 			position.y -= minDist;
 			Projectile* temp = new Projectile;
-			temp->aoe(box, position, direction, 50.0f, scale);
+			temp->aoe(box, 1, position, direction, 50.0f, scale);
 			allProjectiles.push_back(temp);
 		}
 	}

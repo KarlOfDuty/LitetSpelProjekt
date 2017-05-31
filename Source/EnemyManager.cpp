@@ -22,33 +22,33 @@ EnemyManager::~EnemyManager()
 
 void EnemyManager::createSlime(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemySlime(3, new Model(slimeModel), 1, 0.5, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f), sound));
+	this->allEnemies.push_back(new EnemySlime(3, new Model(slimeModel), 1, 1, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f), sound));
 }
 
 void EnemyManager::createToad(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyToad(5, new Model(toadModel), 2, 0.5, enemyStartPos, glm::vec3(3.30f, 3.30f, 3.30f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemyToad(5, new Model(toadModel), 2, 1, enemyStartPos, glm::vec3(3.30f, 3.30f, 3.30f), allProjectiles, sound));
 }
 
 void EnemyManager::createGiantBat(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, 0.5, enemyStartPos, glm::vec3(2.5f, 2.5f, 2.5f), sound));
+	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, 1, enemyStartPos, glm::vec3(2.5f, 2.5f, 2.5f), sound));
 }
 
 void EnemyManager::createBatSwarm(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBatSmall(1, new Model(batSmallModel), 1, 0.5, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f), sound));
+	this->allEnemies.push_back(new EnemyBatSmall(1, new Model(batSmallModel), 1, 1, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f), sound));
 	allSmallBats.push_back(allEnemies.back());
 }
 
 void EnemyManager::createSkeleton(glm::vec3 enemyStartPos, bool patrol)
 {
-	this->allEnemies.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, 0.5, patrol, enemyStartPos, glm::vec3(1.5f, 1.3f, 1.5f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, 1, patrol, enemyStartPos, glm::vec3(1.5f, 1.3f, 1.5f), allProjectiles, sound));
 }
 
 void EnemyManager::createCrab(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyCrab(6, new Model(crabModel), 3, 0.5, enemyStartPos, glm::vec3(2.70f, 2.70f, 2.70f), sound));
+	this->allEnemies.push_back(new EnemyCrab(6, new Model(crabModel), 3, 1, enemyStartPos, glm::vec3(2.70f, 2.70f, 2.70f), sound));
 }
 
 void EnemyManager::createBoss(glm::vec3 enemyStartPos)
@@ -58,7 +58,7 @@ void EnemyManager::createBoss(glm::vec3 enemyStartPos)
 
 void EnemyManager::createFirefly(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, 0.5, enemyStartPos, glm::vec3(5.16f, 5.16f, 5.16f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, 1, enemyStartPos, glm::vec3(5.16f, 5.16f, 5.16f), allProjectiles, sound));
 }
 
 void EnemyManager::clearDeadEnemies()
@@ -130,11 +130,11 @@ void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allMo
 		if (allProjectiles->at(i)->isInUse())
 		{
 			std::vector<glm::vec2> arrowPoints = allProjectiles->at(i)->getPoints();
-			if (glm::distance(allProjectiles->at(i)->getPos(), player->getPos()) < 2.0f)
+			if (glm::distance(allProjectiles->at(i)->getPos(), player->getPos()) < 200.0f)
 			{
 				if (collision::collision(arrowPoints, player->getPoints()))
 				{
-					player->applyDamage(1);
+					player->applyDamage(allProjectiles->at(i)->getDamage());
 					allProjectiles->at(i)->disableArrow();
 				}
 			}
