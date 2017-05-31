@@ -17,7 +17,7 @@ void Level::loadLevel(Player* player)
 		if (str == "staticModels")
 		{
 			line >> path;
-			readModels(path.c_str(), staticModels);
+			//readModels(path.c_str(), staticModels);
 		}
 		else if (str == "dynamicModels")
 		{
