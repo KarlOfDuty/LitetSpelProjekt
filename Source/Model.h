@@ -49,8 +49,6 @@ struct Joint
 struct Weights
 {
 	int nrOfIndices;
-	std::vector<int> indexPos;
-	std::vector<glm::vec3> polygonVerteciesIndex;
 	std::vector<glm::ivec4> controllers;
 	std::vector<glm::vec4> weightsInfluence;
 };
@@ -113,7 +111,7 @@ public:
 	void addMesh(Mesh* mesh);
 	void rotate();
 	void readOBJ(std::string filename);
-	bool Model::readModel(const char* filePath);
+	bool readModel(const char* filePath);
 	void loadSkeleton(const char* filePath);
 	void loadWeight(const char* filePath);
 	void setupModel();
