@@ -78,6 +78,7 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 			settings = TriggerSettings();
 			activators.clear();
 			targets.clear();
+			commands.clear();
 		}
 		//Activators
 		else if (str == "activator")
@@ -102,6 +103,22 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 				line >> tempInt;
 				activators.push_back(colliders[tempInt]);
 			}
+			else if (str == "enemy")
+			{
+				line >> str;
+				if (str == "all")
+				{
+					for (int i = 0; i < enemyList->getAllEnemies().size(); i++)
+					{
+						activators.push_back(enemyList->getAllEnemies()[i]);
+					}
+				}
+				else
+				{
+					int index = std::stoi(str);
+					activators.push_back(enemyList->getAllEnemies()[index]);
+				}
+			}
 		}
 		//Targets
 		else if (str == "target")
@@ -125,6 +142,22 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 			{
 				line >> tempInt;
 				targets.push_back(colliders[tempInt]);
+			}
+			else if (str == "enemy")
+			{
+				line >> str;
+				if (str == "all")
+				{
+					for (int i = 0; i < enemyList->getAllEnemies().size(); i++)
+					{
+						targets.push_back(enemyList->getAllEnemies()[i]);
+					}
+				}
+				else
+				{
+					int index = std::stoi(str);
+					targets.push_back(enemyList->getAllEnemies()[index]);
+				}
 			}
 		}
 		//Commands
