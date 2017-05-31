@@ -4,7 +4,7 @@
 
 EnemyCrab::EnemyCrab(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
-	this->acceleration = 0.2f;
+	this->acceleration = 5.0f;
 	this->moving = true;
 	this->oldOriginPoint = enemyStartPos;
 	this->startPosition = enemyStartPos;
@@ -53,7 +53,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	if (moving)
 	{
-		if (glm::length(enemyPosCurrent - oldOriginPoint) > 4.0f)
+		if (glm::length(enemyPosCurrent - oldOriginPoint) > 100.0f)
 		{
 			oldOriginPoint = enemyPosCurrent;
 			moving = false;
@@ -95,7 +95,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 7.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 300.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -170,7 +170,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			}
 			else
 			{
-				if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
+				if (glm::length(enemyPosCurrent.x - startPosition.x) > 10.5f)
 				{
 					if (movingLeft == false)
 					{
@@ -206,22 +206,22 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	if (!collidingWithGround)
 	{
-		velocityY -= 30 * dt;
+		velocityY -= 300 * dt;
 	}
 
-	if (velocityY > 10)
+	if (velocityY > 200)
 	{
-		velocityY = 10;
+		velocityY = 200;
 	}
 
 	//Maximum falling speed
-	if (velocityY < -30)
+	if (velocityY < -300)
 	{
-		velocityY = -30;
+		velocityY = -300;
 	}
 
-	if (velocityX < -0.3) velocityX = -0.3f;
-	if (velocityX > 0.3) velocityX = 0.3f;
+	if (velocityX < -5.0) velocityX = -5.0f;
+	if (velocityX > 5.0) velocityX = 5.0f;
 
 
 	//Apply velocity

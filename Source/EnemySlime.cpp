@@ -33,12 +33,12 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	}
 
 	//Patrol check 
-	if (enemyPosCurrent.x < checkPoint.x-2)
+	if (enemyPosCurrent.x < checkPoint.x-40)
 	{
 		checkPointReached = true;
 		
 	}
-	else if (enemyPosCurrent.x > checkPoint.x+2)
+	else if (enemyPosCurrent.x > checkPoint.x+40)
 	{
 		checkPointReached = false;
 	}
@@ -47,7 +47,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	{
 		if (collidedFrom.x != 0 && collidedFrom.y > 0)
 		{
-			velocityY = 15;
+			velocityY = 150;
 		}
 
 		if (collidedFrom.x != 0)
@@ -66,7 +66,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 7.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 200.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -93,32 +93,32 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 			}
 			if (enemyPosCurrent.x > player->getPos().x)
 			{
-				velocityX -= 2.0f*dt;
+				velocityX -= 40.0f*dt;
 			}
 			else
 			{
-				velocityX += 2.0f*dt;
+				velocityX += 40.0f*dt;
 			}
 			playerSeen = true;
 		}
 		else
 		{
 			//Patrol
-			if (enemyPosCurrent.x >= checkPoint.x + 2)
+			if (enemyPosCurrent.x >= checkPoint.x)
 			{
 				rotateLeft = false;
 			}
-			if (enemyPosCurrent.x <= checkPoint.x - 2)
+			if (enemyPosCurrent.x <= checkPoint.x)
 			{
 				rotateLeft = true;
 			}
 			if (checkPointReached == false)
 			{
-				velocityX -= 2.0f*dt;
+				velocityX -= 40.0f*dt;
 			}
 			else if (checkPointReached == true)
 			{
-				velocityX += 2.0f*dt;
+				velocityX += 40.0f*dt;
 			}
 		}
 	}
@@ -132,15 +132,15 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 		{
 			rotateLeft = true;
 		}
-		if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
+		if (glm::length(enemyPosCurrent.x - startPosition.x) > 20.0f)
 		{
 			if (enemyPosCurrent.x > startPosition.x)
 			{
-				velocityX -= 2.0f*dt;
+				velocityX -= 40.0f*dt;
 			}
 			else if (enemyPosCurrent.x < startPosition.x)
 			{
-				velocityX += 2.0f*dt;
+				velocityX += 40.0f*dt;
 			}
 		}
 		else
@@ -154,24 +154,25 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	{
 		if (collisionWithPlayer(player))
 		{
-			velocityY = 8;
+			velocityY = 100;
 		}
 	}
 
 	if (!collidingWithGround)
 	{
-		velocityY -= 30*dt;
+		velocityY -= 300*dt;
 	}
 
-	if (velocityY > 15)
+
+	if (velocityY > 200)
 	{
-		velocityY = 15;
+		velocityY = 200;
 	}
 
 	//Maximum falling speed
-	if (velocityY < -30)
+	if (velocityY < -300)
 	{
-		velocityY = -30;
+		velocityY = -300;
 	}
 
 	//Apply velocity

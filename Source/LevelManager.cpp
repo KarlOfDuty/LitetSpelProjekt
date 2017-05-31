@@ -1,11 +1,18 @@
 #include "LevelManager.h"
 LevelManager::LevelManager()
 {
-	levels.push_back(new Level());
-	levels.push_back(new Level());
-	menuIndex = 0;
-	levelIndex = 1;
-	currentMenu = levels[menuIndex];
+	this->enemyList = nullptr;
+	levels.push_back(new Level("config/level1.ini", enemyList));
+	levels.push_back(new Level("config/level2.ini", enemyList));
+	levelIndex = 0;
+	currentLevel = levels[levelIndex];
+}
+LevelManager::LevelManager(EnemyManager * enemy)
+{
+	this->enemyList = enemy;
+	levels.push_back(new Level("config/level1.ini", enemyList));
+	levels.push_back(new Level("config/level2.ini", enemyList));
+	levelIndex = 0;
 	currentLevel = levels[levelIndex];
 }
 
@@ -21,14 +28,16 @@ void LevelManager::startLevel(int level)
 }
 void LevelManager::nextLevel()
 {
-	if (levels.size() > levelIndex + 1)
+	levelIndex++;
+	if (levelIndex < levels.size())
 	{
-		levelIndex++;
 		currentLevel = levels[levelIndex];
 	}
 	else
 	{
 		backToMenu();
+		levelIndex = 0;
+		currentLevel = levels[0];
 	}
 }
 void LevelManager::backToMenu()

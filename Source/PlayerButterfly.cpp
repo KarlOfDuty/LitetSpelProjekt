@@ -3,7 +3,7 @@
 PlayerButterfly::PlayerButterfly(Model model, bool inWater) :PlayerChar(model, inWater)
 {
 	this->maxJumps = 1;
-	this->jumpHeight = 15;
+	this->jumpHeight = 210;
 	box = new Model("models/cube/cubeGreen.obj");
 }
 
@@ -50,7 +50,7 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 			}
 		}
 		glm::vec2 direction(0, 1);
-		glm::vec3 scale(4.0f, 0.1f, 1.0f);
+		glm::vec3 scale(60.0f, 1.0f, 10.0f);
 
 		//Raycast to ground to see find y pos
 		glm::vec3 ray_origin = glm::vec3(position.x, position.y + 0.001, 0);
@@ -79,8 +79,8 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 		if (minDist == 0)
 		{
 			minDist = 10000;
-			glm::vec3 ray_origin = glm::vec3(position.x, position.y + 4, 0);
-			position.y += 4;
+			glm::vec3 ray_origin = glm::vec3(position.x, position.y + 70, 0);
+			position.y += 70;
 			for (int i = 0; i < sortedModels.size(); i++)
 			{
 				glm::mat4 boxMatrix = sortedModels[i]->getModelMatrix();
@@ -98,11 +98,11 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 			}
 		}
 		//If the ray is in reach then create attackbox
-		if (minDist <= 4.0f && minDist != 0)
+		if (minDist <= 70.0f && minDist != 0)
 		{
 			position.y -= minDist;
 			Projectile* temp = new Projectile;
-			temp->aoe(box, position, direction, 5.0f, scale);
+			temp->aoe(box, position, direction, 50.0f, scale);
 			allProjectiles.push_back(temp);
 		}
 	}

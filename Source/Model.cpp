@@ -156,6 +156,29 @@ void Model::setRotationMatrix(glm::mat4 rotationMat)
 {
 	this->rotationMatrix = rotationMat;
 }
+void Model::setRotationMatrix(glm::vec3 rotation)
+{
+	rotation = rotation * 3.14f / 180.0f;
+	glm::quat quaternion = glm::quat(rotation);
+	
+	//This might not work depending on exporter values
+	this->rotationMatrix = glm::toMat4(quaternion);
+}
+void Model::setPos(glm::vec3 pos)
+{
+	this->modelMatrix[3] = glm::vec4(pos,1.0);
+}
+//Probably only safe to use this before any rotations have been made
+void Model::setScale(glm::vec3& scale)
+{
+	this->modelMatrix[0][0] = scale.x;
+	this->modelMatrix[1][1] = scale.y;
+	this->modelMatrix[2][2] = scale.z;
+}
+void Model::addMesh(Mesh* mesh)
+{
+	meshes.push_back(mesh);
+}
 //Sets the radius of the bounding sphere around this model
 void Model::setBoundingSphereRadius()
 {
@@ -176,7 +199,7 @@ void Model::rotate()
 	this->modelMatrix *= rotationMatrix;
 }
 //Reads a .obj file and creates a Model object from the data
-void Model::read(std::string filename)
+void Model::readOBJ(std::string filename)
 {
 	//Temporary containers
 	std::ifstream file(filename);
@@ -474,6 +497,237 @@ void Model::read(std::string filename)
 		meshVertices = std::vector<Vertex>();
 	}
 }
+bool Model::readModel(const char* filePath)
+{
+	glm::vec3 vec3;
+	glm::vec2 vec2;
+	std::ifstream in(filePath, std::ios::binary);
+	int nrOfMeshes = 0;
+	in.read(reinterpret_cast<char*>(&nrOfMeshes), sizeof(int));
+	//Read the name of the mesh
+	std::string name = "";
+	int nrOfChars = 0;
+	in.read(reinterpret_cast<char*>(&nrOfChars), sizeof(int));
+	char *tempName;
+	tempName = new char[nrOfChars];
+	in.read(tempName, nrOfChars);
+	name.append(tempName, nrOfChars);
+	if (modelDebug)std::cout << name << std::endl;
+	delete[] tempName;
+
+	int nrOfCtrlPoints = 0;
+	in.read(reinterpret_cast<char*>(&nrOfCtrlPoints), sizeof(int));
+
+	if (modelDebug)std::cout << nrOfCtrlPoints << std::endl;
+	Mesh *mesh = new Mesh();
+	mesh->name = name;
+
+	for (int k = 0; k < nrOfCtrlPoints; k++)
+	{
+		vec3 = glm::vec3(0);
+		if (modelDebug)
+		{
+			std::cout << "Tell: " << in.tellg() << std::endl;
+			std::cout << "Pos: " << std::endl;
+		}
+		//Read the Vertices for the primitive
+		for (int h = 0; h < 3; h++)
+		{
+			mesh->vertices.push_back(Vertex());
+			in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+			if (modelDebug)
+			{
+				std::cout << "Vertex: ";
+				std::cout << vec3.x << " ";
+				std::cout << vec3.y << " ";
+				std::cout << vec3.z << std::endl;
+			}
+			mesh->vertices[(k * 3) + h].pos = vec3;
+		}
+		for (int h = 0; h < 3; h++)
+		{
+			//Read the Normals for the primitive
+			in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+			if (modelDebug)
+			{
+				std::cout << "Normal: ";
+				std::cout << vec3.x << " ";
+				std::cout << vec3.y << " ";
+				std::cout << vec3.z << std::endl;
+			}
+			mesh->vertices[(k * 3) + h].normal = vec3;
+			//Read the Tangents for the primitive
+			in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+			if (modelDebug)
+			{
+				std::cout << "Tangent: ";
+				std::cout << vec3.x << " ";
+				std::cout << vec3.y << " ";
+				std::cout << vec3.z << std::endl;
+			}
+			mesh->vertices[(k * 3) + h].tangent = vec3;
+			//Read the BiNormals for the primitive
+			in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
+			if (modelDebug)
+			{
+				std::cout << "BiNormal: ";
+				std::cout << vec3.x << " ";
+				std::cout << vec3.y << " ";
+				std::cout << vec3.z << std::endl;
+			}
+			mesh->vertices[(k * 3) + h].biTangent = vec3;
+		}
+		//Read the UVs for the primitive
+		for (int h = 0; h < 3; h++)
+		{
+			in.read(reinterpret_cast<char*>(&vec2), sizeof(vec2));
+			if (modelDebug)
+			{
+				std::cout << "UV: ";
+				std::cout << vec2.x << " ";
+				std::cout << vec2.y << std::endl;
+			}
+			mesh->vertices[(k * 3) + h].texPos = vec2;
+		}
+	}
+	//Diffuse texture file
+	int fileNameLength = 0;
+	in.read(reinterpret_cast<char*>(&fileNameLength), sizeof(int));
+	if (fileNameLength)
+	{
+		std::string diffuseFileName = "";
+		char *tempFileName = new char[fileNameLength];
+		in.read(tempFileName, fileNameLength);
+		diffuseFileName.append(tempFileName, fileNameLength);
+		if (diffuseFileName != "NULL")
+		{
+			std::cout << "'" << diffuseFileName << "'" << std::endl;
+			mesh->material.textureMapDiffuseFile = diffuseFileName;
+		}
+		delete[] tempFileName;
+	}
+	//Diffuse colour
+	glm::vec3 diffuseColour;
+	in.read(reinterpret_cast<char*>(&diffuseColour), sizeof(diffuseColour));
+	mesh->material.diffuseColour = glm::vec3(0.5, 0.5, 0.5);
+	mesh->material.diffuseColour = diffuseColour;
+	//Specularity
+	float specularity = 0;
+	in.read(reinterpret_cast<char*>(&specularity), sizeof(specularity));
+	mesh->material.specularColour = glm::vec3(specularity, specularity, specularity);
+	//Not used
+	mesh->material.ambientColour = glm::vec3(0.5, 0.5, 0.5);
+	//Position
+	glm::vec3 pos;
+	in.read(reinterpret_cast<char*>(&pos), sizeof(pos));
+	this->setPos(pos);
+	//Rotation
+	glm::vec3 rotation;
+	in.read(reinterpret_cast<char*>(&rotation), sizeof(rotation));
+	this->setRotationMatrix(rotation);
+	//Scale
+	glm::vec3 scale;
+	in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
+	this->setScale(scale);
+	//Set up model
+	this->rotate();
+	this->addMesh(mesh);
+	this->setupModel();
+	this->loadTextures(0);
+	this->setBoundingSphereRadius();
+	in.close();
+	return true;
+}
+void Model::loadSkeleton(const char* filePath)
+{
+	//First nrOfClusters
+	std::ifstream in(filePath, std::ios::binary);
+	int clusterNr = 0;
+
+	int indexNr = 0;
+	in.read(reinterpret_cast<char*>(&indexNr), sizeof(int));
+	in.read(reinterpret_cast<char*>(&nrOfKeyframes), sizeof(int));
+	in.read(reinterpret_cast<char*>(&clusterNr), sizeof(int));
+	for (int i = 0; i < clusterNr; i++) 
+	{
+		//Get the name
+		std::string name = "";
+		int nrOfChars = 0;
+		in.read(reinterpret_cast<char*>(&nrOfChars), sizeof(int));
+		char *tempName;
+		tempName = new char[nrOfChars];
+		in.read(tempName, nrOfChars);
+		name.append(tempName, nrOfChars);
+
+		std::cout << name << std::endl;
+		delete tempName;
+
+		Joint *joint = new Joint();
+		joint->nrOfKeys = nrOfKeyframes;
+		joint->jointName = name;
+		joint->animationIndex = indexNr;
+
+		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[0]), sizeof(joint->globalBindPosMat[0]));
+		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[1]), sizeof(joint->globalBindPosMat[1]));
+		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[2]), sizeof(joint->globalBindPosMat[2]));
+		in.read(reinterpret_cast<char*>(&joint->globalBindPosMat[3]), sizeof(joint->globalBindPosMat[3]));
+
+		for (int o = 0; o < nrOfKeyframes; o++)
+		{
+			glm::mat4 tempMap;
+			in.read(reinterpret_cast<char*>(&tempMap[0]), sizeof(tempMap[0]));
+			in.read(reinterpret_cast<char*>(&tempMap[1]), sizeof(tempMap[1]));
+			in.read(reinterpret_cast<char*>(&tempMap[2]), sizeof(tempMap[2]));
+			in.read(reinterpret_cast<char*>(&tempMap[3]), sizeof(tempMap[3]));
+			joint->transformMat.push_back(tempMap);
+		}
+		skeleton.push_back(joint);
+	}
+}
+void Model::loadWeight(const char* filePath)
+{
+
+	std::ifstream in(filePath, std::ios::binary);
+
+	int nrOfIndices = 0;
+	int nrOfPolygons = 0;
+	in.read(reinterpret_cast<char*>(&nrOfPolygons), sizeof(int));
+	in.read(reinterpret_cast<char*>(&nrOfIndices), sizeof(int));
+	weightInfo.nrOfIndices = nrOfIndices;
+	int polygonIndex[3];
+	int jointIndex = 0;
+	float influence = 0;
+
+	glm::ivec3 polygonVertexIndex;
+	glm::ivec4 controllers;
+	glm::vec4 weightInfluences;
+
+	for (int k = 0; k < nrOfPolygons; k++) 
+	{
+		for (int i = 0; i < 3; i++) 
+		{
+			in.read(reinterpret_cast<char*>(&polygonIndex[i]), sizeof(int));
+			polygonVertexIndex[i] = polygonIndex[i];
+		}
+
+		for (int i = 0; i < 3; i++)
+		{
+			for (int q = 0; q < 4; q++)
+			{
+				int check = in.tellg();
+				in.read(reinterpret_cast<char*>(&jointIndex), sizeof(int));
+				controllers[q] = jointIndex;
+
+				in.read(reinterpret_cast<char*>(&influence), sizeof(influence));
+				weightInfluences[q] = influence;
+				check = in.tellg();
+
+			}
+			weightInfo.controllers.push_back(controllers);
+			weightInfo.weightsInfluence.push_back(weightInfluences);
+		}
+	}
+}
 //Draws the model
 void Model::draw(Shader shader)
 {
@@ -523,7 +777,9 @@ void Model::setupModel()
 		}
 		loadTextures(i);
 	}
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices.front(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 
+		vertices.size() * sizeof(Vertex), 
+		&vertices[0], GL_STATIC_DRAW);
 	//Position
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(0));
@@ -630,24 +886,6 @@ void Model::loadTextures(int i)
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
-	//Check weather to use normal map
-	if (meshes[i]->material.normalMapFile != "")
-	{
-		glGenTextures(1, &meshes[i]->material.normalMapTexture);
-		glBindTexture(GL_TEXTURE_2D, meshes[i]->material.normalMapTexture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		int width, height;
-		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.normalMapFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		SOIL_free_image_data(image);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
 }
 //Constructors
 Model::Model(std::string filename)
@@ -655,7 +893,7 @@ Model::Model(std::string filename)
 	//Initializes the model without a rotation or model matrix. Does not set the model up so it can be drawn.
 	this->modelMatrix = glm::mat4(1.0);
 	this->rotationMatrix = glm::mat4(1.0);
-	read(filename);
+	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
 }
@@ -664,7 +902,7 @@ Model::Model(std::string filename, glm::mat4 modelMat)
 	//Initializes the model without a rotation
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = glm::mat4(1.0);
-	read(filename);
+	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
 }
@@ -673,7 +911,7 @@ Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 	//Initializes the model
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = rotation;
-	read(filename);
+	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
 }
