@@ -2,6 +2,7 @@
 #define LEVEL_H
 #include "Model.h"
 #include "Trigger.h"
+#include "EnemyManager.h"
 #include <SFML/Window.hpp>
 #include <fstream>
 #include <sstream>
@@ -20,13 +21,16 @@ private:
 	std::vector<Model*> dynamicModels;
 	std::vector<Trigger*> triggerBoxes;
 	std::vector<GameObject*> playerAndEnemy;
+	EnemyManager * enemyList;
+
 public:
 	std::string filePath;
 	void loadLevel(Player* player);
 	void readTriggers(const char * filePath, std::vector<Trigger*>& vector, Player* player);
 	bool readModels(const char* filePath, std::vector<Model*> &modelVector);
+	bool readEnemys(const char* filePath);
+	bool readTrigers(const char* filePath);
 	void unloadModels();
-	void setupTriggers(Player* player, std::vector<Enemy*> allEnemies);
 	void updateTriggers(float dt);
 	void deleteTriggers();
 	void playMusic(SoundSystem *soundSystem);
@@ -38,7 +42,7 @@ public:
 	glm::vec3 getPlayerPos();
 	void createPickup(Model * pickupModel, glm::vec2 position, std::string triggerName, Player * player);
 	Level();
-	Level(std::string filePath);
+	Level(std::string filePath, EnemyManager * enemy);
 	~Level();
 };
 #endif
