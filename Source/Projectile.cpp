@@ -425,8 +425,6 @@ void Projectile::collision(std::vector<Model*> &allObjects)
 		}
 	}
 
-	std::cout << closeObjects.size();
-
 	if (!closeObjects.empty())
 	{
 		std::vector<glm::vec2> projectilePoints = getPoints();

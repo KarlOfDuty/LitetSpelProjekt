@@ -30,6 +30,11 @@ void Level::loadLevel(Player* player)
 			readModels(path.c_str(), colliders);
 			if (showColliders)readModels(path.c_str(), staticModels);
 		}
+		else if (str == "enemies")
+		{
+			line >> path;
+			readEnemys(path.c_str());
+		}
 		else if (str == "triggers")
 		{
 			line >> path;
@@ -73,6 +78,7 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 			settings = TriggerSettings();
 			activators.clear();
 			targets.clear();
+			commands.clear();
 		}
 		//Activators
 		else if (str == "activator")
@@ -97,6 +103,22 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 				line >> tempInt;
 				activators.push_back(colliders[tempInt]);
 			}
+			else if (str == "enemy")
+			{
+				line >> str;
+				if (str == "all")
+				{
+					for (int i = 0; i < enemyList->getAllEnemies().size(); i++)
+					{
+						activators.push_back(enemyList->getAllEnemies()[i]);
+					}
+				}
+				else
+				{
+					int index = std::stoi(str);
+					activators.push_back(enemyList->getAllEnemies()[index]);
+				}
+			}
 		}
 		//Targets
 		else if (str == "target")
@@ -120,6 +142,22 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 			{
 				line >> tempInt;
 				targets.push_back(colliders[tempInt]);
+			}
+			else if (str == "enemy")
+			{
+				line >> str;
+				if (str == "all")
+				{
+					for (int i = 0; i < enemyList->getAllEnemies().size(); i++)
+					{
+						targets.push_back(enemyList->getAllEnemies()[i]);
+					}
+				}
+				else
+				{
+					int index = std::stoi(str);
+					targets.push_back(enemyList->getAllEnemies()[index]);
+				}
 			}
 		}
 		//Commands
@@ -173,6 +211,11 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 		{
 			line >> tempInt;
 			settings.numberOfActivationsAllowed = tempInt;
+		}
+		else if (str == "accociativeCommands")
+		{
+			line >> tempInt;
+			settings.accociativeCommands = tempInt;
 		}
 		else if (str == "accociativeActions")
 		{
@@ -330,6 +373,94 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 	in.close();
 	return true;
 }
+bool Level::readEnemys(const char* filePath)
+{
+	//Temporary containers
+	std::ifstream file(filePath);
+	std::string str = "";
+	//Gets a single line of the file at a time
+	while (std::getline(file, str))
+	{
+		std::stringstream line;
+		std::string type;
+		line << str;
+		line >> str;
+
+		float x;
+		float y;
+		float z;
+		line >> type;
+		line >> x;
+		line >> y;
+		line >> z;
+		if (type == "bats")
+		{
+			enemyList->createBatSwarm(glm::vec3(x, y, z));
+		}
+		else if (type == "boss")
+		{
+			enemyList->createBoss(glm::vec3(x, y, z));
+		}
+		else if (type == "crab")
+		{
+			enemyList->createCrab(glm::vec3(x, y, z));
+		}
+		else if (type == "firefly")
+		{
+			enemyList->createFirefly(glm::vec3(x, y, z));
+		}
+		else if (type == "bat")
+		{
+			enemyList->createGiantBat(glm::vec3(x, y, z));
+		}
+		else if (type == "skeleton")
+		{
+			enemyList->createSkeleton(glm::vec3(x, y, z), false);
+		}
+		else if (type == "slime")
+		{
+			enemyList->createSlime(glm::vec3(x, y, z));
+		}
+		else if (type == "toad")
+		{
+			enemyList->createToad(glm::vec3(x, y, z));
+		}
+	}
+	file.close();
+	return true;
+}
+bool Level::readTrigers(const char * filePath)
+{
+	//Temporary containers
+	std::ifstream file(filePath);
+	std::string str = "";
+	//Gets a single line of the file at a time
+	while (std::getline(file, str))
+	{
+		std::stringstream line;
+		std::string type;
+		line << str;
+		line >> str;
+
+		float x;
+		float y;
+		float z;
+		line >> type;
+		line >> x;
+		line >> y;
+		line >> z;
+		if (type == "heart")
+		{
+			enemyList->createBatSwarm(glm::vec3(x, y, z));
+		}
+		else if (type == "boss")
+		{
+			enemyList->createBoss(glm::vec3(x, y, z));
+		}
+	}
+	file.close();
+	return true;
+}
 //Delete all models from memory
 void Level::unloadModels()
 {
@@ -352,31 +483,6 @@ void Level::unloadModels()
 		delete colliders[i];
 	}
 	colliders.clear();
-}
-//Sets the triggerboxes for this level
-void Level::setupTriggers(Player* player, std::vector<Enemy*> allEnemies)
-{
-	//water land
-	for (int i = 0; i < allEnemies.size(); i++)
-	{
-		playerAndEnemy.push_back(allEnemies[i]);
-	}
-	playerAndEnemy.push_back(player);
-
-	std::vector<glm::vec2> corners1 = { glm::vec2(1150,90), glm::vec2(1295,90), glm::vec2(1150,-25), glm::vec2(1295,-25) };
-	TriggerSettings settings1;
-	settings1.onEnter = true;
-	settings1.onExit = true;
-	triggerBoxes.push_back(new Trigger(corners1, settings1, playerAndEnemy, playerAndEnemy, "water"));
-
-	std::vector<glm::vec2> corners2 = { glm::vec2(2030,395), glm::vec2(2705,395), glm::vec2(2030,260), glm::vec2(2705,260) };
-	triggerBoxes.push_back(new Trigger(corners2, settings1, playerAndEnemy, playerAndEnemy, "water"));
-
-	std::vector<glm::vec2> corners3 = { glm::vec2(5000,475), glm::vec2(5620,475), glm::vec2(5000,200), glm::vec2(5620,200) };
-	triggerBoxes.push_back(new Trigger(corners3, settings1, playerAndEnemy, playerAndEnemy, "water"));
-
-	Model* heart = new Model("models/heart/HeartContainer.obj");
-	createPickup(heart, glm::vec2(200, 110), "healthPickup", player);
 }
 void Level::updateTriggers(float dt)
 {
@@ -457,8 +563,9 @@ Level::Level()
 	this->filePath = "";
 	playerPos = glm::vec3(0, 0, 0);
 }
-Level::Level(std::string filePath)
+Level::Level(std::string filePath, EnemyManager * enemy)
 {
+	this->enemyList = enemy;
 	this->filePath = filePath;
 	playerPos = glm::vec3(0, 0, 0);
 }

@@ -513,7 +513,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 				std::vector<glm::vec2> arrowPoints = allAttackBoxes[i]->getPoints();
 				for (int k = 0; k < allEnemies.size(); k++)
 				{
-					if (!allAttackBoxes[i]->isCollidingWithWorld() && glm::distance(allAttackBoxes[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
+					if (!allAttackBoxes[i]->isCollidingWithWorld() && glm::distance(allAttackBoxes[i]->getPos(), allEnemies[k]->getPos()) < 200.0f)
 					{
 						if (collision::collision(arrowPoints, allEnemies[k]->getPoints()))
 						{
