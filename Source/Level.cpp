@@ -40,6 +40,11 @@ void Level::loadLevel(Player* player)
 			line >> path;
 			readTriggers(path.c_str(), triggerBoxes, player);
 		}
+		else if (str == "lights")
+		{
+			line >> path;
+			readLights(path.c_str());
+		}
 	}
 	file.close();
 }
@@ -396,37 +401,36 @@ bool Level::readEnemies(const char* filePath)
 	file.close();
 	return true;
 }
-bool Level::readTrigers(const char * filePath)
+bool Level::readLights(const char * filePath)
 {
 	//Temporary containers
 	std::ifstream file(filePath);
 	std::string str = "";
+	float tempFloat = 0.0f;
 	//Gets a single line of the file at a time
 	while (std::getline(file, str))
 	{
 		std::stringstream line;
-		std::string type;
+		std::string path;
+		//Takes the first word of the line and compares it to variable names
 		line << str;
 		line >> str;
-
-		float x;
-		float y;
-		float z;
-		line >> type;
-		line >> x;
-		line >> y;
-		line >> z;
-		if (type == "heart")
+		if (str == "directional")
 		{
-			enemyList->createBatSwarm(glm::vec3(x, y, z));
+			glm::vec3 vector;
+			line >> vector.x;
+			line >> vector.y;
+			line >> vector.z;
+			readModels(path.c_str(), staticModels);
 		}
-		else if (type == "boss")
+		else if (str == "point")
 		{
-			enemyList->createBoss(glm::vec3(x, y, z));
+			line >> tempFloat;
+			readModels(path.c_str(), dynamicModels);
 		}
 	}
 	file.close();
-	return true;
+	return false;
 }
 //Delete all models from memory
 void Level::unloadModels()
