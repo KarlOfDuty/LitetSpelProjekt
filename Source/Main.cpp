@@ -687,7 +687,7 @@ void loadLevel()
 	//enemyManager->createBoss(glm::vec3(680.0f, 50.0f, 0.0f));
 	/*enemyManager->createSlime(glm::vec3(790.0f, 45.0f, 0.0f));
 	enemyManager->createSlime(glm::vec3(1516.0f, 170.0f, 0.0f));*/
-	enemyManager->createSlime(glm::vec3(1950.0f, 400.0f, 0.0f));
+	/*enemyManager->createSlime(glm::vec3(1950.0f, 400.0f, 0.0f));
 	enemyManager->createToad(glm::vec3(3181.0f, 525.0f, 0.0f));
 	enemyManager->createSlime(glm::vec3(3213.0f, 33.0f, 0.0f));
 	enemyManager->createFirefly(glm::vec3(3695.0f, 115.0f, 0.0f));
@@ -702,7 +702,7 @@ void loadLevel()
 	enemyManager->createToad(glm::vec3(6430.0f, 460.0f, 0.0f));
 	enemyManager->createFirefly(glm::vec3(7055.0f, 396.0f, 0.0f));
 	enemyManager->createFirefly(glm::vec3(7010.0f, 360.0f, 0.0f));
-	enemyManager->createSlime(glm::vec3(7628.0f, 360.0f, 0.0f));
+	enemyManager->createSlime(glm::vec3(7628.0f, 360.0f, 0.0f));*/
 	//enemyManager->createToad(glm::vec3(7980.0f, 500.0f, 0.0f));
 	//enemyManager->createToad(glm::vec3(8044.0f, 500.0f, 0.0f));
 	//enemyManager->createGiantBat(glm::vec3(1050.0f, 330.0f, 0.0f));

@@ -503,18 +503,6 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	
 	collision(allModels);
 
-	//Handle collision detection with ground
-	if (getPos().y <= groundPos && !isOnGround)
-	{
-		jumps = 0;
-		if (velocityY < 0)
-		{
-			modelMatrix[3].y = groundPos;
-			velocityY = 0;
-		}
-		isOnGround = true;
-	}
-
 	for (int i = 0; i < allAttackBoxes.size(); i++)
 	{
 		if (allAttackBoxes[i]->isInUse())
@@ -608,24 +596,37 @@ void Player::collision(std::vector<Model*> &allModels)
 				float radians = 0.0f;
 				getPoints(objectPoints, closeObjects[i], radians);
 				glm::vec2 mtv;
-				if (collision::collision(playerPoints, objectPoints, mtv))
+				glm::vec2 collisionNormal;
+				if (collision::collision(playerPoints, objectPoints, mtv, collisionNormal))
 				{
-					if (radians > -0.79f && radians != 0.0f && radians < 0.79f)
+					if (collisionNormal.y >= 0.707)
 					{
-						if (mtv.y < 0 && mtv.x <= 0.5 && mtv.x > 0)
+						modelMatrix[3].y += mtv.y;
+						
+						if (modelMatrix[3].y < groundPos)
+						{
+							modelMatrix[3].y = groundPos;
+						}
+						if (velocityY < 0)
 						{
 							velocityY = 0;
 						}
-						modelMatrix[3].x += mtv.x;
-
+						groundPos = modelMatrix[3].y;
+						jumps = 0;
+						isOnGround = true;
 					}
-					else if (radians == 0)
+					if (collisionNormal.y < 0 && velocityY > 0)
+					{
+						modelMatrix[3].y += mtv.y;
+						velocityY = velocityY * (collisionNormal.y + 1.0);
+					}
+
+
+					if (abs(collisionNormal.x) >= 0.707 && abs(collisionNormal.x) <= 1)
 					{
 						modelMatrix[3].x += mtv.x;
 					}
-
-					modelMatrix[3].y += mtv.y;
-					if (mtv.y > 0)
+					/*if (mtv.y > 0)
 					{
 						if (abs(groundPos - modelMatrix[3].y) <= 10)
 						{
@@ -633,7 +634,7 @@ void Player::collision(std::vector<Model*> &allModels)
 								modelMatrix[3].y = groundPos;
 							groundPos = modelMatrix[3].y;
 						}
-					}
+					}*/
 				}
 				else
 				{
