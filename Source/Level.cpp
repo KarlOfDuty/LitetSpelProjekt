@@ -358,11 +358,6 @@ void Level::unloadModels()
 	}
 	colliders.clear();
 }
-//Sets the triggerboxes for this level
-void Level::setupTriggers(Player* player)
-{
-
-}
 void Level::updateTriggers(float dt)
 {
 	for (int i = 0; i < triggerBoxes.size(); i++)

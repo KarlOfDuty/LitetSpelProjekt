@@ -270,6 +270,11 @@ void Trigger::runCommand(int commandID, GameObject* target, float dt)
 		Player* player = dynamic_cast<Player*>(target);
 		player->setDiving(!player->getDiving());
 	}
+	else if (commands[commandID] == "water" && target->type() == "Enemy")
+	{
+		Enemy* enemy = dynamic_cast<Enemy*>(target);
+		enemy->setHealth(0);
+	}
 	else if (commands[commandID] == "nextLevel")
 	{
 		nextLevel = true;
@@ -311,7 +316,12 @@ void Trigger::runCommand(int commandID, GameObject* target, float dt)
 			test[3].z = 1000000;
 			heartModel->setModelMatrix(test);
 		}
-		delete this;
+		std::vector<glm::vec2> corners;
+		corners.push_back(glm::vec2(-101, -101));
+		corners.push_back(glm::vec2(-101, -102));
+		corners.push_back(glm::vec2(-100, -101));
+		corners.push_back(glm::vec2(-100, -102));
+		this->setPos(corners);
 	}
 	else if (commands[commandID] == "phase1" && target->type() == "Enemy")
 	{
