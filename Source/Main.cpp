@@ -141,7 +141,7 @@ int main()
 	eventHandler = EventHandler();
 
 	//Level manager
-	levelManager = LevelManager();
+	levelManager = LevelManager(enemyManager);
 	playerCamera = Camera();
 	playerCamera.setupFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance);
 	//Load level
