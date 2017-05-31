@@ -175,6 +175,14 @@ void Model::setScale(glm::vec3& scale)
 	this->modelMatrix[1][1] = scale.y;
 	this->modelMatrix[2][2] = scale.z;
 }
+void Model::setCurrentKeyframe(int frame)
+{
+	this->currentFrame = frame;
+}
+void Model::setAnimationIndex(int index)
+{
+	this->currentAnimationIndex = index;
+}
 void Model::addMesh(Mesh* mesh)
 {
 	meshes.push_back(mesh);
@@ -684,7 +692,7 @@ void Model::loadSkeleton(const char* filePath)
 			in.read(reinterpret_cast<char*>(&tempMap[3]), sizeof(tempMap[3]));
 			joint->transformMat.push_back(tempMap);
 		}
-		this->skeleton.push_back(joint);
+		this->skeleton[indexNr].push_back(joint);
 	}
 }
 void Model::loadWeight(const char* filePath)
@@ -717,7 +725,7 @@ void Model::loadWeight(const char* filePath)
 				in.read(reinterpret_cast<char*>(&influence), sizeof(influence));
 				weightInfluences[q] = influence;
 				check = in.tellg();
-
+				
 			}
 			meshes[0]->vertices[(k*3) + i].controllers = controllers;
 			meshes[0]->vertices[(k * 3) + i].weightsInfluence = weightInfluences;
@@ -726,9 +734,9 @@ void Model::loadWeight(const char* filePath)
 }
 void Model::updateAnimation()
 {
-	if (skeleton.size())
+	if (skeleton[this->currentAnimationIndex].size())
 	{
-		if (currentFrame < this->skeleton[0]->nrOfKeys)
+		if (currentFrame < this->skeleton[currentAnimationIndex][0]->nrOfKeys)
 		{
 			currentFrame++;
 		}
@@ -741,12 +749,12 @@ void Model::updateAnimation()
 //Draws the model
 void Model::draw(Shader shader)
 {
-	if (skeleton.size())
+	if (skeleton[currentAnimationIndex].size())
 	{
 		//std::cout << this->skeleton[0]->transformMat.size() << " " << currentFrame << std::endl;
-		for (int i = 0; i < skeleton.size(); i++)
+		for (int i = 0; i < skeleton[currentAnimationIndex].size(); i++)
 		{
-			currentJointTrans[i] = skeleton[i]->transformMat[currentFrame - 1] * skeleton[i]->globalBindPosMat;
+			currentJointTrans[i] = skeleton[currentAnimationIndex][i]->transformMat[currentFrame - 1] * skeleton[currentAnimationIndex][i]->globalBindPosMat;
 		}
 		for (int j = 0; j < 100; j++)
 		{
@@ -953,7 +961,7 @@ Model::Model(Model &otherModel)
 	this->hasAnimations = otherModel.hasAnimations;
 	this->modelMatrix = otherModel.modelMatrix;
 	this->rotationMatrix = otherModel.rotationMatrix;
-	this->skeleton = otherModel.skeleton;
+	this->skeleton[this->currentAnimationIndex] = otherModel.skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel.meshes;
 	this->VAO = otherModel.VAO;
 	this->VBO = otherModel.VBO;
@@ -964,7 +972,7 @@ Model::Model(Model *otherModel)
 	this->hasAnimations = otherModel->hasAnimations;
 	this->modelMatrix = otherModel->modelMatrix;
 	this->rotationMatrix = otherModel->rotationMatrix;
-	this->skeleton = otherModel->skeleton;
+	this->skeleton[this->currentAnimationIndex] = otherModel->skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel->meshes;
 	this->VAO = otherModel->VAO;
 	this->VBO = otherModel->VBO;
@@ -975,7 +983,7 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 	this->hasAnimations = otherModel.hasAnimations;
 	this->modelMatrix =  modelMat;
 	this->rotationMatrix = otherModel.rotationMatrix;
-	this->skeleton = otherModel.skeleton;
+	this->skeleton[this->currentAnimationIndex] = otherModel.skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel.meshes;
 	this->VAO = otherModel.VAO;
 	this->VBO = otherModel.VBO;
@@ -986,7 +994,7 @@ Model::Model(Model *otherModel, glm::mat4 modelMat)
 	this->hasAnimations = otherModel->hasAnimations;
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = otherModel->rotationMatrix;
-	this->skeleton = otherModel->skeleton;
+	this->skeleton[this->currentAnimationIndex] = otherModel->skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel->meshes;
 	this->VAO = otherModel->VAO;
 	this->VBO = otherModel->VBO;

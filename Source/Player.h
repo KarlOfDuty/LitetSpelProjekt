@@ -33,6 +33,7 @@ private:
 	bool goingRight;
 	float angle;
 	bool isOnGround;
+	
 	int jumps;
 	float movementSpeed;
 	float groundPos;
@@ -79,9 +80,12 @@ public:
 	void collision(std::vector<Model*> &allModels);
 	void getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians);
 	void setStaticModels(std::vector<Model*> allStaticModels);
+	void setCurrentKeyframe(int frame);
+	void setAnimationIndex(int index);
 	bool getDiving() const;
 	void setDiving(bool diving);
 	void setHealth(int health);
 	void groundCheck();
+	//bool firstTimeIdleFrame = true;
 };
 #endif

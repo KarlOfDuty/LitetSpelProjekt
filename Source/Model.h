@@ -75,11 +75,12 @@ class Model : public GameObject
 private:
 	int nrOfKeyframes = 0;
 	int currentFrame = 1;
+	int currentAnimationIndex = 0;
 	bool hasAnimations;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
 	std::vector<Mesh*> meshes;
-	std::vector<Joint*> skeleton;
+	std::vector<Joint*> skeleton[7];
 	std::vector<glm::vec2> allPoints;
 	glm::vec3 minBounding;
 	glm::vec3 maxBounding;
@@ -105,6 +106,8 @@ public:
 	void setRotationMatrix(glm::vec3 rotation);
 	void setPos(glm::vec3 pos);
 	void setScale(glm::vec3& scale);
+	void setCurrentKeyframe(int frame);
+	void setAnimationIndex(int index);
 	void addMesh(Mesh* mesh);
 	void rotate();
 	void readOBJ(std::string filename);
