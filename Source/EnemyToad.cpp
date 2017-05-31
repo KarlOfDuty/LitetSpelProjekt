@@ -47,7 +47,7 @@ void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 				{
 					if (!allProjectiles->at(i)->isInUse())
 					{
-						allProjectiles->at(i)->shoot(projectileModel, position, direction, glm::vec2(0, 100.f), 300.f, glm::vec3(4.0, 4.0, 4.0),false,true);
+						allProjectiles->at(i)->shoot(projectileModel, getDamage(), position, direction, glm::vec2(0, 100.f), 300.f, glm::vec3(4.0, 4.0, 4.0),false,true);
 						i = (int)allProjectiles->size();
 					}
 				}
@@ -56,7 +56,7 @@ void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 		else
 		{
 			Projectile* temp = new Projectile;
-			temp->shoot(projectileModel, position, direction, glm::vec2(0, 100.f), 300.f, glm::vec3(4.0, 4.0, 4.0),false,true);
+			temp->shoot(projectileModel, getDamage(), position, direction, glm::vec2(0, 100.f), 300.f, glm::vec3(4.0, 4.0, 4.0),false,true);
 			allProjectiles->push_back(temp);
 		}
 		attackCooldown.restart();

@@ -56,6 +56,11 @@ void Projectile::disableArrow()
 	isUsed = false;
 }
 
+int Projectile::getDamage()
+{
+	return damage;
+}
+
 glm::vec2 Projectile::getPosition()
 {
 	return this->position;
@@ -234,7 +239,7 @@ void Projectile::draw(Shader shader)
 	}
 }
 
-void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate, bool shouldDelete)
+void Projectile::shoot(Model* projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, glm::vec2 projectileRetardation, float projectileVelocity, glm::vec3 projectileScale, bool shouldRotate, bool shouldDelete)
 {
 	//Copy info supplied
 	position = startPos;
@@ -242,6 +247,7 @@ void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 pro
 	direction = projectileDirection;
 	retardation = projectileRetardation;
 	deleteOnImpact = shouldDelete;
+	damage = projectileDamage;
 	enemyMeleeAttack = false;
 	//Create new modelmat for model
 	glm::mat4 modelMat({
@@ -283,12 +289,13 @@ void Projectile::shoot(Model* projectileModel, glm::vec2 startPos, glm::vec2 pro
 	timeSinceCollision.restart();
 }
 
-void Projectile::aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
+void Projectile::aoe(Model* projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
 {
 	//Copy info supplied
 	position = startPos;
 	scale = projectileScale;
 	direction = projectileDirection;
+	damage = projectileDamage;
 	deleteOnImpact = false;
 	enemyMeleeAttack = false;
 
@@ -325,12 +332,13 @@ void Projectile::aoe(Model* projectileModel, glm::vec2 startPos, glm::vec2 proje
 	timeSinceCollision.restart();
 }
 
-void Projectile::melee(Model * projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
+void Projectile::melee(Model * projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
 {
 	//Copy info supplied
 	position = startPos;
 	scale = projectileScale;
 	direction = projectileDirection;
+	damage = projectileDamage;
 	deleteOnImpact = false;
 	enemyMeleeAttack = false;
 
@@ -367,12 +375,13 @@ void Projectile::melee(Model * projectileModel, glm::vec2 startPos, glm::vec2 pr
 	timeSinceCollision.restart();
 }
 
-void Projectile::enemyMelee(Model * projectileModel, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
+void Projectile::enemyMelee(Model * projectileModel, int projectileDamage, glm::vec2 startPos, glm::vec2 projectileDirection, float projectileVelocity, glm::vec3 projectileScale)
 {
 	//Copy info supplied
 	position = startPos;
 	scale = projectileScale;
 	direction = projectileDirection;
+	this->damage = projectileDamage;
 	deleteOnImpact = false;
 	enemyMeleeAttack = true;
 	//Create new modelmat for model
@@ -410,44 +419,49 @@ void Projectile::enemyMelee(Model * projectileModel, glm::vec2 startPos, glm::ve
 
 void Projectile::collision(std::vector<Model*> &allObjects)
 {
-	//Calculate closest model to check collision for
-	std::vector<glm::vec2> arrowPoints = model->getPoints();
-	int index = -1;
-	float minDistance = 1000;
+	std::vector<Model*> closeObjects;
 	for (int i = 0; i < allObjects.size(); i++)
 	{
-		float distance = glm::length(position - glm::vec2(allObjects[i]->getModelMatrix()[3]));
-		if (distance < minDistance)
+		glm::vec3 objectMin, objectMax;
+		allObjects[i]->getScaledMinMaxBouding(objectMin, objectMax);
+		glm::vec2 distance = allObjects[i]->getPos() - getPos();
+		if (abs(distance.x) < 50.0f + objectMax.x)
 		{
-			minDistance = distance;
-			index = i;
+			if (abs(distance.y) < 50.0f + objectMax.y)
+			{
+				closeObjects.push_back(allObjects[i]);
+			}
 		}
 	}
 
-	//If something was in range check collision
-	if (index != -1)
+	if (!closeObjects.empty())
 	{
-		std::vector<glm::vec2> objectPoints = allObjects[index]->getPoints();
-		glm::vec2 mtv;
-		if (collision::collision(arrowPoints, objectPoints, mtv))
+		std::vector<glm::vec2> projectilePoints = getPoints();
+
+		for (int i = 0; i < closeObjects.size(); i++)
 		{
-			if (!deleteOnImpact)
+			std::vector<glm::vec2> objectPoints = closeObjects[i]->getPoints();
+			glm::vec2 mtv;
+			if (collision::collision(projectilePoints, objectPoints, mtv))
 			{
-				position += mtv;
-				model->setModelMatrix({
-					1.0, 0.0, 0.0, 0.0,
-					0.0, 1.0, 0.0, 0.0,
-					0.0, 0.0, 1.0, 0.0,
-					position.x, position.y , 0.0, 1.0
-				});
-				model->rotate();
-				velocity = glm::vec2(0);
-				hasCollided = true;
-				timeSinceCollision.restart();
-			}
-			else
-			{
-				isUsed = false;
+				if (!deleteOnImpact)
+				{
+					position += mtv;
+					model->setModelMatrix({
+						1.0, 0.0, 0.0, 0.0,
+						0.0, 1.0, 0.0, 0.0,
+						0.0, 0.0, 1.0, 0.0,
+						position.x, position.y , 0.0, 1.0
+					});
+					model->rotate();
+					velocity = glm::vec2(0);
+					hasCollided = true;
+					timeSinceCollision.restart();
+				}
+				else
+				{
+					isUsed = false;
+				}
 			}
 		}
 	}
