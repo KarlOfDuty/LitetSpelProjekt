@@ -211,6 +211,11 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 		Player* player = dynamic_cast<Player*>(targets[targetID]);
 		player->setDiving(!player->getDiving());
 	}
+	else if (commands[commandID] == "water" && targets[targetID]->type() == "Enemy")
+	{
+		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
+		enemy->applyDamage(0);
+	}
 	else if (commands[commandID] == "nextLevel")
 	{
 		nextLevel = true;
