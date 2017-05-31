@@ -257,7 +257,12 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 			test[3].z = 1000000;
 			heartModel->setModelMatrix(test);
 		}
-		delete this;
+		std::vector<glm::vec2> corners;
+		corners.push_back(glm::vec2(-101, -101));
+		corners.push_back(glm::vec2(-101, -102));
+		corners.push_back(glm::vec2(-100, -101));
+		corners.push_back(glm::vec2(-100, -102));
+		this->setPos(corners);
 	}
 	else if (commands[commandID] == "phase1" && targets[targetID]->type() == "Enemy")
 	{
