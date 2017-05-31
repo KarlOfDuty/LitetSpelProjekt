@@ -45,116 +45,139 @@ bool Trigger::update(float dt)
 	if (settings.numberOfActivationsAllowed == -1 || settings.numberOfActivationsAllowed > 0)
 	{
 		//Find how many activators intersect the trigger
-		int objectsFound = 0;
+		std::vector<bool> objectsFound = std::vector<bool>(activators.size());
+		int numObjectsFound = 0;
 		for (int i = 0; i < activators.size(); i++)
 		{
 			if (collision::collision(corners, activators[i]->getPoints()))
 			{
-				objectsFound++;
+				objectsFound[i] = true;
+				numObjectsFound++;
 			}
 			else if (collision::isInside(corners, activators[i]->getPoints()))
 			{
-				objectsFound++;
+				objectsFound[i] = true;
+				numObjectsFound++;
+			}
+			else
+			{
+				objectsFound[i] = false;
 			}
 		}
 		timer += dt;
 
-
 		//If there is no cooldown active, activate commands according to the settings
 		if (timer > settings.frequency)
 		{
-
-			//onEnter
-			if (settings.onEnter && objectsFound > objectsInside)
+			//onEnter and onExit
+			for (int i = 0; i < activators.size(); i++)
 			{
-				for (int i = 0; i < objectsFound - objectsInside; i++)
+				if (objectsFound[i] && !objectsInside[i] && settings.onEnter)
 				{
-					activate(dt);
+					activate(dt, activators[i], i);
+					triggered = true;
 				}
-				timer = 0;
-				triggered = true;
+				else if (!objectsFound[i] && objectsInside[i] && settings.onExit)
+				{
+					activate(dt, activators[i], i);
+					triggered = true;
+				}
 			}
 			//onEnterAll
-			if (settings.onEnterAll && activators.size() == objectsFound && objectsFound > 0 && objectsFound > objectsInside)
+			if (settings.onEnterAll && numObjectsFound > 0 && numObjectsFound == activators.size())
 			{
-				if (settings.perActivator)
+				bool found = false;
+				for (int i = 0; i < objectsInside.size() && !found; i++)
 				{
-					for (int i = 0; i < objectsFound; i++)
+					if (!objectsInside[i])
 					{
-						activate(dt);
+						found = true;
 					}
 				}
-				else
+				if (found)
 				{
-					activate(dt);
+					if (settings.perActivator || settings.accociativeActions)
+					{
+						for (int i = 0; i < activators.size(); i++)
+						{
+							activate(dt, activators[i], i);
+						}
+					}
+					else
+					{
+						activate(dt, activators[0], 0);
+					}
+					triggered = true;
 				}
-				timer = 0;
-				triggered = true;
-			}
-			//onExit
-			if (settings.onExit && objectsFound < objectsInside)
-			{
-				for (int i = 0; i < objectsInside - objectsFound; i++)
-				{
-					activate(dt);
-				}
-				timer = 0;
-				triggered = true;
+
 			}
 			//onExitAll
-			if (settings.onEnterAll &&  objectsFound == 0 && objectsFound < objectsInside)
+			if (settings.onExitAll && numObjectsFound == 0)
 			{
-				if (settings.perActivator)
+				bool found = false;
+				for (int i = 0; i < objectsInside.size() && !found; i++)
 				{
-					for (int i = 0; i < objectsFound; i++)
+					if (objectsInside[i])
 					{
-						activate(dt);
+						found = true;
 					}
 				}
-				else
+				if (found)
 				{
-					activate(dt);
+					if (settings.perActivator || settings.accociativeActions)
+					{
+						for (int i = 0; i < activators.size(); i++)
+						{
+							activate(dt, activators[i], i);
+						}
+					}
+					else
+					{
+						activate(dt, activators[0], 0);
+					}
+					triggered = true;
 				}
-				timer = 0;
-				triggered = true;
+
 			}
 			//whileInside
-			if (settings.whileInside && objectsFound > 0)
+			if (settings.whileInside && numObjectsFound > 0)
 			{
-				if (settings.perActivator)
+				if (settings.perActivator || settings.accociativeActions)
 				{
-					for (int i = 0; i < objectsFound; i++)
+					for (int i = 0; i < objectsFound.size(); i++)
 					{
-						activate(dt);
+						if (objectsFound[i])
+						{
+							activate(dt, activators[i], i);
+						}
 					}
 				}
 				else
 				{
-					activate(dt);
+					activate(dt, activators[0], 0);
 				}
-				timer = 0;
 				triggered = true;
 			}
-			//whileInsideAll
-			if (settings.whileAllInside && objectsFound > 0 && objectsFound == activators.size())
+			//whileAllInside
+			if (settings.whileAllInside && numObjectsFound > 0 && numObjectsFound == activators.size())
 			{
-				if (settings.perActivator)
+				if (settings.perActivator || settings.accociativeActions)
 				{
-					for (int i = 0; i < objectsFound; i++)
+					for (int i = 0; i < objectsFound.size(); i++)
 					{
-						activate(dt);
+						if (objectsFound[i])
+						{
+							activate(dt, activators[i], i);
+						}
 					}
 				}
 				else
 				{
-					activate(dt);
+					activate(dt, activators[0], 0);
 				}
-				timer = 0;
 				triggered = true;
 			}
-
-
-			//Update the number of activators inside the trigger
+			//Update which activators are inside the trigger
 			objectsInside = objectsFound;
 		}
 		else
@@ -163,33 +186,34 @@ bool Trigger::update(float dt)
 			objectsInside = objectsFound;
 		}
 	}
-
 	return triggered;
 }
 //Activates the trigger
-void Trigger::activate(float dt)
+void Trigger::activate(float dt, GameObject* activator, int index)
 {
 	if (settings.accociativeActions)
 	{
-		//Activate each command on their counterpart in targets
-		for (int i = 0; i < commands.size() && i < targets.size(); i++)
+		//Target only the objects that activated the trigger
+		if (settings.accociativeCommands)
 		{
-			runCommand(i,i, dt);
-			//numberOfActivationsAllowed
-			if (settings.numberOfActivationsAllowed != -1)
+			if (index < commands.size())
 			{
-				settings.numberOfActivationsAllowed--;
+				runCommand(index,activator, dt);
+				timer = 0;
+				//numberOfActivationsAllowed
+				if (settings.numberOfActivationsAllowed != -1)
+				{
+					settings.numberOfActivationsAllowed--;
+				}
 			}
 		}
-	}
-	else
-	{	
-		//Activates each command on each target
-		for (int i = 0; i < commands.size(); i++)
+		else
 		{
-			for (int j = 0; j < targets.size(); j++)
+			//Activates each command on each target
+			for (int i = 0; i < commands.size(); i++)
 			{
-				runCommand(i,j, dt);
+				runCommand(i, activator, dt);
+				timer = 0;
 				//numberOfActivationsAllowed
 				if (settings.numberOfActivationsAllowed != -1)
 				{
@@ -198,54 +222,89 @@ void Trigger::activate(float dt)
 			}
 		}
 	}
+	else
+	{
+		//Target the objects in the targets vector
+		if (settings.accociativeCommands)
+		{
+			//Activate each command on their counterpart in targets
+			for (int i = 0; i < commands.size() && i < targets.size(); i++)
+			{
+				runCommand(i, targets[i], dt);
+				timer = 0;
+				//numberOfActivationsAllowed
+				if (settings.numberOfActivationsAllowed != -1)
+				{
+					settings.numberOfActivationsAllowed--;
+				}
+			}
+		}
+		else
+		{
+			//Activates each command on each target
+			for (int i = 0; i < commands.size(); i++)
+			{
+				for (int j = 0; j < targets.size(); j++)
+				{
+					runCommand(i, targets[j], dt);
+					timer = 0;
+					//numberOfActivationsAllowed
+					if (settings.numberOfActivationsAllowed != -1)
+					{
+						settings.numberOfActivationsAllowed--;
+					}
+				}
+			}
+		}
+	}
 }
-void Trigger::runCommand(int commandID, int targetID, float dt)
+void Trigger::runCommand(int commandID, GameObject* target, float dt)
 {
 	//Add new commands here
 	if (commands[commandID] == "hellogais")
 	{
 		std::cout << "Hello gais" << std::endl;
 	}
-	else if (commands[commandID] == "water" && targets[targetID]->type() == "Player")
+	else if (commands[commandID] == "water" && target->type() == "Player")
 	{
-		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		Player* player = dynamic_cast<Player*>(target);
 		player->setDiving(!player->getDiving());
 	}
 	else if (commands[commandID] == "nextLevel")
 	{
 		nextLevel = true;
 	}
-	else if (commands[commandID] == "fire" && targets[targetID]->type() == "Player")
+	else if (commands[commandID] == "fire" && target->type() == "Player")
 	{
-		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		Player* player = dynamic_cast<Player*>(target);
 		player->applyDamage(1);
 	}
-	else if (commands[commandID] == "spikes" && targets[targetID]->type() == "Player")
+	else if (commands[commandID] == "spikes" && target->type() == "Player")
 	{
-		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		Player* player = dynamic_cast<Player*>(target);
 		player->applyDamage(10);
 	}
-	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Player")
+	else if (commands[commandID] == "kill" && target->type() == "Player")
 	{
-		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		Player* player = dynamic_cast<Player*>(target);
 		player->setHealth(0);
 	}
-	else if (commands[commandID] == "kill" && targets[targetID]->type() == "Enemy")
+	else if (commands[commandID] == "kill" && target->type() == "Enemy")
 	{
-		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
+		Enemy* enemy = dynamic_cast<Enemy*>(target);
 		enemy->setHealth(0);
 	}
-	else if (commands[commandID] == "healthPickup" && targets[targetID]->type() == "Player")
+	else if (commands[commandID] == "healthPickup" && target->type() == "Player")
 	{
-		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		Player* player = dynamic_cast<Player*>(target);
 		if (player != nullptr)
 		{
 			player->setHealth(player->getHealth() + 5);
 		}
 	}
-	else if (commands[commandID] == "healthPickup" && targets[targetID]->type() == "Model")
+	else if (commands[commandID] == "healthPickup" && target->type() == "Model")
 	{
-		Model* heartModel = dynamic_cast<Model*>(targets[targetID]);
+		Model* heartModel = dynamic_cast<Model*>(target);
 		if (heartModel != nullptr)
 		{
 			glm::mat4 test = heartModel->getModelMatrix();
@@ -254,10 +313,10 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 		}
 		delete this;
 	}
-	else if (commands[commandID] == "phase1" && targets[targetID]->type() == "Enemy")
+	else if (commands[commandID] == "phase1" && target->type() == "Enemy")
 	{
-		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
-		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
+		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(target);
+		Enemy* enemy = dynamic_cast<Enemy*>(target);
 
 		enemy->setBossImmunity(false);
 		enemy->applyDamage(30);
@@ -273,10 +332,10 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 		enemyBoss->setAttacking(false);
 		enemyBoss->setChargeCounter(0);
 	}
-	else if (commands[commandID] == "phase2" && targets[targetID]->type() == "Enemy")
+	else if (commands[commandID] == "phase2" && target->type() == "Enemy")
 	{
-		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
-		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
+		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(target);
+		Enemy* enemy = dynamic_cast<Enemy*>(target);
 
 		enemy->setBossImmunity(false);
 		enemy->applyDamage(30);
@@ -289,14 +348,14 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 
 		enemyBoss->loseTrackOfPlayer(true);
 	}
-	else if (commands[commandID] == "finishingBlow" && targets[targetID]->type() == "Enemy")
+	else if (commands[commandID] == "finishingBlow" && target->type() == "Enemy")
 	{
-		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
+		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(target);
 		enemyBoss->setChandelierMove();
 	}
-	else if (commands[commandID] == "playerUnderBoss" && targets[targetID]->type() == "Enemy")
+	else if (commands[commandID] == "playerUnderBoss" && target->type() == "Enemy")
 	{
-		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(targets[targetID]);
+		EnemyBoss* enemyBoss = dynamic_cast<EnemyBoss*>(target);
 		if (enemyBoss->getPhase() == 2)
 		{
 			enemyBoss->setPlayerInWater(!enemyBoss->getPlayerInWater());
@@ -307,9 +366,9 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 			enemyBoss->loseTrackOfPlayer(!enemyBoss->getPlayerTracked());
 		}
 	}
-	else if (commands[commandID] == "playerUnderBoss" && targets[targetID]->type() == "Player")
+	else if (commands[commandID] == "playerUnderBoss" && target->type() == "Player")
 	{
-		Player* player = dynamic_cast<Player*>(targets[targetID]);
+		Player* player = dynamic_cast<Player*>(target);
 		player->setDiving(!player->getDiving());
 	}
 }
@@ -321,6 +380,7 @@ Trigger::Trigger()
 	this->activators = std::vector<GameObject*>();
 	this->targets = std::vector<GameObject*>();
 	this->settings = TriggerSettings();
+	this->objectsInside = std::vector<bool>(activators.size());
 }
 Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::vector<GameObject*> activators, std::vector<GameObject*> targets, std::vector<std::string> commands)
 {
@@ -336,6 +396,7 @@ Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::
 	this->targets = targets;
 	this->settings = settings;
 	this->commands = commands;
+	this->objectsInside = std::vector<bool>(activators.size());
 }
 Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, GameObject* activator, std::vector<GameObject*> targets, std::vector<std::string> commands)
 {
@@ -351,6 +412,7 @@ Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, GameO
 	this->targets = targets;
 	this->settings = settings;
 	this->commands = commands;
+	this->objectsInside = std::vector<bool>(activators.size());
 }
 Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::vector<GameObject*> activators, GameObject* target, std::vector<std::string> commands)
 {
@@ -365,6 +427,7 @@ Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::
 	this->targets.push_back(target);
 	this->settings = settings;
 	this->commands = commands;
+	this->objectsInside = std::vector<bool>(activators.size());
 }
 Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, GameObject* activator, GameObject* target, std::vector<std::string> commands)
 {
@@ -379,6 +442,7 @@ Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, GameO
 	this->targets.push_back(target);
 	this->settings = settings;
 	this->commands = commands;
+	this->objectsInside = std::vector<bool>(activators.size());
 }
 Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::vector<GameObject*> activators, std::vector<GameObject*> targets, std::string command)
 {
@@ -394,6 +458,7 @@ Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::
 	this->targets = targets;
 	this->settings = settings;
 	this->commands.push_back(command);
+	this->objectsInside = std::vector<bool>(activators.size());
 }
 Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, GameObject* activator, std::vector<GameObject*> targets, std::string command)
 {
@@ -409,6 +474,7 @@ Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, GameO
 	this->targets = targets;
 	this->settings = settings;
 	this->commands.push_back(command);
+	this->objectsInside = std::vector<bool>(activators.size());
 }
 Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::vector<GameObject*> activators, GameObject* target, std::string command)
 {
@@ -423,6 +489,7 @@ Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::
 	this->targets.push_back(target);
 	this->settings = settings;
 	this->commands.push_back(command);
+	this->objectsInside = std::vector<bool>(activators.size());
 }
 Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, GameObject* activator, GameObject* target, std::string command)
 {
@@ -437,6 +504,7 @@ Trigger::Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, GameO
 	this->targets.push_back(target);
 	this->settings = settings;
 	this->commands.push_back(command);
+	this->objectsInside = std::vector<bool>(activators.size());
 }
 //Destructors
 Trigger::~Trigger()

@@ -174,6 +174,11 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 			line >> tempInt;
 			settings.numberOfActivationsAllowed = tempInt;
 		}
+		else if (str == "accociativeCommands")
+		{
+			line >> tempInt;
+			settings.accociativeCommands = tempInt;
+		}
 		else if (str == "accociativeActions")
 		{
 			line >> tempInt;
@@ -356,14 +361,7 @@ void Level::unloadModels()
 //Sets the triggerboxes for this level
 void Level::setupTriggers(Player* player)
 {
-	//water land
-	std::vector<glm::vec2> corners2 = { glm::vec2(-20,0), glm::vec2(-20,400), glm::vec2(-200,400), glm::vec2(-200,0) };
-	TriggerSettings settings2;
-	settings2.onEnter = true;
-	//triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "nextLevel"));
 
-	Model* heart = new Model("models/heart/HeartContainer.obj");
-	createPickup(heart, glm::vec2(200, 110), "healthPickup", player);
 }
 void Level::updateTriggers(float dt)
 {
