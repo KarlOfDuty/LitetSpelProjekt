@@ -682,12 +682,12 @@ void drawQuad()
 
 void loadLevel()
 {
-	levelManager.currentLevel->loadLevel();
+	levelManager.currentLevel->loadLevel(player);
 	levelManager.currentLevel->setupTriggers(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 
-	//enemyManager->createBoss(glm::vec3(43.0f, 22.0f, 0.0f));
+	//enemyManager->createBoss(glm::vec3(680.0f, 50.0f, 0.0f));
 	//enemyManager->createSlime(glm::vec3(666.0f, 30.0f, 0.0f));
 	//enemyManager->createToad(glm::vec3(666.0f, 30.0f, 0.0f));
 	//enemyManager->createGiantBat(glm::vec3(1050.0f, 330.0f, 0.0f));
@@ -695,8 +695,8 @@ void loadLevel()
 	enemyManager->createBatSwarm(glm::vec3(1090.0f, 332.3f, 0.0f));
 	enemyManager->createBatSwarm(glm::vec3(1110.0f, 330.6f, 0.0f));*/
 	//enemyManager->createCrab(glm::vec3(670.0f, 40.0f, 0.0f));
-	//enemyManager->createFirefly(glm::vec3(-15.0f, 6.0f, 0.0f));
-	//enemyManager->createSkeleton(glm::vec3(30.0f, 7.0f, 0.0f), false);
+	//enemyManager->createFirefly(glm::vec3(1110.0f, 330.0f, 0.0f));
+	//enemyManager->createSkeleton(glm::vec3(670.0f, 45.0f, 0.0f), false);
 
 	//Some lights with random values
 	std::srand((int)time(0));

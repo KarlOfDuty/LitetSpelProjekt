@@ -21,8 +21,8 @@ private:
 	EnemyManager * enemyList;
 public:
 	std::string filePath;
-	void loadModels();
-	void loadLevel();
+	void loadLevel(Player* player);
+	void readTriggers(const char * filePath, std::vector<Trigger*>& vector, Player* player);
 	bool readModels(const char* filePath, std::vector<Model*> &modelVector);
 	bool readEnemys(const char* filePath);
 	bool readTrigers(const char* filePath);
@@ -37,6 +37,7 @@ public:
 	std::vector<Model*>& getCollisionBoxes();
 	std::vector<Trigger*> getTriggers();
 	glm::vec3 getPlayerPos();
+	void createPickup(Model * pickupModel, glm::vec2 position, std::string triggerName, Player * player);
 	Level();
 	Level(std::string filePath, EnemyManager * enemy);
 	~Level();

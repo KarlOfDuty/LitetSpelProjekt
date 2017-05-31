@@ -1,6 +1,6 @@
 #include "Level.h"
 
-void Level::loadLevel()
+void Level::loadLevel(Player* player)
 {
 	//Temporary containers
 	std::ifstream file(filePath);
@@ -38,7 +38,151 @@ void Level::loadLevel()
 		else if (str == "triggers")
 		{
 			line >> path;
-			readTrigers(path.c_str());
+			readTriggers(path.c_str(), triggerBoxes, player);
+		}
+	}
+	file.close();
+}
+void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Player* player)
+{
+	//Temporary containers
+	TriggerSettings settings;
+	std::vector<GameObject*> activators = std::vector<GameObject*>();
+	std::vector<GameObject*> targets = std::vector<GameObject*>();
+	std::vector<std::string> commands;
+	std::ifstream file(filePath);
+	std::string str = "";
+	int tempInt = 0;
+	float tempFloat = 0.0f;
+	//Gets a single line of the file at a time
+	while (std::getline(file, str))
+	{
+		std::stringstream line;
+		std::string path;
+		//Takes the first word of the line and compares it to variable names
+		line << str;
+		line >> str;
+		//New trigger
+		if (str == "trigger")
+		{
+			//Read corners
+			std::vector<glm::vec2> points = std::vector<glm::vec2>(4);
+			for (int i = 0; i < 4; i++)
+			{
+				line >> points[i].x;
+				line >> points[i].y;
+				line >> str;
+			}
+			vector.push_back(new Trigger(points,settings,activators,targets,commands));
+			//Reset variables for the next trigger
+			settings = TriggerSettings();
+			activators.clear();
+			targets.clear();
+		}
+		//Activators
+		else if (str == "activator")
+		{
+			line >> str;
+			if (str == "player")
+			{
+				activators.push_back(player);
+			}
+			else if (str == "staticModel")
+			{
+				line >> tempInt;
+				activators.push_back(staticModels[tempInt]);
+			}
+			else if (str == "dynamicModel")
+			{
+				line >> tempInt;
+				activators.push_back(dynamicModels[tempInt]);
+			}
+			else if (str == "collider")
+			{
+				line >> tempInt;
+				activators.push_back(colliders[tempInt]);
+			}
+		}
+		//Targets
+		else if (str == "target")
+		{
+			line >> str;
+			if (str == "player")
+			{
+				targets.push_back(player);
+			}
+			else if (str == "staticModel")
+			{
+				line >> tempInt;
+				targets.push_back(staticModels[tempInt]);
+			}
+			else if (str == "dynamicModel")
+			{
+				line >> tempInt;
+				targets.push_back(dynamicModels[tempInt]);
+			}
+			else if (str == "collider")
+			{
+				line >> tempInt;
+				targets.push_back(colliders[tempInt]);
+			}
+		}
+		//Commands
+		else if (str == "command")
+		{
+			line >> str;
+			commands.push_back(str);
+		}
+		//Settings
+		else if (str == "onEnter")
+		{
+			line >> tempInt;
+			settings.onEnter = tempInt;
+		}
+		else if (str == "onEnterAll")
+		{
+			line >> tempInt;
+			settings.onEnterAll = tempInt;
+		}
+		else if (str == "onExit")
+		{
+			line >> tempInt;
+			settings.onExit = tempInt;
+		}
+		else if (str == "onExitAll")
+		{
+			line >> tempInt;
+			settings.onExitAll = tempInt;
+		}
+		else if (str == "whileInside")
+		{
+			line >> tempInt;
+			settings.whileInside = tempInt;
+		}
+		else if (str == "whileAllInside")
+		{
+			line >> tempInt;
+			settings.whileAllInside = tempInt;
+		}
+		else if (str == "perActivator")
+		{
+			line >> tempInt;
+			settings.perActivator = tempInt;
+		}
+		else if (str == "frequency")
+		{
+			line >> tempFloat;
+			settings.frequency = tempFloat;
+		}
+		else if (str == "numberOfActivationsAllowed")
+		{
+			line >> tempInt;
+			settings.numberOfActivationsAllowed = tempInt;
+		}
+		else if (str == "accociativeActions")
+		{
+			line >> tempInt;
+			settings.accociativeActions = tempInt;
 		}
 	}
 	file.close();
@@ -138,7 +282,8 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec2.x << " ";
 					std::cout << vec2.y << std::endl;
 				}
-				mesh->vertices[(k * 3) + h].texPos = vec2;
+				mesh->vertices[(k * 3) + h].texPos.x = vec2.x;
+				mesh->vertices[(k * 3) + h].texPos.y = (vec2.y * -1.0f) + 1.0;
 			}
 		}
 		//Diffuse texture file
@@ -310,29 +455,8 @@ void Level::setupTriggers(Player* player)
 	settings2.onEnter = true;
 	//triggerBoxes.push_back(new Trigger(corners2, settings2, player, player, "nextLevel"));
 
-	//health pickup
-	glm::mat4 mat({
-		0.02, 0, 0, 0,
-		0, 0.02, 0, 0,
-		0, 0, 0.02, 0,
-		-4, 5, 0, 1
-	});
-	Model* heart = new Model("models/heart/HeartContainer.obj", mat);
-	glm::vec3 min, max;
-	heart->getMinMaxBouding(min, max);
-	min += glm::vec3(mat[3]);
-	max += glm::vec3(mat[3]);
-	heart->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-6.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	dynamicModels.push_back(heart);
-
-	std::vector<glm::vec2> corners3 = { glm::vec2(min), glm::vec2(min.x,max.y), glm::vec2(max), glm::vec2(max.x,min.y) };
-	TriggerSettings settings3;
-	settings3.onEnter = true;
-	std::vector<GameObject*> shitVec;
-	shitVec.push_back(player);
-	shitVec.push_back(heart);
-	Trigger* fuck = new Trigger(heart->getPoints(), settings3, player, shitVec, "healthPickup");
-	triggerBoxes.push_back(fuck);
+	Model* heart = new Model("models/heart/HeartContainer.obj");
+	createPickup(heart, glm::vec2(200, 110), "healthPickup", player);
 }
 void Level::updateTriggers(float dt)
 {
@@ -381,6 +505,31 @@ std::vector<Trigger*> Level::getTriggers()
 glm::vec3 Level::getPlayerPos()
 {
 	return playerPos;
+}
+void Level::createPickup(Model* pickupModel, glm::vec2 position, std::string triggerName, Player* player)
+{
+	glm::mat4 mat({
+		0.5, 0, 0, 0,
+		0, 0.5, 0, 0,
+		0, 0, 0.5, 0,
+		position.x, position.y, 0, 1
+	});
+	Model* thisPickup = new Model(pickupModel, mat);
+	glm::vec3 min, max;
+	thisPickup->getMinMaxBouding(min, max);
+	min += glm::vec3(mat[3]);
+	max += glm::vec3(mat[3]);
+	thisPickup->setRotationMatrix(glm::rotate(glm::mat4(), glm::radians(-6.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	dynamicModels.push_back(thisPickup);
+
+	std::vector<glm::vec2> corners3 = { glm::vec2(min), glm::vec2(min.x,max.y), glm::vec2(max), glm::vec2(max.x,min.y) };
+	TriggerSettings settings3;
+	settings3.onEnter = true;
+	std::vector<GameObject*> allObjects;
+	allObjects.push_back(player);
+	allObjects.push_back(thisPickup);
+	Trigger* pickupTrigger = new Trigger(thisPickup->getPoints(), settings3, player, allObjects, triggerName);
+	triggerBoxes.push_back(pickupTrigger);
 }
 //Constructors
 Level::Level()

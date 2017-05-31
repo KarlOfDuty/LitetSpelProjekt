@@ -4,9 +4,9 @@
 PlayerShark::PlayerShark(Model model, bool inWater) :PlayerChar(model, inWater)
 {
 	this->maxJumps = 1;
-	this->jumpHeight = 15;
+	this->jumpHeight = 150;
 	this->arrowModel = new Model("models/cube/cubeGreen.obj");
-	this->arrowVelocity = 30.0f;
+	this->arrowVelocity = 300.0f;
 }
 
 PlayerShark::~PlayerShark()
@@ -41,7 +41,7 @@ void PlayerShark::shootArrow(std::vector<Projectile*>& allProjectiles, glm::vec2
 				activeArrows++;
 		}
 
-		glm::vec3 scale(0.1f, 1.0f, 0.1f);
+		glm::vec3 scale(2.0f, 15.0f, 2.0f);
 
 		//Reuse old arrow if possible otherwize create a new
 		if (activeArrows < allProjectiles.size())
@@ -50,7 +50,7 @@ void PlayerShark::shootArrow(std::vector<Projectile*>& allProjectiles, glm::vec2
 			{
 				if (!allProjectiles[i]->isInUse())
 				{
-					allProjectiles[i]->shoot(arrowModel, position, direction, glm::vec2(5.0f, 30.0f), arrowVelocity, scale);
+					allProjectiles[i]->shoot(arrowModel, position, direction, glm::vec2(50.0f, 300.0f), arrowVelocity, scale);
 					i = (int)allProjectiles.size();
 				}
 			}
@@ -58,7 +58,7 @@ void PlayerShark::shootArrow(std::vector<Projectile*>& allProjectiles, glm::vec2
 		else
 		{
 			Projectile* temp = new Projectile();
-			temp->shoot(arrowModel, position, direction, glm::vec2(5.0f, 30.0f), arrowVelocity, scale);
+			temp->shoot(arrowModel, position, direction, glm::vec2(50.0f, 300.0f), arrowVelocity, scale);
 			allProjectiles.push_back(temp);
 		}
 		attackCooldown.restart();
