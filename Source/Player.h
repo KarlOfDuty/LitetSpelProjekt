@@ -33,7 +33,9 @@ private:
 	bool goingRight;
 	float angle;
 	bool isOnGround;
-	
+	sf::Clock rotating;
+	bool isIdle;
+	bool restartKeyframes;
 	int jumps;
 	float movementSpeed;
 	float groundPos;

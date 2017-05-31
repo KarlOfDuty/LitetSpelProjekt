@@ -385,6 +385,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			velocityX = -movementSpeed*dt;
 			goingLeft = true;
 			goingRight = false;
+			isIdle = false;
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
@@ -392,14 +393,16 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			velocityX = movementSpeed*dt;
 			goingRight = true;
 			goingLeft = false;
+			isIdle = false;
 		}
 
 		if (goingLeft == true)
 		{
 			if (angle != 180)
 			{
-				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				angle += 12;
+				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle += 20;
+				rotating.restart();
 			}
 		
 		}
@@ -407,8 +410,9 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		{
 			if (angle > 0)
 			{
-				this->modelMatrix  *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				angle -= 12;
+				this->modelMatrix  *= glm::rotate(glm::mat4(), glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle -= 20;
+				rotating.restart();
 			}
 		
 		}
@@ -439,20 +443,23 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			velocityX = -movementSpeed*dt/2;
 			goingLeft = true;
 			goingRight = false;
+			isIdle = false;
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
 			velocityX = movementSpeed*dt/2;
 			goingRight = true;
 			goingLeft = false;
+			isIdle = false;
 		}
 
 		if (goingLeft == true)
 		{
 			if (angle != 180)
 			{
-				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				angle += 12;
+				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle += 20;
+				rotating.restart();
 			}
 
 		}
@@ -461,8 +468,9 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		{
 			if (angle > 0)
 			{
-				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				angle -= 12;
+				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle -= 20;
+				rotating.restart();
 			}
 		}
 		//If in air
@@ -520,6 +528,31 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			}
 		}
 	}
+	//Fix the animation jump
+
+	//restartKeyframes = false;
+	//if (!isIdle) {
+	//	restartKeyframes = true;
+	//}
+	//
+	//if (velocityX == 0 && isOnGround == false)
+	//{
+	//	//Change the time compare to make it idle faster after turning/rotating
+	//	if (rotating.getElapsedTime().asSeconds() >= 0.2)
+	//	{
+	//		isIdle = true;
+	//	}
+	//}
+	//if (isIdle) {
+	//	if (restartKeyframes == true) {
+	//		setCurrentKeyframe(1);
+	//	}
+	//	setAnimationIndex(0);
+	//}
+	//else
+	//{
+	//	restartKeyframes = false;
+	//}
 
 	//Apply velocity
 	modelMatrix[3].x += velocityX;
@@ -539,17 +572,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 
 		isOnGround = true;
-		//firstTimeIdleFrame = true;
 	}
-	//if (isOnGround == true && goingLeft == false && goingRight == false) {
-	//	if (firstTimeIdleFrame == true) {
-	//		setCurrentKeyframe(1);
-	//	}
-	//	setAnimationIndex(0);
-	//}
-	//else {
-	//	firstTimeIdleFrame = false;
-	//}
 
 	for (int i = 0; i < allAttackBoxes.size(); i++)
 	{
