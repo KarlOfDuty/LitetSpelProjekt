@@ -24,6 +24,7 @@ private:
 	void freeMemory();
 	sf::Clock damageImmunity;
 	sf::Clock tpCooldown;
+	sf::Clock rotating;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
 	int health;
@@ -31,6 +32,7 @@ private:
 	float velocityY;
 	bool goingLeft;
 	bool goingRight;
+	bool isIdle;
 	float angle;
 	bool isOnGround;
 	int jumps;
