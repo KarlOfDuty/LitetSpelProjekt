@@ -266,37 +266,13 @@ bool Level::readTrigers(const char * filePath)
 		line >> x;
 		line >> y;
 		line >> z;
-		if (type == "bats")
+		if (type == "heart")
 		{
 			enemyList->createBatSwarm(glm::vec3(x, y, z));
 		}
 		else if (type == "boss")
 		{
 			enemyList->createBoss(glm::vec3(x, y, z));
-		}
-		else if (type == "crab")
-		{
-			enemyList->createCrab(glm::vec3(x, y, z));
-		}
-		else if (type == "firefly")
-		{
-			enemyList->createFirefly(glm::vec3(x, y, z));
-		}
-		else if (type == "bat")
-		{
-			enemyList->createGiantBat(glm::vec3(x, y, z));
-		}
-		else if (type == "skeleton")
-		{
-			enemyList->createSkeleton(glm::vec3(x, y, z), false);
-		}
-		else if (type == "slime")
-		{
-			enemyList->createSlime(glm::vec3(x, y, z));
-		}
-		else if (type == "toad")
-		{
-			enemyList->createToad(glm::vec3(x, y, z));
 		}
 	}
 	file.close();
