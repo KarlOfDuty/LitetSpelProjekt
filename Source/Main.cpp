@@ -715,8 +715,6 @@ void loadLevel()
 	enemyManager->createBatSwarm(glm::vec3(1110.0f, 330.6f, 0.0f));*/
 	//enemyManager->createCrab(glm::vec3(670.0f, 40.0f, 0.0f));
 	//enemyManager->createSkeleton(glm::vec3(670.0f, 45.0f, 0.0f), true);
-
-	levelManager.currentLevel->setupTriggers(player, enemyManager->getAllEnemies());
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 

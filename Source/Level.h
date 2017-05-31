@@ -31,7 +31,6 @@ public:
 	bool readEnemys(const char* filePath);
 	bool readTrigers(const char* filePath);
 	void unloadModels();
-	void setupTriggers(Player* player, std::vector<Enemy*> allEnemies);
 	void updateTriggers(float dt);
 	void deleteTriggers();
 	void playMusic(SoundSystem *soundSystem);
