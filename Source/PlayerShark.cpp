@@ -4,7 +4,7 @@
 PlayerShark::PlayerShark(Model model, bool inWater) :PlayerChar(model, inWater)
 {
 	this->maxJumps = 1;
-	this->jumpHeight = 150;
+	this->jumpHeight = 210;
 	this->arrowModel = new Model("models/cube/cubeGreen.obj");
 	this->arrowVelocity = 300.0f;
 }
