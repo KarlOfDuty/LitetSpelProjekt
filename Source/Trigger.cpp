@@ -214,7 +214,7 @@ void Trigger::runCommand(int commandID, int targetID, float dt)
 	else if (commands[commandID] == "water" && targets[targetID]->type() == "Enemy")
 	{
 		Enemy* enemy = dynamic_cast<Enemy*>(targets[targetID]);
-		enemy->applyDamage(0);
+		enemy->setHealth(0);
 	}
 	else if (commands[commandID] == "nextLevel")
 	{

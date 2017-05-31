@@ -105,6 +105,7 @@ std::vector<Enemy*> &EnemyManager::getAllEnemies()
 	return allEnemies;
 }
 
+
 void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allModels, Player* player)
 {
 	clearDeadEnemies();

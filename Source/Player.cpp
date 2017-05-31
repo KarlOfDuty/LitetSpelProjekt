@@ -112,7 +112,7 @@ void Player::waterEffect()
 {
 	if (this->player != playerCharacters[1])
 	{
-		setHealth(0);
+		this->applyDamage(2);
 	}
 }
 
@@ -386,13 +386,13 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		//If in air
 		if (!isOnGround)
 		{
-			velocityY -= 200 * dt;
+			velocityY -= 305 * dt;
 		}
 
 		//Maximum falling speed
-		if (velocityY < -500)
+		if (velocityY < -900)
 		{
-			velocityY = -500;
+			velocityY = -900;
 		}
 	}
 	else 
@@ -438,19 +438,19 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		//If in air
 		if (!isOnGround)
 		{
-			velocityY -= 30 * dt * 2;
+			velocityY -= 305 * dt * 2;
 		}
 
 		//Maximum falling speed
-		if (velocityY < -5)
+		if (velocityY < -150)
 		{
-			velocityY = -5;
+			velocityY = -150;
 		}
 	}
 
 	if (playerCharacters[2] == player)
 	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && tpCooldown.getElapsedTime().asSeconds() >= 5.0)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && tpCooldown.getElapsedTime().asSeconds() >= 3.0)
 		{
 			glm::vec3 prevPos = getPos();
 			if (goingLeft == true)
