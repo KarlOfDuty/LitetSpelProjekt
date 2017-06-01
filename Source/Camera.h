@@ -22,6 +22,7 @@ public:
 	void setupQuadTree(std::vector<Model*> &staticModels);
 	void destroyQuadTree();
 	glm::mat4 update(glm::vec3 playerPos);
+	glm::mat4 update(glm::vec3 playerPos, glm::vec3 menuOfset);
 	glm::vec3 getCameraPos();
 
 };
