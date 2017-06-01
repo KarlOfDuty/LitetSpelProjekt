@@ -4,6 +4,7 @@
 #include "Collision.h"
 #include "Projectile.h"
 #include "Trigger.h"
+#include "SoundSystem.h"
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <SFML\Window.hpp>
@@ -27,6 +28,7 @@ private:
 	Model *model;
 	glm::vec3 pos;
 	glm::vec3 checkPoint;
+	SoundSystem * sound;
 	//Animation animation;
 public:
 	//Variables
@@ -36,6 +38,7 @@ public:
 	bool playerSeen;
 	bool bossImmunity;
 	glm::vec2 collidedFrom;
+	glm::vec2 collisionNormal;
 	float radians;
 	float groundPos;
 	float angle;
@@ -49,7 +52,7 @@ public:
 	virtual std::string type() const;
 	//Own functions
 	Enemy();
-	Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor);
+	Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound);
 	virtual ~Enemy();
 	void setPos(glm::vec3 position);
 	void setHealth(int health);

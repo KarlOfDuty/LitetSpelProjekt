@@ -2,10 +2,11 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemySlime::EnemySlime(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
+EnemySlime::EnemySlime(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
 	startPosition = enemyStartPos;
 	returnToStart = false;
+	this->sound = sound;
 }
 
 EnemySlime::~EnemySlime()
@@ -32,24 +33,24 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	}
 
 	//Patrol check 
-	if (enemyPosCurrent.x < checkPoint.x-2)
+	if (enemyPosCurrent.x < checkPoint.x-40)
 	{
 		checkPointReached = true;
 		
 	}
-	else if (enemyPosCurrent.x > checkPoint.x+2)
+	else if (enemyPosCurrent.x > checkPoint.x+40)
 	{
 		checkPointReached = false;
 	}
 
 	if (collides)
 	{
-		if (collidedFrom.x != 0 && collidedFrom.y > 0)
+		if (abs(collisionNormal.x) > 0.9  && collidedFrom.y > 0)
 		{
-			velocityY = 10;
+			velocityY = 150;
 		}
 
-		if (collidedFrom.x != 0)
+		if (abs(collisionNormal.x) > 0.9)
 		{
 			if (collisionTime.getElapsedTime().asSeconds() >= 5)
 			{
@@ -65,10 +66,16 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 5.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 200.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
+	}
+
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 8)
+	{
+		this->sound->playSound("goopySlimeSounds");
+		soundTimer.restart();
 	}
 
 	//Move
@@ -86,33 +93,33 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 			}
 			if (enemyPosCurrent.x > player->getPos().x)
 			{
-				velocityX -= 2.0f*dt;
+				velocityX -= 40.0f*dt;
 			}
 			else
 			{
-				velocityX += 2.0f*dt;
+				velocityX += 40.0f*dt;
 			}
 			playerSeen = true;
 		}
 		else
 		{
 			//Patrol
-			//if (enemyPosCurrent.x >= checkPoint.x)
-			//{
-			//	rotateLeft = false;
-			//}
-			//if (enemyPosCurrent.x <= checkPoint.x)
-			//{
-			//	rotateLeft = true;
-			//}
-			//if (checkPointReached == false)
-			//{
-			//	velocityX -= 2.0f*dt;
-			//}
-			//else if (checkPointReached == true)
-			//{
-			//	velocityX += 2.0f*dt;
-			//}
+			if (enemyPosCurrent.x >= checkPoint.x)
+			{
+				rotateLeft = false;
+			}
+			if (enemyPosCurrent.x <= checkPoint.x)
+			{
+				rotateLeft = true;
+			}
+			if (checkPointReached == false)
+			{
+				velocityX -= 40.0f*dt;
+			}
+			else if (checkPointReached == true)
+			{
+				velocityX += 40.0f*dt;
+			}
 		}
 	}
 	else
@@ -125,15 +132,15 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 		{
 			rotateLeft = true;
 		}
-		if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
+		if (glm::length(enemyPosCurrent.x - startPosition.x) > 20.0f)
 		{
 			if (enemyPosCurrent.x > startPosition.x)
 			{
-				velocityX -= 1.0f*dt;
+				velocityX -= 40.0f*dt;
 			}
 			else if (enemyPosCurrent.x < startPosition.x)
 			{
-				velocityX += 1.0f*dt;
+				velocityX += 40.0f*dt;
 			}
 		}
 		else
@@ -147,24 +154,25 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	{
 		if (collisionWithPlayer(player))
 		{
-			velocityY = 10;
+			velocityY = 100;
 		}
 	}
 
 	if (!collidingWithGround)
 	{
-		velocityY -= 30*dt;
+		velocityY -= 300*dt;
 	}
 
-	if (velocityY > 10)
+
+	if (velocityY > 200)
 	{
-		velocityY = 10;
+		velocityY = 200;
 	}
 
 	//Maximum falling speed
-	if (velocityY < -30)
+	if (velocityY < -300)
 	{
-		velocityY = -30;
+		velocityY = -300;
 	}
 
 	//Apply velocity

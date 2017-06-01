@@ -9,7 +9,7 @@ Enemy::Enemy()
 }
 
 
-Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor)
+Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound)
 {
 	this->health = health;
 	this->model = model;
@@ -23,6 +23,7 @@ Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 e
 	angle = 0;
 	this->checkPoint.x = enemyStartPos.x;
 	bossImmunity = false;
+	this->sound = sound;
 }
 
 Enemy::~Enemy()
@@ -87,6 +88,7 @@ void Enemy::applyDamage(int appliedDamage)
 	{
 		if (this->damageImmunity.getElapsedTime().asSeconds() >= immunityTime)
 		{
+			this->playerSeen = true;
 			this->health -= appliedDamage;
 			this->damageImmunity.restart();
 		}
@@ -116,22 +118,24 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 		glm::vec3 objectMin, objectMax;
 		allModels[i]->getScaledMinMaxBouding(objectMin, objectMax);
 		glm::vec2 distance = allModels[i]->getPos() - getPos();
-		if (abs(distance.x) < 5.0f + objectMax.x)
+		if (abs(distance.x) < 100.0f + objectMax.x)
 		{
-			if (abs(distance.y) < 5.0f + objectMax.y)
+			if (abs(distance.y) < 100.0f + objectMax.y)
 			{
 				closeObjects.push_back(allModels[i]);
 			}
 		}
 	}
 	collidedFrom = glm::vec2(0,0);
+	collisionNormal = glm::vec2(0, 0);
 	bool hasCollided = false;
 	for (int i = 0; i < closeObjects.size(); i++)
 	{
 		std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
 		std::vector<glm::vec2> objectPoints = closeObjects[i]->getPoints();
 		glm::vec2 mtv;
-		if (collision::collision(enemyPoints, objectPoints, mtv))
+		glm::vec2 normal;
+		if (collision::collision(enemyPoints, objectPoints, mtv, normal))
 		{
 			//Get rotation
 			glm::quat rotation;
@@ -147,7 +151,10 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 			}
 			else
 			{
-				pos.x += mtv.x;
+				if (normal.y < 0.707)
+				{
+					pos.x += mtv.x;
+				}
 				pos.y += mtv.y;
 			}
 
@@ -156,70 +163,16 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 				if (pos.y < 0) pos.y = 0;
 				groundPos = pos.y;
 			}
-
+			if (abs(collisionNormal.x) < abs(normal.x))
+			{
+				collisionNormal = normal;
+			}
 			collidedFrom += mtv;
-
 			setPos(pos);
 			hasCollided = true;
 		}
 	}
-	return hasCollided;
-	
-	/*
-	int index = -1;
-	float minDist = 1000;
-	for (int i = 0; i < allModels.size(); i++)
-	{
-		float distance = glm::length(pos - glm::vec3(allModels[i]->getModelMatrix()[3]));
-		if (minDist > distance)
-		{
-			minDist = distance;
-			index = i;
-		}
-	}
-	if (index != -1)
-	{
-		std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
-		std::vector<glm::vec2> objectPoints = allModels[index]->getPoints();
-		glm::vec2 mtv;
-		if (collision::collision(enemyPoints, objectPoints, mtv))
-		{	
-			//Get rotation
-			glm::quat rotation;
-			glm::decompose(allModels[index]->getModelMatrix(),glm::vec3(),rotation,glm::vec3(),glm::vec3(),glm::vec4());
-			//Convert from quat to radians
-			double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
-			double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
-			radians = (float)-std::atan2(t3, t4);
-			if (radians > 0.0f && radians < 0.79f)
-			{
-				pos.y += mtv.y;
-				mtv.x = 0;
-			}
-			else
-			{
-				pos.x += mtv.x;
-				pos.y += mtv.y;
-			}
-
-			if (mtv.y > 0)
-			{
-				if (pos.y < 0) pos.y = 0;
-				groundPos = pos.y;
-			}
-			collidedFrom = mtv;
-			std::cout << collidedFrom.x << ", " << collidedFrom.y << std::endl;
-			setPos(pos);
-			return true;
-		}
-		else
-		{
-			collidedFrom = glm::vec2(0,0);
-		}
-	}
-	
-	return false;
-	*/
+	return hasCollided; 
 }
 
 bool Enemy::collisionWithPlayer(Player* player)
@@ -241,7 +194,7 @@ bool Enemy::getBossKill() const
 
 void Enemy::update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
-	if (glm::length(pos - player->getPos()) < 25.0f)
+	if (glm::length(pos - player->getPos()) < 400.0f)
 	{
 		updateThis(dt, pos, checkPoint, allSmallBats, allModels, player);
 	}

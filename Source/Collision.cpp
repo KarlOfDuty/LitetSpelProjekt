@@ -141,6 +141,73 @@ bool collision::collision(std::vector<glm::vec2> points1, std::vector<glm::vec2>
 	return true;
 }
 
+bool collision::collision(std::vector<glm::vec2> points1, std::vector<glm::vec2> points2, glm::vec2 &mtv, glm::vec2 &collisionNormal)
+{
+	float o = 1000000000;
+	glm::vec2 smallestAxis;
+	std::vector<glm::vec2> axis1 = getAxis(points1);
+	std::vector<glm::vec2> axis2 = getAxis(points2);
+
+	for (int i = 0; i < axis1.size(); i++) {
+		glm::vec2 thisAxis = axis1[i];
+
+		float s1min, s1max;
+		projectOnAxis(points1, thisAxis, s1min, s1max);
+		float s2min, s2max;
+		projectOnAxis(points2, thisAxis, s2min, s2max);
+
+		if (s2min > s1max || s2max < s1min) {
+			return false;
+		}
+
+		float overlap;
+		if (s1max < s2min) {
+			overlap = s1max - s2min;
+		}
+		else
+		{
+			overlap = s2max - s1min;
+		}
+		if (overlap < o)
+		{
+			o = overlap;
+			smallestAxis = thisAxis;
+		}
+	}
+	for (int i = 0; i < axis2.size(); i++) {
+		glm::vec2 thisAxis = axis2[i];
+
+		float s1min, s1max;
+		projectOnAxis(points1, thisAxis, s1min, s1max);
+		float s2min, s2max;
+		projectOnAxis(points2, thisAxis, s2min, s2max);
+
+		if (s2max < s1min || s1max < s2min) {
+			return false;
+		}
+
+		float overlap;
+		if (s1max < s2min) {
+			overlap = s1max - s2min;
+		}
+		else
+		{
+			overlap = s2max - s1min;
+		}
+		if (overlap < o)
+		{
+			o = overlap;
+			smallestAxis = thisAxis;
+		}
+	}
+	mtv = smallestAxis*o;
+	collisionNormal = smallestAxis;
+	if (mtv == glm::vec2())
+	{
+		return false;
+	}
+	return true;
+}
 std::vector<glm::vec2> collision::getAxis(std::vector<glm::vec2> allPoints)
 {
 	std::vector<glm::vec2> axis;
@@ -288,35 +355,6 @@ bool collision::TestRayOBBIntersection(glm::vec3 ray_origin, glm::vec3 ray_direc
 		}
 		else {
 			if (-e + aabb_min.y > 0.0f || -e + aabb_max.y < 0.0f)
-				return false;
-		}
-	}
-
-
-	// Test intersection with the 2 planes perpendicular to the OBB's Z axis
-	// Exactly the same thing than above.
-	{
-		glm::vec3 zaxis(ModelMatrix[2].x, ModelMatrix[2].y, ModelMatrix[2].z);
-		float e = glm::dot(zaxis, delta);
-		float f = glm::dot(ray_direction, zaxis);
-
-		if (fabs(f) > 0.001f) {
-
-			float t1 = (e + aabb_min.z) / f;
-			float t2 = (e + aabb_max.z) / f;
-
-			if (t1>t2) { float w = t1;t1 = t2;t2 = w; }
-
-			if (t2 < tMax)
-				tMax = t2;
-			if (t1 > tMin)
-				tMin = t1;
-			if (tMin > tMax)
-				return false;
-
-		}
-		else {
-			if (-e + aabb_min.z > 0.0f || -e + aabb_max.z < 0.0f)
 				return false;
 		}
 	}

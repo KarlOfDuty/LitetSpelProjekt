@@ -596,7 +596,8 @@ bool Model::readModel(const char* filePath)
 				std::cout << vec2.x << " ";
 				std::cout << vec2.y << std::endl;
 			}
-			mesh->vertices[(k * 3) + h].texPos = vec2;
+			mesh->vertices[(k * 3) + h].texPos.x = vec2.x;
+			mesh->vertices[(k * 3) + h].texPos.y = (vec2.y * -1.0f) + 1.0f;
 		}
 	}
 	//Diffuse texture file
@@ -644,6 +645,7 @@ bool Model::readModel(const char* filePath)
 	this->hasAnimations = hasAnimation;
 
 	//Set up model
+
 	this->rotate();
 	this->addMesh(mesh);
 	this->setBoundingSphereRadius();

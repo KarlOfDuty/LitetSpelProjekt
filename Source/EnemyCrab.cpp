@@ -2,12 +2,13 @@
 #include "Player.h"
 #include "Trigger.h"
 
-EnemyCrab::EnemyCrab(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor)
+EnemyCrab::EnemyCrab(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound) :Enemy(health, model, damage, immunityTime, enemyStartPos, scaleFactor, sound)
 {
-	this->acceleration = 0.2f;
+	this->acceleration = 5.0f;
 	this->moving = true;
 	this->oldOriginPoint = enemyStartPos;
 	this->startPosition = enemyStartPos;
+	this->sound = sound;
 }
 
 EnemyCrab::~EnemyCrab()
@@ -52,7 +53,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	if (moving)
 	{
-		if (glm::length(enemyPosCurrent - oldOriginPoint) > 4.0f)
+		if (glm::length(enemyPosCurrent - oldOriginPoint) > 100.0f)
 		{
 			oldOriginPoint = enemyPosCurrent;
 			moving = false;
@@ -65,16 +66,21 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	if (collides)
 	{
-		if (collidedFrom.x != 0)
+		if (abs(collisionNormal.x) > 0.8)
 		{
+			collisionCounter++;
 			movingRight = false;
 			movingLeft = false;
 			moving = false;
-			if (collisionTime.getElapsedTime().asSeconds() >= 5)
+			velocityX = 0;
+			oldOriginPoint = enemyPosCurrent;
+			walkTimer.restart();
+			if (collisionCounter > 10)
 			{
 				returnToStart = true;
 				playerSeen = false;
 			}
+			timeSinceCollision.restart();
 		}
 	}
 
@@ -83,130 +89,139 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		collisionTime.restart();
 	}
 
+	if (timeSinceCollision.getElapsedTime().asSeconds() >= 2)
+	{
+		collisionCounter = 0;
+	}
+
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 5.0f)
+	if (glm::length(enemyPosCurrent - player->getPos()) < 300.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
 	}
 
-	//Move
-	if (moving)
+	if (playerSeen == true && soundTimer.getElapsedTime().asSeconds() > 6)
 	{
-		if (!returnToStart)
-		{
-			if (playerSeen)
-			{
-				if (!movingLeft)
-				{
-					if (enemyPosCurrent.x >= player->getPos().x)
-					{
-						movingRight = true;
-					}
-				}
-				if (!movingRight)
-				{
-					if (enemyPosCurrent.x <= player->getPos().x)
-					{
-						movingLeft = true;
-					}
-				}
-				if (movingRight)
-				{
-					velocityX = velocityX - acceleration * dt;
-				}
-				else if (movingLeft)
-				{
-					velocityX = velocityX + acceleration * dt;
-				}
-				playerSeen = true;
-			}
-			else
-			{
-				//Patrol
-				if (!movingLeft)
-				{
-					if ((!checkPointReached))
-					{
-						movingRight = true;
-					}
-				}
-				if (!movingRight)
-				{
-					if (checkPointReached)
-					{
-						movingLeft = true;
-					}
-				}
-				if (movingRight)
-				{
-					velocityX = velocityX - acceleration * dt;
-				}
-				else if (movingLeft)
-				{
-					velocityX = velocityX + acceleration * dt;
-				}
-			}
-		}
-		else
-		{
-			if (glm::length(enemyPosCurrent.x - startPosition.x) > 0.5f)
-			{
-				if (movingLeft == false)
-				{
-					if (enemyPosCurrent.x >= startPosition.x)
-					{
-						movingRight = true;
-					}
-				}
-				if (movingRight == false)
-				{
-					if (enemyPosCurrent.x <= startPosition.x)
-					{
-						movingLeft = true;
-					}
-				}
-				if (movingRight == true)
-				{
-					velocityX = velocityX - acceleration * dt;
-				}
-				else if (movingLeft == true)
-				{
-					velocityX = velocityX + acceleration * dt;
-				}
-			}
-			else
-			{
-				returnToStart = false;
-				playerSeen = false;
-			}
-		}
+		this->sound->playSound("snapyCraby");
+		soundTimer.restart();
 	}
-	
 
+	//Move
 	if (collidingWithGround)
 	{
-
+		//Move
+		if (moving)
+		{
+			if (!returnToStart)
+			{
+				if (playerSeen)
+				{
+					if (!movingLeft)
+					{
+						if (enemyPosCurrent.x >= player->getPos().x)
+						{
+							movingRight = true;
+						}
+					}
+					if (!movingRight)
+					{
+						if (enemyPosCurrent.x <= player->getPos().x)
+						{
+							movingLeft = true;
+						}
+					}
+					if (movingRight)
+					{
+						velocityX = velocityX - acceleration * dt;
+					}
+					else if (movingLeft)
+					{
+						velocityX = velocityX + acceleration * dt;
+					}
+					playerSeen = true;
+				}
+				else
+				{
+					//Patrol
+					if (!movingLeft)
+					{
+						if ((!checkPointReached))
+						{
+							movingRight = true;
+						}
+					}
+					if (!movingRight)
+					{
+						if (checkPointReached)
+						{
+							movingLeft = true;
+						}
+					}
+					if (movingRight)
+					{
+						velocityX = velocityX - acceleration * dt;
+					}
+					else if (movingLeft)
+					{
+						velocityX = velocityX + acceleration * dt;
+					}
+				}
+			}
+			else
+			{
+				if (glm::length(enemyPosCurrent.x - startPosition.x) > 10.5f)
+				{
+					if (movingLeft == false)
+					{
+						if (enemyPosCurrent.x >= startPosition.x)
+						{
+							movingRight = true;
+						}
+					}
+					if (movingRight == false)
+					{
+						if (enemyPosCurrent.x <= startPosition.x)
+						{
+							movingLeft = true;
+						}
+					}
+					if (movingRight == true)
+					{
+						velocityX = velocityX - acceleration * dt;
+					}
+					else if (movingLeft == true)
+					{
+						velocityX = velocityX + acceleration * dt;
+					}
+				}
+				else
+				{
+					returnToStart = false;
+					playerSeen = false;
+				}
+			}
+		}
 	}
 
-	if (!isOnGround)
+	if (!collidingWithGround)
 	{
-		velocityY -= 30 * dt;
+		velocityY -= 300 * dt;
 	}
 
-	if (velocityY > 10)
+	if (velocityY > 200)
 	{
-		velocityY = 10;
+		velocityY = 200;
 	}
 
 	//Maximum falling speed
-	if (velocityY < -30)
+	if (velocityY < -300)
 	{
-		velocityY = -30;
+		velocityY = -300;
 	}
 
-	if (velocityX < -0.3) velocityX = -0.3f;
-	if (velocityX > 0.3) velocityX = 0.3f;
+	if (velocityX < -5.0) velocityX = -5.0f;
+	if (velocityX > 5.0) velocityX = 5.0f;
 
 
 	//Apply velocity

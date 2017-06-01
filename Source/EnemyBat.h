@@ -14,6 +14,8 @@ private:
 	bool checkPointReached;
 	bool xPointReached;
 	bool yPointReached;
+	SoundSystem * sound;
+	sf::Clock soundTimer;
 
 	//workarounds for collision
 	bool collides;
@@ -22,7 +24,7 @@ private:
 	sf::Clock collisionTime;
 	glm::vec3 startPosition;
 public:
-	EnemyBat(int health, Model* enemyModel, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor);
+	EnemyBat(int health, Model* enemyModel, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound);
 	virtual ~EnemyBat();
 	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent);
 	virtual void updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player);

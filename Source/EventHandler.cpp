@@ -22,13 +22,13 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 	{
 		if (running == 1)
 		{
-			if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Up)
+			if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Left)
 			{
-				menu->MoveUp();
+				menu->MoveLeft();
 			}
-			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Down)
+			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Right)
 			{
-				menu->MoveDown();
+				menu->MoveRight();
 			}
 			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Return)
 			{
