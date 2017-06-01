@@ -624,11 +624,11 @@ void Player::draw(Shader shader)
 	glUniformMatrix4fv(glGetUniformLocation(shader.program, "model"), 1, GL_FALSE, &modelMatrix[0][0]);
 	player->draw(shader);
 
-	for (int i = 0; i < allAttackBoxes.size(); i++)
+	for (int i = 0; i < allArrowAttackBoxes.size(); i++)
 	{
-		if (allAttackBoxes[i]->isInUse())
+		if (allArrowAttackBoxes[i]->isInUse())
 		{
-			allAttackBoxes[i]->draw(shader);
+			allArrowAttackBoxes[i]->draw(shader);
 		}
 	}
 
