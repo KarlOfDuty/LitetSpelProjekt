@@ -1,6 +1,6 @@
 #include "PlayerButterfly.h"
 
-PlayerButterfly::PlayerButterfly(Model model, bool inWater) :PlayerChar(model, inWater)
+PlayerButterfly::PlayerButterfly(Model* model, bool inWater) :PlayerChar(model, inWater)
 {
 	this->maxJumps = 1;
 	this->jumpHeight = 210;

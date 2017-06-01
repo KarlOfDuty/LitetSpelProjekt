@@ -10,7 +10,7 @@ private:
 public:
 	float arrowVelocity;
 
-	PlayerShark(Model model, bool inWater);
+	PlayerShark(Model* model, bool inWater);
 	virtual ~PlayerShark();
 	void operator=(const PlayerShark &originalObject);
 	int getMaxJumps();

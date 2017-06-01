@@ -33,7 +33,7 @@ void Level::loadLevel(Player* player)
 		else if (str == "enemies")
 		{
 			line >> path;
-			readEnemys(path.c_str());
+			//readEnemies(path.c_str()); //fix emil plz
 		}
 		else if (str == "triggers")
 		{
@@ -276,6 +276,8 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.z << std::endl;
 				}
 				mesh->vertices[(k * 3) + h].pos = vec3;
+				mesh->vertices[(k * 3) + h].controllers = glm::ivec4(0);
+				mesh->vertices[(k * 3) + h].weightsInfluence = glm::vec4(0);
 			}
 			for (int h = 0; h < 3; h++)
 			{
@@ -298,7 +300,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.y << " ";
 					std::cout << vec3.z << std::endl;
 				}
-				mesh->vertices[(k * 3) + h].tangent = vec3;
+				//mesh->vertices[(k * 3) + h].tangent = vec3;
 				//Read the BiNormals for the primitive
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 				if (modelDebug)
@@ -308,7 +310,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.y << " ";
 					std::cout << vec3.z << std::endl;
 				}
-				mesh->vertices[(k * 3) + h].biTangent = vec3;
+				//mesh->vertices[(k * 3) + h].biTangent = vec3;
 			}
 			//Read the UVs for the primitive
 			for (int h = 0; h < 3; h++)
@@ -362,18 +364,21 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		glm::vec3 scale;
 		in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
 		model->setScale(scale);
+
+		bool hasAnimation = false;
+		in.read(reinterpret_cast<char*>(&hasAnimation), sizeof(bool));
+
 		//Set up model
 		model->rotate();
 		model->addMesh(mesh);
 		model->setupModel();
-		model->loadTextures(0);
 		model->setBoundingSphereRadius();
 		modelVector.push_back(model);
 	}
 	in.close();
 	return true;
 }
-bool Level::readEnemys(const char* filePath)
+bool Level::readEnemies(const char* filePath)
 {
 	//Temporary containers
 	std::ifstream file(filePath);
@@ -484,6 +489,7 @@ void Level::unloadModels()
 	}
 	colliders.clear();
 }
+
 void Level::updateTriggers(float dt)
 {
 	for (int i = 0; i < triggerBoxes.size(); i++)
