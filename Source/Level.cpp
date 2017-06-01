@@ -33,7 +33,7 @@ void Level::loadLevel(Player* player)
 		else if (str == "enemies")
 		{
 			line >> path;
-			//readEnemies(path.c_str()); //fix emil plz
+			readEnemies(path.c_str());
 		}
 		else if (str == "triggers")
 		{
