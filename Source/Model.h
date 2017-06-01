@@ -72,7 +72,7 @@ static bool modelDebug = false;
 //Turns on console feedback for reading of material files
 static bool matDebug = false;
 //Shows collision boxes
-static bool showColliders = true;
+static bool showColliders = false;
 class Model : public GameObject
 {
 private:

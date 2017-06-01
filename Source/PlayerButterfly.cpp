@@ -105,5 +105,6 @@ void PlayerButterfly::shootAoe(std::vector<Model*> &allStaticModels, std::vector
 			temp->aoe(box, 1, position, direction, 50.0f, scale);
 			allProjectiles.push_back(temp);
 		}
+		attackCooldown.restart();
 	}
 }

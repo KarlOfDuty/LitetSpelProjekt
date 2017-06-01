@@ -1,4 +1,3 @@
-enemies skeleton 3181 525 0
 enemies slime 790 45 0
 enemies slime 1516 170 0
 enemies slime 1950 400 0
@@ -19,3 +18,4 @@ enemies firefly 7010 360 0
 enemies slime 7628 360 0
 enemies toad 7980 500 0
 enemies toad 8044 500 0
+enemies skeleton 8555 650 0
