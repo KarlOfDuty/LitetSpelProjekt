@@ -24,6 +24,8 @@ private:
 	sf::Clock damageImmunity;
 	sf::Clock tpCooldown;
 	sf::Clock rotating;
+	sf::Clock timeSinceJump;
+	sf::Clock timeSinceAttack;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
 	int health;
@@ -34,6 +36,7 @@ private:
 	bool isIdle;
 	float angle;
 	bool isOnGround;
+	bool attacking;
 	
 	bool restartKeyframes;
 	int jumps;
@@ -84,6 +87,9 @@ public:
 	void setStaticModels(std::vector<Model*> allStaticModels);
 	void setCurrentKeyframe(int frame);
 	void setAnimationIndex(int index);
+	void restartTimeSinceJump();
+	void restartTimeSinceAttack();
+	void setAttacking(bool attacking);
 	bool getDiving() const;
 	void setDiving(bool diving);
 	void setHealth(int health);
