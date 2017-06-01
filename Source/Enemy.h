@@ -38,6 +38,7 @@ public:
 	bool playerSeen;
 	bool bossImmunity;
 	glm::vec2 collidedFrom;
+	glm::vec2 collisionNormal;
 	float radians;
 	float groundPos;
 	float angle;
