@@ -12,9 +12,11 @@
 #include <glm/gtx/transform.hpp> 
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm\gtc\type_ptr.hpp>
 #include <SOIL.h>
 #include "Shader.h"
 #include "GameObject.h"
+extern Shader deferredGeometryPass;
 //A material specifying how shading, coloring and texturing works
 struct Material
 {
@@ -46,20 +48,23 @@ struct Joint
 	std::vector<glm::mat4> transformMat;
 	int nrOfKeys;
 };
+
 struct Weights
 {
 	int nrOfIndices;
 	std::vector<glm::ivec4> controllers;
 	std::vector<glm::vec4> weightsInfluence;
 };
+
 struct Vertex
 {
 	glm::vec3 pos;
 	glm::vec2 texPos;
 	glm::vec3 normal;
-	glm::vec3 tangent;
-	glm::vec3 biTangent;
-	int useNormalMap;
+	glm::vec4 weightsInfluence;
+	glm::ivec4 controllers;
+	//glm::vec3 tangent;
+	//glm::vec3 biTangent;
 };
 struct Mesh
 {
@@ -76,20 +81,23 @@ static bool showColliders = false;
 class Model : public GameObject
 {
 private:
-	glm::mat4 currentJointTrans[100];
 	int nrOfKeyframes = 0;
-	int currentFrame = 0;
 
+	int currentFrame = 1;
+	int currentAnimationIndex = 0;
+
+	bool hasAnimations;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
 	std::vector<Mesh*> meshes;
-	std::vector<Joint*> skeleton;
-	Weights weightInfo;
+	std::vector<Joint*> skeleton[7];
 	std::vector<glm::vec2> allPoints;
 	glm::vec3 minBounding;
 	glm::vec3 maxBounding;
 	float boundingSphereRadius;
 public:
+
+	glm::mat4 currentJointTrans[100];
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
 	glm::vec3 getPos() const;
@@ -108,6 +116,8 @@ public:
 	void setRotationMatrix(glm::vec3 rotation);
 	void setPos(glm::vec3 pos);
 	void setScale(glm::vec3& scale);
+	void setCurrentKeyframe(int frame);
+	void setAnimationIndex(int index);
 	void addMesh(Mesh* mesh);
 	void rotate();
 	void readOBJ(std::string filename);
@@ -116,6 +126,7 @@ public:
 	void loadWeight(const char* filePath);
 	void setupModel();
 	void loadTextures(int meshNr);
+	void updateAnimation();
 	void draw(Shader shader);
 	void setBoundingSphereRadius();
 	float getBoundingSphereRadius() const;

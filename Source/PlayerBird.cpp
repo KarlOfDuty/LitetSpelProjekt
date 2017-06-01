@@ -1,6 +1,6 @@
 #include "PlayerBird.h"
 
-PlayerBird::PlayerBird(Model model, bool inWater) :PlayerChar(model, inWater)
+PlayerBird::PlayerBird(Model* model, bool inWater) :PlayerChar(model, inWater)
 {
 	this->maxJumps = 2;
 	this->jumpHeight = 210;

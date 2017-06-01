@@ -13,9 +13,40 @@ void Player::freeMemory()
 
 Player::Player()
 {
-	Model* birdModel = new Model("models/Characters/Bird/BirdTest1.obj", modelMatrix);
-	Model* sharkModel = new Model("models/Characters/Shark/Fish_T-Pose_Export.obj", modelMatrix);
-	Model* butterflyModel = new Model("models/Characters/Butterfly/ButterFly.obj", modelMatrix);
+
+
+	Model* birdModel = new Model();
+	birdModel->readModel("models/Characters/Bird/model.bb");
+	birdModel->loadWeight("models/Characters/Bird/weightInfo.bb");
+	birdModel->loadSkeleton("models/Characters/Bird/Idle/skelInfo.bb");
+	birdModel->loadSkeleton("models/Characters/Bird/Run/skelInfo.bb");
+	birdModel->loadSkeleton("models/Characters/Bird/Actions/skelInfo.bb");
+	birdModel->loadSkeleton("models/Characters/Bird/Jump/RunningJump/skelInfo.bb");
+	birdModel->loadSkeleton("models/Characters/Bird/Jump/StillJump/skelInfo.bb");
+	birdModel->loadSkeleton("models/Characters/Bird/Special/skelInfo.bb");
+	birdModel->setupModel();
+
+	Model* sharkModel = new Model();
+	sharkModel->readModel("models/Characters/Shark/model.bb");
+	sharkModel->loadWeight("models/Characters/Shark/weightInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Idle/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Run/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Jump/StillJump/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Special/skelInfo.bb");
+	sharkModel->setupModel();
+
+	Model* butterflyModel = new Model();
+	butterflyModel->readModel("models/Characters/Butter/model.bb");
+	butterflyModel->loadWeight("models/Characters/Butter/weightInfo.bb");
+	butterflyModel->loadSkeleton("models/Characters/Butter/Idle/skelInfo.bb");
+	butterflyModel->loadSkeleton("models/Characters/Butter/Run/skelInfo.bb");
+	butterflyModel->loadSkeleton("models/Characters/Butter/Actions/skelInfo.bb");
+	butterflyModel->loadSkeleton("models/Characters/Butter/Jump/StillJump/skelInfo.bb");
+	butterflyModel->loadSkeleton("models/Characters/Butter/Jump/RunningJump/skelInfo.bb");
+	butterflyModel->loadSkeleton("models/Characters/Butter/Special/skelInfo.bb");
+	butterflyModel->setupModel();
+	//Model* sharkModel = new Model("models/Characters/Shark/Fish_T-Pose_Export.obj", modelMatrix);
+	//Model* butterflyModel = new Model("models/Characters/Butterfly/ButterFly.obj", modelMatrix);
 
 	arrow = new Model("models/cube/cubeGreen.obj");
 
@@ -104,6 +135,10 @@ void Player::jump()
 			velocityY = player->getJumpHeight();
 			jumps++;
 		}
+	}
+	if (jumps == 2) {
+		player->getModel()->setCurrentKeyframe(1);
+		player->getModel()->setAnimationIndex(6);
 	}
 }
 
@@ -309,6 +344,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		std::cout << this->getPos().y << " y" << std::endl;
 	}
 
+	player->update();
 	allAttackBoxes.clear();
 	for (int i = 0; i < allArrowAttackBoxes.size(); i++)
 	{
@@ -322,7 +358,6 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	{
 		allAttackBoxes.push_back(allMeleeAttackBoxes[i]);
 	}
-
 	allStaticModels = allModels;
 
 	//Kill player and reset jumps in water
@@ -354,6 +389,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
+			setAnimationIndex(1);
 			velocityX = -movementSpeed*dt;
 			goingLeft = true;
 			goingRight = false;
@@ -361,6 +397,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
+			setAnimationIndex(1);
 			velocityX = movementSpeed*dt;
 			goingRight = true;
 			goingLeft = false;
@@ -413,13 +450,16 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			velocityX = -movementSpeed*dt/2;
 			goingLeft = true;
 			goingRight = false;
+			isIdle = false;
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
 			velocityX = movementSpeed*dt/2;
 			goingRight = true;
 			goingLeft = false;
+			isIdle = false;
 		}
+
 		if (goingLeft == true)
 		{
 			if (angle != 180)
@@ -451,7 +491,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			velocityY = -150;
 		}
 	}
-
+	
 	if (playerCharacters[2] == player)
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && tpCooldown.getElapsedTime().asSeconds() >= 3.0)
@@ -499,6 +539,31 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			}
 		}
 	}
+	//Fix the animation jump
+
+	//restartKeyframes = false;
+	//if (!isIdle) {
+	//	restartKeyframes = true;
+	//}
+	//
+	//if (velocityX == 0 && isOnGround == false)
+	//{
+	//	//Change the time compare to make it idle faster after turning/rotating
+	//	if (rotating.getElapsedTime().asSeconds() >= 0.2)
+	//	{
+	//		isIdle = true;
+	//	}
+	//}
+	//if (isIdle) {
+	//	if (restartKeyframes == true) {
+	//		setCurrentKeyframe(1);
+	//	}
+	//	setAnimationIndex(0);
+	//}
+	//else
+	//{
+	//	restartKeyframes = false;
+	//}
 
 	if (velocityX == 0)
 	{
@@ -515,6 +580,19 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 	modelMatrix[3].y += velocityY*dt;
 	
 	collision(allModels);
+
+	//Handle collision detection with ground
+	if (getPos().y <= groundPos && !isOnGround)
+	{
+		jumps = 0;
+		if (velocityY < 0)
+		{
+			modelMatrix[3].y = groundPos;
+			velocityY = 0;
+		}
+
+		isOnGround = true;
+	}
 
 	for (int i = 0; i < allAttackBoxes.size(); i++)
 	{
@@ -681,6 +759,16 @@ void Player::getPoints(std::vector<glm::vec2> &objectPoints, Model *object, floa
 void Player::setStaticModels(std::vector<Model*> theModels)
 {
 	this->allStaticModels = theModels;
+}
+
+void Player::setCurrentKeyframe(int frame)
+{
+	this->player->getModel()->setCurrentKeyframe(frame);
+}
+
+void Player::setAnimationIndex(int index)
+{
+	this->player->getModel()->setAnimationIndex(index);
 }
 
 bool Player::getDiving() const
