@@ -164,7 +164,7 @@ void EnemyManager::draw(Shader shader)
 	}
 	for (int i = 0; i < allProjectiles->size(); i++)
 	{
-		if (allProjectiles->at(i)->isInUse())
+		if (allProjectiles->at(i)->isInUse() && allProjectiles->at(i)->isProjectileAttack())
 		{
 			allProjectiles->at(i)->draw(shader);
 		}
