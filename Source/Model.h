@@ -48,6 +48,14 @@ struct Joint
 	std::vector<glm::mat4> transformMat;
 	int nrOfKeys;
 };
+
+struct Weights
+{
+	int nrOfIndices;
+	std::vector<glm::ivec4> controllers;
+	std::vector<glm::vec4> weightsInfluence;
+};
+
 struct Vertex
 {
 	glm::vec3 pos;
@@ -74,8 +82,10 @@ class Model : public GameObject
 {
 private:
 	int nrOfKeyframes = 0;
+
 	int currentFrame = 1;
 	int currentAnimationIndex = 0;
+
 	bool hasAnimations;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
@@ -111,7 +121,7 @@ public:
 	void addMesh(Mesh* mesh);
 	void rotate();
 	void readOBJ(std::string filename);
-	bool Model::readModel(const char* filePath);
+	bool readModel(const char* filePath);
 	void loadSkeleton(const char* filePath);
 	void loadWeight(const char* filePath);
 	void setupModel();

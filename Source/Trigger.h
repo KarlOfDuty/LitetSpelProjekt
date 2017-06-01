@@ -32,10 +32,10 @@ struct TriggerSettings
 	float frequency = 0;
 	//Maximum allowed activations
 	int numberOfActivationsAllowed = -1;
-	//Decides what actions will be taken on the targets
-	std::vector<std::string> actions;
 	//If false, all commands will try to execute on all targets
 	//If true, each command will execute on their counterpart in the targets vector
+	bool accociativeCommands = false;
+	//If true, the trigger will use the activator as the target (this also causes perActivator to be true)
 	bool accociativeActions = false;
 };
 class EnemyManager;
@@ -54,20 +54,20 @@ private:
 	//Used if there is a maximum number of activations
 	int activations;
 	//Saved between function calls to be able to tell how many activators entered/exited
-	int objectsInside;
+	std::vector<bool> objectsInside;
 public:
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();
+	glm::vec3 getPos() const;
+	std::string type() const;
+	//Own functions
 	void move(glm::vec2 distance);
 	void setPos(std::vector<glm::vec2> cornerArr);
 	void setActivators(std::vector<GameObject*> activators);
 	void setTargets(std::vector<GameObject*> targets);
-	glm::vec3 getPos() const;
-	std::string type() const;
-	//Own functions
 	bool update(float dt);
-	void activate(float dt);
-	void runCommand(int commandID, int targetID, float dt);
+	void activate(float dt, GameObject* currentActivators, int index);
+	void runCommand(int commandID, GameObject* target, float dt);
 	//Constructors
 	Trigger();
 	Trigger(std::vector<glm::vec2> corners, TriggerSettings settings, std::vector<GameObject*> activators, std::vector<GameObject*> targets, std::vector<std::string> commands);

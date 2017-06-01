@@ -9,7 +9,7 @@ Enemy::Enemy()
 }
 
 
-Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor)
+Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 enemyStartPos, glm::vec3 scaleFactor, SoundSystem * sound)
 {
 	this->health = health;
 	this->model = model;
@@ -23,6 +23,7 @@ Enemy::Enemy(int health, Model* model, int damage, int immunityTime, glm::vec3 e
 	angle = 0;
 	this->checkPoint.x = enemyStartPos.x;
 	bossImmunity = false;
+	this->sound = sound;
 }
 
 Enemy::~Enemy()
@@ -87,6 +88,7 @@ void Enemy::applyDamage(int appliedDamage)
 	{
 		if (this->damageImmunity.getElapsedTime().asSeconds() >= immunityTime)
 		{
+			this->playerSeen = true;
 			this->health -= appliedDamage;
 			this->damageImmunity.restart();
 		}
@@ -116,9 +118,9 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 		glm::vec3 objectMin, objectMax;
 		allModels[i]->getScaledMinMaxBouding(objectMin, objectMax);
 		glm::vec2 distance = allModels[i]->getPos() - getPos();
-		if (abs(distance.x) < 5.0f + objectMax.x)
+		if (abs(distance.x) < 100.0f + objectMax.x)
 		{
-			if (abs(distance.y) < 5.0f + objectMax.y)
+			if (abs(distance.y) < 100.0f + objectMax.y)
 			{
 				closeObjects.push_back(allModels[i]);
 			}
@@ -241,7 +243,7 @@ bool Enemy::getBossKill() const
 
 void Enemy::update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
-	if (glm::length(pos - player->getPos()) < 25.0f)
+	if (glm::length(pos - player->getPos()) < 400.0f)
 	{
 		updateThis(dt, pos, checkPoint, allSmallBats, allModels, player);
 	}

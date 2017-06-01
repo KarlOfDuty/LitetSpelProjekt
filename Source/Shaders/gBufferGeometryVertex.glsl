@@ -40,15 +40,13 @@ void main()
 	else
 	{
 		finalVertexPos = vec4(vertexPos,1.0f);
-		finalNormal = vec4(normal,1.0f);
+		finalNormal = vec4(vertexNormal,1.0f);
 	}
 	vec4 worldPos = model * finalVertexPos;
 	//Position converted to clip space
 	gl_Position = projection * view * worldPos;
 	fragPos = worldPos.xyz;
-	vec2 UV = vertexTexture;
-	UV.y = (vertexTexture.y * -1.0f) + 1.0f;
-	texCoords = UV;
+	texCoords = vertexTexture;
 	//Calculate normal
 	mat3 normalMatrix = transpose(inverse(mat3(model)));
     normal = finalNormal.xyz;
