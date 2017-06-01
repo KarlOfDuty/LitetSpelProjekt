@@ -119,6 +119,8 @@ public:
 	void setScale(glm::vec3& scale);
 	void setCurrentKeyframe(int frame);
 	void setAnimationIndex(int index);
+	int getLastAnimationIndex() const;
+	int getCurrentAnimationIndex() const;
 	void addMesh(Mesh* mesh);
 	void rotate();
 	void readOBJ(std::string filename);

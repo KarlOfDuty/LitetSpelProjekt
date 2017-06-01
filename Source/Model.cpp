@@ -184,6 +184,14 @@ void Model::setAnimationIndex(int index)
 	this->lastAnimationIndex = this->currentAnimationIndex;
 	this->currentAnimationIndex = index;
 }
+int Model::getLastAnimationIndex() const
+{
+	return this->lastAnimationIndex;
+}
+int Model::getCurrentAnimationIndex() const
+{
+	return this->currentAnimationIndex;
+}
 void Model::addMesh(Mesh* mesh)
 {
 	meshes.push_back(mesh);
@@ -970,6 +978,7 @@ Model::Model(Model &otherModel)
 {
 	this->hasAnimations = otherModel.hasAnimations;
 	this->modelMatrix = otherModel.modelMatrix;
+	this->lastAnimationIndex = otherModel.lastAnimationIndex;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->skeleton[this->currentAnimationIndex] = otherModel.skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel.meshes;
@@ -981,6 +990,7 @@ Model::Model(Model *otherModel)
 {
 	this->hasAnimations = otherModel->hasAnimations;
 	this->modelMatrix = otherModel->modelMatrix;
+	this->lastAnimationIndex = otherModel->lastAnimationIndex;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->skeleton[this->currentAnimationIndex] = otherModel->skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel->meshes;
@@ -992,6 +1002,7 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 {
 	this->hasAnimations = otherModel.hasAnimations;
 	this->modelMatrix =  modelMat;
+	this->lastAnimationIndex = otherModel.lastAnimationIndex;
 	this->rotationMatrix = otherModel.rotationMatrix;
 	this->skeleton[this->currentAnimationIndex] = otherModel.skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel.meshes;
@@ -1003,6 +1014,7 @@ Model::Model(Model *otherModel, glm::mat4 modelMat)
 {
 	this->hasAnimations = otherModel->hasAnimations;
 	this->modelMatrix = modelMat;
+	this->lastAnimationIndex = otherModel->lastAnimationIndex;
 	this->rotationMatrix = otherModel->rotationMatrix;
 	this->skeleton[this->currentAnimationIndex] = otherModel->skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel->meshes;

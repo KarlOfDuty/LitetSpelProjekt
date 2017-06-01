@@ -18,33 +18,34 @@ Player::Player()
 	Model* birdModel = new Model();
 	birdModel->readModel("models/Characters/Bird/model.bb");
 	birdModel->loadWeight("models/Characters/Bird/weightInfo.bb");
+	birdModel->setupModel();
 	birdModel->loadSkeleton("models/Characters/Bird/Idle/skelInfo.bb");
 	birdModel->loadSkeleton("models/Characters/Bird/Run/skelInfo.bb");
 	birdModel->loadSkeleton("models/Characters/Bird/Actions/skelInfo.bb");
 	birdModel->loadSkeleton("models/Characters/Bird/Jump/RunningJump/skelInfo.bb");
 	birdModel->loadSkeleton("models/Characters/Bird/Jump/StillJump/skelInfo.bb");
 	birdModel->loadSkeleton("models/Characters/Bird/Special/skelInfo.bb");
-	birdModel->setupModel();
 
 	Model* sharkModel = new Model();
 	sharkModel->readModel("models/Characters/Shark/model.bb");
 	sharkModel->loadWeight("models/Characters/Shark/weightInfo.bb");
-	sharkModel->loadSkeleton("models/Characters/Shark/Idle/skelInfo.bb");
-	//sharkModel->loadSkeleton("models/Characters/Shark/Run/skelInfo.bb");
-	//sharkModel->loadSkeleton("models/Characters/Shark/Jump/StillJump/skelInfo.bb");
-	//sharkModel->loadSkeleton("models/Characters/Shark/Special/skelInfo.bb");
 	sharkModel->setupModel();
+	sharkModel->loadSkeleton("models/Characters/Shark/Idle/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Run/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Actions/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Jump/StillJump/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Special/skelInfo.bb");
 
 	Model* butterflyModel = new Model();
 	butterflyModel->readModel("models/Characters/Butter/model.bb");
 	butterflyModel->loadWeight("models/Characters/Butter/weightInfo.bb");
+	butterflyModel->setupModel();
 	butterflyModel->loadSkeleton("models/Characters/Butter/Idle/skelInfo.bb");
 	butterflyModel->loadSkeleton("models/Characters/Butter/Run/skelInfo.bb");
 	butterflyModel->loadSkeleton("models/Characters/Butter/Actions/skelInfo.bb");
 	butterflyModel->loadSkeleton("models/Characters/Butter/Jump/StillJump/skelInfo.bb");
 	butterflyModel->loadSkeleton("models/Characters/Butter/Jump/RunningJump/skelInfo.bb");
 	butterflyModel->loadSkeleton("models/Characters/Butter/Special/skelInfo.bb");
-	butterflyModel->setupModel();
 	//Model* sharkModel = new Model("models/Characters/Shark/Fish_T-Pose_Export.obj", modelMatrix);
 	//Model* butterflyModel = new Model("models/Characters/Butterfly/ButterFly.obj", modelMatrix);
 
@@ -507,7 +508,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 				glm::vec3 plus4 = {50,00,0};
 				this->setPos(this->getPos() + plus4);
 			}
-
+			
 			//colisions
 			bool colided = false;
 			glm::vec2 mtvValue(0, 0);
@@ -535,6 +536,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			}
 			else
 			{
+				setAnimationIndex(6);
 				tpCooldown.restart();
 			}
 		}
