@@ -112,9 +112,10 @@ void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allMo
 	std::vector<std::thread> allThreads;
 	for (int i = 0; i < this->allEnemies.size(); i++)
 	{
-		if (allThreads.size() <= i)
+		if (glm::length(allEnemies[i]->getPos() - player->getPos()) < 400.0f)
 		{
 			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, allSmallBats, allModels, player); }, allEnemies[i]));
+			//std::cout << glm::length(allEnemies[i]->getPos() - player->getPos()) << " i:" << i << std::endl;
 		}
 	}
 	for (int i = 0; i < allThreads.size(); i++)

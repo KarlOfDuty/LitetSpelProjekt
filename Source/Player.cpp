@@ -13,8 +13,6 @@ void Player::freeMemory()
 
 Player::Player()
 {
-
-
 	Model* birdModel = new Model();
 	birdModel->readModel("models/Characters/Bird/model.bb");
 	birdModel->loadWeight("models/Characters/Bird/weightInfo.bb");

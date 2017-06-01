@@ -458,7 +458,7 @@ void update(sf::RenderWindow &window)
 	//Update player if not dead
 	if (!player->playerIsDead())
 	{
-		player->update(window, dt, levelManager.currentLevel->getCollisionBoxes() , enemyManager->getAllEnemies());
+		player->update(window, dt, levelManager.currentLevel->getCollisionBoxes(), enemyManager->getAllEnemies());
 	}
 
 	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getCollisionBoxes(), player);

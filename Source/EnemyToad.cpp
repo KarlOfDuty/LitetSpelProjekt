@@ -19,18 +19,18 @@ EnemyToad::~EnemyToad()
 
 }
 
-void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
+void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos)
 {
 	if (attackCooldown.getElapsedTime().asSeconds() >= 2)
 	{
 		glm::vec3 position;
 		if (rotateLeft)
 		{
-			position = glm::vec3(enemyPosCurrent.x + 15, enemyPosCurrent.y+2, enemyPosCurrent.z);
+			position = glm::vec3(pos.x + 15, pos.y+2, pos.z);
 		}
 		else
 		{
-			position = glm::vec3(enemyPosCurrent.x - 15, enemyPosCurrent.y+2, enemyPosCurrent.z);
+			position = glm::vec3(pos.x - 15, pos.y+2, pos.z);
 		}
 		glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-0.7, 0.3) : glm::vec2(0.7, 0.3);
 		int activeArrows = 0;
@@ -63,7 +63,7 @@ void EnemyToad::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 	}
 }
 
-void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
+void EnemyToad::update(float dt, std::vector<Enemy*> &allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
 	
 		groundCheck();
@@ -97,7 +97,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 
 		//Detect player
-		if (glm::length(enemyPosCurrent - player->getPos()) < 200.0f)
+		if (glm::length(pos - player->getPos()) < 200.0f)
 		{
 
 			playerSeen = true;
@@ -116,15 +116,15 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			if (collidingWithGround)
 			{
-				if (enemyPosCurrent.x >= player->getPos().x)
+				if (pos.x >= player->getPos().x)
 				{
 					rotateLeft = false;
 				}
-				if (enemyPosCurrent.x <= player->getPos().x)
+				if (pos.x <= player->getPos().x)
 				{
 					rotateLeft = true;
 				}
-				if (glm::length(enemyPosCurrent - player->getPos()) > 60.0f + attackRange)
+				if (glm::length(pos - player->getPos()) > 60.0f + attackRange)
 				{
 					//Jump
 					if (playerSeen)
@@ -142,7 +142,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				}
 				else
 				{
-					this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+					this->attackPlayer(dt, player->getPos());
 				}
 			}
 
@@ -151,14 +151,14 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			{
 				if (movingLeft == false)
 				{
-					if (enemyPosCurrent.x >= player->getPos().x)
+					if (pos.x >= player->getPos().x)
 					{
 						movingRight = true;
 					}
 				}
 				if (movingRight == false)
 				{
-					if (enemyPosCurrent.x <= player->getPos().x)
+					if (pos.x <= player->getPos().x)
 					{
 						movingLeft = true;
 					}
@@ -178,16 +178,16 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		{
 			if (collidingWithGround)
 			{
-				if (enemyPosCurrent.x >= startPosition.x)
+				if (pos.x >= startPosition.x)
 				{
 					rotateLeft = false;
 				}
-				if (enemyPosCurrent.x <= startPosition.x)
+				if (pos.x <= startPosition.x)
 				{
 					rotateLeft = true;
 				}
 				//Jump
-				if (glm::length(enemyPosCurrent.x - startPosition.x) > 15.0f)
+				if (glm::length(pos.x - startPosition.x) > 15.0f)
 				{
 					if (jumpTimer.getElapsedTime().asSeconds() >= 1.7)
 					{
@@ -209,14 +209,14 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			{
 				if (movingLeft == false)
 				{
-					if (enemyPosCurrent.x >= startPosition.x)
+					if (pos.x >= startPosition.x)
 					{
 						movingRight = true;
 					}
 				}
 				if (movingRight == false)
 				{
-					if (enemyPosCurrent.x <= startPosition.x)
+					if (pos.x <= startPosition.x)
 					{
 						movingLeft = true;
 					}
@@ -247,23 +247,21 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 		}
 
 		//Apply velocity
-		enemyPosCurrent.x += velocityX;
+		pos.x += velocityX;
 		velocityX = 0;
-		enemyPosCurrent.y += velocityY*dt;
+		pos.y += velocityY*dt;
 
 		//Handle collision detection with ground
-		if (enemyPosCurrent.y <= groundPos)
+		if (pos.y <= groundPos)
 		{
 			if (velocityY < 0)
 			{
-				enemyPosCurrent.y = groundPos;
+				pos.y = groundPos;
 				velocityY = 0;
 			}
 			isOnGround = true;
 		}
-
-		setPos(enemyPosCurrent);
-
+		setPos(pos);
 		collides = collision(allModels);
 
 		if (rotateLeft == false)

@@ -98,7 +98,6 @@ void Enemy::applyDamage(int appliedDamage)
 void Enemy::groundCheck()
 {
 	groundPos = 0.0f;
-
 	if (pos.y > groundPos)
 	{
 		isOnGround = false;
@@ -166,67 +165,10 @@ bool Enemy::collision(std::vector<Model*> &allModels)
 		}
 	}
 	return hasCollided;
-	
-	/*
-	int index = -1;
-	float minDist = 1000;
-	for (int i = 0; i < allModels.size(); i++)
-	{
-		float distance = glm::length(pos - glm::vec3(allModels[i]->getModelMatrix()[3]));
-		if (minDist > distance)
-		{
-			minDist = distance;
-			index = i;
-		}
-	}
-	if (index != -1)
-	{
-		std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
-		std::vector<glm::vec2> objectPoints = allModels[index]->getPoints();
-		glm::vec2 mtv;
-		if (collision::collision(enemyPoints, objectPoints, mtv))
-		{	
-			//Get rotation
-			glm::quat rotation;
-			glm::decompose(allModels[index]->getModelMatrix(),glm::vec3(),rotation,glm::vec3(),glm::vec3(),glm::vec4());
-			//Convert from quat to radians
-			double t3 = +2.0 * (rotation.w * rotation.z + rotation.x * rotation.y);
-			double t4 = +1.0 - 2.0f * ((rotation.y * rotation.y) + rotation.z * rotation.z);
-			radians = (float)-std::atan2(t3, t4);
-			if (radians > 0.0f && radians < 0.79f)
-			{
-				pos.y += mtv.y;
-				mtv.x = 0;
-			}
-			else
-			{
-				pos.x += mtv.x;
-				pos.y += mtv.y;
-			}
-
-			if (mtv.y > 0)
-			{
-				if (pos.y < 0) pos.y = 0;
-				groundPos = pos.y;
-			}
-			collidedFrom = mtv;
-			std::cout << collidedFrom.x << ", " << collidedFrom.y << std::endl;
-			setPos(pos);
-			return true;
-		}
-		else
-		{
-			collidedFrom = glm::vec2(0,0);
-		}
-	}
-	
-	return false;
-	*/
 }
 
 bool Enemy::collisionWithPlayer(Player* player)
 {
-
 	std::vector<glm::vec2> enemyPoints = this->getModel()->getPoints();
 	if (collision::collision(enemyPoints, player->getPoints()))
 	{
@@ -239,14 +181,6 @@ bool Enemy::collisionWithPlayer(Player* player)
 bool Enemy::getBossKill() const
 {
 	return bossKill;
-}
-
-void Enemy::update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
-{
-	if (glm::length(pos - player->getPos()) < 400.0f)
-	{
-		updateThis(dt, pos, checkPoint, allSmallBats, allModels, player);
-	}
 }
 
 void Enemy::draw(Shader shader)

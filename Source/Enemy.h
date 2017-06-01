@@ -20,7 +20,7 @@ class Player;
 
 class Enemy : public GameObject
 {
-private:
+protected:
 	float health;
 	int damage;
 	int immunityTime;
@@ -65,9 +65,8 @@ public:
 	bool collision(std::vector<Model*> &allModels);
 	bool collisionWithPlayer(Player* player);
 	bool getBossKill()const;
-	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 pos) = 0;
-	void update(float dt, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player);
-	virtual void updateThis(float dt, glm::vec3 pos, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player) = 0;
+	virtual void attackPlayer(float dt, glm::vec3 playerPos) = 0;
+	virtual void update(float dt, std::vector<Enemy*> &allSmallBats, std::vector<Model*> &allModels, Player* player) = 0;
 	void draw(Shader shader);
 };
 #endif

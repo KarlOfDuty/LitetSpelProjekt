@@ -14,12 +14,12 @@ EnemySlime::~EnemySlime()
 
 }
 
-void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
+void EnemySlime::attackPlayer(float dt, glm::vec3 playerPos)
 {
 
 }
 
-void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
+void EnemySlime::update(float dt, std::vector<Enemy*> &allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
 	groundCheck();
 
@@ -33,12 +33,12 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	}
 
 	//Patrol check 
-	if (enemyPosCurrent.x < checkPoint.x-40)
+	if (pos.x < checkPoint.x-40)
 	{
 		checkPointReached = true;
 		
 	}
-	else if (enemyPosCurrent.x > checkPoint.x+40)
+	else if (pos.x > checkPoint.x+40)
 	{
 		checkPointReached = false;
 	}
@@ -66,7 +66,7 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 200.0f)
+	if (glm::length(pos - player->getPos()) < 200.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -83,15 +83,16 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	{
 		if (playerSeen)
 		{
-			if (enemyPosCurrent.x >= player->getPos().x)
+			if (pos.x >= player->getPos().x)
 			{
 				rotateLeft = false;
 			}
-			if (enemyPosCurrent.x <= player->getPos().x)
+			else if (pos.x < player->getPos().x)
 			{
 				rotateLeft = true;
 			}
-			if (enemyPosCurrent.x > player->getPos().x)
+
+			if (pos.x > player->getPos().x)
 			{
 				velocityX -= 40.0f*dt;
 			}
@@ -99,19 +100,19 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 			{
 				velocityX += 40.0f*dt;
 			}
-			playerSeen = true;
 		}
 		else
 		{
 			//Patrol
-			if (enemyPosCurrent.x >= checkPoint.x)
+			if (pos.x >= checkPoint.x)
 			{
 				rotateLeft = false;
 			}
-			if (enemyPosCurrent.x <= checkPoint.x)
+			else if (pos.x < checkPoint.x)
 			{
 				rotateLeft = true;
 			}
+
 			if (checkPointReached == false)
 			{
 				velocityX -= 40.0f*dt;
@@ -124,21 +125,22 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	}
 	else
 	{
-		if (enemyPosCurrent.x >= startPosition.x)
+		if (pos.x >= startPosition.x)
 		{
 			rotateLeft = false;
 		}
-		if (enemyPosCurrent.x <= startPosition.x)
+		else if (pos.x < startPosition.x)
 		{
 			rotateLeft = true;
 		}
-		if (glm::length(enemyPosCurrent.x - startPosition.x) > 20.0f)
+
+		if (glm::length(pos.x - startPosition.x) > 20.0f)
 		{
-			if (enemyPosCurrent.x > startPosition.x)
+			if (pos.x > startPosition.x)
 			{
 				velocityX -= 40.0f*dt;
 			}
-			else if (enemyPosCurrent.x < startPosition.x)
+			else if (pos.x < startPosition.x)
 			{
 				velocityX += 40.0f*dt;
 			}
@@ -150,25 +152,14 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 		}
 	}
 
-	if (collidingWithGround)
+	if (collidingWithGround && collisionWithPlayer(player))
 	{
-		if (collisionWithPlayer(player))
-		{
-			velocityY = 100;
-		}
+		velocityY = 100;
 	}
-
-	if (!collidingWithGround)
+	else if (!collidingWithGround)
 	{
 		velocityY -= 300*dt;
 	}
-
-
-	if (velocityY > 200)
-	{
-		velocityY = 200;
-	}
-
 	//Maximum falling speed
 	if (velocityY < -300)
 	{
@@ -176,31 +167,28 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 	}
 
 	//Apply velocity
-	enemyPosCurrent.x += velocityX;
+	pos.x += velocityX;
 	velocityX = 0;
-	enemyPosCurrent.y += velocityY*dt;
+	pos.y += velocityY*dt;
 
 	//Handle collision detection with ground
-	if (enemyPosCurrent.y <= groundPos)
+	if (pos.y <= groundPos)
 	{
 		if (velocityY < 0)
 		{
-			enemyPosCurrent.y = groundPos;
+			pos.y = groundPos;
 			velocityY = 0;
 		}
 		isOnGround = true;
 	}
-
-	setPos(enemyPosCurrent);
-
+	setPos(pos);
 	collides = collision(allModels);
 
-	if (rotateLeft == false)
+	if (!rotateLeft)
 	{
 		rotateModel(-90.0f);
 	}
-
-	if (rotateLeft == true)
+	else
 	{
 		rotateModel(90.0f);
 	}

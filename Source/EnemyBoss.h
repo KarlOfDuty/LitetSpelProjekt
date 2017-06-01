@@ -86,7 +86,7 @@ public:
 	int getPhase()const;
 	bool getPlayerTracked()const;
 	bool getPlayerInWater()const;
-	virtual void attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent);
-	virtual void updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player);
+	virtual void attackPlayer(float dt, glm::vec3 playerPos);
+	virtual void update(float dt, std::vector<Enemy*> &allSmallBats, std::vector<Model*> &allModels, Player* player);
 	std::vector<Model*> getTriggerModels();
 };

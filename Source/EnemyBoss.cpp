@@ -214,7 +214,7 @@ bool EnemyBoss::getPlayerInWater() const
 	return this->playerInWater;
 }
 
-void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
+void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos)
 {
 	if (attackCooldown.getElapsedTime().asSeconds() >= 0.9)
 	{
@@ -251,9 +251,8 @@ void EnemyBoss::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCu
 	}
 }
 
-void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
+void EnemyBoss::update(float dt, std::vector<Enemy*> &allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
-
 	groundCheck();
 	if (sound1 == true && phase == 1)
 	{
@@ -294,7 +293,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 150.0f)
+	if (glm::length(pos - player->getPos()) < 150.0f)
 	{
 		if (!blockExit)
 		{
@@ -373,14 +372,14 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 						{
 							if (!movingRight)
 							{
-								if (enemyPosCurrent.x >= originPoint.x)
+								if (pos.x >= originPoint.x)
 								{
 									movingLeft = true;
 								}
 							}
 							if (!movingLeft)
 							{
-								if (enemyPosCurrent.x < originPoint.x)
+								if (pos.x < originPoint.x)
 								{
 									movingRight = true;
 								}
@@ -473,7 +472,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					{
 						if (!movingRight)
 						{
-							if (enemyPosCurrent.x >= originPoint.x)
+							if (pos.x >= originPoint.x)
 							{
 								movingLeft = true;
 								inRightCorner = true;
@@ -483,7 +482,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 					if (!movingLeft)
 					{
-						if (enemyPosCurrent.x < originPoint.x)
+						if (pos.x < originPoint.x)
 						{
 							movingRight = true;
 							inRightCorner = false;
@@ -525,7 +524,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				}
 
 				//If boss is outside center go to center
-				if (glm::length(enemyPosCurrent.x - originPoint.x) > 10.5f)
+				if (glm::length(pos.x - originPoint.x) > 10.5f)
 				{
 					if (getPos().x > originPoint.x)
 					{
@@ -535,18 +534,18 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					{
 						rotateLeft = true;
 					}
-					if (enemyPosCurrent.x >= originPoint.x)
+					if (pos.x >= originPoint.x)
 					{
 						velocityX -= 50.0f*dt;
 					}
-					else if (enemyPosCurrent.x < originPoint.x)
+					else if (pos.x < originPoint.x)
 					{
 						velocityX += 50.0f*dt;
 					}
 				}
 
 				//If boss is in center
-				if (glm::length(enemyPosCurrent.x - originPoint.x) < 10.5f)
+				if (glm::length(pos.x - originPoint.x) < 10.5f)
 				{
 					if (!weakPointsArr.empty())
 					{
@@ -561,7 +560,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					{
 						if (!rotateLeft)
 						{
-							if (enemyPosCurrent.x >= player->getPos().x)
+							if (pos.x >= player->getPos().x)
 							{
 								playerTracked = true;
 							}
@@ -569,7 +568,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 						if (
 							rotateLeft)
 						{
-							if (enemyPosCurrent.x < player->getPos().x)
+							if (pos.x < player->getPos().x)
 							{
 								playerTracked = true;
 							}
@@ -579,12 +578,12 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 					if (playerTracked)
 					{
 						setRotateToPlayer(player);
-						this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+						this->attackPlayer(dt, player->getPos());
 						oldPlayerPos = player->getPos();
 					}
 					else if (!playerTracked)
 					{
-						this->attackPlayer(dt, oldPlayerPos, enemyPosCurrent);
+						this->attackPlayer(dt, oldPlayerPos);
 					}
 				}
 			}
@@ -633,7 +632,7 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 						{
 							scaleFactor.y -= 0.2*dt;
 							scaleFactor.x += 0.2*dt;
-							enemyPosCurrent.x -= 1 * dt;
+							pos.x -= 1 * dt;
 						}
 					}
 				}
@@ -644,12 +643,12 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 				if (playerTracked)
 				{
 					setRotateToPlayer(player);
-					this->attackPlayer(dt, player->getPos(), enemyPosCurrent);
+					this->attackPlayer(dt, player->getPos());
 					oldPlayerPos = player->getPos();
 				}
 				else if (!playerTracked)
 				{
-					this->attackPlayer(dt, oldPlayerPos, enemyPosCurrent);
+					this->attackPlayer(dt, oldPlayerPos);
 				}
 			}
 			else if (this->getHealth() <= 10)
@@ -681,36 +680,36 @@ void EnemyBoss::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 			//Apply velocity
 		if (phase == 1)
 		{
-			enemyPosCurrent.x += velocityX;
-			enemyPosCurrent.y += velocityY*dt;
+			pos.x += velocityX;
+			pos.y += velocityY*dt;
 		}
 		else if (phase == 2)
 		{
 			if (!wallDestroyed)
 			{
-				enemyPosCurrent.x += velocityX;
-				enemyPosCurrent.y += velocityY*dt;
+				pos.x += velocityX;
+				pos.y += velocityY*dt;
 			}
 			if (wallDestroyed)
 			{
-				enemyPosCurrent.x += velocityX;
+				pos.x += velocityX;
 				velocityX = 0;
-				enemyPosCurrent.y += velocityY*dt;
+				pos.y += velocityY*dt;
 			}
 		}
 
 		//Handle collision detection with ground
-		if (enemyPosCurrent.y <= groundPos)
+		if (pos.y <= groundPos)
 		{
 			if (velocityY < 0)
 			{
-				enemyPosCurrent.y = groundPos;
+				pos.y = groundPos;
 				velocityY = 0;
 			}
 			isOnGround = true;
 		}
 
-		setPos(enemyPosCurrent);
+		setPos(pos);
 		collision(allModels);
 		if (rotateLeft == false)
 		{

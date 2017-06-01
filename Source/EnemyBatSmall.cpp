@@ -15,15 +15,14 @@ EnemyBatSmall::~EnemyBatSmall()
 
 }
 
-void EnemyBatSmall::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyPosCurrent)
+void EnemyBatSmall::attackPlayer(float dt, glm::vec3 playerPos)
 {
 
 }
 
-void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkPoint, std::vector<Enemy*> allSmallBats, std::vector<Model*> &allModels, Player* player)
+void EnemyBatSmall::update(float dt, std::vector<Enemy*> &allSmallBats, std::vector<Model*> &allModels, Player* player)
 {
 	groundCheck();
-
 	if (collidedFrom.y > 0)
 	{
 		collidingWithGround = true;
@@ -39,7 +38,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 
 	for (int i = 0; i < allSmallBats.size(); i++)
 	{
-		if (glm::length(enemyPosCurrent - allSmallBats[i]->getPos()) < 60.5f)
+		if (glm::length(pos - allSmallBats[i]->getPos()) < 60.5f)
 		{
 			if (playerSeen)
 			{
@@ -58,14 +57,14 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 			goForPlayer = false;
 		}
 	}
-	if (glm::length(enemyPosCurrent - player->getPos()) > 90.0f)
+	if (glm::length(pos - player->getPos()) > 90.0f)
 	{
 		goForPlayer = true;
 	}
 
 	if (!goForPlayer)
 	{
-		if (fabs(enemyPosCurrent.x - checkpoint.x) < 2.0f && fabs(enemyPosCurrent.y - checkpoint.y) < 2.0f)
+		if (fabs(pos.x - checkpoint.x) < 2.0f && fabs(pos.y - checkpoint.y) < 2.0f)
 		{
 			checkpoint.x = player->getPos().x + distX(rng);
 			checkpoint.y = player->getPos().y + distY(rng);
@@ -109,7 +108,7 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 	}
 
 	//Detect player
-	if (glm::length(enemyPosCurrent - player->getPos()) < 250.0f)
+	if (glm::length(pos - player->getPos()) < 250.0f)
 	{
 		playerSeen = true;
 		returnToStart = false;
@@ -128,19 +127,19 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 		{
 			if (playerSeen)
 			{
-				if (enemyPosCurrent.x > player->getPos().x)
+				if (pos.x > player->getPos().x)
 				{
 					velocityX -= 50.5f*dt;
 				}
-				else if (enemyPosCurrent.x < player->getPos().x)
+				else if (pos.x < player->getPos().x)
 				{
 					velocityX += 50.5f*dt;
 				}
-				if (enemyPosCurrent.y > player->getPos().y)
+				if (pos.y > player->getPos().y)
 				{
 					velocityY -= 50.5f*dt;
 				}
-				else if (enemyPosCurrent.y < player->getPos().y)
+				else if (pos.y < player->getPos().y)
 				{
 					velocityY += 50.5f*dt;
 				}
@@ -149,19 +148,19 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 		}
 		else
 		{
-			if (enemyPosCurrent.x > checkpoint.x)
+			if (pos.x > checkpoint.x)
 			{
 				velocityX -= 70.5f*dt;
 			}
-			else if (enemyPosCurrent.x < checkpoint.x)
+			else if (pos.x < checkpoint.x)
 			{
 				velocityX += 70.5f*dt;
 			}
-			if (enemyPosCurrent.y > checkpoint.y)
+			if (pos.y > checkpoint.y)
 			{
 				velocityY -= 70.5f*dt;
 			}
-			else if (enemyPosCurrent.y < checkpoint.y)
+			else if (pos.y < checkpoint.y)
 			{
 				velocityY += 70.5f*dt;
 			}
@@ -174,23 +173,23 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 			allSmallBats[i]->playerSeen = false;
 		}
 
-			if (glm::length(enemyPosCurrent - startPosition) > 0.5f)
+			if (glm::length(pos - startPosition) > 0.5f)
 			{
 				if (!collides)
 				{
-					if (enemyPosCurrent.x > startPosition.x)
+					if (pos.x > startPosition.x)
 					{
 						velocityX -= 50.5f*dt;
 					}
-					else if (enemyPosCurrent.x < startPosition.x)
+					else if (pos.x < startPosition.x)
 					{
 						velocityX += 50.5f*dt;
 					}
-					if (enemyPosCurrent.y > startPosition.y)
+					if (pos.y > startPosition.y)
 					{
 						velocityY -= 50.5f*dt;
 					}
-					else if (enemyPosCurrent.y < startPosition.y)
+					else if (pos.y < startPosition.y)
 					{
 						velocityY += 50.5f*dt;
 					}
@@ -219,22 +218,21 @@ void EnemyBatSmall::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 	}
 
 	//Apply velocity
-	enemyPosCurrent.x += velocityX;
+	pos.x += velocityX;
 	velocityX = 0;
-	enemyPosCurrent.y += velocityY;
+	pos.y += velocityY;
 	velocityY = 0;
 
 	//Handle collision detection with ground
-	if (enemyPosCurrent.y <= groundPos && !isOnGround)
+	if (pos.y <= groundPos && !isOnGround)
 	{
 		if (velocityY < 0)
 		{
-			enemyPosCurrent.y = groundPos;
+			pos.y = groundPos;
 			velocityY = 0;
 		}
 		isOnGround = true;
 	}
-
-	setPos(enemyPosCurrent);
+	setPos(pos);
 	collides = collision(allModels);
 }
