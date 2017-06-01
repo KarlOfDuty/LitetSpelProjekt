@@ -33,7 +33,7 @@ void Level::loadLevel(Player* player)
 		else if (str == "enemies")
 		{
 			line >> path;
-			readEnemys(path.c_str());
+			//readEnemies(path.c_str());
 		}
 		else if (str == "triggers")
 		{
@@ -378,7 +378,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 	in.close();
 	return true;
 }
-bool Level::readEnemys(const char* filePath)
+bool Level::readEnemies(const char* filePath)
 {
 	//Temporary containers
 	std::ifstream file(filePath);
