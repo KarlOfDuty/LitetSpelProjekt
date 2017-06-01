@@ -29,7 +29,10 @@ Player::Player()
 	Model* sharkModel = new Model();
 	sharkModel->readModel("models/Characters/Shark/model.bb");
 	sharkModel->loadWeight("models/Characters/Shark/weightInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Idle/skelInfo.bb");
 	sharkModel->loadSkeleton("models/Characters/Shark/Run/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Jump/StillJump/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Special/skelInfo.bb");
 	sharkModel->setupModel();
 
 	Model* butterflyModel = new Model();
