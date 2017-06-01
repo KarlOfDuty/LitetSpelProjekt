@@ -95,7 +95,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 	{
 		if (attack)
 		{
-			if (collidedFrom.x != 0 && collidedFrom.y > 0)
+			if (abs(collisionNormal.x) > 0.8 && collidedFrom.y > 0)
 			{
 				velocityY = 200;
 			}
@@ -104,7 +104,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 
 		if (!attack)
 		{
-			if (collidedFrom.x != 0 && collidedFrom.y > 0)
+			if (abs(collisionNormal.x) > 0.8 && collidedFrom.y > 0)
 			{
 				jumped = false;
 				velocityX = 0;
@@ -115,7 +115,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 		}
 		
 
-		if (collidedFrom.x != 0)
+		if (abs(collisionNormal.x) > 0.8)
 		{
 			if (collisionTime.getElapsedTime().asSeconds() >= 5)
 			{

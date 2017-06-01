@@ -4,8 +4,8 @@
 #include "SFML/Graphics.hpp"
 #include "SoundSystem.h"
 
-#define MAX_NUMBER_OF_ITEMS 4
-#define MAX_NUMBER_OF_OPTIONS 4
+#define MAX_NUMBER_OF_ITEMS 3
+#define MAX_NUMBER_OF_OPTIONS 3
 
 class Menu
 {

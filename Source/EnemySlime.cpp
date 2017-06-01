@@ -45,12 +45,12 @@ void EnemySlime::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 check
 
 	if (collides)
 	{
-		if (collidedFrom.x != 0 && collidedFrom.y > 0)
+		if (abs(collisionNormal.x) > 0.9  && collidedFrom.y > 0)
 		{
 			velocityY = 150;
 		}
 
-		if (collidedFrom.x != 0)
+		if (abs(collisionNormal.x) > 0.9)
 		{
 			if (collisionTime.getElapsedTime().asSeconds() >= 5)
 			{

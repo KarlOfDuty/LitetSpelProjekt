@@ -711,21 +711,10 @@ void Player::collision(std::vector<Model*> &allModels)
 						modelMatrix[3].y += mtv.y;
 						velocityY = velocityY * (collisionNormal.y + 1.0);
 					}
-
-
-					if (abs(collisionNormal.x) >= 0.707 && abs(collisionNormal.x) <= 1)
+					if (abs(collisionNormal.x) >= 0.707)
 					{
 						modelMatrix[3].x += mtv.x;
 					}
-					/*if (mtv.y > 0)
-					{
-						if (abs(groundPos - modelMatrix[3].y) <= 10)
-						{
-							if (modelMatrix[3].y < groundPos)
-								modelMatrix[3].y = groundPos;
-							groundPos = modelMatrix[3].y;
-						}
-					}*/
 				}
 				else
 				{

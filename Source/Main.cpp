@@ -158,7 +158,9 @@ int main()
 
 	//menu system
 	menu = new Menu(window.getSize().x, window.getSize().y, soundSystem);
-	viewMatrixM = playerCamera.update(glm::vec3(0,2,0));
+	viewMatrixM = playerCamera.update(glm::vec3(300,0,-300));
+	viewMatrixM = playerCamera.update(glm::vec3(190, -20, -250), glm::vec3(-280, 20, 200));
+	
 
 	//quit = 0, menu 1 and game 2
 	int running = 1;

@@ -14,45 +14,35 @@ Menu::Menu(float width, float height, SoundSystem * sound)
 	menu[0].setFont(font);
 	menu[0].setFillColor(sf::Color::Red);
 	menu[0].setString("Play");
-	menu[0].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_ITEMS + 1) * 1, height / 2));
+	menu[0].setPosition(sf::Vector2f((width / 2) + 150, height / (MAX_NUMBER_OF_ITEMS + 1) * 1));
 
 	menu[1].setFont(font);
 	menu[1].setFillColor(sf::Color::White);
-	menu[1].setString("Sound Options");
-	menu[1].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_ITEMS + 1) * 2, height / 2));
+	menu[1].setString("Options");
+	menu[1].setPosition(sf::Vector2f((width / 2) + 150, (height / (MAX_NUMBER_OF_ITEMS + 1) * 2) - 42));
 
 	menu[2].setFont(font);
 	menu[2].setFillColor(sf::Color::White);
-	menu[2].setString("P H graphics");
-	menu[2].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_ITEMS + 1) * 3, height / 2));
-
-	menu[3].setFont(font);
-	menu[3].setFillColor(sf::Color::White);
-	menu[3].setString("Exit");
-	menu[3].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_ITEMS + 1) * 4, height / 2));
+	menu[2].setString("Exit");
+	menu[2].setPosition(sf::Vector2f((width / 2) + 153, (height / (MAX_NUMBER_OF_ITEMS + 1) * 3) - 83));
 
 	selectedItemIndex = 0;
 
 	//options
 	options[0].setFont(font);
 	options[0].setFillColor(sf::Color::Red);
-	options[0].setString("Master Volume: On");
-	options[0].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_OPTIONS + 1) * 1, height / 2));
+	options[0].setString("Sound");
+	options[0].setPosition(sf::Vector2f((width / 2) + 150, height / (MAX_NUMBER_OF_ITEMS + 1) * 1));
 
 	options[1].setFont(font);
 	options[1].setFillColor(sf::Color::White);
-	options[1].setString("Music: On");
-	options[1].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_OPTIONS + 1) * 2, height / 2));
+	options[1].setString("Music");
+	options[1].setPosition(sf::Vector2f((width / 2) + 150, (height / (MAX_NUMBER_OF_ITEMS + 1) * 2) - 42));
 
 	options[2].setFont(font);
 	options[2].setFillColor(sf::Color::White);
-	options[2].setString("Sound Effects: On");
-	options[2].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_OPTIONS + 1) * 3, height / 2));
-
-	options[3].setFont(font);
-	options[3].setFillColor(sf::Color::White);
-	options[3].setString("Back");
-	options[3].setPosition(sf::Vector2f(width / (MAX_NUMBER_OF_OPTIONS + 1) * 4, height / 2));
+	options[2].setString("Back");
+	options[2].setPosition(sf::Vector2f((width / 2) + 153, (height / (MAX_NUMBER_OF_ITEMS + 1) * 3) - 83));
 
 
 	selectedOptionIndex = 0;
@@ -144,11 +134,6 @@ int Menu::Select()
 		}
 		else if (selectedItemIndex == 2)
 		{
-			//activeMenu = 2;
-			result = 1;
-		}
-		else if (selectedItemIndex == 3)
-		{
 			//exit
 			result = 2;
 		}
@@ -161,13 +146,11 @@ int Menu::Select()
 			{
 				soundS->stopSound();
 				soundS->setSoundEnabled(false);
-				options[selectedOptionIndex].setString("Master Volume: Off");
 			}
 			else
 			{
 				soundS->setSoundEnabled(true);
 				soundS->startSound();
-				options[selectedOptionIndex].setString("Master Volume: On");
 			}
 
 		}
@@ -178,33 +161,15 @@ int Menu::Select()
 			{
 				soundS->stopMusic();
 				soundS->setMusicEnabled(false);
-				options[selectedOptionIndex].setString("Music: Off");
 			}
 			else
 			{
 				soundS->setMusicEnabled(true);
 				soundS->startMusic();
-				options[selectedOptionIndex].setString("Music: On");
 			}
 		}
 
 		else if (selectedOptionIndex == 2)
-		{
-			if (soundS->getSfxEnabled() == true)
-			{
-				soundS->stopSfx();
-				soundS->setSfxEnabled(false);
-				options[selectedOptionIndex].setString("Sound Effects: Off");
-			}
-			else
-			{
-				soundS->setSfxEnabled(true);
-				soundS->startSfx();
-				options[selectedOptionIndex].setString("Sound Effects: On");
-			}
-		}
-
-		else if (selectedOptionIndex == 3)
 		{
 			activeMenu = 0;
 		}
