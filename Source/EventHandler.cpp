@@ -81,7 +81,7 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Space && !keyPressed[sf::Keyboard::Space])
 			{
 				keyPressed[sf::Keyboard::Space] = true;
-				player->setCurrentKeyframe(1);
+				//player->setCurrentKeyframe(1);
 				player->setAnimationIndex(4);
 				player->jump();
 			}
@@ -114,19 +114,19 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Num1 && !keyPressed[sf::Keyboard::Num1])
 			{
 				keyPressed[sf::Keyboard::Num1] = true;
-				player->setCurrentKeyframe(1);
+				//player->setCurrentKeyframe(1);
 				player->swap(0);
 			}
 			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Num2 && !keyPressed[sf::Keyboard::Num2])
 			{
 				keyPressed[sf::Keyboard::Num2] = true;
-				player->setCurrentKeyframe(1);
+				//player->setCurrentKeyframe(1);
 				player->swap(1);
 			}
 			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Num3 && !keyPressed[sf::Keyboard::Num3])
 			{
 				keyPressed[sf::Keyboard::Num3] = true;
-				player->setCurrentKeyframe(1);
+				//player->setCurrentKeyframe(1);
 				player->swap(2);
 			}
 			else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Num1)

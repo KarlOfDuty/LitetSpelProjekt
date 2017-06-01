@@ -87,6 +87,7 @@ private:
 	float boundingSphereRadius;
 public:
 
+	int lastAnimationIndex;
 	glm::mat4 currentJointTrans[100];
 	//Parent inherited functions
 	std::vector<glm::vec2> getPoints();

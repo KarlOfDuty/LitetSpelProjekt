@@ -40,7 +40,7 @@ void main()
 	else
 	{
 		finalVertexPos = vec4(vertexPos,1.0f);
-		finalNormal = vec4(normal,1.0f);
+		finalNormal = vec4(vertexNormal,1.0f);
 	}
 	vec4 worldPos = model * finalVertexPos;
 	//Position converted to clip space
