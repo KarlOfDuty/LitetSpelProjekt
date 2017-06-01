@@ -574,7 +574,7 @@ Level::Level(std::string filePath, EnemyManager * enemy)
 {
 	this->enemyList = enemy;
 	this->filePath = filePath;
-	playerPos = glm::vec3(0, 0, 0);
+	playerPos = glm::vec3(0, 2, 0);
 }
 //Destructor
 Level::~Level()

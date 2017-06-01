@@ -30,9 +30,9 @@ Player::Player()
 	sharkModel->readModel("models/Characters/Shark/model.bb");
 	sharkModel->loadWeight("models/Characters/Shark/weightInfo.bb");
 	sharkModel->loadSkeleton("models/Characters/Shark/Idle/skelInfo.bb");
-	sharkModel->loadSkeleton("models/Characters/Shark/Run/skelInfo.bb");
-	sharkModel->loadSkeleton("models/Characters/Shark/Jump/StillJump/skelInfo.bb");
-	sharkModel->loadSkeleton("models/Characters/Shark/Special/skelInfo.bb");
+	//sharkModel->loadSkeleton("models/Characters/Shark/Run/skelInfo.bb");
+	//sharkModel->loadSkeleton("models/Characters/Shark/Jump/StillJump/skelInfo.bb");
+	//sharkModel->loadSkeleton("models/Characters/Shark/Special/skelInfo.bb");
 	sharkModel->setupModel();
 
 	Model* butterflyModel = new Model();
@@ -137,7 +137,7 @@ void Player::jump()
 		}
 	}
 	if (jumps == 2) {
-		player->getModel()->setCurrentKeyframe(1);
+		//player->getModel()->setCurrentKeyframe(1);
 		player->getModel()->setAnimationIndex(6);
 	}
 }
@@ -539,31 +539,18 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			}
 		}
 	}
-	//Fix the animation jump
-
-	//restartKeyframes = false;
-	//if (!isIdle) {
-	//	restartKeyframes = true;
-	//}
-	//
-	//if (velocityX == 0 && isOnGround == false)
-	//{
-	//	//Change the time compare to make it idle faster after turning/rotating
-	//	if (rotating.getElapsedTime().asSeconds() >= 0.2)
-	//	{
-	//		isIdle = true;
-	//	}
-	//}
-	//if (isIdle) {
-	//	if (restartKeyframes == true) {
-	//		setCurrentKeyframe(1);
-	//	}
-	//	setAnimationIndex(0);
-	//}
-	//else
-	//{
-	//	restartKeyframes = false;
-	//}
+	
+	if (velocityX == 0 && isOnGround == true)
+	{
+		//Change the time compare to make it idle faster after turning/rotating
+		if (rotating.getElapsedTime().asSeconds() >= 0.2)
+		{
+			isIdle = true;
+		}
+	}
+	if (isIdle) {
+		setAnimationIndex(0);
+	}
 
 	if (velocityX == 0)
 	{
@@ -711,21 +698,10 @@ void Player::collision(std::vector<Model*> &allModels)
 						modelMatrix[3].y += mtv.y;
 						velocityY = velocityY * (collisionNormal.y + 1.0);
 					}
-
-
-					if (abs(collisionNormal.x) >= 0.707 && abs(collisionNormal.x) <= 1)
+					if (abs(collisionNormal.x) >= 0.707)
 					{
 						modelMatrix[3].x += mtv.x;
 					}
-					/*if (mtv.y > 0)
-					{
-						if (abs(groundPos - modelMatrix[3].y) <= 10)
-						{
-							if (modelMatrix[3].y < groundPos)
-								modelMatrix[3].y = groundPos;
-							groundPos = modelMatrix[3].y;
-						}
-					}*/
 				}
 				else
 				{

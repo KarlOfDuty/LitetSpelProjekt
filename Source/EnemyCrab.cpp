@@ -66,7 +66,7 @@ void EnemyCrab::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 	if (collides)
 	{
-		if (collidedFrom.x != 0)
+		if (abs(collisionNormal.x) > 0.8)
 		{
 			collisionCounter++;
 			movingRight = false;
