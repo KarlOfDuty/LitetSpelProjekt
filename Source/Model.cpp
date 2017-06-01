@@ -629,10 +629,11 @@ bool Model::readModel(const char* filePath)
 	glm::vec3 scale;
 	in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
 	this->setScale(scale);
-	//Set up model
-
+	//Animation
 	bool hasAnimation = false;
 	in.read(reinterpret_cast<char*>(&hasAnimation), sizeof(bool));
+	this->hasAnimations = hasAnimation;
+	//Set up model
 
 	this->rotate();
 	this->addMesh(mesh);

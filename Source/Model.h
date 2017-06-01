@@ -79,7 +79,7 @@ private:
 	glm::mat4 currentJointTrans[100];
 	int nrOfKeyframes = 0;
 	int currentFrame = 0;
-
+	bool hasAnimations;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
 	std::vector<Mesh*> meshes;

@@ -147,7 +147,7 @@ int main()
 	playerCamera = Camera();
 	playerCamera.setupFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance);
 	//Load level
-	loadLevel();
+	//loadLevel();
 	loadMenu();
 	//Create the gbuffer textures and lights
 	createGBuffer();
