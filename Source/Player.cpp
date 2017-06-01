@@ -389,19 +389,37 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
-			setAnimationIndex(1);
 			velocityX = -movementSpeed*dt;
 			goingLeft = true;
 			goingRight = false;
-			isIdle = false;
+			if (getPos().y < (groundPos + 15.0f))
+			{
+				if (timeSinceJump.getElapsedTime().asSeconds() > 0.2)
+				{
+					if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+					{
+						setAnimationIndex(1);
+					}
+				}
+				isIdle = false;
+			}
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
-			setAnimationIndex(1);
 			velocityX = movementSpeed*dt;
 			goingRight = true;
 			goingLeft = false;
-			isIdle = false;
+			if (getPos().y < (groundPos + 15.0f))
+			{
+				if (timeSinceJump.getElapsedTime().asSeconds() > 0.2)
+				{
+					if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+					{
+						setAnimationIndex(1);
+					}
+				}
+				isIdle = false;
+			}
 		}
 
 		if (goingLeft == true)
@@ -450,14 +468,20 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			velocityX = -movementSpeed*dt/2;
 			goingLeft = true;
 			goingRight = false;
-			isIdle = false;
+			if (getPos().y < (groundPos + 15.0f))
+			{
+				isIdle = false;
+			}
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
 			velocityX = movementSpeed*dt/2;
 			goingRight = true;
 			goingLeft = false;
-			isIdle = false;
+			if (getPos().y < (groundPos + 15.0f))
+			{
+				isIdle = false;
+			}
 		}
 
 		if (goingLeft == true)
@@ -539,25 +563,49 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			}
 		}
 	}
-	
-	if (velocityX == 0 && isOnGround == true)
-	{
-		//Change the time compare to make it idle faster after turning/rotating
-		if (rotating.getElapsedTime().asSeconds() >= 0.2)
-		{
-			isIdle = true;
-		}
-	}
-	if (isIdle) {
-		setAnimationIndex(0);
-	}
 
 	if (velocityX == 0)
 	{
-		//Change the time compare to make it idle faster after turning/rotating
-		if (rotating.getElapsedTime().asSeconds() >= 0.2)
+		if (getPos().y < (groundPos + 15.0f))
 		{
-			isIdle = true;
+			//Change the time compare to make it idle faster after turning/rotating
+			if (rotating.getElapsedTime().asSeconds() >= 0.2)
+			{
+				isIdle = true;
+			}
+		}
+	}
+
+	if (getPos().y > (groundPos + 10.0f))
+	{
+		if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+		{
+			setAnimationIndex(4);
+			timeSinceJump.restart();
+		}
+	}
+
+	if (timeSinceJump.getElapsedTime().asSeconds() > 0.2)
+	{
+		if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+		{
+			if (isIdle && getPos().y < (groundPos + 15.0f))
+			{
+				setAnimationIndex(0);
+			}
+		}
+	}
+
+	if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+	{
+		attacking = false;
+	}
+
+	if (attacking)
+	{
+		if (timeSinceAttack.getElapsedTime().asSeconds() < 2.0)
+		{
+			setAnimationIndex(2);
 		}
 	}
 
@@ -745,6 +793,21 @@ void Player::setCurrentKeyframe(int frame)
 void Player::setAnimationIndex(int index)
 {
 	this->player->getModel()->setAnimationIndex(index);
+}
+
+void Player::restartTimeSinceJump()
+{
+	this->timeSinceJump.restart();
+}
+
+void Player::restartTimeSinceAttack()
+{
+	timeSinceAttack.restart();
+}
+
+void Player::setAttacking(bool attacking)
+{
+	this->attacking = attacking;
 }
 
 bool Player::getDiving() const
