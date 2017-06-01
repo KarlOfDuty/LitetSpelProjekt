@@ -9,7 +9,7 @@ private:
 	Model* box;
 	sf::Clock attackCooldown;
 public:
-	PlayerBird(Model model, bool inWater);
+	PlayerBird(Model* model, bool inWater);
 	virtual ~PlayerBird();
 	void operator=(const PlayerBird &originalObject);
 	float getJumpHeight();

@@ -6,7 +6,7 @@ PlayerChar::PlayerChar()
 }
 
 
-PlayerChar::PlayerChar(Model model, bool inWater)
+PlayerChar::PlayerChar(Model* model, bool inWater)
 {
 	this->playerModel = model;
 	this->inWater = inWater;
@@ -27,13 +27,16 @@ int PlayerChar::getDamage() const
 {
 	return this->damage;
 }
-
+void PlayerChar::update()
+{
+	playerModel->updateAnimation();
+}
 void PlayerChar::draw(Shader shader)
 {
-	playerModel.draw(shader);
+	playerModel->draw(shader);
 }
 
-Model& PlayerChar::getModel()
+Model* PlayerChar::getModel()
 {
 	return this->playerModel;
 }
