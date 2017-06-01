@@ -148,6 +148,7 @@ int main()
 	playerCamera.setupFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance);
 	//Load level
 	loadLevel();
+	loadMenu();
 	//Create the gbuffer textures and lights
 	createGBuffer();
 
@@ -377,13 +378,6 @@ void renderM()
 			glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &levelManager.currentMenu->getStaticModels()[j]->getModelMatrix()[0][0]);
 			levelManager.currentMenu->getStaticModels()[j]->draw(shadowShader);
 		}
-		//glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel().getModelMatrix()[0][0]);
-		//enemyManager->draw(shadowShader);
-		//if (player->playerIsDead() != true)
-		//{
-		//	player->draw(shadowShader);
-		//}
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, windowWidth, windowHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
@@ -413,11 +407,6 @@ void renderM()
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
 		dynamicModels.at(i)->draw(deferredGeometryPass);
 	}
-	//if (player->playerIsDead() != true)
-	//{
-	//	player->draw(deferredGeometryPass);
-	//}
-	//enemyManager->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -520,31 +509,10 @@ void update(sf::RenderWindow &window)
 void updateM(sf::RenderWindow &window)
 {
 	dt = deltaClock.restart().asSeconds();
-	//Update player if not dead
-	//if (!player->playerIsDead())
-	//{
-	//	player->update(window, dt, levelManager.currentLevel->getStaticModels(), enemyManager->getAllEnemies());
-	//}
+	
 
-	//enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
+	viewMatrix = viewMatrixM;
 
-	//Camera update, get new viewMatrix
-	//if (aboveView)
-	//{
-		viewMatrix = viewMatrixM;
-		//viewMatrix = glm::lookAt(
-		//	glm::vec3(1, 20, 0),
-		//	glm::vec3(1, 1, 0.01),
-		//	glm::vec3(0, 0.01, 0));
-		//viewMatrix = glm::lookAt(
-		//	glm::vec3(1, 0, 0),
-		//	glm::vec3(0, 1, 0),
-		//	glm::vec3(0, 0, 1));
-	//}
-	//else
-	//{
-	//	viewMatrix = playerCamera.update(player->getPos());
-	//}
 
 	if (endLevel)
 	{
@@ -552,9 +520,6 @@ void updateM(sf::RenderWindow &window)
 		loadLevel();
 		endLevel = false;
 	}
-	//levelManager.currentLevel->updateTriggers(dt);
-	//playerCamera.frustumCulling(modelsToBeDrawn);
-	//gui.update(player);
 }
 
 //Create the buffer
