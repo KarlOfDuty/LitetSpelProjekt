@@ -152,7 +152,7 @@ void Player::lightAttackPressed(sf::Window &window)
 			position = glm::vec2(getPos().x - 10.0f, getPos().y);
 			direction = glm::vec2(-1, 0);
 		}
-		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 20.f);
+		bird->meleeAttack(allMeleeAttackBoxes, position, direction, 150.f);
 	}
 }
 void Player::lightAttackReleased(sf::Window &window)
@@ -357,20 +357,23 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			velocityX = -movementSpeed*dt;
 			goingLeft = true;
 			goingRight = false;
+			isIdle = false;
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
 			velocityX = movementSpeed*dt;
 			goingRight = true;
 			goingLeft = false;
+			isIdle = false;
 		}
 
 		if (goingLeft == true)
 		{
 			if (angle != 180)
 			{
-				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				angle += 12;
+				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle += 20;
+				rotating.restart();
 			}
 		
 		}
@@ -378,10 +381,10 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		{
 			if (angle > 0)
 			{
-				this->modelMatrix  *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				angle -= 12;
+				this->modelMatrix  *= glm::rotate(glm::mat4(), glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle -= 20;
+				rotating.restart();
 			}
-		
 		}
 		//If in air
 		if (!isOnGround)
@@ -421,18 +424,19 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		{
 			if (angle != 180)
 			{
-				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				angle += 12;
+				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(-20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle += 20;
+				rotating.restart();
 			}
-
 		}
 
 		if (goingRight == true)
 		{
 			if (angle > 0)
 			{
-				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(12.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				angle -= 12;
+				this->modelMatrix *= glm::rotate(glm::mat4(), glm::radians(20.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				angle -= 20;
+				rotating.restart();
 			}
 		}
 		//If in air
@@ -496,24 +500,21 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 	}
 
+	if (velocityX == 0)
+	{
+		//Change the time compare to make it idle faster after turning/rotating
+		if (rotating.getElapsedTime().asSeconds() >= 0.2)
+		{
+			isIdle = true;
+		}
+	}
+
 	//Apply velocity
 	modelMatrix[3].x += velocityX;
 	velocityX = 0;
 	modelMatrix[3].y += velocityY*dt;
 	
 	collision(allModels);
-
-	//Handle collision detection with ground
-	if (getPos().y <= groundPos && !isOnGround)
-	{
-		jumps = 0;
-		if (velocityY < 0)
-		{
-			modelMatrix[3].y = groundPos;
-			velocityY = 0;
-		}
-		isOnGround = true;
-	}
 
 	for (int i = 0; i < allAttackBoxes.size(); i++)
 	{
@@ -525,7 +526,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 				std::vector<glm::vec2> arrowPoints = allAttackBoxes[i]->getPoints();
 				for (int k = 0; k < allEnemies.size(); k++)
 				{
-					if (!allAttackBoxes[i]->isCollidingWithWorld() && glm::distance(allAttackBoxes[i]->getPos(), allEnemies[k]->getPos()) < 2.0f)
+					if (!allAttackBoxes[i]->isCollidingWithWorld() && glm::distance(allAttackBoxes[i]->getPos(), allEnemies[k]->getPos()) < 200.0f)
 					{
 						if (collision::collision(arrowPoints, allEnemies[k]->getPoints()))
 						{
@@ -533,7 +534,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 							{
 								allAttackBoxes[i]->disableArrow();
 							}
-							allEnemies[k]->applyDamage(100);
+							allEnemies[k]->applyDamage(allAttackBoxes[i]->getDamage());
 							k = (int)allEnemies.size();
 						}
 					}
@@ -608,24 +609,37 @@ void Player::collision(std::vector<Model*> &allModels)
 				float radians = 0.0f;
 				getPoints(objectPoints, closeObjects[i], radians);
 				glm::vec2 mtv;
-				if (collision::collision(playerPoints, objectPoints, mtv))
+				glm::vec2 collisionNormal;
+				if (collision::collision(playerPoints, objectPoints, mtv, collisionNormal))
 				{
-					if (radians > -0.79f && radians != 0.0f && radians < 0.79f)
+					if (collisionNormal.y >= 0.707)
 					{
-						if (mtv.y < 0 && mtv.x <= 0.5 && mtv.x > 0)
+						modelMatrix[3].y += mtv.y;
+						
+						if (modelMatrix[3].y < groundPos)
+						{
+							modelMatrix[3].y = groundPos;
+						}
+						if (velocityY < 0)
 						{
 							velocityY = 0;
 						}
-						modelMatrix[3].x += mtv.x;
-
+						groundPos = modelMatrix[3].y;
+						jumps = 0;
+						isOnGround = true;
 					}
-					else if (radians == 0)
+					if (collisionNormal.y < 0 && velocityY > 0)
+					{
+						modelMatrix[3].y += mtv.y;
+						velocityY = velocityY * (collisionNormal.y + 1.0);
+					}
+
+
+					if (abs(collisionNormal.x) >= 0.707 && abs(collisionNormal.x) <= 1)
 					{
 						modelMatrix[3].x += mtv.x;
 					}
-
-					modelMatrix[3].y += mtv.y;
-					if (mtv.y > 0)
+					/*if (mtv.y > 0)
 					{
 						if (abs(groundPos - modelMatrix[3].y) <= 10)
 						{
@@ -633,7 +647,7 @@ void Player::collision(std::vector<Model*> &allModels)
 								modelMatrix[3].y = groundPos;
 							groundPos = modelMatrix[3].y;
 						}
-					}
+					}*/
 				}
 				else
 				{

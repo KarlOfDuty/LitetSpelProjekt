@@ -33,7 +33,7 @@ void PlayerBird::meleeAttack(std::vector<Projectile*> &allAttackBoxes, glm::vec2
 		glm::vec3 scale(0, 35.0f, 1.0f);
 		position.y += 15.f;
 		Projectile* temp = new Projectile;
-		temp->melee(box, position, direction, velocity, scale);
+		temp->melee(box, 1, position, direction, velocity, scale);
 		allAttackBoxes.push_back(temp);
 		attackCooldown.restart();
 	}

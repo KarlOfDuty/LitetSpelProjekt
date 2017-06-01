@@ -20,7 +20,6 @@ private:
 	std::vector<Model*> colliders;
 	std::vector<Model*> dynamicModels;
 	std::vector<Trigger*> triggerBoxes;
-	std::vector<GameObject*> playerAndEnemy;
 	EnemyManager * enemyList;
 
 public:
