@@ -1,4 +1,4 @@
-enemies crab 670 40 0
+enemies skeleton 3181 525 0
 enemies slime 790 45 0
 enemies slime 1516 170 0
 enemies slime 1950 400 0
