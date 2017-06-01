@@ -181,6 +181,7 @@ void Model::setCurrentKeyframe(int frame)
 }
 void Model::setAnimationIndex(int index)
 {
+	this->lastAnimationIndex = this->currentAnimationIndex;
 	this->currentAnimationIndex = index;
 }
 void Model::addMesh(Mesh* mesh)
@@ -738,6 +739,9 @@ void Model::updateAnimation()
 {
 	if (skeleton[this->currentAnimationIndex].size())
 	{
+		if (lastAnimationIndex != currentAnimationIndex) {
+			currentFrame = 1;
+		}
 		if (currentFrame < this->skeleton[currentAnimationIndex][0]->nrOfKeys)
 		{
 			currentFrame++;
@@ -843,7 +847,7 @@ void Model::loadTextures(int i)
 	{
 		int width, height;
 		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.textureMapAmbientFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+		image = SOIL_load_image(("textures/" + meshes[i]->material.textureMapAmbientFile).c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		SOIL_free_image_data(image);
@@ -872,7 +876,7 @@ void Model::loadTextures(int i)
 	{	
 		int width, height;
 		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.textureMapDiffuseFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+		image = SOIL_load_image(("textures/" + meshes[i]->material.textureMapDiffuseFile).c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		SOIL_free_image_data(image);
@@ -902,7 +906,7 @@ void Model::loadTextures(int i)
 	{
 		int width, height;
 		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.textureMapSpecularFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+		image = SOIL_load_image(("textures/" + meshes[i]->material.textureMapSpecularFile).c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		SOIL_free_image_data(image);
@@ -924,6 +928,7 @@ Model::Model(std::string filename)
 {
 	//Initializes the model without a rotation or model matrix. Does not set the model up so it can be drawn.
 	this->hasAnimations = false;
+	this->lastAnimationIndex = 0;
 	this->modelMatrix = glm::mat4(1.0);
 	this->rotationMatrix = glm::mat4(1.0);
 	readOBJ(filename);
@@ -934,6 +939,7 @@ Model::Model(std::string filename, glm::mat4 modelMat)
 {
 	//Initializes the model without a rotation
 	this->hasAnimations = false;
+	this->lastAnimationIndex = 0;
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = glm::mat4(1.0);
 	readOBJ(filename);
@@ -944,6 +950,7 @@ Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 {
 	//Initializes the model
 	this->hasAnimations = false;
+	this->lastAnimationIndex = 0;
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = rotation;
 	readOBJ(filename);
@@ -954,6 +961,7 @@ Model::Model()
 {
 	//Initializes the model with no data
 	this->hasAnimations = false;
+	this->lastAnimationIndex = 0;
 	this->modelMatrix = glm::mat4(1.0);
 	this->rotationMatrix = glm::mat4(1.0);
 }
