@@ -2,13 +2,48 @@
 
 EnemyManager::EnemyManager(SoundSystem * sound)
 {
-	slimeModel = new Model("models/Enemies/Slime/newSlime.obj");
-	toadModel = new Model("models/Enemies/Toad/newToad.obj");
-	batModel = new Model("models/Enemies/Bat/newBigBat.obj");
+	slimeModel = new Model();
+	slimeModel->readModel("models/Enemies/Slime/model.bb");
+	slimeModel->setupModel();
+
+	toadModel = new Model();
+	toadModel->readModel("models/Enemies/Toad/model.bb");
+	toadModel->setupModel();
+	toadModel->loadWeight("models/Enemies/Toad/weight.bb");
+	toadModel->loadSkeleton("models/Enemies/Toad/walk.bb");
+	toadModel->loadSkeleton("models/Enemies/Toad/jump.bb");
+
+	batModel = new Model();
+	batModel->readModel("models/Enemies/Bat/model.bb");
+	batModel->setupModel();
+	batModel->loadWeight("models/Enemies/Bat/weight.bb");
+	batModel->loadSkeleton("models/Enemies/Bat/flying.bb");
+
 	batSmallModel = new Model("models/Enemies/BatSmall/newSmallBat.obj");
-	bossModel = new Model("models/Enemies/Boss/FullBoss.obj");
-	skeletonModel = new Model("models/Enemies/Skeleton/newSkeleton.obj");
-	crabModel = new Model("models/Enemies/Crab/newCrab.obj");
+
+	bossModel = new Model();
+	bossModel->readModel("models/Enemies/Boss/model.bb");
+	bossModel->setupModel();
+	bossModel->loadWeight("models/Enemies/Boss/weight.bb");
+	bossModel->loadSkeleton("models/Enemies/Boss/roar.bb");
+	bossModel->loadSkeleton("models/Enemies/Boss/charge.bb");
+	bossModel->loadSkeleton("models/Enemies/Boss/spit.bb");
+
+	skeletonModel = new Model();
+	skeletonModel->readModel("models/Enemies/Skeleton/model.bb");
+	skeletonModel->setupModel();
+	skeletonModel->loadWeight("models/Enemies/Skeleton/weight.bb");
+	skeletonModel->loadSkeleton("models/Enemies/Skeleton/walk.bb");
+	skeletonModel->loadSkeleton("models/Enemies/Skeleton/attack.bb");
+
+	crabModel = new Model();
+	crabModel->readModel("models/Enemies/Crab/model.bb");
+	crabModel->setupModel();
+	crabModel->loadWeight("models/Enemies/Crab/weight.bb");
+	crabModel->loadSkeleton("models/Enemies/Crab/walk.bb");
+	crabModel->loadSkeleton("models/Enemies/Crab/attack.bb");
+	crabModel->setAnimationIndex(0);
+
 	fireflyModel = new Model("models/cube/cube.obj");
 	allProjectiles = new std::vector<Projectile*>();
 
@@ -116,6 +151,7 @@ void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allMo
 		{
 			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, allSmallBats, allModels, player); }, allEnemies[i]));
 		}
+		allEnemies[i]->getModel()->updateAnimation();
 	}
 	for (int i = 0; i < allThreads.size(); i++)
 	{
@@ -164,7 +200,7 @@ void EnemyManager::draw(Shader shader)
 	}
 	for (int i = 0; i < allProjectiles->size(); i++)
 	{
-		if (allProjectiles->at(i)->isInUse())
+		if (allProjectiles->at(i)->isInUse() && allProjectiles->at(i)->isProjectileAttack())
 		{
 			allProjectiles->at(i)->draw(shader);
 		}
