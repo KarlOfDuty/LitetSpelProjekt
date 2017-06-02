@@ -18,11 +18,13 @@ private:
 	bool bossIsKilled;
 	sf::Clock bossTextDelay;
 	sf::Text bossText;
+	sf::Clock restartTimer;
 public:
 	GUI();
 	~GUI();
 	void update(Player* player, EnemyManager* enemy);
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states)const;
+	void resetOpacity();
 };
 
 #endif // !GUdI_H
