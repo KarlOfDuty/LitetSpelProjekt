@@ -79,7 +79,7 @@ void EnemyToad::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 checkP
 
 		if (collides)
 		{
-			if (collidedFrom.x != 0)
+			if (abs(collisionNormal.x) > 0.8)
 			{
 				collisionCounterToad++;
 				if (collisionCounterToad > 200)
