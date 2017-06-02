@@ -179,6 +179,10 @@ void Model::setCurrentKeyframe(int frame)
 {
 	this->currentFrame = frame;
 }
+void Model::resetKeyframe()
+{
+	this->currentFrame = 1;
+}
 void Model::setAnimationIndex(int index)
 {
 	this->lastAnimationIndex = this->currentAnimationIndex;
@@ -735,20 +739,29 @@ void Model::loadWeight(const char* filePath)
 		}
 	}
 }
-void Model::updateAnimation()
+void Model::updateAnimation(float dtChange)
 {
+	dt += dtChange;
 	if (skeleton[this->currentAnimationIndex].size())
 	{
-		if (lastAnimationIndex != currentAnimationIndex) {
-			currentFrame = 1;
-		}
-		if (currentFrame < this->skeleton[currentAnimationIndex][0]->nrOfKeys)
-		{
-			currentFrame++;
-		}
-		else
+		if (lastAnimationIndex != currentAnimationIndex) 
 		{
 			currentFrame = 1;
+		}
+		if(dt >= 0.01)
+		{
+			int round = dt;
+			dt = -round;
+			if (currentFrame + 4 + round < this->skeleton[currentAnimationIndex][0]->nrOfKeys)
+			{
+				
+				currentFrame += 4 + round;
+			
+			}
+			else
+			{
+				currentFrame = 1;
+			}
 		}
 	}
 }
@@ -926,6 +939,7 @@ void Model::loadTextures(int i)
 //Constructors
 Model::Model(std::string filename)
 {
+	
 	//Initializes the model without a rotation or model matrix. Does not set the model up so it can be drawn.
 	this->hasAnimations = false;
 	this->lastAnimationIndex = 0;
@@ -934,6 +948,7 @@ Model::Model(std::string filename)
 	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
+	this->dt = 0;
 }
 Model::Model(std::string filename, glm::mat4 modelMat)
 {
@@ -945,6 +960,7 @@ Model::Model(std::string filename, glm::mat4 modelMat)
 	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
+	this->dt = 0;
 }
 Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 {
@@ -956,6 +972,7 @@ Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
+	this->dt = 0;
 }
 Model::Model()
 {
@@ -964,6 +981,7 @@ Model::Model()
 	this->lastAnimationIndex = 0;
 	this->modelMatrix = glm::mat4(1.0);
 	this->rotationMatrix = glm::mat4(1.0);
+	this->dt = 0;
 }
 //Copy constructors
 Model::Model(Model &otherModel)
@@ -976,6 +994,7 @@ Model::Model(Model &otherModel)
 	this->VAO = otherModel.VAO;
 	this->VBO = otherModel.VBO;
 	this->boundingSphereRadius = otherModel.boundingSphereRadius;
+	this->dt = 0;
 }
 Model::Model(Model *otherModel)
 {
@@ -987,6 +1006,7 @@ Model::Model(Model *otherModel)
 	this->VAO = otherModel->VAO;
 	this->VBO = otherModel->VBO;
 	this->boundingSphereRadius = otherModel->boundingSphereRadius;
+	this->dt = 0;
 }
 Model::Model(Model &otherModel, glm::mat4 modelMat)
 {
@@ -998,6 +1018,7 @@ Model::Model(Model &otherModel, glm::mat4 modelMat)
 	this->VAO = otherModel.VAO;
 	this->VBO = otherModel.VBO;
 	this->boundingSphereRadius = otherModel.boundingSphereRadius;
+	this->dt = 0;
 }
 Model::Model(Model *otherModel, glm::mat4 modelMat)
 {
@@ -1009,6 +1030,7 @@ Model::Model(Model *otherModel, glm::mat4 modelMat)
 	this->VAO = otherModel->VAO;
 	this->VBO = otherModel->VBO;
 	this->boundingSphereRadius = otherModel->boundingSphereRadius;
+	this->dt = 0;
 }
 //Destructor
 Model::~Model()
