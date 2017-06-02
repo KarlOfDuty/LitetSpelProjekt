@@ -82,13 +82,13 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 			{
 				keyPressed[sf::Keyboard::Space] = true;
 				//player->setCurrentKeyframe(1);
-				player->setAnimationIndex(4);
 				player->jump();
 			}
 			else if (windowEvent.type == sf::Event::MouseButtonPressed && windowEvent.key.code == sf::Mouse::Button::Left)
 			{
 				player->lightAttackPressed(window);
-				player->setAnimationIndex(2);
+				player->setAttacking(true);
+				player->restartTimeSinceAttack();
 			}
 			else if (windowEvent.type == sf::Event::MouseButtonReleased && windowEvent.key.code == sf::Mouse::Button::Left)
 			{

@@ -8,43 +8,45 @@ EnemyManager::EnemyManager(SoundSystem * sound)
 
 	toadModel = new Model();
 	toadModel->readModel("models/Enemies/Toad/model.bb");
-	toadModel->setupModel();
 	toadModel->loadWeight("models/Enemies/Toad/weight.bb");
+	toadModel->setupModel();
 	toadModel->loadSkeleton("models/Enemies/Toad/walk.bb");
 	toadModel->loadSkeleton("models/Enemies/Toad/jump.bb");
 
 	batModel = new Model();
 	batModel->readModel("models/Enemies/Bat/model.bb");
-	batModel->setupModel();
 	batModel->loadWeight("models/Enemies/Bat/weight.bb");
+	batModel->setupModel();
 	batModel->loadSkeleton("models/Enemies/Bat/flying.bb");
 
 	batSmallModel = new Model("models/Enemies/BatSmall/newSmallBat.obj");
 
 	bossModel = new Model();
 	bossModel->readModel("models/Enemies/Boss/model.bb");
-	bossModel->setupModel();
 	bossModel->loadWeight("models/Enemies/Boss/weight.bb");
+	bossModel->setupModel();
 	bossModel->loadSkeleton("models/Enemies/Boss/roar.bb");
 	bossModel->loadSkeleton("models/Enemies/Boss/charge.bb");
 	bossModel->loadSkeleton("models/Enemies/Boss/spit.bb");
 
 	skeletonModel = new Model();
 	skeletonModel->readModel("models/Enemies/Skeleton/model.bb");
-	skeletonModel->setupModel();
 	skeletonModel->loadWeight("models/Enemies/Skeleton/weight.bb");
+	skeletonModel->setupModel();
 	skeletonModel->loadSkeleton("models/Enemies/Skeleton/walk.bb");
 	skeletonModel->loadSkeleton("models/Enemies/Skeleton/attack.bb");
 
 	crabModel = new Model();
 	crabModel->readModel("models/Enemies/Crab/model.bb");
-	crabModel->setupModel();
 	crabModel->loadWeight("models/Enemies/Crab/weight.bb");
+	crabModel->setupModel();
 	crabModel->loadSkeleton("models/Enemies/Crab/walk.bb");
 	crabModel->loadSkeleton("models/Enemies/Crab/attack.bb");
 	crabModel->setAnimationIndex(0);
 
-	fireflyModel = new Model("models/cube/cube.obj");
+	fireflyModel = new Model();
+	fireflyModel->readModel("models/Enemies/Firefly/model.bb");
+	fireflyModel->setupModel();
 	allProjectiles = new std::vector<Projectile*>();
 
 	this->sound = sound;
@@ -93,7 +95,7 @@ void EnemyManager::createBoss(glm::vec3 enemyStartPos)
 
 void EnemyManager::createFirefly(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, 1, enemyStartPos, glm::vec3(5.16f, 5.16f, 5.16f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, 1, enemyStartPos, glm::vec3(10.0f, 10.0f, 10.0f), allProjectiles, sound));
 }
 
 void EnemyManager::clearDeadEnemies()
