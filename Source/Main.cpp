@@ -130,8 +130,6 @@ int main()
 	soundSystem->loadSound("audio/enemys/crabb.flac", "snapyCraby");
 	soundSystem->loadSound("audio/enemys/bats.flac", "screees");
 
-	//soundSystem->playMusic("audio/music/never.flac");
-
 	////Characters
 	player = new Player();
 	enemyManager = new EnemyManager(soundSystem);
@@ -648,7 +646,7 @@ void drawQuad()
 
 void loadMenu()
 {
-	levelManager.currentMenu->loadLevel(player);
+	levelManager.currentMenu->loadLevel(player, soundSystem);
 
 	menuModelsToBeDrawn = levelManager.currentMenu->getStaticModels();
 
@@ -662,7 +660,7 @@ void loadMenu()
 
 void loadLevel()
 {
-	levelManager.currentLevel->loadLevel(player);
+	levelManager.currentLevel->loadLevel(player, soundSystem);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
 
 	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());

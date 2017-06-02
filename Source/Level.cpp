@@ -1,6 +1,6 @@
 #include "Level.h"
 
-void Level::loadLevel(Player* player)
+void Level::loadLevel(Player* player, SoundSystem* soundSystem)
 {
 	//Temporary containers
 	std::ifstream file(filePath);
@@ -51,11 +51,12 @@ void Level::loadLevel(Player* player)
 		//	line >> path;
 		//	readPickups(path.c_str());
 		//}
-		//else if (str == "music")
-		//{
-		//	line >> path;
-		//	readMusic(path.c_str());
-		//}
+		else if (str == "music")
+		{
+			line >> path;
+			soundSystem->stopMusic();
+			soundSystem->playMusic(path);
+		}
 	}
 	file.close();
 }

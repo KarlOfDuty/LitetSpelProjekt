@@ -174,7 +174,7 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 		if (restartTimer.getElapsedTime().asSeconds() > 4)
 		{
 			levelManager.currentLevel->unloadModels();
-			levelManager.currentLevel->loadLevel(player);
+			levelManager.currentLevel->loadLevel(player, soundSystem);
 			player->setHealth(20);
 			player->setPos(glm::vec3(0, 0, 0));
 			youDied = false;

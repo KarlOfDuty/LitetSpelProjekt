@@ -27,7 +27,7 @@ private:
 
 public:
 	std::string filePath;
-	void loadLevel(Player* player);
+	void loadLevel(Player* player, SoundSystem* soundSystem);
 	void readTriggers(const char * filePath, std::vector<Trigger*>& vector, Player* player);
 	bool readModels(const char* filePath, std::vector<Model*> &modelVector);
 	bool readEnemies(const char* filePath);
