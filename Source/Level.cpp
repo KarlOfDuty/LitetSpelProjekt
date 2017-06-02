@@ -410,10 +410,20 @@ bool Level::readEnemies(const char* filePath)
 		float x;
 		float y;
 		float z;
+		bool patrol;
 		line >> type;
 		line >> x;
 		line >> y;
 		line >> z;
+		if (type == "skeleton")
+		{
+			line >> patrol;
+			if (patrol != 1 && patrol != 0)
+			{
+				patrol = 0;
+			}
+		}
+
 		if (type == "bats")
 		{
 			enemyList->createBatSwarm(glm::vec3(x, y, z));
@@ -436,7 +446,7 @@ bool Level::readEnemies(const char* filePath)
 		}
 		else if (type == "skeleton")
 		{
-			enemyList->createSkeleton(glm::vec3(x, y, z), false);
+			enemyList->createSkeleton(glm::vec3(x, y, z), patrol);
 		}
 		else if (type == "slime")
 		{
