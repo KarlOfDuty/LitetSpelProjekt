@@ -435,38 +435,6 @@ bool Level::readEnemies(const char* filePath)
 	file.close();
 	return true;
 }
-bool Level::readTrigers(const char * filePath)
-{
-	//Temporary containers
-	std::ifstream file(filePath);
-	std::string str = "";
-	//Gets a single line of the file at a time
-	while (std::getline(file, str))
-	{
-		std::stringstream line;
-		std::string type;
-		line << str;
-		line >> str;
-
-		float x;
-		float y;
-		float z;
-		line >> type;
-		line >> x;
-		line >> y;
-		line >> z;
-		if (type == "heart")
-		{
-			enemyList->createBatSwarm(glm::vec3(x, y, z));
-		}
-		else if (type == "boss")
-		{
-			enemyList->createBoss(glm::vec3(x, y, z));
-		}
-	}
-	file.close();
-	return true;
-}
 //Delete all models from memory
 void Level::unloadModels()
 {

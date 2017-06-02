@@ -748,7 +748,7 @@ void Model::updateAnimation(float dtChange)
 		{
 			currentFrame = 1;
 		}
-		if(dt >= 0.01)
+		if(dt >= 0.02)
 		{
 			int round = dt;
 			dt = -round;
