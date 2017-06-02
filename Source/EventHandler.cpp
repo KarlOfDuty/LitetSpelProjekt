@@ -87,6 +87,7 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 			else if (windowEvent.type == sf::Event::MouseButtonPressed && windowEvent.key.code == sf::Mouse::Button::Left)
 			{
 				player->lightAttackPressed(window);
+				player->setAnimationIndex(2);
 				player->setAttacking(true);
 				player->restartTimeSinceAttack();
 			}

@@ -31,7 +31,7 @@ Player::Player()
 	sharkModel->loadWeight("models/Characters/Shark/weightInfo.bb");
 	sharkModel->loadSkeleton("models/Characters/Shark/Idle/skelInfo.bb");
 	//sharkModel->loadSkeleton("models/Characters/Shark/Run/skelInfo.bb");
-	//sharkModel->loadSkeleton("models/Characters/Shark/Jump/StillJump/skelInfo.bb");
+	//sharkModel->loadSkeleton("models/Characters/Shark/Action/skelInfo.bb");
 	//sharkModel->loadSkeleton("models/Characters/Shark/Special/skelInfo.bb");
 	sharkModel->setupModel();
 
@@ -396,7 +396,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			{
 				if (timeSinceJump.getElapsedTime().asSeconds() > 0.2)
 				{
-					if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+					if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 					{
 						setAnimationIndex(1);
 					}
@@ -413,7 +413,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			{
 				if (timeSinceJump.getElapsedTime().asSeconds() > 0.2)
 				{
-					if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+					if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 					{
 						setAnimationIndex(1);
 					}
@@ -578,7 +578,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 
 	if (getPos().y > (groundPos + 10.0f))
 	{
-		if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+		if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 		{
 			setAnimationIndex(4);
 			timeSinceJump.restart();
@@ -587,7 +587,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 
 	if (timeSinceJump.getElapsedTime().asSeconds() > 0.2)
 	{
-		if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+		if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 		{
 			if (isIdle && getPos().y < (groundPos + 15.0f))
 			{
@@ -596,14 +596,14 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 	}
 
-	if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+	if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 	{
 		attacking = false;
 	}
 
 	if (attacking)
 	{
-		if (timeSinceAttack.getElapsedTime().asSeconds() < 2.0)
+		if (timeSinceAttack.getElapsedTime().asSeconds() < 1.0)
 		{
 			setAnimationIndex(2);
 		}
