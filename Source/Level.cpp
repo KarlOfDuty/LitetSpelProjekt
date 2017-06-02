@@ -1,6 +1,6 @@
 #include "Level.h"
 
-void Level::loadLevel(Player* player)
+void Level::loadLevel(Player* player, SoundSystem* soundSystem)
 {
 	//Temporary containers
 	std::ifstream file(filePath);
@@ -40,6 +40,22 @@ void Level::loadLevel(Player* player)
 		{
 			line >> path;
 			readTriggers(path.c_str(), triggerBoxes, player);
+		}
+		else if (str == "lights")
+		{
+			line >> path;
+			readLights(path.c_str());
+		}
+		//else if (str == "pickup")
+		//{
+		//	line >> path;
+		//	readPickups(path.c_str());
+		//}
+		else if (str == "music")
+		{
+			line >> path;
+			soundSystem->stopMusic();
+			soundSystem->playMusic(path);
 		}
 	}
 	file.close();
@@ -445,6 +461,52 @@ bool Level::readEnemies(const char* filePath)
 	file.close();
 	return true;
 }
+bool Level::readLights(const char * filePath)
+{
+	//Temporary containers
+	std::ifstream file(filePath);
+	std::string str = "";
+	float tempFloat = 0.0f;
+	//Gets a single line of the file at a time
+	while (std::getline(file, str))
+	{
+		std::stringstream line;
+		std::string path;
+		//Takes the first word of the line and compares it to variable names
+		line << str;
+		line >> str;
+		if (str == "directional")
+		{
+			glm::vec3 direction;
+			line >> direction.x;
+			line >> direction.y;
+			line >> direction.z;
+			glm::vec3 colour;
+			line >> colour.r;
+			line >> colour.g;
+			line >> colour.b;
+			dirLights.push_back(new DirectionalLight(direction, colour));
+		}
+		else if (str == "point")
+		{
+			glm::vec3 pos;
+			line >> pos.x;
+			line >> pos.y;
+			line >> pos.z;
+			glm::vec3 colour;
+			line >> colour.r;
+			line >> colour.g;
+			line >> colour.b;
+			float linearDrop;
+			line >> linearDrop;
+			float quadraticDrop;
+			line >> quadraticDrop;
+			pointLights.push_back(new PointLight(pos,colour,linearDrop,quadraticDrop));
+		}
+	}
+	file.close();
+	return false;
+}
 //Delete all models from memory
 void Level::unloadModels()
 {
@@ -509,9 +571,17 @@ std::vector<Model*> Level::getDynamicModels()
 {
 	return dynamicModels;
 }
-std::vector<Trigger*> Level::getTriggers()
+std::vector<Trigger*>& Level::getTriggers()
 {
-	return std::vector<Trigger*>();
+	return triggerBoxes;
+}
+std::vector<DirectionalLight*>& Level::getDirLights()
+{
+	return dirLights;
+}
+std::vector<PointLight*>& Level::getPointLights()
+{
+	return pointLights;
 }
 glm::vec3 Level::getPlayerPos()
 {
