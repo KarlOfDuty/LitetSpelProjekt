@@ -4,7 +4,7 @@
 #enemies slime 3210 525 0
 #enemies slime 3015 525 0
 #enemies slime 3180 35 0
-#enemies firefly 3680 0
+#enemies firefly 3680 140 0
 #enemies toad 4260 300 0
 #enemies toad 4760 400 0
 #enemies toad 5125 500 0
