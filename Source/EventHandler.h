@@ -4,6 +4,8 @@
 #include "Player.h"
 #include "SoundSystem.h"
 #include "Menu.h"
+#include "LevelManager.h"
+
 class EventHandler
 {
 private:
@@ -16,9 +18,10 @@ private:
 	bool keyPressed[120] = { false };
 	bool youDied;
 	int running;
+	sf::Clock restartTimer;
 public:
 	EventHandler();
 	~EventHandler();
-	int handleEvents(sf::Window &window, Player *player, SoundSystem *soundSystem, Menu * menu);
+	int handleEvents(sf::Window &window, Player *player, SoundSystem *soundSystem, Menu * menu, LevelManager &levelManager);
 };
 #endif
