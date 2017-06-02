@@ -14,6 +14,7 @@ void Level::loadLevel(Player* player)
 		line << str;
 		line >> str;
 		if (modelDebug)std::cout << str << std::endl;
+		//denpending on the type of item to load, the different fuctions will be ran
 		if (str == "staticModels")
 		{
 			line >> path;
