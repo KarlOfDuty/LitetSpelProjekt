@@ -847,7 +847,7 @@ void Model::loadTextures(int i)
 	{
 		int width, height;
 		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.textureMapAmbientFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+		image = SOIL_load_image(("textures/" + meshes[i]->material.textureMapAmbientFile).c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		SOIL_free_image_data(image);
@@ -876,7 +876,7 @@ void Model::loadTextures(int i)
 	{	
 		int width, height;
 		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.textureMapDiffuseFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+		image = SOIL_load_image(("textures/" + meshes[i]->material.textureMapDiffuseFile).c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		SOIL_free_image_data(image);
@@ -906,7 +906,7 @@ void Model::loadTextures(int i)
 	{
 		int width, height;
 		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.textureMapSpecularFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+		image = SOIL_load_image(("textures/" + meshes[i]->material.textureMapSpecularFile).c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		SOIL_free_image_data(image);

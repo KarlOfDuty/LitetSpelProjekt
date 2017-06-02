@@ -14,6 +14,7 @@ void Level::loadLevel(Player* player)
 		line << str;
 		line >> str;
 		if (modelDebug)std::cout << str << std::endl;
+		//denpending on the type of item to load, the different fuctions will be ran
 		if (str == "staticModels")
 		{
 			line >> path;
@@ -33,7 +34,7 @@ void Level::loadLevel(Player* player)
 		else if (str == "enemies")
 		{
 			line >> path;
-			//readEnemies(path.c_str()); //fix emil plz
+			readEnemies(path.c_str());
 		}
 		else if (str == "triggers")
 		{
