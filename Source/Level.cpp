@@ -529,6 +529,11 @@ void Level::unloadModels()
 		delete colliders[i];
 	}
 	colliders.clear();
+	for (int i = 0; i < dirLights.size(); i++)
+	{
+		delete dirLights[i];
+	}
+	dirLights.clear();
 }
 
 void Level::updateTriggers(float dt)

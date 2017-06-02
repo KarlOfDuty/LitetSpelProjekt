@@ -6,7 +6,7 @@ Menu::Menu(float width, float height, SoundSystem * sound)
 
 	soundS = sound;
 
-	if (!font.loadFromFile("arial.ttf"))
+	if (!font.loadFromFile("fonts/arial.ttf"))
 	{
 		//handel error
 	}
