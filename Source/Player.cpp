@@ -30,9 +30,10 @@ Player::Player()
 	sharkModel->readModel("models/Characters/Shark/model.bb");
 	sharkModel->loadWeight("models/Characters/Shark/weightInfo.bb");
 	sharkModel->loadSkeleton("models/Characters/Shark/Idle/skelInfo.bb");
-	//sharkModel->loadSkeleton("models/Characters/Shark/Run/skelInfo.bb");
-	//sharkModel->loadSkeleton("models/Characters/Shark/Jump/StillJump/skelInfo.bb");
-	//sharkModel->loadSkeleton("models/Characters/Shark/Special/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Actions/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Run/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Jump/StillJump/skelInfo.bb");
+	sharkModel->loadSkeleton("models/Characters/Shark/Special/skelInfo.bb");
 	sharkModel->setupModel();
 
 	Model* butterflyModel = new Model();
@@ -45,8 +46,6 @@ Player::Player()
 	butterflyModel->loadSkeleton("models/Characters/Butter/Jump/RunningJump/skelInfo.bb");
 	butterflyModel->loadSkeleton("models/Characters/Butter/Special/skelInfo.bb");
 	butterflyModel->setupModel();
-	//Model* sharkModel = new Model("models/Characters/Shark/Fish_T-Pose_Export.obj", modelMatrix);
-	//Model* butterflyModel = new Model("models/Characters/Butterfly/ButterFly.obj", modelMatrix);
 
 	arrow = new Model("models/cube/cubeGreen.obj");
 
