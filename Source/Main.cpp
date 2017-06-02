@@ -175,7 +175,7 @@ int main()
 		{
 			window.setActive(true);
 
-			running = eventHandler.handleEvents(window, player, soundSystem, menu);
+			running = eventHandler.handleEvents(window, player, soundSystem, menu, levelManager);
 			//if (running == true)
 			//{
 			//	running = true;
@@ -207,7 +207,7 @@ int main()
 		}
 		else if(running == 2)
 		{
-			running = eventHandler.handleEvents(window, player, soundSystem, menu);
+			running = eventHandler.handleEvents(window, player, soundSystem, menu, levelManager);
 			if (running == 1)
 			{
 				menu->pause();

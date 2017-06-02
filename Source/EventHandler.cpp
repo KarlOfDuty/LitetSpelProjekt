@@ -10,7 +10,7 @@ EventHandler::~EventHandler()
 
 }
 //Add any events that need to be handled here
-int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem * soundSystem, Menu * menu)
+int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem * soundSystem, Menu * menu, LevelManager &levelManager)
 {
 	//If several controllers are plugged in, this decides which is used
 	int controller = CONTROLLER0;
@@ -167,6 +167,18 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 	{
 		soundSystem->playSound("youDied");
 		youDied = true;
+		restartTimer.restart();
+	}
+	if (youDied)
+	{
+		if (restartTimer.getElapsedTime().asSeconds() > 4)
+		{
+			levelManager.currentLevel->unloadModels();
+			levelManager.currentLevel->loadLevel(player);
+			player->setHealth(20);
+			player->setPos(glm::vec3(0, 0, 0));
+			youDied = false;
+		}
 	}
 	return running;
 }
