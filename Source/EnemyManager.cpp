@@ -2,14 +2,51 @@
 
 EnemyManager::EnemyManager(SoundSystem * sound)
 {
-	slimeModel = new Model("models/Enemies/Slime/newSlime.obj");
-	toadModel = new Model("models/Enemies/Toad/newToad.obj");
-	batModel = new Model("models/Enemies/Bat/newBigBat.obj");
+	slimeModel = new Model();
+	slimeModel->readModel("models/Enemies/Slime/model.bb");
+	slimeModel->setupModel();
+
+	toadModel = new Model();
+	toadModel->readModel("models/Enemies/Toad/model.bb");
+	toadModel->loadWeight("models/Enemies/Toad/weight.bb");
+	toadModel->setupModel();
+	toadModel->loadSkeleton("models/Enemies/Toad/walk.bb");
+	toadModel->loadSkeleton("models/Enemies/Toad/jump.bb");
+
+	batModel = new Model();
+	batModel->readModel("models/Enemies/Bat/model.bb");
+	batModel->loadWeight("models/Enemies/Bat/weight.bb");
+	batModel->setupModel();
+	batModel->loadSkeleton("models/Enemies/Bat/flying.bb");
+
 	batSmallModel = new Model("models/Enemies/BatSmall/newSmallBat.obj");
-	bossModel = new Model("models/Enemies/Boss/FullBoss.obj");
-	skeletonModel = new Model("models/Enemies/Skeleton/newSkeleton.obj");
-	crabModel = new Model("models/Enemies/Crab/newCrab.obj");
-	fireflyModel = new Model("models/cube/cube.obj");
+
+	bossModel = new Model();
+	bossModel->readModel("models/Enemies/Boss/model.bb");
+	bossModel->loadWeight("models/Enemies/Boss/weight.bb");
+	bossModel->setupModel();
+	bossModel->loadSkeleton("models/Enemies/Boss/roar.bb");
+	bossModel->loadSkeleton("models/Enemies/Boss/charge.bb");
+	bossModel->loadSkeleton("models/Enemies/Boss/spit.bb");
+
+	skeletonModel = new Model();
+	skeletonModel->readModel("models/Enemies/Skeleton/model.bb");
+	skeletonModel->loadWeight("models/Enemies/Skeleton/weight.bb");
+	skeletonModel->setupModel();
+	skeletonModel->loadSkeleton("models/Enemies/Skeleton/walk.bb");
+	skeletonModel->loadSkeleton("models/Enemies/Skeleton/attack.bb");
+
+	crabModel = new Model();
+	crabModel->readModel("models/Enemies/Crab/model.bb");
+	crabModel->loadWeight("models/Enemies/Crab/weight.bb");
+	crabModel->setupModel();
+	crabModel->loadSkeleton("models/Enemies/Crab/walk.bb");
+	crabModel->loadSkeleton("models/Enemies/Crab/attack.bb");
+	crabModel->setAnimationIndex(0);
+
+	fireflyModel = new Model();
+	fireflyModel->readModel("models/Enemies/Firefly/model.bb");
+	fireflyModel->setupModel();
 	allProjectiles = new std::vector<Projectile*>();
 
 	this->sound = sound;
@@ -22,33 +59,33 @@ EnemyManager::~EnemyManager()
 
 void EnemyManager::createSlime(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemySlime(3, new Model(slimeModel), 1, 0.5, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f), sound));
+	this->allEnemies.push_back(new EnemySlime(2, new Model(slimeModel), 1, 1, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f), sound));
 }
 
 void EnemyManager::createToad(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyToad(5, new Model(toadModel), 2, 0.5, enemyStartPos, glm::vec3(3.30f, 3.30f, 3.30f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemyToad(4, new Model(toadModel), 2, 1, enemyStartPos, glm::vec3(3.30f, 3.30f, 3.30f), allProjectiles, sound));
 }
 
 void EnemyManager::createGiantBat(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, 0.5, enemyStartPos, glm::vec3(2.5f, 2.5f, 2.5f), sound));
+	this->allEnemies.push_back(new EnemyBat(5, new Model(batModel), 2, 1, enemyStartPos, glm::vec3(2.5f, 2.5f, 2.5f), sound));
 }
 
 void EnemyManager::createBatSwarm(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyBatSmall(1, new Model(batSmallModel), 1, 0.5, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f), sound));
+	this->allEnemies.push_back(new EnemyBatSmall(1, new Model(batSmallModel), 1, 1, enemyStartPos, glm::vec3(2.8f, 2.8f, 2.8f), sound));
 	allSmallBats.push_back(allEnemies.back());
 }
 
 void EnemyManager::createSkeleton(glm::vec3 enemyStartPos, bool patrol)
 {
-	this->allEnemies.push_back(new EnemySkeleton(10, new Model(skeletonModel), 4, 0.5, patrol, enemyStartPos, glm::vec3(1.5f, 1.3f, 1.5f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemySkeleton(8, new Model(skeletonModel), 4, 1, patrol, enemyStartPos, glm::vec3(1.5f, 1.3f, 1.5f), allProjectiles, sound));
 }
 
 void EnemyManager::createCrab(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyCrab(6, new Model(crabModel), 3, 0.5, enemyStartPos, glm::vec3(2.70f, 2.70f, 2.70f), sound));
+	this->allEnemies.push_back(new EnemyCrab(5, new Model(crabModel), 3, 1, enemyStartPos, glm::vec3(2.70f, 2.70f, 2.70f), sound));
 }
 
 void EnemyManager::createBoss(glm::vec3 enemyStartPos)
@@ -58,7 +95,7 @@ void EnemyManager::createBoss(glm::vec3 enemyStartPos)
 
 void EnemyManager::createFirefly(glm::vec3 enemyStartPos)
 {
-	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, 0.5, enemyStartPos, glm::vec3(5.16f, 5.16f, 5.16f), allProjectiles, sound));
+	this->allEnemies.push_back(new EnemyFireFly(1, new Model(fireflyModel), 2, 1, enemyStartPos, glm::vec3(10.0f, 10.0f, 10.0f), allProjectiles, sound));
 }
 
 void EnemyManager::clearDeadEnemies()
@@ -116,6 +153,7 @@ void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allMo
 		{
 			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, allSmallBats, allModels, player); }, allEnemies[i]));
 		}
+		allEnemies[i]->getModel()->updateAnimation(dt);
 	}
 	for (int i = 0; i < allThreads.size(); i++)
 	{
@@ -130,11 +168,11 @@ void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allMo
 		if (allProjectiles->at(i)->isInUse())
 		{
 			std::vector<glm::vec2> arrowPoints = allProjectiles->at(i)->getPoints();
-			if (glm::distance(allProjectiles->at(i)->getPos(), player->getPos()) < 2.0f)
+			if (glm::distance(allProjectiles->at(i)->getPos(), player->getPos()) < 200.0f)
 			{
 				if (collision::collision(arrowPoints, player->getPoints()))
 				{
-					player->applyDamage(1);
+					player->applyDamage(allProjectiles->at(i)->getDamage());
 					allProjectiles->at(i)->disableArrow();
 				}
 			}
@@ -164,7 +202,7 @@ void EnemyManager::draw(Shader shader)
 	}
 	for (int i = 0; i < allProjectiles->size(); i++)
 	{
-		if (allProjectiles->at(i)->isInUse())
+		if (allProjectiles->at(i)->isInUse() && allProjectiles->at(i)->isProjectileAttack())
 		{
 			allProjectiles->at(i)->draw(shader);
 		}

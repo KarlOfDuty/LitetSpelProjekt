@@ -78,6 +78,7 @@ GLuint VBO, VAO, EBO;
 GLuint quadVAO = 0;
 GLuint quadVBO;
 
+std::vector<Model*> menuModelsToBeDrawn;
 std::vector<Model*> modelsToBeDrawn;
 
 //Functions
@@ -87,6 +88,7 @@ void update(sf::RenderWindow &window);
 void updateM(sf::RenderWindow &window);
 void createGBuffer();
 void drawQuad();
+void loadMenu();
 void loadLevel();
 void unloadLevel();
 
@@ -143,6 +145,7 @@ int main()
 	playerCamera.setupFrustum(verticalFOV, windowWidth, windowHeight, nearDistance, farDistance);
 	//Load level
 	loadLevel();
+	loadMenu();
 	//Create the gbuffer textures and lights
 	createGBuffer();
 
@@ -152,7 +155,9 @@ int main()
 
 	//menu system
 	menu = new Menu(window.getSize().x, window.getSize().y, soundSystem);
-	viewMatrixM = playerCamera.update(glm::vec3(0,2,0));
+	viewMatrixM = playerCamera.update(glm::vec3(300,0,-300));
+	viewMatrixM = playerCamera.update(glm::vec3(190, -20, -250), glm::vec3(-280, 20, 200));
+	
 
 	//quit = 0, menu 1 and game 2
 	int running = 1;
@@ -167,12 +172,12 @@ int main()
 		{
 			window.setActive(true);
 
-			running = eventHandler.handleEvents(window, player, soundSystem, menu);
-			if (running == true)
-			{
-				running = true;
-				//testing
-			}
+			running = eventHandler.handleEvents(window, player, soundSystem, menu, levelManager);
+			//if (running == true)
+			//{
+			//	running = true;
+			//	//testing
+			//}
 			
 			//Clear the buffers
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -187,9 +192,9 @@ int main()
 				firstFrame = false;
 			}
 
-			/*window.setActive(true);
+			window.setActive(true);
 			renderM();
-			window.setActive(false);*/
+			window.setActive(false);
 
 			window.pushGLStates();
 			menu->draw(window);
@@ -199,7 +204,7 @@ int main()
 		}
 		else if(running == 2)
 		{
-			running = eventHandler.handleEvents(window, player, soundSystem, menu);
+			running = eventHandler.handleEvents(window, player, soundSystem, menu, levelManager);
 			if (running == 1)
 			{
 				menu->pause();
@@ -259,12 +264,12 @@ void render()
 			glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &levelManager.currentLevel->getStaticModels()[j]->getModelMatrix()[0][0]);
 			levelManager.currentLevel->getStaticModels()[j]->draw(shadowShader);
 		}
-		glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel().getModelMatrix()[0][0]);
-		enemyManager->draw(shadowShader);
+		glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel()->getModelMatrix()[0][0]);
 		if (player->playerIsDead() != true)
 		{
-			player->draw(shadowShader);
+			//player->draw(shadowShader);
 		}
+		enemyManager->draw(shadowShader);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, windowWidth, windowHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -372,13 +377,6 @@ void renderM()
 			glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &levelManager.currentMenu->getStaticModels()[j]->getModelMatrix()[0][0]);
 			levelManager.currentMenu->getStaticModels()[j]->draw(shadowShader);
 		}
-		//glUniformMatrix4fv(glGetUniformLocation(shadowShader.program, "model"), 1, GL_FALSE, &player->getCurrentCharacter()->getModel().getModelMatrix()[0][0]);
-		//enemyManager->draw(shadowShader);
-		//if (player->playerIsDead() != true)
-		//{
-		//	player->draw(shadowShader);
-		//}
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, windowWidth, windowHeight);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
@@ -408,11 +406,6 @@ void renderM()
 		glUniformMatrix4fv(glGetUniformLocation(deferredGeometryPass.program, "model"), 1, GL_FALSE, &dynamicModels[i]->getModelMatrix()[0][0]);
 		dynamicModels.at(i)->draw(deferredGeometryPass);
 	}
-	//if (player->playerIsDead() != true)
-	//{
-	//	player->draw(deferredGeometryPass);
-	//}
-	//enemyManager->draw(deferredGeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -468,7 +461,6 @@ void update(sf::RenderWindow &window)
 	}
 
 	enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getCollisionBoxes(), player);
-
 	//Camera update, get new viewMatrix
 	if (enemyManager->getBossKill() && !cameraOnBoss)
 	{
@@ -515,31 +507,10 @@ void update(sf::RenderWindow &window)
 void updateM(sf::RenderWindow &window)
 {
 	dt = deltaClock.restart().asSeconds();
-	//Update player if not dead
-	//if (!player->playerIsDead())
-	//{
-	//	player->update(window, dt, levelManager.currentLevel->getStaticModels(), enemyManager->getAllEnemies());
-	//}
+	
 
-	//enemyManager->update(dt, player->getDamage(), levelManager.currentLevel->getStaticModels(), player);
+	viewMatrix = viewMatrixM;
 
-	//Camera update, get new viewMatrix
-	//if (aboveView)
-	//{
-		viewMatrix = viewMatrixM;
-		//viewMatrix = glm::lookAt(
-		//	glm::vec3(1, 20, 0),
-		//	glm::vec3(1, 1, 0.01),
-		//	glm::vec3(0, 0.01, 0));
-		//viewMatrix = glm::lookAt(
-		//	glm::vec3(1, 0, 0),
-		//	glm::vec3(0, 1, 0),
-		//	glm::vec3(0, 0, 1));
-	//}
-	//else
-	//{
-	//	viewMatrix = playerCamera.update(player->getPos());
-	//}
 
 	if (endLevel)
 	{
@@ -547,9 +518,6 @@ void updateM(sf::RenderWindow &window)
 		loadLevel();
 		endLevel = false;
 	}
-	//levelManager.currentLevel->updateTriggers(dt);
-	//playerCamera.frustumCulling(modelsToBeDrawn);
-	//gui.update(player);
 }
 
 //Create the buffer
@@ -676,6 +644,20 @@ void drawQuad()
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void loadMenu()
+{
+	levelManager.currentMenu->loadLevel(player);
+
+	menuModelsToBeDrawn = levelManager.currentMenu->getStaticModels();
+
+	std::srand((int)time(0));
+
+	levelManager.currentLevel->getDirLights().push_back(new DirectionalLight(
+		glm::normalize(glm::vec3(1.0f, -4.0f, 0.0f)),
+		glm::vec3(1.0f, 1.0f, 1.0f)));
+
 }
 
 void loadLevel()

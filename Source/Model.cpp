@@ -175,6 +175,19 @@ void Model::setScale(glm::vec3& scale)
 	this->modelMatrix[1][1] = scale.y;
 	this->modelMatrix[2][2] = scale.z;
 }
+void Model::setCurrentKeyframe(int frame)
+{
+	this->currentFrame = frame;
+}
+void Model::resetKeyframe()
+{
+	this->currentFrame = 1;
+}
+void Model::setAnimationIndex(int index)
+{
+	this->lastAnimationIndex = this->currentAnimationIndex;
+	this->currentAnimationIndex = index;
+}
 void Model::addMesh(Mesh* mesh)
 {
 	meshes.push_back(mesh);
@@ -308,8 +321,6 @@ void Model::readOBJ(std::string filename)
 					i++;
 				};
 				Vertex aVertex;
-				//This variable is handled in the setup function
-				aVertex.useNormalMap = 0;
 				//Creates a vertex from the data pointed to by the indices
 				if (i == 3)
 				{
@@ -543,6 +554,8 @@ bool Model::readModel(const char* filePath)
 				std::cout << vec3.z << std::endl;
 			}
 			mesh->vertices[(k * 3) + h].pos = vec3;
+			mesh->vertices[(k * 3) + h].controllers = glm::ivec4(0);
+			mesh->vertices[(k * 3) + h].weightsInfluence = glm::vec4(0);
 		}
 		for (int h = 0; h < 3; h++)
 		{
@@ -565,7 +578,7 @@ bool Model::readModel(const char* filePath)
 				std::cout << vec3.y << " ";
 				std::cout << vec3.z << std::endl;
 			}
-			mesh->vertices[(k * 3) + h].tangent = vec3;
+			//mesh->vertices[(k * 3) + h].tangent = vec3;
 			//Read the BiNormals for the primitive
 			in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 			if (modelDebug)
@@ -575,7 +588,7 @@ bool Model::readModel(const char* filePath)
 				std::cout << vec3.y << " ";
 				std::cout << vec3.z << std::endl;
 			}
-			mesh->vertices[(k * 3) + h].biTangent = vec3;
+			//mesh->vertices[(k * 3) + h].biTangent = vec3;
 		}
 		//Read the UVs for the primitive
 		for (int h = 0; h < 3; h++)
@@ -587,7 +600,8 @@ bool Model::readModel(const char* filePath)
 				std::cout << vec2.x << " ";
 				std::cout << vec2.y << std::endl;
 			}
-			mesh->vertices[(k * 3) + h].texPos = vec2;
+			mesh->vertices[(k * 3) + h].texPos.x = vec2.x;
+			mesh->vertices[(k * 3) + h].texPos.y = (vec2.y * -1.0f) + 1.0f;
 		}
 	}
 	//Diffuse texture file
@@ -629,11 +643,15 @@ bool Model::readModel(const char* filePath)
 	glm::vec3 scale;
 	in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
 	this->setScale(scale);
+
+	bool hasAnimation = false;
+	in.read(reinterpret_cast<char*>(&hasAnimation), sizeof(bool));
+	this->hasAnimations = hasAnimation;
+
 	//Set up model
+
 	this->rotate();
 	this->addMesh(mesh);
-	this->setupModel();
-	this->loadTextures(0);
 	this->setBoundingSphereRadius();
 	in.close();
 	return true;
@@ -659,8 +677,8 @@ void Model::loadSkeleton(const char* filePath)
 		in.read(tempName, nrOfChars);
 		name.append(tempName, nrOfChars);
 
-		std::cout << name << std::endl;
-		delete tempName;
+		//std::cout << name << std::endl;
+		delete[] tempName;
 
 		Joint *joint = new Joint();
 		joint->nrOfKeys = nrOfKeyframes;
@@ -681,24 +699,18 @@ void Model::loadSkeleton(const char* filePath)
 			in.read(reinterpret_cast<char*>(&tempMap[3]), sizeof(tempMap[3]));
 			joint->transformMat.push_back(tempMap);
 		}
-		skeleton.push_back(joint);
+		this->skeleton[indexNr].push_back(joint);
 	}
 }
 void Model::loadWeight(const char* filePath)
 {
-
 	std::ifstream in(filePath, std::ios::binary);
-
-	int nrOfIndices = 0;
 	int nrOfPolygons = 0;
 	in.read(reinterpret_cast<char*>(&nrOfPolygons), sizeof(int));
-	in.read(reinterpret_cast<char*>(&nrOfIndices), sizeof(int));
-	weightInfo.nrOfIndices = nrOfIndices;
 	int polygonIndex[3];
 	int jointIndex = 0;
 	float influence = 0;
 
-	glm::ivec3 polygonVertexIndex;
 	glm::ivec4 controllers;
 	glm::vec4 weightInfluences;
 
@@ -707,7 +719,6 @@ void Model::loadWeight(const char* filePath)
 		for (int i = 0; i < 3; i++) 
 		{
 			in.read(reinterpret_cast<char*>(&polygonIndex[i]), sizeof(int));
-			polygonVertexIndex[i] = polygonIndex[i];
 		}
 
 		for (int i = 0; i < 3; i++)
@@ -721,16 +732,55 @@ void Model::loadWeight(const char* filePath)
 				in.read(reinterpret_cast<char*>(&influence), sizeof(influence));
 				weightInfluences[q] = influence;
 				check = in.tellg();
-
+				
 			}
-			weightInfo.controllers.push_back(controllers);
-			weightInfo.weightsInfluence.push_back(weightInfluences);
+			meshes[0]->vertices[(k*3) + i].controllers = controllers;
+			meshes[0]->vertices[(k * 3) + i].weightsInfluence = weightInfluences;
+		}
+	}
+}
+void Model::updateAnimation(float dtChange)
+{
+	dt += dtChange;
+	if (skeleton[this->currentAnimationIndex].size())
+	{
+		if (lastAnimationIndex != currentAnimationIndex) 
+		{
+			currentFrame = 1;
+		}
+		if(dt >= 0.02)
+		{
+			int round = dt;
+			dt = -round;
+			if (currentFrame + 4 + round < this->skeleton[currentAnimationIndex][0]->nrOfKeys)
+			{
+				
+				currentFrame += 4 + round;
+			
+			}
+			else
+			{
+				currentFrame = 1;
+			}
 		}
 	}
 }
 //Draws the model
 void Model::draw(Shader shader)
 {
+	if (skeleton[currentAnimationIndex].size())
+	{
+		//std::cout << this->skeleton[0]->transformMat.size() << " " << currentFrame << std::endl;
+		for (int i = 0; i < skeleton[currentAnimationIndex].size(); i++)
+		{
+			currentJointTrans[i] = skeleton[currentAnimationIndex][i]->transformMat[currentFrame - 1] * skeleton[currentAnimationIndex][i]->globalBindPosMat;
+		}
+		for (int j = 0; j < 100; j++)
+		{
+			glUniformMatrix4fv(glGetUniformLocation(shader.program, ("currentJointTrans[" + std::to_string(j) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(currentJointTrans[j]));
+		}
+	}
+	glUniform1i(glGetUniformLocation(shader.program,"hasAnimation"),(int)hasAnimations);
 	//Draw vertices
 	glBindVertexArray(this->VAO);
 	for (int i = 0; i < this->meshes.size(); i++)
@@ -769,10 +819,6 @@ void Model::setupModel()
 		//Iterate through vertices in the face
 		for (int j = 0; j < meshes[i]->vertices.size(); j++)
 		{
-			if (meshes[i]->material.normalMapFile != "")
-			{
-				meshes[i]->vertices[j].useNormalMap = 1;
-			}
 			vertices.push_back(meshes[i]->vertices.at(j));
 		}
 		loadTextures(i);
@@ -789,9 +835,12 @@ void Model::setupModel()
 	//Normal
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 5));
-	//UseNormalMap Bool
+	//Weights
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 4, GL_INT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 8));
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 8));
+	//Controllers
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), BUFFER_OFFSET(sizeof(float) * 12));
 	//Unbind the vertex array buffer
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -811,7 +860,7 @@ void Model::loadTextures(int i)
 	{
 		int width, height;
 		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.textureMapAmbientFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+		image = SOIL_load_image(("textures/" + meshes[i]->material.textureMapAmbientFile).c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		SOIL_free_image_data(image);
@@ -840,7 +889,7 @@ void Model::loadTextures(int i)
 	{	
 		int width, height;
 		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.textureMapDiffuseFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+		image = SOIL_load_image(("textures/" + meshes[i]->material.textureMapDiffuseFile).c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		SOIL_free_image_data(image);
@@ -870,7 +919,7 @@ void Model::loadTextures(int i)
 	{
 		int width, height;
 		unsigned char* image;
-		image = SOIL_load_image(meshes[i]->material.textureMapSpecularFile.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+		image = SOIL_load_image(("textures/" + meshes[i]->material.textureMapSpecularFile).c_str(), &width, &height, 0, SOIL_LOAD_RGB);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		SOIL_free_image_data(image);
@@ -890,73 +939,98 @@ void Model::loadTextures(int i)
 //Constructors
 Model::Model(std::string filename)
 {
+	
 	//Initializes the model without a rotation or model matrix. Does not set the model up so it can be drawn.
+	this->hasAnimations = false;
+	this->lastAnimationIndex = 0;
 	this->modelMatrix = glm::mat4(1.0);
 	this->rotationMatrix = glm::mat4(1.0);
 	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
+	this->dt = 0;
 }
 Model::Model(std::string filename, glm::mat4 modelMat)
 {
 	//Initializes the model without a rotation
+	this->hasAnimations = false;
+	this->lastAnimationIndex = 0;
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = glm::mat4(1.0);
 	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
+	this->dt = 0;
 }
 Model::Model(std::string filename, glm::mat4 modelMat, glm::mat4 rotation)
 {
 	//Initializes the model
+	this->hasAnimations = false;
+	this->lastAnimationIndex = 0;
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = rotation;
 	readOBJ(filename);
 	setupModel();
 	setBoundingSphereRadius();
+	this->dt = 0;
 }
 Model::Model()
 {
 	//Initializes the model with no data
+	this->hasAnimations = false;
+	this->lastAnimationIndex = 0;
 	this->modelMatrix = glm::mat4(1.0);
 	this->rotationMatrix = glm::mat4(1.0);
+	this->dt = 0;
 }
 //Copy constructors
 Model::Model(Model &otherModel)
 {
+	this->hasAnimations = otherModel.hasAnimations;
 	this->modelMatrix = otherModel.modelMatrix;
 	this->rotationMatrix = otherModel.rotationMatrix;
+	this->skeleton[this->currentAnimationIndex] = otherModel.skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel.meshes;
 	this->VAO = otherModel.VAO;
 	this->VBO = otherModel.VBO;
 	this->boundingSphereRadius = otherModel.boundingSphereRadius;
+	this->dt = 0;
 }
 Model::Model(Model *otherModel)
 {
+	this->hasAnimations = otherModel->hasAnimations;
 	this->modelMatrix = otherModel->modelMatrix;
 	this->rotationMatrix = otherModel->rotationMatrix;
+	this->skeleton[this->currentAnimationIndex] = otherModel->skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel->meshes;
 	this->VAO = otherModel->VAO;
 	this->VBO = otherModel->VBO;
 	this->boundingSphereRadius = otherModel->boundingSphereRadius;
+	this->dt = 0;
 }
 Model::Model(Model &otherModel, glm::mat4 modelMat)
 {
+	this->hasAnimations = otherModel.hasAnimations;
 	this->modelMatrix =  modelMat;
 	this->rotationMatrix = otherModel.rotationMatrix;
+	this->skeleton[this->currentAnimationIndex] = otherModel.skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel.meshes;
 	this->VAO = otherModel.VAO;
 	this->VBO = otherModel.VBO;
 	this->boundingSphereRadius = otherModel.boundingSphereRadius;
+	this->dt = 0;
 }
 Model::Model(Model *otherModel, glm::mat4 modelMat)
 {
+	this->hasAnimations = otherModel->hasAnimations;
 	this->modelMatrix = modelMat;
 	this->rotationMatrix = otherModel->rotationMatrix;
+	this->skeleton[this->currentAnimationIndex] = otherModel->skeleton[this->currentAnimationIndex];
 	this->meshes = otherModel->meshes;
 	this->VAO = otherModel->VAO;
 	this->VBO = otherModel->VBO;
 	this->boundingSphereRadius = otherModel->boundingSphereRadius;
+	this->dt = 0;
 }
 //Destructor
 Model::~Model()

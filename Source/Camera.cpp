@@ -21,11 +21,25 @@ glm::mat4 Camera::update(glm::vec3 playerPos)
 	this->cameraPos.y = playerPos.y + 50;
 	this->cameraPos.z = playerPos.z + 300;
 
-	this->cameraFront = playerPos  - cameraPos;
+	this->cameraFront = playerPos - cameraPos;
 	this->cameraFront = glm::normalize(cameraFront);
 
 	//The camera also points to a point slightly above the player
 	return glm::lookAt(cameraPos, playerPos + glm::vec3(0, 0, 0), cameraUp);
+}
+//fix functio to rotate menu
+glm::mat4 Camera::update(glm::vec3 playerPos, glm::vec3 menuOfset)
+{
+	//The camera is always in front of the player and slightly above.
+	this->cameraPos.x = playerPos.x;
+	this->cameraPos.y = playerPos.y + 50;
+	this->cameraPos.z = playerPos.z + 300;
+
+	this->cameraFront = playerPos - cameraPos;
+	this->cameraFront = glm::normalize(cameraFront);
+
+	//The camera also points to a point slightly above the player
+	return glm::lookAt(cameraPos, playerPos + menuOfset, cameraUp);
 }
 glm::vec3 Camera::getCameraPos()
 {

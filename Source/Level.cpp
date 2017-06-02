@@ -14,6 +14,7 @@ void Level::loadLevel(Player* player)
 		line << str;
 		line >> str;
 		if (modelDebug)std::cout << str << std::endl;
+		//denpending on the type of item to load, the different fuctions will be ran
 		if (str == "staticModels")
 		{
 			line >> path;
@@ -93,6 +94,7 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 			settings = TriggerSettings();
 			activators.clear();
 			targets.clear();
+			commands.clear();
 		}
 		//Activators
 		else if (str == "activator")
@@ -117,6 +119,22 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 				line >> tempInt;
 				activators.push_back(colliders[tempInt]);
 			}
+			else if (str == "enemy")
+			{
+				line >> str;
+				if (str == "all")
+				{
+					for (int i = 0; i < enemyList->getAllEnemies().size(); i++)
+					{
+						activators.push_back(enemyList->getAllEnemies()[i]);
+					}
+				}
+				else
+				{
+					int index = std::stoi(str);
+					activators.push_back(enemyList->getAllEnemies()[index]);
+				}
+			}
 		}
 		//Targets
 		else if (str == "target")
@@ -140,6 +158,22 @@ void Level::readTriggers(const char* filePath, std::vector<Trigger*> &vector, Pl
 			{
 				line >> tempInt;
 				targets.push_back(colliders[tempInt]);
+			}
+			else if (str == "enemy")
+			{
+				line >> str;
+				if (str == "all")
+				{
+					for (int i = 0; i < enemyList->getAllEnemies().size(); i++)
+					{
+						targets.push_back(enemyList->getAllEnemies()[i]);
+					}
+				}
+				else
+				{
+					int index = std::stoi(str);
+					targets.push_back(enemyList->getAllEnemies()[index]);
+				}
 			}
 		}
 		//Commands
@@ -258,6 +292,8 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.z << std::endl;
 				}
 				mesh->vertices[(k * 3) + h].pos = vec3;
+				mesh->vertices[(k * 3) + h].controllers = glm::ivec4(0);
+				mesh->vertices[(k * 3) + h].weightsInfluence = glm::vec4(0);
 			}
 			for (int h = 0; h < 3; h++)
 			{
@@ -280,7 +316,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.y << " ";
 					std::cout << vec3.z << std::endl;
 				}
-				mesh->vertices[(k * 3) + h].tangent = vec3;
+				//mesh->vertices[(k * 3) + h].tangent = vec3;
 				//Read the BiNormals for the primitive
 				in.read(reinterpret_cast<char*>(&vec3), sizeof(vec3));
 				if (modelDebug)
@@ -290,7 +326,7 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 					std::cout << vec3.y << " ";
 					std::cout << vec3.z << std::endl;
 				}
-				mesh->vertices[(k * 3) + h].biTangent = vec3;
+				//mesh->vertices[(k * 3) + h].biTangent = vec3;
 			}
 			//Read the UVs for the primitive
 			for (int h = 0; h < 3; h++)
@@ -344,11 +380,14 @@ bool Level::readModels(const char* filePath, std::vector<Model*> &modelVector)
 		glm::vec3 scale;
 		in.read(reinterpret_cast<char*>(&scale), sizeof(scale));
 		model->setScale(scale);
+
+		bool hasAnimation = false;
+		in.read(reinterpret_cast<char*>(&hasAnimation), sizeof(bool));
+
 		//Set up model
 		model->rotate();
 		model->addMesh(mesh);
 		model->setupModel();
-		model->loadTextures(0);
 		model->setBoundingSphereRadius();
 		modelVector.push_back(model);
 	}
@@ -480,6 +519,7 @@ void Level::unloadModels()
 	}
 	colliders.clear();
 }
+
 void Level::updateTriggers(float dt)
 {
 	for (int i = 0; i < triggerBoxes.size(); i++)
@@ -571,7 +611,7 @@ Level::Level(std::string filePath, EnemyManager * enemy)
 {
 	this->enemyList = enemy;
 	this->filePath = filePath;
-	playerPos = glm::vec3(0, 0, 0);
+	playerPos = glm::vec3(0, 2, 0);
 }
 //Destructor
 Level::~Level()

@@ -1,5 +1,4 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 #include "PlayerBird.h"
 #include "PlayerShark.h"
 #include "PlayerButterfly.h"
@@ -24,6 +23,9 @@ private:
 	void freeMemory();
 	sf::Clock damageImmunity;
 	sf::Clock tpCooldown;
+	sf::Clock rotating;
+	sf::Clock timeSinceJump;
+	sf::Clock timeSinceAttack;
 	glm::mat4 modelMatrix;
 	glm::mat4 rotationMatrix;
 	int health;
@@ -31,22 +33,26 @@ private:
 	float velocityY;
 	bool goingLeft;
 	bool goingRight;
+	bool isIdle;
 	float angle;
 	bool isOnGround;
+	bool attacking;
+	
+	bool restartKeyframes;
 	int jumps;
 	float movementSpeed;
 	float groundPos;
 	bool diving;
 	enum { CONTROLLER0, CONTROLLER1, CONTROLLER2, CONTROLLER3 };
 	std::vector<Model*> debugCubes;
-	
+
 	Model* arrow;
 
 	std::vector<Projectile*> allAttackBoxes;
 	std::vector<Projectile*> allArrowAttackBoxes;
 	std::vector<Projectile*> allAOEAttackBoxes;
 	std::vector<Projectile*> allMeleeAttackBoxes;
-	
+
 	std::vector<Model*> allStaticModels;
 
 public:
@@ -79,9 +85,14 @@ public:
 	void collision(std::vector<Model*> &allModels);
 	void getPoints(std::vector<glm::vec2> &objectPoints, Model *object, float &radians);
 	void setStaticModels(std::vector<Model*> allStaticModels);
+	void setCurrentKeyframe(int frame);
+	void setAnimationIndex(int index);
+	void restartTimeSinceJump();
+	void restartTimeSinceAttack();
+	void setAttacking(bool attacking);
 	bool getDiving() const;
 	void setDiving(bool diving);
 	void setHealth(int health);
 	void groundCheck();
+	//bool firstTimeIdleFrame = true;
 };
-#endif

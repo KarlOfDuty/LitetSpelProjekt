@@ -29,7 +29,7 @@ void EnemySkeleton::attackPlayer(float dt, glm::vec3 playerPos, glm::vec3 enemyP
 			glm::vec3 scale(0.0, 75.0, 2.0);
 			glm::vec2 direction = (getPos().x >= playerPos.x) ? glm::vec2(-1, 0) : glm::vec2(1, 0);
 			Projectile* temp = new Projectile;
-			temp->enemyMelee(box, enemyPosCurrent, direction, 200.0f, scale);
+			temp->enemyMelee(box, getDamage(), enemyPosCurrent, direction, 200.0f, scale);
 			allProjectiles->push_back(temp);
 			attack = false;
 			jumpDelay.restart();
@@ -95,7 +95,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 	{
 		if (attack)
 		{
-			if (collidedFrom.x != 0 && collidedFrom.y > 0)
+			if (abs(collisionNormal.x) > 0.8 && collidedFrom.y > 0)
 			{
 				velocityY = 200;
 			}
@@ -104,7 +104,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 
 		if (!attack)
 		{
-			if (collidedFrom.x != 0 && collidedFrom.y > 0)
+			if (abs(collisionNormal.x) > 0.8 && collidedFrom.y > 0)
 			{
 				jumped = false;
 				velocityX = 0;
@@ -115,7 +115,7 @@ void EnemySkeleton::updateThis(float dt, glm::vec3 enemyPosCurrent, glm::vec3 ch
 		}
 		
 
-		if (collidedFrom.x != 0)
+		if (abs(collisionNormal.x) > 0.8)
 		{
 			if (collisionTime.getElapsedTime().asSeconds() >= 5)
 			{

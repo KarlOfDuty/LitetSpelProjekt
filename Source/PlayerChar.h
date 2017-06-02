@@ -7,19 +7,20 @@ class PlayerChar
 {
 private:
 	int damage;
-	Model playerModel;
+	Model* playerModel;
 	bool inWater;
 
 	//Animation animation;
 public:
 	PlayerChar();
-	PlayerChar(Model model, bool inWater);
+	PlayerChar(Model* model, bool inWater);
 	virtual ~PlayerChar();
 	void setSwim(bool swiming);
 	int getDamage() const;
+	void update(float dt);
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;
 	virtual float getJumpHeight() = 0;
-	Model& getModel();
+	Model* getModel();
 };
 #endif

@@ -9,7 +9,7 @@ private:
 	Model* box;
 	sf::Clock attackCooldown;
 public:
-	PlayerButterfly(Model model, bool inWater);
+	PlayerButterfly(Model* model, bool inWater);
 	virtual ~PlayerButterfly();
 	void operator=(const PlayerButterfly &originalObject);
 	int getMaxJumps();

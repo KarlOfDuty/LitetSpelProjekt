@@ -10,7 +10,7 @@ EventHandler::~EventHandler()
 
 }
 //Add any events that need to be handled here
-int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem * soundSystem, Menu * menu)
+int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem * soundSystem, Menu * menu, LevelManager &levelManager)
 {
 	//If several controllers are plugged in, this decides which is used
 	int controller = CONTROLLER0;
@@ -22,11 +22,11 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 	{
 		if (running == 1)
 		{
-			if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Left)
+			if (windowEvent.type == sf::Event::KeyPressed && (windowEvent.key.code == sf::Keyboard::Left || windowEvent.key.code == sf::Keyboard::Up))
 			{
 				menu->MoveLeft();
 			}
-			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Right)
+			else if (windowEvent.type == sf::Event::KeyPressed && (windowEvent.key.code == sf::Keyboard::Right || windowEvent.key.code == sf::Keyboard::Down))
 			{
 				menu->MoveRight();
 			}
@@ -81,11 +81,15 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Space && !keyPressed[sf::Keyboard::Space])
 			{
 				keyPressed[sf::Keyboard::Space] = true;
+				//player->setCurrentKeyframe(1);
 				player->jump();
 			}
 			else if (windowEvent.type == sf::Event::MouseButtonPressed && windowEvent.key.code == sf::Mouse::Button::Left)
 			{
 				player->lightAttackPressed(window);
+				player->setAnimationIndex(2);
+				player->setAttacking(true);
+				player->restartTimeSinceAttack();
 			}
 			else if (windowEvent.type == sf::Event::MouseButtonReleased && windowEvent.key.code == sf::Mouse::Button::Left)
 			{
@@ -111,16 +115,19 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Num1 && !keyPressed[sf::Keyboard::Num1])
 			{
 				keyPressed[sf::Keyboard::Num1] = true;
+				//player->setCurrentKeyframe(1);
 				player->swap(0);
 			}
 			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Num2 && !keyPressed[sf::Keyboard::Num2])
 			{
 				keyPressed[sf::Keyboard::Num2] = true;
+				//player->setCurrentKeyframe(1);
 				player->swap(1);
 			}
 			else if (windowEvent.type == sf::Event::KeyPressed && windowEvent.key.code == sf::Keyboard::Num3 && !keyPressed[sf::Keyboard::Num3])
 			{
 				keyPressed[sf::Keyboard::Num3] = true;
+				//player->setCurrentKeyframe(1);
 				player->swap(2);
 			}
 			else if (windowEvent.type == sf::Event::KeyReleased && windowEvent.key.code == sf::Keyboard::Num1)
@@ -160,6 +167,18 @@ int EventHandler::handleEvents(sf::Window & window, Player *player, SoundSystem 
 	{
 		soundSystem->playSound("youDied");
 		youDied = true;
+		restartTimer.restart();
+	}
+	if (youDied)
+	{
+		if (restartTimer.getElapsedTime().asSeconds() > 4)
+		{
+			levelManager.currentLevel->unloadModels();
+			levelManager.currentLevel->loadLevel(player);
+			player->setHealth(20);
+			player->setPos(glm::vec3(0, 0, 0));
+			youDied = false;
+		}
 	}
 	return running;
 }
