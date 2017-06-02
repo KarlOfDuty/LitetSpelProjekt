@@ -1,21 +1,16 @@
-enemies slime 790 45 0
-enemies slime 1516 170 0
-enemies slime 1950 400 0
-enemies toad 3181 525 0
-enemies slime 3213 33 0
-enemies firefly 3695 115 0
-enemies toad 4066 205 0
-enemies firefly 4260 380 0
-enemies slime 4715 390 0
-enemies slime 4550 380 0
-enemies toad 5160 500 0
-enemies firefly 5850 668 0
-enemies slime 6198 500 0
-enemies slime 6490 450 0
-enemies toad 6430 460 0
-enemies firefly 7055 396 0
-enemies firefly 7010 360 0
-enemies slime 7628 360 0
-enemies toad 7980 500 0
-enemies toad 8044 500 0
-enemies skeleton 8555 650 0
+#enemies slime 790 45 0
+#enemies slime 1522 170 0
+#enemies toad 1935 420 0
+#enemies slime 3210 525 0
+#enemies slime 3015 525 0
+#enemies slime 3180 35 0
+#enemies firefly 3680 0
+#enemies toad 4260 300 0
+#enemies toad 4760 400 0
+#enemies toad 5125 500 0
+#enemies firefly 5900 590 0
+#enemies toad 6550 400 0
+#enemies slime 6400 430 0
+#enemies slime 6700 430 0
+#enemies skeleton 7200 535 0
+

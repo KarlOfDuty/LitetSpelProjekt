@@ -1,11 +1,7 @@
 #include "GUI.h"
-<<<<<<< HEAD
-=======
-
 
 // Graphical user interface
 //is used for victory/end screens and the health bars
->>>>>>> refs/remotes/origin/master
 GUI::GUI()
 {
 	isDead = false;
