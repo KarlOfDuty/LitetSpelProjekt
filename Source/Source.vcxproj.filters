@@ -81,9 +81,6 @@
     <ClCompile Include="Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EnemyBat.cpp">
       <Filter>Source Files\Enemies</Filter>
     </ClCompile>
