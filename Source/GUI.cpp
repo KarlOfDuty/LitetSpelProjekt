@@ -1,4 +1,11 @@
 #include "GUI.h"
+<<<<<<< HEAD
+=======
+
+
+// Graphical user interface
+//is used for victory/end screens and the health bars
+>>>>>>> refs/remotes/origin/master
 GUI::GUI()
 {
 	isDead = false;
@@ -40,6 +47,7 @@ GUI::~GUI()
 
 void GUI::update(Player * player, EnemyManager* enemy)
 {
+	//hp and stuf geting updated
 	healthBar.clear();
 	for (int i = 0; i < player->getHealth(); i++)
 	{
@@ -91,6 +99,7 @@ void GUI::update(Player * player, EnemyManager* enemy)
 			deadText.setFillColor(newTextColor);
 		}
 	}
+
 	if (enemy->getBossKill())
 	{
 		if (!bossIsKilled)
