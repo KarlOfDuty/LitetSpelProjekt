@@ -45,6 +45,16 @@ void Level::loadLevel(Player* player)
 			line >> path;
 			readLights(path.c_str());
 		}
+		//else if (str == "pickup")
+		//{
+		//	line >> path;
+		//	readPickups(path.c_str());
+		//}
+		//else if (str == "music")
+		//{
+		//	line >> path;
+		//	readMusic(path.c_str());
+		//}
 	}
 	file.close();
 }
@@ -417,16 +427,31 @@ bool Level::readLights(const char * filePath)
 		line >> str;
 		if (str == "directional")
 		{
-			glm::vec3 vector;
-			line >> vector.x;
-			line >> vector.y;
-			line >> vector.z;
-			readModels(path.c_str(), staticModels);
+			glm::vec3 direction;
+			line >> direction.x;
+			line >> direction.y;
+			line >> direction.z;
+			glm::vec3 colour;
+			line >> colour.r;
+			line >> colour.g;
+			line >> colour.b;
+			dirLights.push_back(new DirectionalLight(direction, colour));
 		}
 		else if (str == "point")
 		{
-			line >> tempFloat;
-			readModels(path.c_str(), dynamicModels);
+			glm::vec3 pos;
+			line >> pos.x;
+			line >> pos.y;
+			line >> pos.z;
+			glm::vec3 colour;
+			line >> colour.r;
+			line >> colour.g;
+			line >> colour.b;
+			float linearDrop;
+			line >> linearDrop;
+			float quadraticDrop;
+			line >> quadraticDrop;
+			pointLights.push_back(new PointLight(pos,colour,linearDrop,quadraticDrop));
 		}
 	}
 	file.close();
@@ -495,9 +520,17 @@ std::vector<Model*> Level::getDynamicModels()
 {
 	return dynamicModels;
 }
-std::vector<Trigger*> Level::getTriggers()
+std::vector<Trigger*>& Level::getTriggers()
 {
-	return std::vector<Trigger*>();
+	return triggerBoxes;
+}
+std::vector<DirectionalLight*>& Level::getDirLights()
+{
+	return dirLights;
+}
+std::vector<PointLight*>& Level::getPointLights()
+{
+	return pointLights;
 }
 glm::vec3 Level::getPlayerPos()
 {

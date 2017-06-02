@@ -9,6 +9,7 @@
 #include <iostream>
 #include "SoundSystem.h"
 #include "Enemy.h"
+#include "DirectionalLight.h"
 
 //Turns on console feedback for reading of model files
 class Level
@@ -20,7 +21,8 @@ private:
 	std::vector<Model*> colliders;
 	std::vector<Model*> dynamicModels;
 	std::vector<Trigger*> triggerBoxes;
-	std::vector<GameObject*> playerAndEnemy;
+	std::vector<DirectionalLight*> dirLights;
+	std::vector<PointLight*> pointLights;
 	EnemyManager * enemyList;
 
 public:
@@ -38,7 +40,9 @@ public:
 	std::vector<Model*> getDynamicModels();
 	std::vector<Model*>& getStaticModels();
 	std::vector<Model*>& getCollisionBoxes();
-	std::vector<Trigger*> getTriggers();
+	std::vector<Trigger*>& getTriggers();
+	std::vector<DirectionalLight*>& getDirLights();
+	std::vector<PointLight*>& getPointLights();
 	glm::vec3 getPlayerPos();
 	void createPickup(Model * pickupModel, glm::vec2 position, std::string triggerName, Player * player);
 	Level();

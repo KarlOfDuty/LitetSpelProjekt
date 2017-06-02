@@ -73,9 +73,6 @@ sf::Clock cameraOnBossTimer;
 SoundSystem *soundSystem;
 Menu * menu;
 
-//Lights
-std::vector<PointLight*> pointLights;
-std::vector<DirectionalLight*> directionalLights;
 //VBO VAO
 GLuint VBO, VAO, EBO;
 GLuint quadVAO = 0;
@@ -245,10 +242,10 @@ void render()
 	GLfloat farPlane = 1200.0f;
 	lightProjection = glm::ortho(-200.0f, 500.0f, -600.0f, 600.0f, nearPlane, farPlane);
 	glCullFace(GL_FRONT);
-	for (int i = 0; i < directionalLights.size(); i++)
+	for (int i = 0; i < levelManager.currentLevel->getDirLights().size(); i++)
 	{
 		lightSpaceMatrix.push_back(glm::mat4());
-		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*600.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
+		lightView = glm::lookAt(player->getPos() + (-levelManager.currentLevel->getDirLights()[i]->getDirection()*600.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
 		lightSpaceMatrix[i] = lightProjection * lightView;
 		//Render scene from light's point of view
 		shadowShader.use();
@@ -320,28 +317,28 @@ void render()
 	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
 	glActiveTexture(GL_TEXTURE0 + textureID++);
 	glBindTexture(GL_TEXTURE_2D, gAmbient);
-	for (int i = 0; i < directionalLights.size(); i++)
+	for (int i = 0; i < levelManager.currentLevel->getDirLights().size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + textureID++);
 		glBindTexture(GL_TEXTURE_2D, depthMap[i]);
 	}
 	//Send all lights to the shader
-	for (GLuint i = 0; i < pointLights.size(); i++)
+	for (GLuint i = 0; i < levelManager.currentLevel->getPointLights().size(); i++)
 	{
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].position").c_str()), 1, &pointLights[i]->pos[0]);
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].colour").c_str()), 1, &pointLights[i]->colour[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].position").c_str()), 1, &levelManager.currentLevel->getPointLights()[i]->pos[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].colour").c_str()), 1, &levelManager.currentLevel->getPointLights()[i]->colour[0]);
 		// Linear and quadratic for calculation of the lights radius
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].linear").c_str()), pointLights[i]->linear);
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].quadratic").c_str()), pointLights[i]->quadratic);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].linear").c_str()), levelManager.currentLevel->getPointLights()[i]->linear);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].quadratic").c_str()), levelManager.currentLevel->getPointLights()[i]->quadratic);
 	}
-	for (GLuint i = 0; i < directionalLights.size(); i++)
+	for (GLuint i = 0; i < levelManager.currentLevel->getDirLights().size(); i++)
 	{
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].dir").c_str()), 1, &directionalLights[i]->getDirection()[0]);
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].colour").c_str()), 1, &directionalLights[i]->getColour()[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].dir").c_str()), 1, &levelManager.currentLevel->getDirLights()[i]->getDirection()[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].colour").c_str()), 1, &levelManager.currentLevel->getDirLights()[i]->getColour()[0]);
 		glUniformMatrix4fv(glGetUniformLocation(deferredLightingPass.program, ("lightSpaceMatrix[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix[i]));
 	}
-	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfPointLights"), pointLights.size());
-	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfDirLights"), directionalLights.size());
+	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfPointLights"), levelManager.currentLevel->getPointLights().size());
+	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfDirLights"), levelManager.currentLevel->getDirLights().size());
 	glUniform3fv(glGetUniformLocation(deferredLightingPass.program, "viewPos"), 1, &playerCamera.getCameraPos()[0]);
 	//Draw a fullscreen quad combining the information
 	drawQuad();
@@ -358,10 +355,10 @@ void renderM()
 	GLfloat farPlane = 30.0f;
 	lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, nearPlane, farPlane);
 	glCullFace(GL_FRONT);
-	for (int i = 0; i < directionalLights.size(); i++)
+	for (int i = 0; i < levelManager.currentLevel->getDirLights().size(); i++)
 	{
 		lightSpaceMatrix.push_back(glm::mat4());
-		lightView = glm::lookAt(player->getPos() + (-directionalLights[i]->getDirection()*10.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
+		lightView = glm::lookAt(player->getPos() + (-levelManager.currentLevel->getDirLights()[i]->getDirection()*10.0f), player->getPos(), glm::vec3(0.0, 1.0, 0.0));
 		lightSpaceMatrix[i] = lightProjection * lightView;
 		//Render scene from light's point of view
 		shadowShader.use();
@@ -433,28 +430,28 @@ void renderM()
 	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
 	glActiveTexture(GL_TEXTURE0 + textureID++);
 	glBindTexture(GL_TEXTURE_2D, gAmbient);
-	for (int i = 0; i < directionalLights.size(); i++)
+	for (int i = 0; i < levelManager.currentLevel->getDirLights().size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + textureID++);
 		glBindTexture(GL_TEXTURE_2D, depthMap[i]);
 	}
 	//Send all lights to the shader
-	for (GLuint i = 0; i < pointLights.size(); i++)
+	for (GLuint i = 0; i < levelManager.currentLevel->getPointLights().size(); i++)
 	{
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].position").c_str()), 1, &pointLights[i]->pos[0]);
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].colour").c_str()), 1, &pointLights[i]->colour[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].position").c_str()), 1, &levelManager.currentLevel->getPointLights()[i]->pos[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].colour").c_str()), 1, &levelManager.currentLevel->getPointLights()[i]->colour[0]);
 		// Linear and quadratic for calculation of the lights radius
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].linear").c_str()), pointLights[i]->linear);
-		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].quadratic").c_str()), pointLights[i]->quadratic);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].linear").c_str()), levelManager.currentLevel->getPointLights()[i]->linear);
+		glUniform1f(glGetUniformLocation(deferredLightingPass.program, ("pointLights[" + std::to_string(i) + "].quadratic").c_str()), levelManager.currentLevel->getPointLights()[i]->quadratic);
 	}
-	for (GLuint i = 0; i < directionalLights.size(); i++)
+	for (GLuint i = 0; i < levelManager.currentLevel->getDirLights().size(); i++)
 	{
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].dir").c_str()), 1, &directionalLights[i]->getDirection()[0]);
-		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].colour").c_str()), 1, &directionalLights[i]->getColour()[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].dir").c_str()), 1, &levelManager.currentLevel->getDirLights()[i]->getDirection()[0]);
+		glUniform3fv(glGetUniformLocation(deferredLightingPass.program, ("directionalLights[" + std::to_string(i) + "].colour").c_str()), 1, &levelManager.currentLevel->getDirLights()[i]->getColour()[0]);
 		glUniformMatrix4fv(glGetUniformLocation(deferredLightingPass.program, ("lightSpaceMatrix[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix[i]));
 	}
-	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfPointLights"), pointLights.size());
-	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfDirLights"), directionalLights.size());
+	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfPointLights"), levelManager.currentLevel->getPointLights().size());
+	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "numberOfDirLights"), levelManager.currentLevel->getDirLights().size());
 	glUniform3fv(glGetUniformLocation(deferredLightingPass.program, "viewPos"), 1, &playerCamera.getCameraPos()[0]);
 	//Draw a fullscreen quad combining the information
 	drawQuad();
@@ -563,7 +560,7 @@ void createGBuffer()
 	deferredLightingPass = Shader("Shaders/gBufferLightingVertex.glsl", "Shaders/gBufferLightingFragment.glsl");
 	shadowShader = Shader("shadowVertex.glsl", "shadowFragment.glsl");
 
-	for (int i = 0; i < directionalLights.size(); i++)
+	for (int i = 0; i < levelManager.currentLevel->getDirLights().size(); i++)
 	{
 		//Shadow buffer
 		depthMap.push_back(0);
@@ -595,7 +592,7 @@ void createGBuffer()
 	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "gNormal"), index++);
 	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "gAlbedoSpec"), index++);
 	glUniform1i(glGetUniformLocation(deferredLightingPass.program, "gAmbient"), index++);
-	for (int i = 0; i < directionalLights.size(); i++)
+	for (int i = 0; i < levelManager.currentLevel->getDirLights().size(); i++)
 	{
 		glUniform1i(glGetUniformLocation(deferredLightingPass.program, ("depthMap[" + std::to_string(i) + "]").c_str()), index++);
 	}
@@ -656,12 +653,13 @@ void drawQuad()
 {
 	if (quadVAO == 0)
 	{
-		GLfloat quadVertices[] = {
+		GLfloat quadVertices[] = 
+		{
 			// Positions        // Texture Coords
 			-1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
 			1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-			1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+			1.0f, -1.0f, 0.0f, 1.0f, 0.0f
 		};
 		// Setup plane VAO
 		glGenVertexArrays(1, &quadVAO);
@@ -684,17 +682,8 @@ void loadLevel()
 {
 	levelManager.currentLevel->loadLevel(player);
 	modelsToBeDrawn = levelManager.currentLevel->getStaticModels();
-	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 
-	//Some lights with random values
-	std::srand((int)time(0));
-	//pointLights.push_back(new PointLight(
-	//	glm::vec3(-3.0f, 10.0f, 0),
-	//	glm::vec3(0.6f, 0.9f, 0.9f),
-	//	0.0000f, 0.00f));
-	directionalLights.push_back(new DirectionalLight(
-		glm::normalize(glm::vec3(1.0f, -4.0f, 0.0f)),
-		glm::vec3(1.0f, 1.0f, 1.0f)));
+	playerCamera.setupQuadTree(levelManager.currentLevel->getStaticModels());
 	player->setPos(levelManager.currentLevel->getPlayerPos());
 	player->setStaticModels(levelManager.currentLevel->getCollisionBoxes());
 }
@@ -706,14 +695,6 @@ void unloadLevel()
 	playerCamera.destroyQuadTree();
 	player->clearProjectiles();
 	enemyManager->removeAll();
-	for (int i = 0; i < pointLights.size(); i++)
-	{
-		delete pointLights[i];
-	}
-	pointLights.clear();
-	for (int i = 0; i < directionalLights.size(); i++)
-	{
-		delete directionalLights[i];
-	}
-	directionalLights.clear();
+
+	//TODO: Unload lights in level
 }
