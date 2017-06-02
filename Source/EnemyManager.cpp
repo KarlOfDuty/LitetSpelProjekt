@@ -153,7 +153,7 @@ void EnemyManager::update(float dt, int playerDamage, std::vector<Model*> &allMo
 		{
 			allThreads.push_back(std::thread([&](Enemy * enemy) {enemy->update(dt, allSmallBats, allModels, player); }, allEnemies[i]));
 		}
-		allEnemies[i]->getModel()->updateAnimation();
+		allEnemies[i]->getModel()->updateAnimation(dt);
 	}
 	for (int i = 0; i < allThreads.size(); i++)
 	{

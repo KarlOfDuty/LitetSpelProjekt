@@ -27,9 +27,9 @@ int PlayerChar::getDamage() const
 {
 	return this->damage;
 }
-void PlayerChar::update()
+void PlayerChar::update(float dt)
 {
-	playerModel->updateAnimation();
+	playerModel->updateAnimation(dt);
 }
 void PlayerChar::draw(Shader shader)
 {
