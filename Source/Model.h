@@ -95,6 +95,8 @@ private:
 	glm::vec3 minBounding;
 	glm::vec3 maxBounding;
 	float boundingSphereRadius;
+	float dt;
+
 public:
 
 	int lastAnimationIndex;
@@ -118,6 +120,7 @@ public:
 	void setPos(glm::vec3 pos);
 	void setScale(glm::vec3& scale);
 	void setCurrentKeyframe(int frame);
+	void resetKeyframe();
 	void setAnimationIndex(int index);
 	void addMesh(Mesh* mesh);
 	void rotate();
@@ -127,7 +130,7 @@ public:
 	void loadWeight(const char* filePath);
 	void setupModel();
 	void loadTextures(int meshNr);
-	void updateAnimation();
+	void updateAnimation(float dtChange);
 	void draw(Shader shader);
 	void setBoundingSphereRadius();
 	float getBoundingSphereRadius() const;
