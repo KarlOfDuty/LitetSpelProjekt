@@ -395,7 +395,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			{
 				if (timeSinceJump.getElapsedTime().asSeconds() > 0.2)
 				{
-					if (timeSinceAttack.getElapsedTime().asSeconds() > 0.8)
+					if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 					{
 						setAnimationIndex(1);
 					}
@@ -412,7 +412,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 			{
 				if (timeSinceJump.getElapsedTime().asSeconds() > 0.2)
 				{
-					if (timeSinceAttack.getElapsedTime().asSeconds() > 0.8)
+					if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 					{
 						setAnimationIndex(1);
 					}
@@ -577,16 +577,16 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 
 	if (getPos().y > (groundPos + 10.0f))
 	{
-		if (timeSinceAttack.getElapsedTime().asSeconds() > 0.8)
+		if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 		{
 			setAnimationIndex(4);
 			timeSinceJump.restart();
 		}
 	}
 
-	if (timeSinceJump.getElapsedTime().asSeconds() > 0.2)
+	if (timeSinceJump.getElapsedTime().asSeconds() > 1.1)
 	{
-		if (timeSinceAttack.getElapsedTime().asSeconds() > 0.8)
+		if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 		{
 			if (isIdle && getPos().y < (groundPos + 15.0f))
 			{
@@ -596,14 +596,14 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		}
 	}
 
-	if (timeSinceAttack.getElapsedTime().asSeconds() > 0.8)
+	if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 	{
 		attacking = false;
 	}
 
 	if (attacking)
 	{
-		if (timeSinceAttack.getElapsedTime().asSeconds() < 0.8)
+		if (timeSinceAttack.getElapsedTime().asSeconds() < 1.0)
 		{
 			setAnimationIndex(2);
 			//this->player->getModel()->resetKeyframe();

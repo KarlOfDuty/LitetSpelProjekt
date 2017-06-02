@@ -1,4 +1,5 @@
 #include "GUI.h"
+
 // Graphical user interface
 //is used for victory/end screens and the health bars
 GUI::GUI()
