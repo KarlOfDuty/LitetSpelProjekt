@@ -16,7 +16,7 @@ LevelManager::LevelManager(EnemyManager * enemy)
 	levels.push_back(new Level("config/level1.ini", enemyList));
 	levels.push_back(new Level("config/level2.ini", enemyList));
 	levels.push_back(new Level("config/level4.ini", enemyList));
-	levelIndex = 3;
+	levelIndex = 1;
 	currentLevel = levels[levelIndex];
 	currentMenu = levels[0];
 }
