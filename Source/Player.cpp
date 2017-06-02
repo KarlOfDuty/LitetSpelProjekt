@@ -344,7 +344,7 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 		std::cout << this->getPos().y << " y" << std::endl;
 	}
 
-	player->update();
+	player->update(dt);
 	allAttackBoxes.clear();
 	for (int i = 0; i < allArrowAttackBoxes.size(); i++)
 	{
@@ -578,34 +578,36 @@ void Player::update(sf::Window &window, float dt, std::vector<Model*> &allModels
 
 	if (getPos().y > (groundPos + 10.0f))
 	{
-		if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+		if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 		{
 			setAnimationIndex(4);
 			timeSinceJump.restart();
 		}
 	}
 
-	if (timeSinceJump.getElapsedTime().asSeconds() > 0.2)
+	if (timeSinceJump.getElapsedTime().asSeconds() > 1.1)
 	{
-		if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+		if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 		{
 			if (isIdle && getPos().y < (groundPos + 15.0f))
 			{
 				setAnimationIndex(0);
+				this->player->getModel()->resetKeyframe();
 			}
 		}
 	}
 
-	if (timeSinceAttack.getElapsedTime().asSeconds() > 2.0)
+	if (timeSinceAttack.getElapsedTime().asSeconds() > 1.0)
 	{
 		attacking = false;
 	}
 
 	if (attacking)
 	{
-		if (timeSinceAttack.getElapsedTime().asSeconds() < 2.0)
+		if (timeSinceAttack.getElapsedTime().asSeconds() < 1.0)
 		{
 			setAnimationIndex(2);
+			//this->player->getModel()->resetKeyframe();
 		}
 	}
 

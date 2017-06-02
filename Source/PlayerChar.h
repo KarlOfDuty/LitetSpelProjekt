@@ -17,7 +17,7 @@ public:
 	virtual ~PlayerChar();
 	void setSwim(bool swiming);
 	int getDamage() const;
-	void update();
+	void update(float dt);
 	void draw(Shader shader);
 	virtual int getMaxJumps() = 0;
 	virtual float getJumpHeight() = 0;
