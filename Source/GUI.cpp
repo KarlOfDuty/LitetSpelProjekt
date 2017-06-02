@@ -1,7 +1,4 @@
 #include "GUI.h"
-
-
-
 GUI::GUI()
 {
 	isDead = false;
@@ -62,27 +59,37 @@ void GUI::update(Player * player, EnemyManager* enemy)
 	if (player->getHealth() <= 0)
 	{
 		isDead = true;
+		restartTimer.restart();
 	}
 	if (isDead)
 	{
-		sf::Color newColor = deadBox.getFillColor();
-		sf::Color newOutlineColor = deadBox.getOutlineColor();
-		sf::Color newTextColor = deadText.getFillColor();
-		if (newColor.a + 3 > 255)
+		if (restartTimer.getElapsedTime().asSeconds() > 3)
 		{
-			newColor.a = 255;
-			newOutlineColor.a = 255;
-			newTextColor.a = 255;
+			resetOpacity();
+			player->setHealth(20);
+			isDead = false;
 		}
 		else
 		{
-			newColor.a += 3;
-			newOutlineColor.a += 3;
-			newTextColor.a += 3;
+			sf::Color newColor = deadBox.getFillColor();
+			sf::Color newOutlineColor = deadBox.getOutlineColor();
+			sf::Color newTextColor = deadText.getFillColor();
+			if (newColor.a + 3 > 255)
+			{
+				newColor.a = 255;
+				newOutlineColor.a = 255;
+				newTextColor.a = 255;
+			}
+			else
+			{
+				newColor.a += 3;
+				newOutlineColor.a += 3;
+				newTextColor.a += 3;
+			}
+			deadBox.setFillColor(newColor);
+			deadBox.setOutlineColor(newOutlineColor);
+			deadText.setFillColor(newTextColor);
 		}
-		deadBox.setFillColor(newColor);
-		deadBox.setOutlineColor(newOutlineColor);
-		deadText.setFillColor(newTextColor);
 	}
 	if (enemy->getBossKill())
 	{
@@ -145,4 +152,12 @@ void GUI::draw(sf::RenderTarget & target, sf::RenderStates states) const
 	target.draw(deadBox);
 	target.draw(deadText);
 	target.draw(bossText);
+}
+
+void GUI::resetOpacity()
+{
+	deadBox.setFillColor(sf::Color(0, 0, 0, 0));
+	deadBox.setOutlineColor(sf::Color(40, 40, 40, 0));
+	deadText.setFillColor(sf::Color(200, 20, 20, 0));
+	bossText.setFillColor(sf::Color(20, 200, 20, 0));
 }
