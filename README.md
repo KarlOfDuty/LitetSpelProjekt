@@ -1,5 +1,5 @@
 # LitetSpelProjekt
-A BTH second year small game project.
+A Blekinge Institute of Technology second year small game project.
 
 The game includes our own basic OpenGL engine, our own maps and models, characters with animation, simple enemies, and several playable characters. We developed it in one month with 6 develpoers, two technical artists and four game programmers.
 
